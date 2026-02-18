@@ -19,8 +19,8 @@ const tiers = [
     features: [
       "Up to 10,000 AI queries/month",
       "Predictive analytics dashboard",
-      "Email & chat support",
-      "2 team seats",
+      "AI concierge access",
+      "2 API integrations",
       "Standard API access",
       "Weekly performance reports",
     ],
@@ -37,8 +37,8 @@ const tiers = [
     features: [
       "Unlimited AI queries",
       "Advanced predictive models",
-      "Priority 24/7 support",
-      "25 team seats",
+      "24/7 autonomous monitoring",
+      "25 API integrations",
       "Full API + Webhooks",
       "Custom AI model training",
       "Priority AI concierge access",
@@ -56,7 +56,7 @@ const tiers = [
     icon: Crown,
     features: [
       "Everything in Professional",
-      "Unlimited team seats",
+      "Unlimited API integrations",
       "On-premise deployment option",
       "Custom SLA (99.99% uptime)",
       "AI-guided onboarding",
