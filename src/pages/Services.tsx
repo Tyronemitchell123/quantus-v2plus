@@ -7,7 +7,7 @@ const services = [
     icon: Brain,
     title: "AI Strategy & Consulting",
     desc: "End-to-end AI transformation roadmaps for enterprise organizations seeking competitive advantage.",
-    features: ["Custom model development", "Data architecture design", "ROI forecasting", "Change management"],
+    features: ["Custom model development", "Data architecture design", "ROI forecasting", "Autonomous deployment"],
   },
   {
     icon: TrendingUp,
@@ -30,9 +30,9 @@ const services = [
 ];
 
 const tiers = [
-  { name: "Growth", price: "$5,000", period: "/mo", features: ["1 AI model", "Basic analytics", "Email support", "5 team seats"] },
-  { name: "Enterprise", price: "$25,000", period: "/mo", features: ["Unlimited models", "Full analytics suite", "24/7 priority support", "Unlimited seats"], featured: true },
-  { name: "Custom", price: "Contact Us", period: "", features: ["Bespoke solutions", "Dedicated AI team", "SLA guarantee", "On-premise option"] },
+  { name: "Growth", price: "$5,000", period: "/mo", features: ["1 AI model", "Basic analytics", "AI concierge access", "5 API integrations"] },
+  { name: "Enterprise", price: "$25,000", period: "/mo", features: ["Unlimited models", "Full analytics suite", "24/7 autonomous monitoring", "Unlimited integrations"], featured: true },
+  { name: "Custom", price: "Contact Us", period: "", features: ["Bespoke solutions", "Dedicated AI pipeline", "SLA guarantee", "On-premise option"] },
 ];
 
 const Services = () => (
