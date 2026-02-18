@@ -23,7 +23,7 @@ const Chat = () => {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [ttsEnabled, setTtsEnabled] = useState(true);
-  const [largeText, setLargeText] = useState(false);
+  const [largeText, setLargeText] = useState(() => localStorage.getItem("nexus-large-text") === "true");
   const endRef = useRef<HTMLDivElement>(null);
 
   const { listening, speaking, supported, startListening, stopListening, speak, stopSpeaking } =
@@ -158,7 +158,7 @@ const Chat = () => {
             </div>
             {/* Font size toggle */}
             <button
-              onClick={() => setLargeText((v) => !v)}
+              onClick={() => setLargeText((v) => { const next = !v; localStorage.setItem("nexus-large-text", String(next)); return next; })}
               className={`w-10 h-10 rounded-full flex items-center justify-center transition-all shrink-0 ${
                 largeText
                   ? "bg-primary/10 text-primary ring-1 ring-primary/20"
