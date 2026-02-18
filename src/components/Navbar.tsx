@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Sparkles } from "lucide-react";
+import { Menu, X, Sparkles, LogOut } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
 
 const navLinks = [
   { to: "/", label: "Home" },
@@ -16,6 +17,8 @@ const Navbar = () => {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, signOut } = useAuth();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -27,12 +30,15 @@ const Navbar = () => {
     setOpen(false);
   }, [location.pathname]);
 
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/");
+  };
+
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        scrolled
-          ? "glass shadow-lg shadow-black/20"
-          : "bg-transparent"
+        scrolled ? "glass shadow-lg shadow-black/20" : "bg-transparent"
       }`}
     >
       <div className="container mx-auto flex items-center justify-between h-16 px-6">
@@ -71,12 +77,31 @@ const Navbar = () => {
               </Link>
             );
           })}
-          <Link
-            to="/chat"
-            className="ml-4 px-5 py-2 text-sm font-semibold rounded-full bg-primary text-primary-foreground hover:opacity-90 transition-all hover:shadow-lg hover:shadow-primary/20"
-          >
-            AI Chat
-          </Link>
+
+          {user ? (
+            <div className="ml-4 flex items-center gap-2">
+              <Link
+                to="/chat"
+                className="px-5 py-2 text-sm font-semibold rounded-full bg-primary text-primary-foreground hover:opacity-90 transition-all hover:shadow-lg hover:shadow-primary/20"
+              >
+                AI Chat
+              </Link>
+              <button
+                onClick={handleSignOut}
+                className="p-2 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
+                title="Sign out"
+              >
+                <LogOut size={16} />
+              </button>
+            </div>
+          ) : (
+            <Link
+              to="/auth"
+              className="ml-4 px-5 py-2 text-sm font-semibold rounded-full bg-primary text-primary-foreground hover:opacity-90 transition-all hover:shadow-lg hover:shadow-primary/20"
+            >
+              Get Started
+            </Link>
+          )}
         </nav>
 
         {/* Mobile toggle */}
@@ -121,13 +146,31 @@ const Navbar = () => {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: navLinks.length * 0.05 }}
               >
-                <Link
-                  to="/chat"
-                  onClick={() => setOpen(false)}
-                  className="mt-2 text-center block px-5 py-3 font-semibold rounded-full bg-primary text-primary-foreground"
-                >
-                  AI Chat
-                </Link>
+                {user ? (
+                  <div className="flex flex-col gap-2 mt-2">
+                    <Link
+                      to="/chat"
+                      onClick={() => setOpen(false)}
+                      className="text-center block px-5 py-3 font-semibold rounded-full bg-primary text-primary-foreground"
+                    >
+                      AI Chat
+                    </Link>
+                    <button
+                      onClick={() => { handleSignOut(); setOpen(false); }}
+                      className="text-center px-5 py-3 font-medium rounded-full border border-border text-foreground"
+                    >
+                      Sign Out
+                    </button>
+                  </div>
+                ) : (
+                  <Link
+                    to="/auth"
+                    onClick={() => setOpen(false)}
+                    className="mt-2 text-center block px-5 py-3 font-semibold rounded-full bg-primary text-primary-foreground"
+                  >
+                    Get Started
+                  </Link>
+                )}
               </motion.div>
             </nav>
           </motion.div>
