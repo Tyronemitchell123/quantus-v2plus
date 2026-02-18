@@ -165,7 +165,7 @@ const Chat = () => {
 
           {/* Messages */}
           <div className="flex-1 overflow-y-auto px-4 py-6">
-            <div className="max-w-2xl mx-auto space-y-5">
+            <div className="max-w-2xl mx-auto space-y-6">
               <AnimatePresence>
                 {messages.map((m, i) => (
                   <motion.div
@@ -181,14 +181,14 @@ const Chat = () => {
                       </div>
                     )}
                     <div
-                      className={`max-w-[78%] rounded-2xl px-5 py-3 text-sm leading-relaxed ${
+                      className={`max-w-[78%] rounded-2xl px-6 py-4 text-base leading-relaxed ${
                         m.role === "user"
                           ? "bg-primary text-primary-foreground rounded-br-md shadow-lg shadow-primary/20"
                           : "glass-card rounded-bl-md text-foreground"
                       }`}
                     >
                       {m.role === "assistant" ? (
-                        <div className="prose prose-sm prose-invert max-w-none prose-headings:text-foreground prose-p:text-foreground prose-strong:text-primary prose-li:text-foreground prose-a:text-accent">
+                        <div className="prose prose-base prose-invert max-w-none prose-headings:text-foreground prose-p:text-foreground prose-strong:text-primary prose-li:text-foreground prose-a:text-accent">
                           <ReactMarkdown>{m.content}</ReactMarkdown>
                         </div>
                       ) : (
@@ -234,7 +234,7 @@ const Chat = () => {
                 {supported.stt && (
                   <button
                     onClick={listening ? stopListening : startListening}
-                    className={`w-11 h-11 rounded-full flex items-center justify-center transition-all shrink-0 ${
+                    className={`w-12 h-12 rounded-full flex items-center justify-center transition-all shrink-0 ${
                       listening
                         ? "bg-destructive text-destructive-foreground animate-pulse shadow-lg shadow-destructive/30"
                         : "bg-secondary text-muted-foreground hover:text-foreground hover:bg-secondary/80"
@@ -251,7 +251,7 @@ const Chat = () => {
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && send()}
                     placeholder={listening ? "Listening..." : "Ask the concierge anything..."}
-                    className="w-full bg-secondary/80 border border-border rounded-full px-5 py-3 pr-12 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all"
+                    className="w-full bg-secondary/80 border border-border rounded-full px-6 py-4 pr-14 text-base text-foreground placeholder:text-muted-foreground outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all"
                   />
                   <div className="absolute right-3 top-1/2 -translate-y-1/2">
                     <Sparkles size={14} className="text-muted-foreground/40" />
@@ -265,7 +265,7 @@ const Chat = () => {
                       if (speaking) stopSpeaking();
                       setTtsEnabled((v) => !v);
                     }}
-                    className={`w-11 h-11 rounded-full flex items-center justify-center transition-all shrink-0 ${
+                    className={`w-12 h-12 rounded-full flex items-center justify-center transition-all shrink-0 ${
                       ttsEnabled
                         ? "bg-primary/10 text-primary ring-1 ring-primary/20"
                         : "bg-secondary text-muted-foreground hover:text-foreground"
@@ -279,9 +279,9 @@ const Chat = () => {
                 <button
                   onClick={send}
                   disabled={loading || !input.trim()}
-                  className="w-11 h-11 rounded-full bg-primary text-primary-foreground flex items-center justify-center hover:opacity-90 transition-all disabled:opacity-30 shadow-lg shadow-primary/20 hover:shadow-primary/40 shrink-0"
+                  className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center hover:opacity-90 transition-all disabled:opacity-30 shadow-lg shadow-primary/20 hover:shadow-primary/40 shrink-0"
                 >
-                  <Send size={16} />
+                  <Send size={18} />
                 </button>
               </div>
               <p className="text-center text-[10px] text-muted-foreground/50 mt-2 tracking-wider">
