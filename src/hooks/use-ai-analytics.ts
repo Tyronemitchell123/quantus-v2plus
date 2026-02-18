@@ -3,6 +3,8 @@ import { toast } from "sonner";
 
 const AI_ANALYTICS_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-analytics`;
 
+export const CREDITS_BANNER_STORAGE_KEY = "nexus-credits-banner-dismissed";
+
 export function useAIAnalytics<T = any>() {
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(false);
@@ -36,6 +38,7 @@ export function useAIAnalytics<T = any>() {
 
       const result = await resp.json();
       setData(result.data);
+      try { localStorage.removeItem(CREDITS_BANNER_STORAGE_KEY); } catch {}
       return result.data as T;
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Unknown error";

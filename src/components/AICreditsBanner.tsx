@@ -2,12 +2,12 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Info, Zap, X } from "lucide-react";
 
-const STORAGE_KEY = "nexus-credits-banner-dismissed";
+import { CREDITS_BANNER_STORAGE_KEY } from "@/hooks/use-ai-analytics";
 
 const AICreditsBanner = () => {
   const [dismissed, setDismissed] = useState(() => {
     try {
-      return localStorage.getItem(STORAGE_KEY) === "true";
+      return localStorage.getItem(CREDITS_BANNER_STORAGE_KEY) === "true";
     } catch {
       return false;
     }
@@ -15,7 +15,7 @@ const AICreditsBanner = () => {
 
   const handleDismiss = () => {
     setDismissed(true);
-    try { localStorage.setItem(STORAGE_KEY, "true"); } catch {}
+    try { localStorage.setItem(CREDITS_BANNER_STORAGE_KEY, "true"); } catch {}
   };
   return (
     <AnimatePresence>
