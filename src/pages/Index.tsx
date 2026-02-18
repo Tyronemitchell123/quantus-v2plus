@@ -4,6 +4,7 @@ import { ArrowRight, Brain, LineChart, Zap, Shield, Globe, Sparkles } from "luci
 import ParticleGrid from "@/components/ParticleGrid";
 import { useTypewriter } from "@/hooks/use-typewriter";
 import { useRef } from "react";
+import AIRecommendations from "@/components/AIRecommendations";
 
 const features = [
   { icon: Brain, title: "Autonomous Intelligence", desc: "Self-learning AI that evolves with your business, making decisions in real time.", color: "from-primary/20 to-primary/5" },
@@ -210,6 +211,9 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      {/* AI Recommendations */}
+      <AIRecommendations />
 
       {/* CTA */}
       <section className="py-24">
