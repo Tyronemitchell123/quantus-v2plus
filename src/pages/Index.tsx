@@ -7,6 +7,8 @@ import { useTypewriter } from "@/hooks/use-typewriter";
 import { useRef } from "react";
 import AIRecommendations from "@/components/AIRecommendations";
 import useDocumentHead from "@/hooks/use-document-head";
+import quantumProcessor from "@/assets/quantum-processor.jpg";
+import quantumAnalytics from "@/assets/quantum-analytics.jpg";
 
 const features = [
   { icon: Atom, title: "Quantum Intelligence", desc: "Quantum-enhanced neural networks that process exponentially faster, unlocking solutions classical AI cannot reach.", color: "from-quantum-cyan/20 to-quantum-cyan/5" },
@@ -194,7 +196,7 @@ const Index = () => {
               Powered by <span className="text-quantum-gradient">Quantum Physics</span>
             </h2>
           </motion.div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
             {features.map((f, i) => (
               <motion.div
                 key={f.title}
@@ -216,6 +218,35 @@ const Index = () => {
               </motion.div>
             ))}
           </div>
+
+          {/* Analytics image showcase */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="max-w-4xl mx-auto"
+          >
+            <motion.div
+              animate={{
+                boxShadow: [
+                  "0 0 30px -10px hsla(185, 100%, 55%, 0.15)",
+                  "0 0 60px -10px hsla(185, 100%, 55%, 0.3), 0 0 100px -20px hsla(270, 80%, 60%, 0.15)",
+                  "0 0 30px -10px hsla(185, 100%, 55%, 0.15)",
+                ],
+                transition: { duration: 5, repeat: Infinity, ease: "easeInOut" as const },
+              }}
+              className="rounded-2xl overflow-hidden border border-quantum-purple/20"
+            >
+              <motion.img
+                src={quantumAnalytics}
+                alt="Quantum analytics dashboard with holographic charts and data nodes"
+                className="w-full h-auto rounded-2xl"
+                animate={{ y: [0, -8, 0], transition: { duration: 6, repeat: Infinity, ease: "easeInOut" as const } }}
+                whileHover={{ scale: 1.02 }}
+                transition={{ duration: 0.4 }}
+              />
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 
@@ -246,15 +277,39 @@ const Index = () => {
               </ul>
             </motion.div>
             <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
+              initial={{ opacity: 0, scale: 0.85 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
-              className="flex items-center justify-center"
+              transition={{ duration: 0.7 }}
+              className="relative"
             >
-              <div className="relative">
-                <QuantumOrbit size={240} />
-                <div className="absolute inset-0 bg-quantum-cyan/[0.05] rounded-full blur-[60px] animate-quantum-pulse" />
-              </div>
+              <motion.div
+                animate={{
+                  boxShadow: [
+                    "0 0 20px -5px hsla(185, 100%, 55%, 0.2)",
+                    "0 0 40px -5px hsla(185, 100%, 55%, 0.4), 0 0 80px -10px hsla(270, 80%, 60%, 0.2)",
+                    "0 0 20px -5px hsla(185, 100%, 55%, 0.2)",
+                  ],
+                  transition: { duration: 4, repeat: Infinity, ease: "easeInOut" as const },
+                }}
+                className="rounded-2xl overflow-hidden border border-quantum-cyan/20"
+              >
+                <motion.img
+                  src={quantumProcessor}
+                  alt="Quantum processor chip with glowing cyan and purple data streams"
+                  className="w-full h-auto rounded-2xl"
+                  animate={{ y: [0, -10, 0], transition: { duration: 5, repeat: Infinity, ease: "easeInOut" as const } }}
+                  whileHover={{ scale: 1.03 }}
+                  transition={{ duration: 0.4 }}
+                />
+              </motion.div>
+              <motion.div
+                className="absolute -bottom-4 -right-4 w-20 h-20"
+                animate={{ rotate: 360 }}
+                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+              >
+                <QuantumOrbit size={80} />
+              </motion.div>
             </motion.div>
           </div>
         </div>

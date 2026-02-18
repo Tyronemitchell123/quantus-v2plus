@@ -2,6 +2,9 @@ import { motion } from "framer-motion";
 import { Atom, TrendingUp, Megaphone, Coins, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import useDocumentHead from "@/hooks/use-document-head";
+import quantumProcessor from "@/assets/quantum-processor.jpg";
+import quantumAnalytics from "@/assets/quantum-analytics.jpg";
+import QuantumOrbit from "@/components/QuantumOrbit";
 
 const services = [
   {
@@ -45,19 +48,86 @@ const Services = () => {
 
   return (
     <div className="pt-24">
+    {/* Hero with image */}
     <section className="py-24">
       <div className="container mx-auto px-6">
+        <div className="grid md:grid-cols-2 gap-16 items-center mb-24">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <p className="text-quantum-cyan font-display text-sm tracking-[0.3em] uppercase mb-4">What We Offer</p>
+            <h1 className="font-display text-4xl md:text-6xl font-bold text-foreground mb-6">
+              Quantum <span className="text-quantum-gradient">AI Services</span>
+            </h1>
+            <p className="text-muted-foreground text-lg leading-relaxed">
+              Enterprise solutions powered by quantum computing — from strategy to deployment, we bring quantum advantage to every facet of your business.
+            </p>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9, x: 30 }}
+            animate={{ opacity: 1, scale: 1, x: 0 }}
+            transition={{ duration: 0.7 }}
+            className="relative"
+          >
+            <motion.div
+              animate={{
+                boxShadow: [
+                  "0 0 20px -5px hsla(185, 100%, 55%, 0.2)",
+                  "0 0 40px -5px hsla(185, 100%, 55%, 0.4), 0 0 80px -10px hsla(270, 80%, 60%, 0.2)",
+                  "0 0 20px -5px hsla(185, 100%, 55%, 0.2)",
+                ],
+                transition: { duration: 4, repeat: Infinity, ease: "easeInOut" as const },
+              }}
+              className="rounded-2xl overflow-hidden border border-quantum-cyan/20"
+            >
+              <motion.img
+                src={quantumProcessor}
+                alt="Quantum processor powering enterprise AI services"
+                className="w-full h-auto rounded-2xl"
+                animate={{ y: [0, -10, 0], transition: { duration: 5, repeat: Infinity, ease: "easeInOut" as const } }}
+                whileHover={{ scale: 1.03 }}
+                transition={{ duration: 0.4 }}
+              />
+            </motion.div>
+            <motion.div
+              className="absolute -bottom-4 -left-4 w-20 h-20"
+              animate={{ rotate: 360 }}
+              transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+            >
+              <QuantumOrbit size={80} />
+            </motion.div>
+          </motion.div>
+        </div>
+
+        {/* Analytics image divider */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-16"
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="max-w-3xl mx-auto mb-24"
         >
-          <p className="text-quantum-cyan font-display text-sm tracking-[0.3em] uppercase mb-4">What We Offer</p>
-          <h1 className="font-display text-4xl md:text-6xl font-bold text-foreground">
-            Quantum <span className="text-quantum-gradient">AI Services</span>
-          </h1>
+          <motion.div
+            animate={{
+              boxShadow: [
+                "0 0 25px -8px hsla(270, 80%, 60%, 0.15)",
+                "0 0 50px -8px hsla(270, 80%, 60%, 0.3), 0 0 80px -15px hsla(185, 100%, 55%, 0.15)",
+                "0 0 25px -8px hsla(270, 80%, 60%, 0.15)",
+              ],
+              transition: { duration: 5, repeat: Infinity, ease: "easeInOut" as const },
+            }}
+            className="rounded-2xl overflow-hidden border border-quantum-purple/20"
+          >
+            <motion.img
+              src={quantumAnalytics}
+              alt="Quantum analytics visualization with holographic data dashboards"
+              className="w-full h-auto rounded-2xl"
+              animate={{ y: [0, -8, 0], transition: { duration: 6, repeat: Infinity, ease: "easeInOut" as const } }}
+              whileHover={{ scale: 1.02 }}
+              transition={{ duration: 0.4 }}
+            />
+          </motion.div>
         </motion.div>
-
         <div className="grid md:grid-cols-2 gap-6 mb-24">
           {services.map((s, i) => (
             <motion.div
