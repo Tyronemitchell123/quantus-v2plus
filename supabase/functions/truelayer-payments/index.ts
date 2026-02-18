@@ -7,8 +7,9 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const TRUELAYER_AUTH_URL = "https://auth.truelayer.com";
-const TRUELAYER_API_URL = "https://api.truelayer.com";
+// Use sandbox URLs — switch to production (auth.truelayer.com / api.truelayer.com) when going live
+const TRUELAYER_AUTH_URL = "https://auth.truelayer-sandbox.com";
+const TRUELAYER_API_URL = "https://api.truelayer-sandbox.com";
 
 async function getAccessToken(): Promise<string> {
   const clientId = Deno.env.get("TRUELAYER_CLIENT_ID");
@@ -102,7 +103,7 @@ serve(async (req) => {
             provider_selection: { type: "user_selected" },
             beneficiary: {
               type: "merchant_account",
-              merchant_account_id: Deno.env.get("TRUELAYER_MERCHANT_ACCOUNT_ID") || "default",
+              merchant_account_id: Deno.env.get("TRUELAYER_MERCHANT_ACCOUNT_ID") || "",
             },
           },
           user: { id: userId },
