@@ -2,6 +2,9 @@ import { useState, useRef, useEffect, lazy, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Send, Bot, User, Sparkles, Shield, Zap, Mic, MicOff, Volume2, VolumeX } from "lucide-react";
 import { useVoice } from "@/hooks/use-voice";
+import { streamChat } from "@/lib/stream-chat";
+import ReactMarkdown from "react-markdown";
+import { toast } from "sonner";
 
 const HolographicAvatar = lazy(() => import("@/components/HolographicAvatar"));
 
@@ -29,24 +32,44 @@ const Chat = () => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  const assistantRef = useRef("");
+
   const send = async () => {
     const text = input.trim();
     if (!text || loading) return;
     setInput("");
     const userMsg: Message = { role: "user", content: text };
-    setMessages((prev) => [...prev, userMsg]);
+    const allMessages = [...messages, userMsg];
+    setMessages(allMessages);
     setLoading(true);
+    assistantRef.current = "";
 
-    setTimeout(() => {
-      const reply =
-        "Thank you for your message. The AI backend will be connected soon to deliver real-time intelligent responses. For now, explore the platform and its features.";
-      setMessages((prev) => [
-        ...prev,
-        { role: "assistant", content: reply },
-      ]);
-      setLoading(false);
-      if (ttsEnabled) speak(reply);
-    }, 1500);
+    await streamChat({
+      messages: allMessages,
+      onDelta: (chunk) => {
+        assistantRef.current += chunk;
+        const soFar = assistantRef.current;
+        setMessages((prev) => {
+          const last = prev[prev.length - 1];
+          if (last?.role === "assistant" && prev.length > allMessages.length) {
+            return prev.map((m, i) => (i === prev.length - 1 ? { ...m, content: soFar } : m));
+          }
+          return [...prev, { role: "assistant", content: soFar }];
+        });
+      },
+      onDone: () => {
+        setLoading(false);
+        if (ttsEnabled && assistantRef.current) {
+          // Speak a trimmed version (strip markdown)
+          const plain = assistantRef.current.replace(/[#*_`~>\[\]()!|-]/g, "").slice(0, 500);
+          speak(plain);
+        }
+      },
+      onError: (msg) => {
+        setLoading(false);
+        toast.error(msg);
+      },
+    });
   };
 
   return (
@@ -155,7 +178,13 @@ const Chat = () => {
                           : "glass-card rounded-bl-md text-foreground"
                       }`}
                     >
-                      {m.content}
+                      {m.role === "assistant" ? (
+                        <div className="prose prose-sm prose-invert max-w-none prose-headings:text-foreground prose-p:text-foreground prose-strong:text-primary prose-li:text-foreground prose-a:text-accent">
+                          <ReactMarkdown>{m.content}</ReactMarkdown>
+                        </div>
+                      ) : (
+                        m.content
+                      )}
                     </div>
                     {m.role === "user" && (
                       <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center shrink-0 mt-1">
