@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, lazy, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send, Bot, User, Sparkles, Shield, Zap } from "lucide-react";
+import { Send, Bot, User, Sparkles, Shield, Zap, Mic, MicOff, Volume2, VolumeX } from "lucide-react";
+import { useVoice } from "@/hooks/use-voice";
 
 const HolographicAvatar = lazy(() => import("@/components/HolographicAvatar"));
 
@@ -16,7 +17,13 @@ const Chat = () => {
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [ttsEnabled, setTtsEnabled] = useState(true);
   const endRef = useRef<HTMLDivElement>(null);
+
+  const { listening, speaking, supported, startListening, stopListening, speak, stopSpeaking } =
+    useVoice({
+      onResult: (transcript) => setInput(transcript),
+    });
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -31,15 +38,14 @@ const Chat = () => {
     setLoading(true);
 
     setTimeout(() => {
+      const reply =
+        "Thank you for your message. The AI backend will be connected soon to deliver real-time intelligent responses. For now, explore the platform and its features.";
       setMessages((prev) => [
         ...prev,
-        {
-          role: "assistant",
-          content:
-            "Thank you for your message. The AI backend will be connected soon to deliver real-time intelligent responses. For now, explore the platform and its features.",
-        },
+        { role: "assistant", content: reply },
       ]);
       setLoading(false);
+      if (ttsEnabled) speak(reply);
     }, 1500);
   };
 
@@ -71,7 +77,7 @@ const Chat = () => {
                 </div>
               }
             >
-              <HolographicAvatar speaking={loading} />
+              <HolographicAvatar speaking={loading || speaking} />
             </Suspense>
           </div>
 
@@ -120,7 +126,7 @@ const Chat = () => {
             {/* Mobile avatar peek */}
             <div className="lg:hidden ml-auto w-16 h-16 relative">
               <Suspense fallback={null}>
-                <HolographicAvatar speaking={loading} />
+                <HolographicAvatar speaking={loading || speaking} />
               </Suspense>
             </div>
           </div>
@@ -185,29 +191,63 @@ const Chat = () => {
           {/* Input area */}
           <div className="border-t border-border/50 glass p-4">
             <div className="max-w-2xl mx-auto">
-              <div className="flex gap-3 items-center">
+              <div className="flex gap-2 items-center">
+                {/* Voice toggle */}
+                {supported.stt && (
+                  <button
+                    onClick={listening ? stopListening : startListening}
+                    className={`w-11 h-11 rounded-full flex items-center justify-center transition-all shrink-0 ${
+                      listening
+                        ? "bg-destructive text-destructive-foreground animate-pulse shadow-lg shadow-destructive/30"
+                        : "bg-secondary text-muted-foreground hover:text-foreground hover:bg-secondary/80"
+                    }`}
+                    title={listening ? "Stop listening" : "Voice input"}
+                  >
+                    {listening ? <MicOff size={16} /> : <Mic size={16} />}
+                  </button>
+                )}
+
                 <div className="flex-1 relative">
                   <input
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && send()}
-                    placeholder="Ask the concierge anything..."
+                    placeholder={listening ? "Listening..." : "Ask the concierge anything..."}
                     className="w-full bg-secondary/80 border border-border rounded-full px-5 py-3 pr-12 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all"
                   />
                   <div className="absolute right-3 top-1/2 -translate-y-1/2">
                     <Sparkles size={14} className="text-muted-foreground/40" />
                   </div>
                 </div>
+
+                {/* TTS toggle */}
+                {supported.tts && (
+                  <button
+                    onClick={() => {
+                      if (speaking) stopSpeaking();
+                      setTtsEnabled((v) => !v);
+                    }}
+                    className={`w-11 h-11 rounded-full flex items-center justify-center transition-all shrink-0 ${
+                      ttsEnabled
+                        ? "bg-primary/10 text-primary ring-1 ring-primary/20"
+                        : "bg-secondary text-muted-foreground hover:text-foreground"
+                    }`}
+                    title={ttsEnabled ? "Mute voice" : "Enable voice"}
+                  >
+                    {ttsEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />}
+                  </button>
+                )}
+
                 <button
                   onClick={send}
                   disabled={loading || !input.trim()}
-                  className="w-11 h-11 rounded-full bg-primary text-primary-foreground flex items-center justify-center hover:opacity-90 transition-all disabled:opacity-30 shadow-lg shadow-primary/20 hover:shadow-primary/40"
+                  className="w-11 h-11 rounded-full bg-primary text-primary-foreground flex items-center justify-center hover:opacity-90 transition-all disabled:opacity-30 shadow-lg shadow-primary/20 hover:shadow-primary/40 shrink-0"
                 >
                   <Send size={16} />
                 </button>
               </div>
               <p className="text-center text-[10px] text-muted-foreground/50 mt-2 tracking-wider">
-                END-TO-END ENCRYPTED • NEXUS AI v2.0
+                {listening ? "🎙️ VOICE INPUT ACTIVE" : "END-TO-END ENCRYPTED • NEXUS AI v2.0"}
               </p>
             </div>
           </div>
