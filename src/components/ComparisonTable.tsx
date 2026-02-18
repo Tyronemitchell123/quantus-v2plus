@@ -87,7 +87,7 @@ const ComparisonTable = () => (
         className="glass-card rounded-2xl overflow-hidden"
       >
         {/* Sticky header */}
-        <div className="grid grid-cols-[1fr_repeat(3,minmax(100px,1fr))] border-b border-border">
+        <div className="sticky top-16 z-10 grid grid-cols-[1fr_repeat(3,minmax(100px,1fr))] border-b border-border bg-card/95 backdrop-blur-md">
           <div className="p-5" />
           {tierHeaders.map((h, i) => (
             <div
