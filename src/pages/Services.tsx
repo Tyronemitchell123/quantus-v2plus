@@ -5,6 +5,7 @@ import useDocumentHead from "@/hooks/use-document-head";
 import quantumProcessor from "@/assets/quantum-processor.jpg";
 import quantumAnalytics from "@/assets/quantum-analytics.jpg";
 import QuantumOrbit from "@/components/QuantumOrbit";
+import HeroVideoBackground from "@/components/HeroVideoBackground";
 
 const services = [
   {
@@ -49,7 +50,8 @@ const Services = () => {
   return (
     <div className="pt-24">
     {/* Hero with image */}
-    <section className="py-24">
+    <section className="py-24 relative overflow-hidden">
+      <HeroVideoBackground />
       <div className="container mx-auto px-6">
         <div className="grid md:grid-cols-2 gap-16 items-center mb-24">
           <motion.div

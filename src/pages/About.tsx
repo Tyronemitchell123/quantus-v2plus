@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Atom, Eye, Target } from "lucide-react";
 import QuantumOrbit from "@/components/QuantumOrbit";
 import useDocumentHead from "@/hooks/use-document-head";
+import HeroVideoBackground from "@/components/HeroVideoBackground";
 import quantumMission from "@/assets/quantum-mission.jpg";
 import quantumNeural from "@/assets/quantum-neural.jpg";
 
@@ -36,6 +37,7 @@ const About = () => {
     <div className="pt-24">
       {/* Hero with animated neural image */}
       <header className="py-24 relative overflow-hidden">
+        <HeroVideoBackground />
         <motion.div
           className="absolute -top-20 -right-20 w-[500px] h-[500px] opacity-20 blur-sm pointer-events-none"
           animate={floatAnimation}
