@@ -109,7 +109,7 @@ const Contact = () => {
                 <div className="glass-card rounded-2xl p-8 text-center gold-glow mb-8">
                   <CheckCircle className="text-primary mx-auto mb-4" size={48} />
                   <h3 className="font-display text-2xl font-bold text-foreground mb-2">Message Received & Analyzed</h3>
-                  <p className="text-muted-foreground text-sm">NEXUS AI has instantly processed your inquiry.</p>
+                  <p className="text-muted-foreground text-sm">QUANTUS AI has instantly processed your inquiry.</p>
                 </div>
                 <AIFallbackBanner status={analyzeStatus} onRetry={() => analyze("analyze-contact")} loading={analyzing} className="mb-6" />
 
@@ -196,7 +196,7 @@ const Contact = () => {
                       <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/5 border border-primary/10">
                         <Brain size={12} className="text-primary" />
                         <span className="text-[10px] text-muted-foreground tracking-[0.2em] uppercase">
-                          Analyzed in real-time by NEXUS ML Engine
+                          Analyzed in real-time by QUANTUS Quantum Engine
                         </span>
                       </div>
                     </div>

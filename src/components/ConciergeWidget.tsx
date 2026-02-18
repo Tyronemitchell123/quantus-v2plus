@@ -19,7 +19,7 @@ const ConciergeWidget = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      content: "Hello! I'm your NEXUS concierge. How can I assist you?",
+      content: "Hello! I'm your QUANTUS concierge. How can I assist you?",
     },
   ]);
   const [input, setInput] = useState("");
@@ -130,11 +130,11 @@ const ConciergeWidget = () => {
               <img src={conciergeGlowBg} alt="" className="absolute inset-0 w-full h-full object-cover opacity-30 pointer-events-none" />
               <div className="absolute inset-0 bg-background/70 pointer-events-none" />
               <div className="w-10 h-10 rounded-full overflow-hidden relative shrink-0 ring-2 ring-primary/30">
-                <img src={holoAvatarTexture} alt="NEXUS" className="w-full h-full object-cover" />
+                <img src={holoAvatarTexture} alt="QUANTUS" className="w-full h-full object-cover" />
               </div>
               <div className="flex-1 min-w-0 relative">
                 <h3 className="font-display text-sm font-semibold text-foreground tracking-wide">
-                  NEXUS Concierge
+                  QUANTUS Concierge
                 </h3>
                 <div className="flex items-center gap-1.5">
                   <div className="w-1.5 h-1.5 rounded-full bg-emerald animate-pulse" />

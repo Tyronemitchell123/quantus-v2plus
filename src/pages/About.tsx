@@ -1,10 +1,11 @@
 import { motion } from "framer-motion";
-import { Cpu, Eye, Target } from "lucide-react";
+import { Atom, Eye, Target } from "lucide-react";
+import QuantumOrbit from "@/components/QuantumOrbit";
 
 const capabilities = [
-  { icon: Cpu, title: "Neural Architecture", desc: "Our proprietary neural networks process billions of data points to deliver unmatched predictive accuracy." },
-  { icon: Eye, title: "Computer Vision", desc: "Advanced image and video analysis powering real-time environmental understanding." },
-  { icon: Target, title: "Strategic Reasoning", desc: "Multi-step planning and decision-making that rivals the world's best strategists." },
+  { icon: Atom, title: "Quantum Neural Architecture", desc: "Proprietary quantum neural networks process information in superposition, delivering exponentially faster insights than classical systems." },
+  { icon: Eye, title: "Quantum Sensing", desc: "Advanced quantum-enhanced perception systems for real-time environmental analysis at the atomic level." },
+  { icon: Target, title: "Quantum Strategic Reasoning", desc: "Multi-dimensional planning leveraging quantum annealing to explore solution spaces classical AI cannot reach." },
 ];
 
 const About = () => (
@@ -18,12 +19,12 @@ const About = () => (
           transition={{ duration: 0.8 }}
           className="max-w-3xl"
         >
-          <p className="text-primary font-display text-sm tracking-[0.3em] uppercase mb-6">Our Story</p>
+          <p className="text-quantum-cyan font-display text-sm tracking-[0.3em] uppercase mb-6">Our Story</p>
           <h1 className="font-display text-4xl md:text-6xl font-bold text-foreground leading-tight mb-8">
-            Engineering the <span className="text-gold-gradient">Impossible</span>
+            Engineering the <span className="text-quantum-gradient">Quantum Future</span>
           </h1>
           <p className="text-muted-foreground text-lg leading-relaxed">
-            NEXUS AI was founded on a singular vision: to create autonomous intelligence that doesn't just assist — it leads. We build AI systems that think, strategize, and execute at the highest level, serving the world's most ambitious organizations.
+            QUANTUS AI was founded on a singular vision: to harness the power of quantum computing for autonomous intelligence that doesn't just assist — it transcends. We build quantum AI systems that think in superposition, strategize across parallel dimensions, and execute at the speed of light.
           </p>
         </motion.div>
       </div>
@@ -42,23 +43,28 @@ const About = () => (
               Our Mission
             </h2>
             <p className="text-muted-foreground text-lg leading-relaxed mb-6">
-              To democratize the most powerful AI for visionary enterprises. We believe intelligence should be seamless, autonomous, and transformative.
+              To democratize quantum-powered AI for visionary enterprises. We believe intelligence should be quantum-enhanced, autonomous, and transformative.
             </p>
             <p className="text-muted-foreground leading-relaxed">
-              Every system we build is designed to operate independently — learning from data, adapting to markets, and delivering results that compound over time.
+              Every system we build leverages quantum superposition and entanglement — learning from data at exponential speed, adapting to markets in parallel realities, and delivering results that compound beyond classical limits.
             </p>
           </motion.div>
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            className="glass-card rounded-2xl p-10 gold-glow"
+            className="quantum-card rounded-2xl p-10 quantum-glow relative overflow-hidden"
           >
-            <div className="text-6xl font-display font-bold text-gold-gradient mb-4">2026</div>
-            <p className="text-foreground font-display text-xl font-semibold mb-2">Year of Autonomous AI</p>
-            <p className="text-muted-foreground text-sm leading-relaxed">
-              Our next-generation platform processes over 10 billion decisions daily, with zero human intervention required.
-            </p>
+            <div className="absolute top-4 right-4 opacity-30">
+              <QuantumOrbit size={80} />
+            </div>
+            <div className="relative z-10">
+              <div className="text-6xl font-display font-bold text-quantum-gradient mb-4">2026</div>
+              <p className="text-foreground font-display text-xl font-semibold mb-2">Year of Quantum AI</p>
+              <p className="text-muted-foreground text-sm leading-relaxed">
+                Our quantum processing core handles over 10^18 quantum operations per second, with zero classical bottlenecks.
+              </p>
+            </div>
           </motion.div>
         </div>
       </div>
@@ -73,9 +79,9 @@ const About = () => (
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <p className="text-primary font-display text-sm tracking-[0.3em] uppercase mb-4">AI Capabilities</p>
+          <p className="text-quantum-cyan font-display text-sm tracking-[0.3em] uppercase mb-4">Quantum Capabilities</p>
           <h2 className="font-display text-3xl md:text-5xl font-bold text-foreground">
-            What Powers <span className="text-gold-gradient">NEXUS</span>
+            What Powers <span className="text-quantum-gradient">QUANTUS</span>
           </h2>
         </motion.div>
         <div className="grid md:grid-cols-3 gap-8">
@@ -86,10 +92,10 @@ const About = () => (
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
-              className="glass-card rounded-xl p-8 text-center"
+              className="quantum-card rounded-xl p-8 text-center hover:quantum-glow transition-all duration-500"
             >
-              <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-primary/10 mb-6">
-                <c.icon className="text-primary" size={24} />
+              <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-quantum-cyan/10 mb-6">
+                <c.icon className="text-quantum-cyan" size={24} />
               </div>
               <h3 className="font-display text-lg font-semibold text-foreground mb-3">{c.title}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">{c.desc}</p>

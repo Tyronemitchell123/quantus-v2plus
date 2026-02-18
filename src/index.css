@@ -41,6 +41,9 @@
     --gold-dark: 43 50% 38%;
     --neon-blue: 210 100% 60%;
     --emerald: 160 60% 45%;
+    --quantum-cyan: 185 100% 55%;
+    --quantum-purple: 270 80% 60%;
+    --quantum-glow: 185 100% 70%;
 
     --sidebar-background: 0 0% 6%;
     --sidebar-foreground: 45 10% 90%;
@@ -76,6 +79,10 @@
     @apply bg-clip-text text-transparent;
     background-image: linear-gradient(135deg, hsl(43 70% 65%), hsl(43 56% 52%), hsl(43 50% 38%));
   }
+  .text-quantum-gradient {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, hsl(185 100% 55%), hsl(210 100% 60%), hsl(270 80% 60%));
+  }
   .glass {
     background: hsla(0, 0%, 6%, 0.7);
     backdrop-filter: blur(20px);
@@ -86,10 +93,21 @@
     backdrop-filter: blur(16px);
     border: 1px solid hsla(43, 56%, 52%, 0.1);
   }
+  .quantum-card {
+    background: hsla(0, 0%, 8%, 0.6);
+    backdrop-filter: blur(16px);
+    border: 1px solid hsla(185, 100%, 55%, 0.15);
+  }
   .gold-glow {
     box-shadow: 0 0 30px -5px hsla(43, 56%, 52%, 0.25);
   }
   .gold-glow-text {
     text-shadow: 0 0 40px hsla(43, 56%, 52%, 0.3);
+  }
+  .quantum-glow {
+    box-shadow: 0 0 40px -5px hsla(185, 100%, 55%, 0.3), 0 0 80px -10px hsla(270, 80%, 60%, 0.15);
+  }
+  .quantum-glow-text {
+    text-shadow: 0 0 40px hsla(185, 100%, 55%, 0.4), 0 0 80px hsla(270, 80%, 60%, 0.2);
   }
 }

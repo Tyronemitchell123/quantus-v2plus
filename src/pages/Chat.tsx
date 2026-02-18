@@ -18,14 +18,14 @@ const Chat = () => {
     {
       role: "assistant",
       content:
-        "Welcome to NEXUS AI. I'm your premium AI concierge — here to assist with strategy, analytics, market intelligence, and anything else you need. How can I help you today?",
+        "Welcome to QUANTUS AI. I'm your quantum-powered AI concierge — here to assist with strategy, analytics, market intelligence, and anything else you need. How can I help you today?",
     },
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [creditError, setCreditError] = useState(false);
   const [ttsEnabled, setTtsEnabled] = useState(true);
-  const [largeText, setLargeText] = useState(() => localStorage.getItem("nexus-large-text") === "true");
+  const [largeText, setLargeText] = useState(() => localStorage.getItem("quantus-large-text") === "true");
   const endRef = useRef<HTMLDivElement>(null);
 
   const { listening, speaking, supported, startListening, stopListening, speak, stopSpeaking } =
@@ -149,19 +149,19 @@ const Chat = () => {
           <div className="border-b border-border/50 glass px-6 py-4 flex items-center gap-4">
             <div className="relative">
               <div className="w-10 h-10 rounded-full overflow-hidden ring-2 ring-primary/20">
-                <img src={holoAvatarTexture} alt="NEXUS AI" className="w-full h-full object-cover" />
+                <img src={holoAvatarTexture} alt="QUANTUS AI" className="w-full h-full object-cover" />
               </div>
               <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald border-2 border-background" />
             </div>
             <div>
               <h2 className="font-display text-sm font-semibold text-foreground tracking-wide">
-                NEXUS Concierge
+                QUANTUS Concierge
               </h2>
               <p className="text-xs text-muted-foreground">Holographic AI • Premium Tier</p>
             </div>
             {/* Font size toggle */}
             <button
-              onClick={() => setLargeText((v) => { const next = !v; localStorage.setItem("nexus-large-text", String(next)); return next; })}
+              onClick={() => setLargeText((v) => { const next = !v; localStorage.setItem("quantus-large-text", String(next)); return next; })}
               className={`w-10 h-10 rounded-full flex items-center justify-center transition-all shrink-0 ${
                 largeText
                   ? "bg-primary/10 text-primary ring-1 ring-primary/20"
@@ -302,7 +302,7 @@ const Chat = () => {
                 </button>
               </div>
               <p className="text-center text-[10px] text-muted-foreground/50 mt-2 tracking-wider">
-                {listening ? "🎙️ VOICE INPUT ACTIVE" : "END-TO-END ENCRYPTED • NEXUS AI v2.0"}
+                {listening ? "🎙️ VOICE INPUT ACTIVE" : "END-TO-END ENCRYPTED • QUANTUS AI v2.0"}
               </p>
             </div>
           </div>
