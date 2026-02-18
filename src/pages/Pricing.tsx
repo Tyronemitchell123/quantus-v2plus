@@ -1,12 +1,13 @@
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Check, ArrowRight, Sparkles, Zap, Crown } from "lucide-react";
 
 const tiers = [
   {
     name: "Starter",
-    price: "$499",
-    period: "/month",
+    monthly: 499,
+    annual: 399,
     description: "For growing teams ready to leverage AI automation.",
     icon: Zap,
     features: [
@@ -22,8 +23,8 @@ const tiers = [
   },
   {
     name: "Professional",
-    price: "$1,499",
-    period: "/month",
+    monthly: 1499,
+    annual: 1199,
     description: "For organizations demanding enterprise-grade intelligence.",
     icon: Sparkles,
     features: [
@@ -41,8 +42,8 @@ const tiers = [
   },
   {
     name: "Enterprise",
-    price: "Custom",
-    period: "",
+    monthly: 0,
+    annual: 0,
     description: "Bespoke AI solutions for global-scale operations.",
     icon: Crown,
     features: [
@@ -60,7 +61,12 @@ const tiers = [
   },
 ];
 
+const formatPrice = (amount: number) =>
+  amount === 0 ? "Custom" : `$${amount.toLocaleString()}`;
+
 const Pricing = () => {
+  const [annual, setAnnual] = useState(false);
+
   return (
     <div className="pt-16 min-h-screen">
       {/* Header */}
@@ -81,9 +87,34 @@ const Pricing = () => {
             <h1 className="font-display text-4xl md:text-6xl font-bold text-foreground mb-6">
               Invest in <span className="text-gold-gradient gold-glow-text">Intelligence</span>
             </h1>
-            <p className="text-muted-foreground text-lg leading-relaxed">
+            <p className="text-muted-foreground text-lg leading-relaxed mb-10">
               Transparent pricing built for scale. Every plan includes our core AI engine — choose the tier that matches your ambition.
             </p>
+
+            {/* Billing Toggle */}
+            <div className="flex items-center justify-center gap-4">
+              <span className={`text-sm font-medium transition-colors ${!annual ? "text-foreground" : "text-muted-foreground"}`}>
+                Monthly
+              </span>
+              <button
+                onClick={() => setAnnual((v) => !v)}
+                className="relative w-14 h-7 rounded-full bg-secondary border border-border transition-colors focus:outline-none focus:ring-2 focus:ring-primary/30"
+                aria-label="Toggle annual billing"
+              >
+                <motion.div
+                  layout
+                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                  className="absolute top-0.5 w-6 h-6 rounded-full bg-primary shadow-lg shadow-primary/30"
+                  style={{ left: annual ? "calc(100% - 1.625rem)" : "0.125rem" }}
+                />
+              </button>
+              <span className={`text-sm font-medium transition-colors ${annual ? "text-foreground" : "text-muted-foreground"}`}>
+                Annual
+              </span>
+              <span className="text-xs font-semibold text-primary bg-primary/10 px-2.5 py-1 rounded-full">
+                Save 20%
+              </span>
+            </div>
           </motion.div>
         </div>
       </section>
@@ -124,10 +155,21 @@ const Pricing = () => {
                 <p className="text-sm text-muted-foreground mb-6">{tier.description}</p>
 
                 <div className="mb-8">
-                  <span className="font-display text-4xl font-bold text-foreground">
-                    {tier.price}
+                  <AnimatePresence mode="wait">
+                    <motion.span
+                      key={annual ? "annual" : "monthly"}
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 10 }}
+                      transition={{ duration: 0.2 }}
+                      className="font-display text-4xl font-bold text-foreground inline-block"
+                    >
+                      {formatPrice(annual ? tier.annual : tier.monthly)}
+                    </motion.span>
+                  </AnimatePresence>
+                  <span className="text-muted-foreground text-sm">
+                    {tier.monthly === 0 ? "" : annual ? "/mo, billed yearly" : "/month"}
                   </span>
-                  <span className="text-muted-foreground text-sm">{tier.period}</span>
                 </div>
 
                 <ul className="space-y-3 mb-8 flex-1">
