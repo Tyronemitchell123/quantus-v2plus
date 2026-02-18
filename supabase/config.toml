@@ -2,3 +2,6 @@ project_id = "eqxgnxgbvvrjaxjiznjo"
 
 [functions.concierge-chat]
 verify_jwt = false
+
+[functions.ai-analytics]
+verify_jwt = false
