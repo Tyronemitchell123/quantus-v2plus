@@ -4,6 +4,7 @@ import { Send, CheckCircle, Brain, Sparkles, ArrowRight, Zap } from "lucide-reac
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useAIAnalytics } from "@/hooks/use-ai-analytics";
+import AICreditsBanner from "@/components/AICreditsBanner";
 
 type ContactAnalysis = {
   classification: string;
@@ -19,7 +20,7 @@ const Contact = () => {
   const [email, setEmail] = useState("");
   const [company, setCompany] = useState("");
   const [message, setMessage] = useState("");
-  const { data: analysis, loading: analyzing, analyze } = useAIAnalytics<ContactAnalysis>();
+  const { data: analysis, loading: analyzing, error: analyzeError, analyze } = useAIAnalytics<ContactAnalysis>();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -94,6 +95,9 @@ const Contact = () => {
                   <h3 className="font-display text-2xl font-bold text-foreground mb-2">Message Received & Analyzed</h3>
                   <p className="text-muted-foreground text-sm">NEXUS AI has instantly processed your inquiry.</p>
                 </div>
+
+                {/* AI Credits Banner */}
+                {analyzeError && !analyzing && !analysis && <AICreditsBanner />}
 
                 {/* AI Analysis */}
                 <AnimatePresence>
