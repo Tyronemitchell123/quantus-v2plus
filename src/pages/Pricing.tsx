@@ -64,7 +64,7 @@ const tiers = [
       "Private model fine-tuning",
       "AI-led strategic advisory",
     ],
-    cta: "Contact Sales",
+    cta: "Request Demo",
     highlight: false,
   },
 ];
@@ -108,7 +108,7 @@ const Pricing = () => {
 
   const getButtonLabel = (tier: typeof tiers[0]) => {
     if (isActive && currentTier === tier.key) return "Current Plan";
-    if (tier.key === "enterprise") return "Contact Sales";
+    if (tier.key === "enterprise") return "Request Demo";
     return tier.cta;
   };
 
@@ -255,7 +255,7 @@ const Pricing = () => {
               to="/contact"
               className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity"
             >
-              Talk to Sales
+              Get Started
               <ArrowRight size={18} />
             </Link>
           </motion.div>
