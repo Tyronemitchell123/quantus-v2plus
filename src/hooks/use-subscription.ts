@@ -75,15 +75,6 @@ export function useSubscription() {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) throw new Error("Not authenticated");
 
-    const res = await supabase.functions.invoke("truelayer-payments", {
-      body: { tier: selectedTier, billing_cycle: billingCycle },
-      headers: { "Content-Type": "application/json" },
-      method: "POST",
-    });
-
-    // Handle query params for action
-    // Since supabase.functions.invoke doesn't support query params easily,
-    // we'll use fetch directly
     const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
     const response = await fetch(
       `https://${projectId}.supabase.co/functions/v1/truelayer-payments?action=create-payment`,
@@ -101,7 +92,6 @@ export function useSubscription() {
     const result = await response.json();
     if (!response.ok) throw new Error(result.error || "Payment failed");
 
-    // Refresh subscription after payment
     await fetchSubscription();
     return result;
   };
