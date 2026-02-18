@@ -6,6 +6,7 @@ import QuantumOrbit from "@/components/QuantumOrbit";
 import { useTypewriter } from "@/hooks/use-typewriter";
 import { useRef } from "react";
 import AIRecommendations from "@/components/AIRecommendations";
+import WhyQuantus from "@/components/WhyQuantus";
 import useDocumentHead from "@/hooks/use-document-head";
 import quantumProcessor from "@/assets/quantum-processor.jpg";
 import quantumAnalytics from "@/assets/quantum-analytics.jpg";
@@ -179,6 +180,9 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      {/* Why QUANTUS AI */}
+      <WhyQuantus />
 
       {/* Features */}
       <section className="py-24 relative">
