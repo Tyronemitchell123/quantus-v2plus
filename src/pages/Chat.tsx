@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, lazy, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send, Bot, User, Sparkles, Shield, Zap, Mic, MicOff, Volume2, VolumeX } from "lucide-react";
+import { Send, Bot, User, Sparkles, Shield, Zap, Mic, MicOff, Volume2, VolumeX, AArrowUp, AArrowDown } from "lucide-react";
 import conciergeGlowBg from "@/assets/concierge-glow-bg.jpg";
 import holoAvatarTexture from "@/assets/holographic-avatar-texture.jpg";
 import { useVoice } from "@/hooks/use-voice";
@@ -23,6 +23,7 @@ const Chat = () => {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [ttsEnabled, setTtsEnabled] = useState(true);
+  const [largeText, setLargeText] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
 
   const { listening, speaking, supported, startListening, stopListening, speak, stopSpeaking } =
@@ -155,6 +156,18 @@ const Chat = () => {
               </h2>
               <p className="text-xs text-muted-foreground">Holographic AI • Premium Tier</p>
             </div>
+            {/* Font size toggle */}
+            <button
+              onClick={() => setLargeText((v) => !v)}
+              className={`w-10 h-10 rounded-full flex items-center justify-center transition-all shrink-0 ${
+                largeText
+                  ? "bg-primary/10 text-primary ring-1 ring-primary/20"
+                  : "bg-secondary text-muted-foreground hover:text-foreground"
+              }`}
+              title={largeText ? "Normal text" : "Large text"}
+            >
+              {largeText ? <AArrowDown size={16} /> : <AArrowUp size={16} />}
+            </button>
             {/* Mobile avatar peek */}
             <div className="lg:hidden ml-auto w-16 h-16 relative">
               <Suspense fallback={null}>
@@ -181,14 +194,14 @@ const Chat = () => {
                       </div>
                     )}
                     <div
-                      className={`max-w-[78%] rounded-2xl px-6 py-4 text-base leading-relaxed ${
+                      className={`max-w-[78%] rounded-2xl ${largeText ? "px-7 py-5 text-lg" : "px-6 py-4 text-base"} leading-relaxed ${
                         m.role === "user"
                           ? "bg-primary text-primary-foreground rounded-br-md shadow-lg shadow-primary/20"
                           : "glass-card rounded-bl-md text-foreground"
                       }`}
                     >
                       {m.role === "assistant" ? (
-                        <div className="prose prose-base prose-invert max-w-none prose-headings:text-foreground prose-p:text-foreground prose-strong:text-primary prose-li:text-foreground prose-a:text-accent">
+                        <div className={`prose ${largeText ? "prose-lg" : "prose-base"} prose-invert max-w-none prose-headings:text-foreground prose-p:text-foreground prose-strong:text-primary prose-li:text-foreground prose-a:text-accent`}>
                           <ReactMarkdown>{m.content}</ReactMarkdown>
                         </div>
                       ) : (
@@ -251,7 +264,7 @@ const Chat = () => {
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && send()}
                     placeholder={listening ? "Listening..." : "Ask the concierge anything..."}
-                    className="w-full bg-secondary/80 border border-border rounded-full px-6 py-4 pr-14 text-base text-foreground placeholder:text-muted-foreground outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all"
+                    className={`w-full bg-secondary/80 border border-border rounded-full ${largeText ? "px-7 py-5 pr-16 text-lg" : "px-6 py-4 pr-14 text-base"} text-foreground placeholder:text-muted-foreground outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all`}
                   />
                   <div className="absolute right-3 top-1/2 -translate-y-1/2">
                     <Sparkles size={14} className="text-muted-foreground/40" />
