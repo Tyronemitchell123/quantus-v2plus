@@ -8,18 +8,19 @@ import { useToast } from "@/hooks/use-toast";
 import PricingFAQ from "@/components/PricingFAQ";
 import ComparisonTable from "@/components/ComparisonTable";
 import UsagePricing from "@/components/UsagePricing";
+import CurrencyConverter, { useCurrency } from "@/components/CurrencyConverter";
 import useDocumentHead from "@/hooks/use-document-head";
 
 const tiers = [
   {
     name: "Starter",
     key: "starter" as const,
-    monthly: 499,
-    annual: 399,
+    monthly: 299,
+    annual: 239,
     description: "For growing teams ready to leverage AI automation.",
     icon: Zap,
     features: [
-      "Up to 10,000 AI queries/month",
+      "Up to 5,000 AI queries/month",
       "Predictive analytics dashboard",
       "AI concierge access",
       "2 API integrations",
@@ -32,8 +33,8 @@ const tiers = [
   {
     name: "Professional",
     key: "professional" as const,
-    monthly: 1499,
-    annual: 1199,
+    monthly: 999,
+    annual: 799,
     description: "For organizations demanding enterprise-grade intelligence.",
     icon: Sparkles,
     features: [
@@ -71,12 +72,13 @@ const tiers = [
   },
 ];
 
-const formatPrice = (amount: number) =>
-  amount === 0 ? "Custom" : `$${amount.toLocaleString()}`;
+
+
 
 const Pricing = () => {
   const [annual, setAnnual] = useState(false);
   const [purchasing, setPurchasing] = useState<string | null>(null);
+  const { currency, setCurrency, currencies, formatPrice } = useCurrency();
   const { user } = useAuth();
   const { subscription, createPayment, isActive, tier: currentTier } = useSubscription();
   const navigate = useNavigate();
@@ -160,6 +162,9 @@ const Pricing = () => {
               <span className={`text-sm font-medium transition-colors ${annual ? "text-foreground" : "text-muted-foreground"}`}>Annual</span>
               <span className="text-xs font-semibold text-primary bg-primary/10 px-2.5 py-1 rounded-full">Save 20%</span>
             </div>
+            <div className="mt-4 flex justify-center">
+              <CurrencyConverter currency={currency} setCurrency={setCurrency} currencies={currencies} />
+            </div>
           </motion.div>
         </div>
       </section>
@@ -195,7 +200,7 @@ const Pricing = () => {
                 <div className="mb-8">
                   <AnimatePresence mode="wait">
                     <motion.span
-                      key={annual ? "annual" : "monthly"}
+                      key={`${annual ? "annual" : "monthly"}-${currency.code}`}
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 10 }}
