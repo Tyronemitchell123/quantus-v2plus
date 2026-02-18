@@ -21,12 +21,12 @@ const categories: { label: string; rows: FeatureRow[] }[] = [
   {
     label: "AI & Analytics",
     rows: [
-      { feature: "AI queries / month", tooltip: "The number of AI-powered requests your team can make each month, including predictions, classifications, and natural language queries.", starter: "10,000", professional: "Unlimited", enterprise: "Unlimited" },
+      { feature: "AI queries / month", tooltip: "The number of AI-powered requests your organization can make each month, including predictions, classifications, and natural language queries.", starter: "10,000", professional: "Unlimited", enterprise: "Unlimited" },
       { feature: "Predictive analytics", tooltip: "Machine learning models that forecast trends, revenue, churn, and other key business metrics based on your historical data.", starter: true, professional: true, enterprise: true },
       { feature: "Real-time market intelligence", tooltip: "Live monitoring of market signals, competitor movements, and industry trends delivered directly to your dashboard.", starter: false, professional: true, enterprise: true },
       { feature: "Custom AI model training", tooltip: "Train bespoke AI models on your proprietary data for domain-specific predictions and recommendations.", starter: false, professional: true, enterprise: true },
       { feature: "Private model fine-tuning", tooltip: "Dedicated model instances fine-tuned exclusively on your data, hosted in an isolated environment for maximum security.", starter: false, professional: false, enterprise: true },
-      { feature: "Anomaly detection", tooltip: "Automatically identifies unusual patterns in your data — from revenue spikes to user behavior shifts — and alerts your team.", starter: "Basic", professional: "Advanced", enterprise: "Custom" },
+      { feature: "Anomaly detection", tooltip: "Automatically identifies unusual patterns in your data — from revenue spikes to user behavior shifts — and triggers autonomous alerts.", starter: "Basic", professional: "Advanced", enterprise: "Custom" },
     ],
   },
   {
@@ -40,18 +40,18 @@ const categories: { label: string; rows: FeatureRow[] }[] = [
     ],
   },
   {
-    label: "Team & Collaboration",
+    label: "Access & Collaboration",
     rows: [
-      { feature: "Team seats", tooltip: "The number of individual user accounts that can access the platform simultaneously under your subscription.", starter: "2", professional: "25", enterprise: "Unlimited" },
+      { feature: "API integrations", tooltip: "The number of concurrent API integrations that can connect to the platform under your subscription.", starter: "2", professional: "25", enterprise: "Unlimited" },
       { feature: "Role-based access control", tooltip: "Define granular permissions — admin, analyst, viewer — to control who can access, modify, or export data and settings.", starter: false, professional: true, enterprise: true },
       { feature: "Audit log", tooltip: "A complete, immutable record of every action taken on the platform for compliance, security reviews, and accountability.", starter: false, professional: true, enterprise: true },
-      { feature: "Shared dashboards", tooltip: "Collaboratively build and share interactive dashboards with teammates, stakeholders, or clients with configurable access.", starter: false, professional: true, enterprise: true },
+      { feature: "Shared dashboards", tooltip: "Collaboratively build and share interactive dashboards with stakeholders or clients with configurable access.", starter: false, professional: true, enterprise: true },
     ],
   },
   {
     label: "Support & SLA",
     rows: [
-      { feature: "Support channels", tooltip: "AI-powered support across multiple channels — from intelligent email and chat to priority escalation and dedicated AI concierge.", starter: "Email & Chat", professional: "Priority 24/7", enterprise: "AI Concierge" },
+      { feature: "Support channels", tooltip: "AI-powered autonomous support across multiple channels — from intelligent concierge chat to priority escalation and dedicated AI advisory.", starter: "AI Chat", professional: "24/7 Autonomous", enterprise: "AI Concierge" },
       { feature: "Priority AI concierge", tooltip: "Elevated AI concierge access with faster response times, deeper analysis, and priority queue processing.", starter: false, professional: true, enterprise: true },
       { feature: "Uptime SLA", tooltip: "Guaranteed platform availability percentage, backed by service credits if we fall below the commitment.", starter: "99.9%", professional: "99.95%", enterprise: "99.99%" },
       { feature: "AI-guided onboarding", tooltip: "An intelligent onboarding experience powered by AI — automated data migration, interactive walkthroughs, and adaptive setup tailored to your workflow.", starter: false, professional: false, enterprise: true },
