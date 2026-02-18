@@ -189,11 +189,25 @@ serve(async (req) => {
     }
 
     if (action === "webhook") {
+      // TrueLayer V3 webhook format:
+      // { "type": "payment_executed", "event_id": "...", "event_version": 1, "payment_id": "..." }
+      // Possible types: payment_authorized, payment_executed, payment_settled, payment_failed
       const body = await req.json();
-      const paymentId = body.payment_id;
-      const status = body.status;
+      const eventType = body.type as string | undefined;
+      const paymentId = body.payment_id as string | undefined;
 
-      if (paymentId && status) {
+      console.log("Webhook received:", JSON.stringify({ eventType, paymentId }));
+
+      if (paymentId && eventType) {
+        // Map TrueLayer event type to our payment status
+        const statusMap: Record<string, string> = {
+          payment_authorized: "authorized",
+          payment_executed: "executed",
+          payment_settled: "settled",
+          payment_failed: "failed",
+        };
+        const mappedStatus = statusMap[eventType] || eventType.replace("payment_", "");
+
         const { data: payment } = await supabase
           .from("payments")
           .select("*")
@@ -201,10 +215,10 @@ serve(async (req) => {
           .single();
 
         if (payment) {
-          const mappedStatus = status === "executed" || status === "settled" ? "executed" : status;
           await supabase.from("payments").update({ status: mappedStatus }).eq("id", payment.id);
 
-          if (status === "executed" || status === "settled") {
+          // Activate subscription on successful payment
+          if (eventType === "payment_executed" || eventType === "payment_settled") {
             const meta = payment.metadata as Record<string, string>;
             await supabase.from("subscriptions").update({
               tier: meta.tier,
@@ -216,6 +230,8 @@ serve(async (req) => {
               ).toISOString(),
             }).eq("user_id", payment.user_id);
           }
+        } else {
+          console.warn("Webhook: no payment found for truelayer_payment_id:", paymentId);
         }
       }
 
