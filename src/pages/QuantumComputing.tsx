@@ -3,6 +3,7 @@ import { Atom, Zap, Lock, Brain, Layers, ArrowRight } from "lucide-react";
 import { Suspense, lazy } from "react";
 import useDocumentHead from "@/hooks/use-document-head";
 import QuantumOrbit from "@/components/QuantumOrbit";
+import HeroVideoBackground from "@/components/HeroVideoBackground";
 
 const QubitVisualization = lazy(() => import("@/components/QubitVisualization"));
 
@@ -59,6 +60,7 @@ const QuantumComputing = () => {
     <div className="pt-24">
       {/* Hero */}
       <header className="py-24 relative overflow-hidden">
+        <HeroVideoBackground />
         <div className="absolute top-10 right-10 opacity-20 pointer-events-none">
           <QuantumOrbit size={200} />
         </div>

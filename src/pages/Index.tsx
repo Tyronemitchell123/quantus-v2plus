@@ -6,6 +6,7 @@ import QuantumOrbit from "@/components/QuantumOrbit";
 import { useTypewriter } from "@/hooks/use-typewriter";
 import { useRef } from "react";
 import AIRecommendations from "@/components/AIRecommendations";
+import HeroVideoBackground from "@/components/HeroVideoBackground";
 import WhyQuantus from "@/components/WhyQuantus";
 import useDocumentHead from "@/hooks/use-document-head";
 import quantumProcessor from "@/assets/quantum-processor.jpg";
@@ -53,6 +54,7 @@ const Index = () => {
     <div className="relative">
       {/* Hero */}
       <section ref={heroRef} className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        <HeroVideoBackground />
         <QuantumField />
         <div className="absolute inset-0 bg-gradient-to-b from-background via-background/90 to-background pointer-events-none" />
         

@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useAIAnalytics } from "@/hooks/use-ai-analytics";
 import AIFallbackBanner from "@/components/AIFallbackBanner";
+import HeroVideoBackground from "@/components/HeroVideoBackground";
 
 
 type ContactAnalysis = {
@@ -46,7 +47,8 @@ const Contact = () => {
 
   return (
     <div className="pt-24">
-      <section className="py-24">
+      <section className="py-24 relative overflow-hidden">
+        <HeroVideoBackground />
         <div className="container mx-auto px-6 max-w-4xl">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-12">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-6">
