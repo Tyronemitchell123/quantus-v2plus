@@ -7,6 +7,7 @@ import { useSubscription } from "@/hooks/use-subscription";
 import { useToast } from "@/hooks/use-toast";
 import PricingFAQ from "@/components/PricingFAQ";
 import ComparisonTable from "@/components/ComparisonTable";
+import useDocumentHead from "@/hooks/use-document-head";
 
 const tiers = [
   {
@@ -78,6 +79,12 @@ const Pricing = () => {
   const { user } = useAuth();
   const { subscription, createPayment, isActive, tier: currentTier } = useSubscription();
   const navigate = useNavigate();
+  useDocumentHead({
+    title: "Pricing — Quantum AI Plans from $499/mo | QUANTUS AI",
+    description: "Transparent quantum AI pricing. Starter from $499/mo, Professional from $1,499/mo, Enterprise custom. Every plan includes our quantum AI engine.",
+    canonical: "https://quantus-loom.lovable.app/pricing",
+  });
+
   const { toast } = useToast();
 
   const handlePurchase = async (tierKey: string) => {

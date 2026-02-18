@@ -6,6 +6,7 @@ import QuantumOrbit from "@/components/QuantumOrbit";
 import { useTypewriter } from "@/hooks/use-typewriter";
 import { useRef } from "react";
 import AIRecommendations from "@/components/AIRecommendations";
+import useDocumentHead from "@/hooks/use-document-head";
 
 const features = [
   { icon: Atom, title: "Quantum Intelligence", desc: "Quantum-enhanced neural networks that process exponentially faster, unlocking solutions classical AI cannot reach.", color: "from-quantum-cyan/20 to-quantum-cyan/5" },
@@ -33,6 +34,12 @@ const StatCounter = ({ display, label }: { display: string; label: string }) => 
 const logos = ["OpenAI", "Google", "Meta", "Microsoft", "Tesla", "SpaceX"];
 
 const Index = () => {
+  useDocumentHead({
+    title: "QUANTUS AI — The World's First Quantum Intelligence Platform",
+    description: "Quantum-powered autonomous AI that thinks at the speed of light. Quantum computing, predictive analytics, quantum encryption for visionary organizations.",
+    canonical: "https://quantus-loom.lovable.app/",
+  });
+
   const { displayed, done } = useTypewriter("Quantum", 80, 800);
   const heroRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });

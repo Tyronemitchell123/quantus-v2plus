@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Atom, TrendingUp, Megaphone, Coins, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
+import useDocumentHead from "@/hooks/use-document-head";
 
 const services = [
   {
@@ -35,8 +36,15 @@ const tiers = [
   { name: "Custom", price: "Request Demo", period: "", features: ["Bespoke quantum solutions", "Dedicated quantum pipeline", "Quantum SLA guarantee", "On-premise quantum option"] },
 ];
 
-const Services = () => (
-  <div className="pt-24">
+const Services = () => {
+  useDocumentHead({
+    title: "Quantum AI Services — Strategy, Analytics & Finance | QUANTUS AI",
+    description: "Enterprise quantum AI services: quantum strategy consulting, quantum predictive analytics, quantum marketing engine & quantum finance solutions.",
+    canonical: "https://quantus-loom.lovable.app/services",
+  });
+
+  return (
+    <div className="pt-24">
     <section className="py-24">
       <div className="container mx-auto px-6">
         <motion.div
@@ -130,6 +138,7 @@ const Services = () => (
       </div>
     </section>
   </div>
-);
+  );
+};
 
 export default Services;
