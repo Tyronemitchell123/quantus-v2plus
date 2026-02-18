@@ -32,7 +32,7 @@ const services = [
 const tiers = [
   { name: "Growth", price: "$5,000", period: "/mo", features: ["1 AI model", "Basic analytics", "AI concierge access", "5 API integrations"] },
   { name: "Enterprise", price: "$25,000", period: "/mo", features: ["Unlimited models", "Full analytics suite", "24/7 autonomous monitoring", "Unlimited integrations"], featured: true },
-  { name: "Custom", price: "Contact Us", period: "", features: ["Bespoke solutions", "Dedicated AI pipeline", "SLA guarantee", "On-premise option"] },
+  { name: "Custom", price: "Request Demo", period: "", features: ["Bespoke solutions", "Dedicated AI pipeline", "SLA guarantee", "On-premise option"] },
 ];
 
 const Services = () => (

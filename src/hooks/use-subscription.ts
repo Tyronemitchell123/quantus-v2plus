@@ -15,10 +15,10 @@ export interface Subscription {
   cancel_at_period_end: boolean;
 }
 
-const TIER_LIMITS: Record<SubscriptionTier, { queries: number; seats: number }> = {
-  starter: { queries: 10000, seats: 2 },
-  professional: { queries: Infinity, seats: 25 },
-  enterprise: { queries: Infinity, seats: Infinity },
+const TIER_LIMITS: Record<SubscriptionTier, { queries: number; integrations: number }> = {
+  starter: { queries: 10000, integrations: 2 },
+  professional: { queries: Infinity, integrations: 25 },
+  enterprise: { queries: Infinity, integrations: Infinity },
 };
 
 export function useSubscription() {
