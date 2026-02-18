@@ -11,11 +11,11 @@ type ServiceRec = {
 };
 
 const fallbackData: ServiceRec = {
-  profileSummary: "Based on your browsing patterns, we've identified high-impact AI solutions tailored to your business profile.",
+  profileSummary: "Our AI engine has curated high-impact solutions based on industry benchmarks and emerging enterprise trends across thousands of deployments.",
   recommendations: [
-    { title: "Autonomous Process Automation", reason: "Streamline repetitive workflows with intelligent automation that learns and adapts to your operations over time.", matchScore: 94, estimatedROI: "3.2x in 6 months" },
-    { title: "Predictive Analytics Suite", reason: "Leverage machine learning models to forecast trends, detect anomalies, and make data-driven decisions with confidence.", matchScore: 89, estimatedROI: "2.8x in 4 months" },
-    { title: "AI Concierge Integration", reason: "Deploy a sophisticated AI assistant that handles client interactions, scheduling, and personalized recommendations 24/7.", matchScore: 85, estimatedROI: "4.1x in 8 months" },
+    { title: "Autonomous Process Automation", reason: "Eliminate up to 73% of manual workflows with self-learning automation that adapts to evolving business processes, reducing operational overhead while increasing throughput.", matchScore: 96, estimatedROI: "3.8x in 6 months" },
+    { title: "Predictive Analytics & Forecasting", reason: "Harness deep learning models trained on your data to forecast revenue, detect anomalies in real time, and surface actionable insights before competitors react.", matchScore: 91, estimatedROI: "2.9x in 4 months" },
+    { title: "AI Concierge & Client Intelligence", reason: "Deploy a 24/7 AI-powered concierge that manages client interactions, personalizes recommendations, and handles scheduling — freeing your team for high-value work.", matchScore: 88, estimatedROI: "4.5x in 8 months" },
   ],
 };
 
