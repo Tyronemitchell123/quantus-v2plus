@@ -134,9 +134,10 @@ const ConciergeWidget = () => {
               </div>
               <button
                 onClick={() => setOpen(false)}
-                className="w-8 h-8 rounded-full bg-secondary/80 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+                className="w-10 h-10 rounded-full bg-destructive/80 hover:bg-destructive flex items-center justify-center text-destructive-foreground transition-colors shrink-0"
+                title="Close chat"
               >
-                <X size={14} />
+                <X size={18} />
               </button>
             </div>
 
