@@ -4,7 +4,7 @@ import { Send, CheckCircle, Brain, Sparkles, ArrowRight, Zap } from "lucide-reac
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useAIAnalytics } from "@/hooks/use-ai-analytics";
-import AICreditsBanner from "@/components/AICreditsBanner";
+
 
 type ContactAnalysis = {
   classification: string;
@@ -96,8 +96,6 @@ const Contact = () => {
                   <p className="text-muted-foreground text-sm">NEXUS AI has instantly processed your inquiry.</p>
                 </div>
 
-                {/* AI Credits Banner */}
-                {analyzeError && !analyzing && !analysis && <AICreditsBanner />}
 
                 {/* AI Analysis */}
                 <AnimatePresence>

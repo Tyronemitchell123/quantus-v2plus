@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Brain, Sparkles, ArrowRight, AlertCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAIAnalytics } from "@/hooks/use-ai-analytics";
-import AICreditsBanner from "@/components/AICreditsBanner";
+
 
 type ServiceRec = {
   recommendations: { title: string; reason: string; matchScore: number; estimatedROI: string }[];
@@ -34,7 +34,7 @@ const AIRecommendations = () => {
     <section className="py-24 border-t border-border relative">
       <div className="absolute inset-0 bg-gradient-to-b from-primary/[0.02] via-transparent to-transparent pointer-events-none" />
       <div className="container mx-auto px-6">
-        {error && <AICreditsBanner />}
+        
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}

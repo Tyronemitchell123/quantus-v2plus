@@ -8,7 +8,7 @@ import { useVoice } from "@/hooks/use-voice";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
 import { useLocation } from "react-router-dom";
-import AICreditsBanner from "@/components/AICreditsBanner";
+
 
 const HolographicAvatar = lazy(() => import("@/components/HolographicAvatar"));
 
@@ -209,7 +209,7 @@ const ConciergeWidget = () => {
 
             {/* Input */}
             <div className="border-t border-border/50 p-3">
-              {creditError && <div className="px-1.5 pt-1.5"><AICreditsBanner /></div>}
+              
               <div className="flex gap-1.5 items-center">
                 {/* Mic button */}
                 {supported.stt && (
