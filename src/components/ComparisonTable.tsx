@@ -86,17 +86,17 @@ const ComparisonTable = () => (
         </h2>
       </motion.div>
 
-      <div className="overflow-x-auto -mx-6 px-6">
+      <div className="overflow-x-auto -mx-6 px-6 scrollbar-thin">
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
-        className="glass-card rounded-2xl overflow-hidden min-w-[600px]"
+        className="glass-card rounded-2xl overflow-hidden min-w-[540px]"
       >
         {/* Sticky header */}
-        <div className="sticky top-16 z-10 grid grid-cols-[1fr_repeat(3,minmax(100px,1fr))] border-b border-border bg-card/95 backdrop-blur-md">
-          <div className="p-5" />
+        <div className="sticky top-16 z-10 grid grid-cols-[minmax(180px,1.2fr)_repeat(3,minmax(100px,1fr))] border-b border-border bg-card/95 backdrop-blur-md">
+          <div className="p-5 sticky left-0 z-20 bg-card/95 backdrop-blur-md" />
           {tierHeaders.map((h, i) => (
             <div
               key={h}
@@ -112,8 +112,8 @@ const ComparisonTable = () => (
         {categories.map((cat, ci) => (
           <div key={cat.label}>
             {/* Category header */}
-            <div className="grid grid-cols-[1fr_repeat(3,minmax(100px,1fr))] bg-secondary/30 border-b border-border">
-              <div className="p-4 pl-6 text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+            <div className="grid grid-cols-[minmax(180px,1.2fr)_repeat(3,minmax(100px,1fr))] bg-secondary/30 border-b border-border">
+              <div className="p-4 pl-6 text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground sticky left-0 z-20 bg-secondary/30 backdrop-blur-md">
                 {cat.label}
               </div>
               <div className="col-span-3" />
@@ -122,13 +122,13 @@ const ComparisonTable = () => (
             {cat.rows.map((row, ri) => (
               <div
                 key={row.feature}
-                className={`grid grid-cols-[1fr_repeat(3,minmax(100px,1fr))] ${
+                className={`grid grid-cols-[minmax(180px,1.2fr)_repeat(3,minmax(100px,1fr))] ${
                   ri < cat.rows.length - 1 || ci < categories.length - 1
                     ? "border-b border-border/50"
                     : ""
                 } hover:bg-secondary/20 transition-colors`}
               >
-                <div className="p-4 pl-6 text-sm text-foreground/70 flex items-center gap-2">
+                <div className="p-4 pl-6 text-sm text-foreground/70 flex items-center gap-2 sticky left-0 z-20 bg-card/95 backdrop-blur-md">
                   {row.feature}
                   <Tooltip>
                     <TooltipTrigger asChild>
