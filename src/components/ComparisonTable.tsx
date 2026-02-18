@@ -86,12 +86,13 @@ const ComparisonTable = () => (
         </h2>
       </motion.div>
 
+      <div className="overflow-x-auto -mx-6 px-6">
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
-        className="glass-card rounded-2xl overflow-hidden"
+        className="glass-card rounded-2xl overflow-hidden min-w-[600px]"
       >
         {/* Sticky header */}
         <div className="sticky top-16 z-10 grid grid-cols-[1fr_repeat(3,minmax(100px,1fr))] border-b border-border bg-card/95 backdrop-blur-md">
@@ -146,6 +147,7 @@ const ComparisonTable = () => (
           </div>
         ))}
       </motion.div>
+      </div>
     </div>
   </section>
 );
