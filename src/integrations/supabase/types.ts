@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      contact_submissions: {
+        Row: {
+          auto_reply_sent: boolean
+          classification: string | null
+          company: string | null
+          created_at: string
+          email: string
+          id: string
+          message: string
+          name: string
+          priority: number | null
+          sentiment: string | null
+          suggested_response: string | null
+        }
+        Insert: {
+          auto_reply_sent?: boolean
+          classification?: string | null
+          company?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          message: string
+          name: string
+          priority?: number | null
+          sentiment?: string | null
+          suggested_response?: string | null
+        }
+        Update: {
+          auto_reply_sent?: boolean
+          classification?: string | null
+          company?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string
+          name?: string
+          priority?: number | null
+          sentiment?: string | null
+          suggested_response?: string | null
+        }
+        Relationships: []
+      }
       payments: {
         Row: {
           amount_cents: number
