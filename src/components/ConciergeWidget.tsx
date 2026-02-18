@@ -110,7 +110,7 @@ const ConciergeWidget = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.25, ease: "easeOut" }}
-            className="fixed bottom-6 right-6 z-50 w-[380px] h-[520px] rounded-2xl overflow-hidden flex flex-col border border-border/50 shadow-2xl shadow-black/40"
+            className="fixed bottom-6 right-6 z-50 w-[440px] h-[600px] rounded-2xl overflow-hidden flex flex-col border border-border/50 shadow-2xl shadow-black/40"
             style={{
               background: "hsl(0 0% 5% / 0.95)",
               backdropFilter: "blur(24px)",
@@ -157,7 +157,7 @@ const ConciergeWidget = () => {
                       </div>
                     )}
                     <div
-                      className={`max-w-[80%] rounded-xl px-3 py-2 text-xs leading-relaxed ${
+                      className={`max-w-[80%] rounded-xl px-4 py-3 text-sm leading-relaxed ${
                         m.role === "user"
                           ? "bg-primary text-primary-foreground rounded-br-sm"
                           : "glass-card rounded-bl-sm text-foreground"
@@ -206,7 +206,7 @@ const ConciergeWidget = () => {
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && send()}
                     placeholder="Ask anything..."
-                    className="w-full bg-secondary/80 border border-border rounded-full px-4 py-2.5 pr-9 text-xs text-foreground placeholder:text-muted-foreground outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all"
+                    className="w-full bg-secondary/80 border border-border rounded-full px-5 py-3 pr-10 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all"
                   />
                   <div className="absolute right-2.5 top-1/2 -translate-y-1/2">
                     <Sparkles size={10} className="text-muted-foreground/40" />
@@ -215,7 +215,7 @@ const ConciergeWidget = () => {
                 <button
                   onClick={send}
                   disabled={loading || !input.trim()}
-                  className="w-9 h-9 rounded-full bg-primary text-primary-foreground flex items-center justify-center hover:opacity-90 transition-all disabled:opacity-30 shadow-lg shadow-primary/20 shrink-0"
+                  className="w-11 h-11 rounded-full bg-primary text-primary-foreground flex items-center justify-center hover:opacity-90 transition-all disabled:opacity-30 shadow-lg shadow-primary/20 shrink-0"
                 >
                   <Send size={13} />
                 </button>
