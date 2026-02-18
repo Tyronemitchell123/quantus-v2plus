@@ -7,6 +7,7 @@ import { useSubscription } from "@/hooks/use-subscription";
 import { useToast } from "@/hooks/use-toast";
 import PricingFAQ from "@/components/PricingFAQ";
 import ComparisonTable from "@/components/ComparisonTable";
+import UsagePricing from "@/components/UsagePricing";
 import useDocumentHead from "@/hooks/use-document-head";
 
 const tiers = [
@@ -238,6 +239,8 @@ const Pricing = () => {
           </div>
         </div>
       </section>
+
+      <UsagePricing />
 
       <ComparisonTable />
 
