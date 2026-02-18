@@ -11,6 +11,7 @@ import About from "./pages/About";
 import Services from "./pages/Services";
 import Dashboard from "./pages/Dashboard";
 import Contact from "./pages/Contact";
+import Pricing from "./pages/Pricing";
 import Chat from "./pages/Chat";
 import NotFound from "./pages/NotFound";
 
@@ -29,6 +30,7 @@ const App = () => (
           <Route path="/services" element={<><Services /><Footer /></>} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/contact" element={<><Contact /><Footer /></>} />
+          <Route path="/pricing" element={<><Pricing /><Footer /></>} />
           <Route path="/chat" element={<Chat />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
