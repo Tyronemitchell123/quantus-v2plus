@@ -52,7 +52,7 @@ const categories: { label: string; rows: FeatureRow[] }[] = [
     label: "Support & SLA",
     rows: [
       { feature: "Support channels", tooltip: "How you can reach our support team — from standard email and chat to dedicated phone lines and Slack channels.", starter: "Email & Chat", professional: "Priority 24/7", enterprise: "Dedicated" },
-      { feature: "Dedicated account manager", tooltip: "A named point of contact who understands your business, proactively optimizes your setup, and coordinates internal resources.", starter: false, professional: true, enterprise: true },
+      { feature: "Priority AI concierge", tooltip: "Elevated AI concierge access with faster response times, deeper analysis, and priority queue processing.", starter: false, professional: true, enterprise: true },
       { feature: "Uptime SLA", tooltip: "Guaranteed platform availability percentage, backed by service credits if we fall below the commitment.", starter: "99.9%", professional: "99.95%", enterprise: "99.99%" },
       { feature: "White-glove onboarding", tooltip: "A guided implementation program including data migration, team training, workflow design, and go-live support.", starter: false, professional: false, enterprise: true },
       { feature: "Executive strategy sessions", tooltip: "Quarterly sessions with our AI leadership team to align platform usage with your strategic business objectives.", starter: false, professional: false, enterprise: true },
