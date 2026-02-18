@@ -7,7 +7,7 @@ import { useVoice } from "@/hooks/use-voice";
 import { streamChat } from "@/lib/stream-chat";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
-import AICreditsBanner from "@/components/AICreditsBanner";
+
 
 const HolographicAvatar = lazy(() => import("@/components/HolographicAvatar"));
 
@@ -245,7 +245,7 @@ const Chat = () => {
           {/* Input area */}
           <div className="border-t border-border/50 glass p-4">
             <div className="max-w-2xl mx-auto">
-              {creditError && <AICreditsBanner />}
+              
               <div className="flex gap-2 items-center">
                 {/* Voice toggle */}
                 {supported.stt && (
