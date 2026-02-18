@@ -2,9 +2,21 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Info, Zap, X } from "lucide-react";
 
-const AICreditsBanner = () => {
-  const [dismissed, setDismissed] = useState(false);
+const STORAGE_KEY = "nexus-credits-banner-dismissed";
 
+const AICreditsBanner = () => {
+  const [dismissed, setDismissed] = useState(() => {
+    try {
+      return localStorage.getItem(STORAGE_KEY) === "true";
+    } catch {
+      return false;
+    }
+  });
+
+  const handleDismiss = () => {
+    setDismissed(true);
+    try { localStorage.setItem(STORAGE_KEY, "true"); } catch {}
+  };
   return (
     <AnimatePresence>
       {!dismissed && (
@@ -31,7 +43,7 @@ const AICreditsBanner = () => {
               to restore live AI insights.
             </p>
             <button
-              onClick={() => setDismissed(true)}
+              onClick={handleDismiss}
               className="text-muted-foreground hover:text-foreground transition-colors shrink-0 p-0.5 rounded hover:bg-secondary"
               aria-label="Dismiss"
             >
