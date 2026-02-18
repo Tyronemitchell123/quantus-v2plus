@@ -41,7 +41,7 @@ const tiers = [
       "25 team seats",
       "Full API + Webhooks",
       "Custom AI model training",
-      "Dedicated account manager",
+      "Priority AI concierge access",
       "Real-time market intelligence",
     ],
     cta: "Start Free Trial",
