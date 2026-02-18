@@ -22,6 +22,7 @@ const ConciergeWidget = () => {
   const [loading, setLoading] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
   const assistantRef = useRef("");
+  const sendingRef = useRef(false);
   const location = useLocation();
 
   useEffect(() => {
@@ -33,7 +34,8 @@ const ConciergeWidget = () => {
 
   const send = async () => {
     const text = input.trim();
-    if (!text || loading) return;
+    if (!text || loading || sendingRef.current) return;
+    sendingRef.current = true;
     setInput("");
     const userMsg: Message = { role: "user", content: text };
     const allMessages = [...messages, userMsg];
@@ -56,8 +58,12 @@ const ConciergeWidget = () => {
           return [...prev, { role: "assistant", content: soFar }];
         });
       },
-      onDone: () => setLoading(false),
+      onDone: () => {
+        sendingRef.current = false;
+        setLoading(false);
+      },
       onError: (msg) => {
+        sendingRef.current = false;
         setLoading(false);
         toast.error(msg);
       },

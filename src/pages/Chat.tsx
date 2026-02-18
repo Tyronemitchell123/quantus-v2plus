@@ -33,10 +33,12 @@ const Chat = () => {
   }, [messages]);
 
   const assistantRef = useRef("");
+  const sendingRef = useRef(false);
 
   const send = async () => {
     const text = input.trim();
-    if (!text || loading) return;
+    if (!text || loading || sendingRef.current) return;
+    sendingRef.current = true;
     setInput("");
     const userMsg: Message = { role: "user", content: text };
     const allMessages = [...messages, userMsg];
@@ -58,14 +60,15 @@ const Chat = () => {
         });
       },
       onDone: () => {
+        sendingRef.current = false;
         setLoading(false);
         if (ttsEnabled && assistantRef.current) {
-          // Speak a trimmed version (strip markdown)
           const plain = assistantRef.current.replace(/[#*_`~>\[\]()!|-]/g, "").slice(0, 500);
           speak(plain);
         }
       },
       onError: (msg) => {
+        sendingRef.current = false;
         setLoading(false);
         toast.error(msg);
       },
