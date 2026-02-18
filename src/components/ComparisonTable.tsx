@@ -21,12 +21,24 @@ const categories: { label: string; rows: FeatureRow[] }[] = [
   {
     label: "AI & Analytics",
     rows: [
-      { feature: "AI queries / month", tooltip: "The number of AI-powered requests your organization can make each month, including predictions, classifications, and natural language queries.", starter: "10,000", professional: "Unlimited", enterprise: "Unlimited" },
+      { feature: "AI queries / month", tooltip: "The number of AI-powered requests your organization can make each month, including predictions, classifications, and natural language queries.", starter: "5,000", professional: "Unlimited", enterprise: "Unlimited" },
       { feature: "Predictive analytics", tooltip: "Machine learning models that forecast trends, revenue, churn, and other key business metrics based on your historical data.", starter: true, professional: true, enterprise: true },
       { feature: "Real-time market intelligence", tooltip: "Live monitoring of market signals, competitor movements, and industry trends delivered directly to your dashboard.", starter: false, professional: true, enterprise: true },
       { feature: "Custom AI model training", tooltip: "Train bespoke AI models on your proprietary data for domain-specific predictions and recommendations.", starter: false, professional: true, enterprise: true },
       { feature: "Private model fine-tuning", tooltip: "Dedicated model instances fine-tuned exclusively on your data, hosted in an isolated environment for maximum security.", starter: false, professional: false, enterprise: true },
       { feature: "Anomaly detection", tooltip: "Automatically identifies unusual patterns in your data — from revenue spikes to user behavior shifts — and triggers autonomous alerts.", starter: "Basic", professional: "Advanced", enterprise: "Custom" },
+    ],
+  },
+  {
+    label: "Usage & Limits",
+    rows: [
+      { feature: "AI query overage", tooltip: "Per-query cost once your included monthly AI query allowance is exceeded.", starter: "$0.003/query", professional: "Unlimited", enterprise: "Custom" },
+      { feature: "Quantum compute", tooltip: "Quantum processing unit time for optimization, simulation, and sampling tasks.", starter: "100 QPU-sec", professional: "2,000 QPU-sec", enterprise: "Unlimited" },
+      { feature: "QPU overage", tooltip: "Per-second cost for quantum compute time beyond your plan's included allowance.", starter: "$0.12/sec", professional: "$0.12/sec", enterprise: "Custom" },
+      { feature: "Data processing", tooltip: "Data ingestion, transformation, and storage capacity for predictive model training.", starter: "50 GB", professional: "500 GB", enterprise: "Unlimited" },
+      { feature: "Data overage", tooltip: "Per-GB cost for data processing beyond your plan's included storage.", starter: "$0.40/GB", professional: "$0.40/GB", enterprise: "Custom" },
+      { feature: "API calls", tooltip: "External API requests — webhooks, integrations, and real-time data feeds.", starter: "100K", professional: "1M", enterprise: "Unlimited" },
+      { feature: "API call overage", tooltip: "Per-call cost for API requests beyond your plan's included allowance.", starter: "$0.0005/call", professional: "$0.0005/call", enterprise: "Custom" },
     ],
   },
   {
