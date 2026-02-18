@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect, lazy, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MessageCircle, X, Send, Bot, User, Sparkles } from "lucide-react";
+import conciergeGlowBg from "@/assets/concierge-glow-bg.jpg";
+import holoAvatarTexture from "@/assets/holographic-avatar-texture.jpg";
 import { streamChat } from "@/lib/stream-chat";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
@@ -114,14 +116,14 @@ const ConciergeWidget = () => {
               backdropFilter: "blur(24px)",
             }}
           >
-            {/* Header */}
-            <div className="flex items-center gap-3 px-4 py-3 border-b border-border/50">
-              <div className="w-10 h-10 rounded-full overflow-hidden relative shrink-0">
-                <Suspense fallback={null}>
-                  <HolographicAvatar speaking={loading} />
-                </Suspense>
+            {/* Header with glow bg */}
+            <div className="flex items-center gap-3 px-4 py-3 border-b border-border/50 relative overflow-hidden">
+              <img src={conciergeGlowBg} alt="" className="absolute inset-0 w-full h-full object-cover opacity-30" />
+              <div className="absolute inset-0 bg-background/70" />
+              <div className="w-10 h-10 rounded-full overflow-hidden relative shrink-0 ring-2 ring-primary/30">
+                <img src={holoAvatarTexture} alt="NEXUS" className="w-full h-full object-cover" />
               </div>
-              <div className="flex-1 min-w-0">
+              <div className="flex-1 min-w-0 relative">
                 <h3 className="font-display text-sm font-semibold text-foreground tracking-wide">
                   NEXUS Concierge
                 </h3>

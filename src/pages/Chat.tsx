@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect, lazy, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Send, Bot, User, Sparkles, Shield, Zap, Mic, MicOff, Volume2, VolumeX } from "lucide-react";
+import conciergeGlowBg from "@/assets/concierge-glow-bg.jpg";
+import holoAvatarTexture from "@/assets/holographic-avatar-texture.jpg";
 import { useVoice } from "@/hooks/use-voice";
 import { streamChat } from "@/lib/stream-chat";
 import ReactMarkdown from "react-markdown";
@@ -77,10 +79,14 @@ const Chat = () => {
 
   return (
     <div className="pt-16 flex flex-col h-screen bg-background relative overflow-hidden">
-      {/* Ambient background effects */}
+      {/* Ambient background effects — generated luxury glow */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/[0.03] rounded-full blur-[100px]" />
-        <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-accent/[0.03] rounded-full blur-[80px]" />
+        <img
+          src={conciergeGlowBg}
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover opacity-20"
+        />
+        <div className="absolute inset-0 bg-background/60" />
       </div>
 
       {/* Full-width scanline overlay */}
@@ -138,8 +144,8 @@ const Chat = () => {
           {/* Header */}
           <div className="border-b border-border/50 glass px-6 py-4 flex items-center gap-4">
             <div className="relative">
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center ring-2 ring-primary/20">
-                <Bot size={18} className="text-primary" />
+              <div className="w-10 h-10 rounded-full overflow-hidden ring-2 ring-primary/20">
+                <img src={holoAvatarTexture} alt="NEXUS AI" className="w-full h-full object-cover" />
               </div>
               <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald border-2 border-background" />
             </div>
