@@ -1,1 +1,4 @@
 project_id = "eqxgnxgbvvrjaxjiznjo"
+
+[functions.concierge-chat]
+verify_jwt = false
