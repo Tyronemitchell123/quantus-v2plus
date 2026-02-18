@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { TrendingUp, Users, DollarSign, Activity, Brain, AlertTriangle, Zap, RefreshCw, Sparkles, Shield } from "lucide-react";
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Line, ComposedChart } from "recharts";
 import { useAIAnalytics } from "@/hooks/use-ai-analytics";
+import AIFallbackBanner from "@/components/AIFallbackBanner";
 
 
 type DashboardData = {
@@ -61,7 +62,7 @@ const fallbackDashboard: DashboardData = {
 };
 
 const Dashboard = () => {
-  const { data, loading, error, analyze } = useAIAnalytics<DashboardData>();
+  const { data, loading, error, status, analyze } = useAIAnalytics<DashboardData>();
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
   const fetchData = async () => {
@@ -99,6 +100,8 @@ const Dashboard = () => {
             {loading ? "Analyzing..." : "Refresh AI"}
           </button>
         </motion.div>
+
+        <AIFallbackBanner status={status} onRetry={fetchData} loading={loading} className="mb-6" />
 
         {/* Loading state */}
         <AnimatePresence>
