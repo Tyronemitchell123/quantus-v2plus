@@ -8,6 +8,16 @@ interface UseVoiceOptions {
   onSpeakEnd?: () => void;
 }
 
+// Module-level voice cache to avoid adding extra hooks
+let cachedVoices: SpeechSynthesisVoice[] = [];
+
+if (typeof window !== "undefined" && "speechSynthesis" in window) {
+  cachedVoices = window.speechSynthesis.getVoices();
+  window.speechSynthesis.addEventListener("voiceschanged", () => {
+    cachedVoices = window.speechSynthesis.getVoices();
+  });
+}
+
 export const useVoice = ({ onResult, onSpeakEnd }: UseVoiceOptions = {}) => {
   const [listening, setListening] = useState(false);
   const [speaking, setSpeaking] = useState(false);
@@ -60,8 +70,8 @@ export const useVoice = ({ onResult, onSpeakEnd }: UseVoiceOptions = {}) => {
       utterance.pitch = 1.0;
       utterance.volume = 1;
 
-      // Pick a good voice if available
-      const voices = window.speechSynthesis.getVoices();
+      // Use cached voices for reliable selection
+      const voices = cachedVoices.length > 0 ? cachedVoices : window.speechSynthesis.getVoices();
       const preferred = voices.find(
         (v) =>
           v.name.includes("Google") ||
@@ -71,13 +81,31 @@ export const useVoice = ({ onResult, onSpeakEnd }: UseVoiceOptions = {}) => {
       if (preferred) utterance.voice = preferred;
 
       utterance.onstart = () => setSpeaking(true);
+      utterance.onerror = (e) => {
+        if ((e as any).error !== "interrupted") {
+          console.warn("TTS error:", (e as any).error);
+        }
+        setSpeaking(false);
+      };
+
+      utteranceRef.current = utterance;
+
+      // Chrome workaround: speechSynthesis pauses after ~15s on long text
+      const resumeInterval = setInterval(() => {
+        if (window.speechSynthesis.speaking) {
+          window.speechSynthesis.pause();
+          window.speechSynthesis.resume();
+        } else {
+          clearInterval(resumeInterval);
+        }
+      }, 10000);
+
       utterance.onend = () => {
+        clearInterval(resumeInterval);
         setSpeaking(false);
         onSpeakEnd?.();
       };
-      utterance.onerror = () => setSpeaking(false);
 
-      utteranceRef.current = utterance;
       window.speechSynthesis.speak(utterance);
     },
     [onSpeakEnd]
