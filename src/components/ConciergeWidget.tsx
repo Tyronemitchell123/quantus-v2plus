@@ -8,6 +8,7 @@ import { useVoice } from "@/hooks/use-voice";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
 import { useLocation } from "react-router-dom";
+import AICreditsBanner from "@/components/AICreditsBanner";
 
 const HolographicAvatar = lazy(() => import("@/components/HolographicAvatar"));
 
@@ -23,6 +24,7 @@ const ConciergeWidget = () => {
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [creditError, setCreditError] = useState(false);
   const [ttsEnabled, setTtsEnabled] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
   const assistantRef = useRef("");
@@ -78,6 +80,7 @@ const ConciergeWidget = () => {
       onError: (msg) => {
         sendingRef.current = false;
         setLoading(false);
+        if (msg.toLowerCase().includes("credit")) setCreditError(true);
         toast.error(msg);
       },
     });
@@ -206,6 +209,7 @@ const ConciergeWidget = () => {
 
             {/* Input */}
             <div className="border-t border-border/50 p-3">
+              {creditError && <div className="px-1.5 pt-1.5"><AICreditsBanner /></div>}
               <div className="flex gap-1.5 items-center">
                 {/* Mic button */}
                 {supported.stt && (
