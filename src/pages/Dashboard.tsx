@@ -326,7 +326,7 @@ const Dashboard = () => {
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/5 border border-primary/10">
                 <Brain size={12} className="text-primary" />
                 <span className="text-[10px] text-muted-foreground tracking-[0.2em] uppercase">
-                  100% AI Generated • Zero Human Input • Powered by NEXUS ML Engine
+                  100% AI Generated • Zero Human Input • Powered by QUANTUS Quantum Engine
                 </span>
               </div>
             </motion.div>

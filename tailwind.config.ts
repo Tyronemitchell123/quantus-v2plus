@@ -62,6 +62,11 @@ export default {
         emerald: {
           DEFAULT: "hsl(var(--emerald))",
         },
+        quantum: {
+          cyan: "hsl(var(--quantum-cyan))",
+          purple: "hsl(var(--quantum-purple))",
+          glow: "hsl(var(--quantum-glow))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -107,6 +112,18 @@ export default {
           "0%": { opacity: "0", transform: "translateY(10px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
         },
+        "quantum-pulse": {
+          "0%, 100%": { opacity: "0.3", transform: "scale(1)" },
+          "50%": { opacity: "0.8", transform: "scale(1.05)" },
+        },
+        "quantum-orbit": {
+          "0%": { transform: "rotate(0deg) translateX(40px) rotate(0deg)" },
+          "100%": { transform: "rotate(360deg) translateX(40px) rotate(-360deg)" },
+        },
+        "quantum-flicker": {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0.4" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -116,6 +133,9 @@ export default {
         "slide-up": "slide-up 0.8s ease-out forwards",
         "fade-in": "fade-in 0.6s ease-out forwards",
         "count-up": "count-up 0.5s ease-out forwards",
+        "quantum-pulse": "quantum-pulse 4s ease-in-out infinite",
+        "quantum-orbit": "quantum-orbit 8s linear infinite",
+        "quantum-flicker": "quantum-flicker 2s ease-in-out infinite",
       },
     },
   },

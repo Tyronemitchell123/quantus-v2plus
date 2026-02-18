@@ -6,11 +6,11 @@ const Footer = () => (
       <div className="grid md:grid-cols-4 gap-8">
         <div>
           <span className="font-display text-xl font-bold tracking-wider">
-            <span className="text-gold-gradient">NEXUS</span>
+            <span className="text-gold-gradient">QUANTUS</span>
             <span className="text-foreground/80 ml-1 font-light">AI</span>
           </span>
           <p className="text-muted-foreground text-sm mt-3 leading-relaxed">
-            The world's most intelligent digital presence for those who define the future.
+            Quantum-powered intelligence for those who define the future.
           </p>
         </div>
         <div>
@@ -31,14 +31,14 @@ const Footer = () => (
         <div>
           <h4 className="font-display text-sm font-semibold text-foreground mb-4">Connect</h4>
           <div className="flex flex-col gap-2 text-sm text-muted-foreground">
-            <span>hello@nexus-ai.com</span>
+            <span>hello@quantus-ai.com</span>
             <span>Twitter / X</span>
             <span>LinkedIn</span>
           </div>
         </div>
       </div>
       <div className="mt-12 pt-6 border-t border-border text-center text-xs text-muted-foreground">
-        © 2026 NEXUS AI. All rights reserved.
+        © 2026 QUANTUS AI. All rights reserved.
       </div>
     </div>
   </footer>

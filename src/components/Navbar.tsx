@@ -43,7 +43,7 @@ const Navbar = () => {
     >
       <div className="container mx-auto flex items-center justify-between h-16 px-6">
         <Link to="/" className="font-display text-xl font-bold tracking-wider group">
-          <span className="text-gold-gradient">NEXUS</span>
+          <span className="text-gold-gradient">QUANTUS</span>
           <span className="text-foreground/80 ml-1 font-light">AI</span>
           <motion.span
             className="inline-block ml-1"

@@ -2,7 +2,7 @@ import { useState, useCallback } from "react";
 
 const AI_ANALYTICS_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-analytics`;
 
-const CACHE_PREFIX = "nexus-ai-cache-";
+const CACHE_PREFIX = "quantus-ai-cache-";
 
 function getCached<T>(type: string): T | null {
   try {
