@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.ai-analytics]
 verify_jwt = false
+
+[functions.truelayer-payments]
+verify_jwt = false

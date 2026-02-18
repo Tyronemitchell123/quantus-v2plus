@@ -1,44 +1,16 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "react-router-dom";
-import { Check, ArrowRight, Sparkles, Zap, Crown } from "lucide-react";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-
-const faqs = [
-  {
-    q: "Can I switch between monthly and annual billing?",
-    a: "Absolutely. You can upgrade to annual billing at any time and receive a prorated credit for your remaining monthly period. Downgrading to monthly takes effect at the end of your current annual term.",
-  },
-  {
-    q: "What happens when I exceed my query limit?",
-    a: "On the Starter plan, additional queries are billed at $0.05 each. Professional and Enterprise plans include unlimited queries, so you'll never hit a ceiling.",
-  },
-  {
-    q: "Is there a free trial available?",
-    a: "Yes — the Professional plan includes a 14-day free trial with full access to all features. No credit card required to start.",
-  },
-  {
-    q: "How does the Enterprise pricing work?",
-    a: "Enterprise pricing is tailored to your organization's scale, usage patterns, and support requirements. Contact our sales team for a custom proposal within 24 hours.",
-  },
-  {
-    q: "Can I cancel my subscription at any time?",
-    a: "Yes, you can cancel anytime. Monthly plans end at the close of your current billing cycle. Annual plans can be cancelled with a prorated refund for unused months.",
-  },
-  {
-    q: "What payment methods do you accept?",
-    a: "We accept all major credit cards, ACH bank transfers, and wire transfers for Enterprise accounts. All payments are processed securely with bank-level encryption.",
-  },
-];
+import { Link, useNavigate } from "react-router-dom";
+import { Check, ArrowRight, Sparkles, Zap, Crown, Loader2 } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
+import { useSubscription } from "@/hooks/use-subscription";
+import { useToast } from "@/hooks/use-toast";
+import PricingFAQ from "@/components/PricingFAQ";
 
 const tiers = [
   {
     name: "Starter",
+    key: "starter" as const,
     monthly: 499,
     annual: 399,
     description: "For growing teams ready to leverage AI automation.",
@@ -56,6 +28,7 @@ const tiers = [
   },
   {
     name: "Professional",
+    key: "professional" as const,
     monthly: 1499,
     annual: 1199,
     description: "For organizations demanding enterprise-grade intelligence.",
@@ -75,6 +48,7 @@ const tiers = [
   },
   {
     name: "Enterprise",
+    key: "enterprise" as const,
     monthly: 0,
     annual: 0,
     description: "Bespoke AI solutions for global-scale operations.",
@@ -99,6 +73,43 @@ const formatPrice = (amount: number) =>
 
 const Pricing = () => {
   const [annual, setAnnual] = useState(false);
+  const [purchasing, setPurchasing] = useState<string | null>(null);
+  const { user } = useAuth();
+  const { subscription, createPayment, isActive, tier: currentTier } = useSubscription();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const handlePurchase = async (tierKey: string) => {
+    if (!user) {
+      navigate("/auth");
+      return;
+    }
+
+    if (tierKey === "enterprise") {
+      navigate("/contact");
+      return;
+    }
+
+    setPurchasing(tierKey);
+    try {
+      const result = await createPayment(tierKey as any, annual ? "annual" : "monthly");
+      if (result.demo) {
+        toast({ title: "Subscription activated!", description: `You're now on the ${tierKey} plan.` });
+      } else if (result.hosted_payment_page) {
+        window.location.href = result.hosted_payment_page;
+      }
+    } catch (err: any) {
+      toast({ title: "Payment error", description: err.message, variant: "destructive" });
+    } finally {
+      setPurchasing(null);
+    }
+  };
+
+  const getButtonLabel = (tier: typeof tiers[0]) => {
+    if (isActive && currentTier === tier.key) return "Current Plan";
+    if (tier.key === "enterprise") return "Contact Sales";
+    return tier.cta;
+  };
 
   return (
     <div className="pt-16 min-h-screen">
@@ -114,9 +125,7 @@ const Pricing = () => {
             transition={{ duration: 0.8 }}
             className="text-center max-w-3xl mx-auto"
           >
-            <p className="text-primary font-display text-sm tracking-[0.3em] uppercase mb-4">
-              Pricing
-            </p>
+            <p className="text-primary font-display text-sm tracking-[0.3em] uppercase mb-4">Pricing</p>
             <h1 className="font-display text-4xl md:text-6xl font-bold text-foreground mb-6">
               Invest in <span className="text-gold-gradient gold-glow-text">Intelligence</span>
             </h1>
@@ -126,9 +135,7 @@ const Pricing = () => {
 
             {/* Billing Toggle */}
             <div className="flex items-center justify-center gap-4">
-              <span className={`text-sm font-medium transition-colors ${!annual ? "text-foreground" : "text-muted-foreground"}`}>
-                Monthly
-              </span>
+              <span className={`text-sm font-medium transition-colors ${!annual ? "text-foreground" : "text-muted-foreground"}`}>Monthly</span>
               <button
                 onClick={() => setAnnual((v) => !v)}
                 className="relative w-14 h-7 rounded-full bg-secondary border border-border transition-colors focus:outline-none focus:ring-2 focus:ring-primary/30"
@@ -141,12 +148,8 @@ const Pricing = () => {
                   style={{ left: annual ? "calc(100% - 1.625rem)" : "0.125rem" }}
                 />
               </button>
-              <span className={`text-sm font-medium transition-colors ${annual ? "text-foreground" : "text-muted-foreground"}`}>
-                Annual
-              </span>
-              <span className="text-xs font-semibold text-primary bg-primary/10 px-2.5 py-1 rounded-full">
-                Save 20%
-              </span>
+              <span className={`text-sm font-medium transition-colors ${annual ? "text-foreground" : "text-muted-foreground"}`}>Annual</span>
+              <span className="text-xs font-semibold text-primary bg-primary/10 px-2.5 py-1 rounded-full">Save 20%</span>
             </div>
           </motion.div>
         </div>
@@ -164,9 +167,7 @@ const Pricing = () => {
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.12, duration: 0.6 }}
                 className={`relative rounded-2xl p-8 flex flex-col ${
-                  tier.highlight
-                    ? "glass-card gold-glow ring-1 ring-primary/30"
-                    : "glass-card"
+                  tier.highlight ? "glass-card gold-glow ring-1 ring-primary/30" : "glass-card"
                 }`}
               >
                 {tier.highlight && (
@@ -176,15 +177,10 @@ const Pricing = () => {
                 )}
 
                 <div className="mb-6">
-                  <tier.icon
-                    size={24}
-                    className={tier.highlight ? "text-primary" : "text-muted-foreground"}
-                  />
+                  <tier.icon size={24} className={tier.highlight ? "text-primary" : "text-muted-foreground"} />
                 </div>
 
-                <h3 className="font-display text-xl font-semibold text-foreground mb-1">
-                  {tier.name}
-                </h3>
+                <h3 className="font-display text-xl font-semibold text-foreground mb-1">{tier.name}</h3>
                 <p className="text-sm text-muted-foreground mb-6">{tier.description}</p>
 
                 <div className="mb-8">
@@ -214,64 +210,28 @@ const Pricing = () => {
                   ))}
                 </ul>
 
-                <Link
-                  to={tier.name === "Enterprise" ? "/contact" : "/chat"}
-                  className={`w-full text-center py-3 rounded-full font-semibold text-sm transition-all ${
+                <button
+                  onClick={() => handlePurchase(tier.key)}
+                  disabled={purchasing === tier.key || (isActive && currentTier === tier.key)}
+                  className={`w-full text-center py-3 rounded-full font-semibold text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50 ${
                     tier.highlight
                       ? "bg-primary text-primary-foreground hover:opacity-90 shadow-lg shadow-primary/20"
                       : "border border-border text-foreground hover:border-primary/50"
                   }`}
                 >
-                  {tier.cta}
-                </Link>
+                  {purchasing === tier.key ? (
+                    <Loader2 size={16} className="animate-spin" />
+                  ) : (
+                    getButtonLabel(tier)
+                  )}
+                </button>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* FAQ */}
-      <section className="py-24 border-t border-border">
-        <div className="container mx-auto px-6 max-w-3xl">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-14"
-          >
-            <p className="text-primary font-display text-sm tracking-[0.3em] uppercase mb-4">
-              FAQ
-            </p>
-            <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground">
-              Common <span className="text-gold-gradient">Questions</span>
-            </h2>
-          </motion.div>
-
-          <Accordion type="single" collapsible className="space-y-3">
-            {faqs.map((faq, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.06, duration: 0.4 }}
-              >
-                <AccordionItem
-                  value={`faq-${i}`}
-                  className="glass-card rounded-xl border-none px-6"
-                >
-                  <AccordionTrigger className="text-sm font-medium text-foreground hover:text-primary py-5 hover:no-underline">
-                    {faq.q}
-                  </AccordionTrigger>
-                  <AccordionContent className="text-sm text-muted-foreground leading-relaxed pb-5">
-                    {faq.a}
-                  </AccordionContent>
-                </AccordionItem>
-              </motion.div>
-            ))}
-          </Accordion>
-        </div>
-      </section>
+      <PricingFAQ />
 
       {/* CTA */}
       <section className="py-24 border-t border-border">

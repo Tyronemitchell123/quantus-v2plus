@@ -10,6 +10,7 @@ import ConciergeWidget from "@/components/ConciergeWidget";
 import ScrollProgress from "@/components/ScrollProgress";
 import CursorGlow from "@/components/CursorGlow";
 import PageTransition from "@/components/PageTransition";
+import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import About from "./pages/About";
 import Services from "./pages/Services";
@@ -17,6 +18,8 @@ import Dashboard from "./pages/Dashboard";
 import Contact from "./pages/Contact";
 import Pricing from "./pages/Pricing";
 import Chat from "./pages/Chat";
+import Auth from "./pages/Auth";
+import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,10 +32,26 @@ const AnimatedRoutes = () => {
         <Route path="/" element={<PageTransition><Index /><Footer /></PageTransition>} />
         <Route path="/about" element={<PageTransition><About /><Footer /></PageTransition>} />
         <Route path="/services" element={<PageTransition><Services /><Footer /></PageTransition>} />
-        <Route path="/dashboard" element={<PageTransition><Dashboard /></PageTransition>} />
-        <Route path="/contact" element={<PageTransition><Contact /><Footer /></PageTransition>} />
         <Route path="/pricing" element={<PageTransition><Pricing /><Footer /></PageTransition>} />
-        <Route path="/chat" element={<PageTransition><Chat /></PageTransition>} />
+        <Route path="/contact" element={<PageTransition><Contact /><Footer /></PageTransition>} />
+        <Route path="/auth" element={<PageTransition><Auth /></PageTransition>} />
+        <Route path="/reset-password" element={<PageTransition><ResetPassword /></PageTransition>} />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute requiredTier="starter">
+              <PageTransition><Dashboard /></PageTransition>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/chat"
+          element={
+            <ProtectedRoute requiredTier="professional">
+              <PageTransition><Chat /></PageTransition>
+            </ProtectedRoute>
+          }
+        />
         <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
       </Routes>
     </AnimatePresence>
