@@ -74,17 +74,17 @@ const ConciergeWidget = () => {
 
   return (
     <>
-      {/* Floating button */}
-      <AnimatePresence>
-        {!open && (
+      <AnimatePresence mode="wait">
+        {!open ? (
           <motion.button
+            key="fab"
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
             onClick={() => setOpen(true)}
             className="fixed bottom-6 right-6 z-50 w-16 h-16 rounded-full bg-primary text-primary-foreground shadow-xl shadow-primary/30 flex items-center justify-center hover:shadow-primary/50 transition-shadow group"
           >
-            {/* Mini avatar inside button */}
             <div className="w-full h-full rounded-full overflow-hidden relative">
               <Suspense
                 fallback={
@@ -96,16 +96,11 @@ const ConciergeWidget = () => {
                 <HolographicAvatar speaking={loading} />
               </Suspense>
             </div>
-            {/* Pulse ring */}
             <span className="absolute inset-0 rounded-full border-2 border-primary/40 animate-ping" />
           </motion.button>
-        )}
-      </AnimatePresence>
-
-      {/* Chat popup */}
-      <AnimatePresence>
-        {open && (
+        ) : (
           <motion.div
+            key="chat"
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
@@ -118,8 +113,8 @@ const ConciergeWidget = () => {
           >
             {/* Header with glow bg */}
             <div className="flex items-center gap-3 px-4 py-3 border-b border-border/50 relative overflow-hidden">
-              <img src={conciergeGlowBg} alt="" className="absolute inset-0 w-full h-full object-cover opacity-30" />
-              <div className="absolute inset-0 bg-background/70" />
+              <img src={conciergeGlowBg} alt="" className="absolute inset-0 w-full h-full object-cover opacity-30 pointer-events-none" />
+              <div className="absolute inset-0 bg-background/70 pointer-events-none" />
               <div className="w-10 h-10 rounded-full overflow-hidden relative shrink-0 ring-2 ring-primary/30">
                 <img src={holoAvatarTexture} alt="NEXUS" className="w-full h-full object-cover" />
               </div>
@@ -133,8 +128,8 @@ const ConciergeWidget = () => {
                 </div>
               </div>
               <button
-                onClick={() => setOpen(false)}
-                className="w-10 h-10 rounded-full bg-destructive/80 hover:bg-destructive flex items-center justify-center text-destructive-foreground transition-colors shrink-0"
+                onClick={(e) => { e.stopPropagation(); setOpen(false); }}
+                className="relative z-10 w-10 h-10 rounded-full bg-destructive/80 hover:bg-destructive flex items-center justify-center text-destructive-foreground transition-colors shrink-0"
                 title="Close chat"
               >
                 <X size={18} />
