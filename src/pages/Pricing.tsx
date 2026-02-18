@@ -59,7 +59,7 @@ const tiers = [
       "Unlimited team seats",
       "On-premise deployment option",
       "Custom SLA (99.99% uptime)",
-      "White-glove onboarding",
+      "AI-guided onboarding",
       "Dedicated AI engineering team",
       "Private model fine-tuning",
       "Executive strategy sessions",
