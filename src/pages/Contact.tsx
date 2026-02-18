@@ -4,6 +4,7 @@ import { Send, CheckCircle, Brain, Sparkles, ArrowRight, Zap } from "lucide-reac
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useAIAnalytics } from "@/hooks/use-ai-analytics";
+import AIFallbackBanner from "@/components/AIFallbackBanner";
 
 
 type ContactAnalysis = {
@@ -20,7 +21,7 @@ const Contact = () => {
   const [email, setEmail] = useState("");
   const [company, setCompany] = useState("");
   const [message, setMessage] = useState("");
-  const { data: analysis, loading: analyzing, error: analyzeError, analyze } = useAIAnalytics<ContactAnalysis>();
+  const { data: analysis, loading: analyzing, error: analyzeError, status: analyzeStatus, analyze } = useAIAnalytics<ContactAnalysis>();
 
   const fallbackAnalysis: ContactAnalysis = {
     classification: "partnership inquiry",
@@ -110,6 +111,7 @@ const Contact = () => {
                   <h3 className="font-display text-2xl font-bold text-foreground mb-2">Message Received & Analyzed</h3>
                   <p className="text-muted-foreground text-sm">NEXUS AI has instantly processed your inquiry.</p>
                 </div>
+                <AIFallbackBanner status={analyzeStatus} onRetry={() => analyze("analyze-contact")} loading={analyzing} className="mb-6" />
 
 
                 {/* AI Analysis */}

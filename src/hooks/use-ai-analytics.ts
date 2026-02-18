@@ -20,14 +20,18 @@ function setCache<T>(type: string, data: T) {
   } catch { /* quota exceeded — ignore */ }
 }
 
+export type AIStatus = "live" | "cached" | "fallback" | null;
+
 export function useAIAnalytics<T = any>() {
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [status, setStatus] = useState<AIStatus>(null);
 
   const analyze = useCallback(async (type: string) => {
     setLoading(true);
     setError(null);
+    setStatus(null);
     try {
       const resp = await fetch(AI_ANALYTICS_URL, {
         method: "POST",
@@ -44,29 +48,34 @@ export function useAIAnalytics<T = any>() {
         if (cached) {
           setData(cached);
           setError("cached");
+          setStatus("cached");
           return cached;
         }
         setError("unavailable");
+        setStatus("fallback");
         return null;
       }
 
       const result = await resp.json();
       setData(result.data);
       setCache(type, result.data);
+      setStatus("live");
       return result.data as T;
     } catch {
       const cached = getCached<T>(type);
       if (cached) {
         setData(cached);
         setError("cached");
+        setStatus("cached");
         return cached;
       }
       setError("unavailable");
+      setStatus("fallback");
       return null;
     } finally {
       setLoading(false);
     }
   }, []);
 
-  return { data, loading, error, analyze };
+  return { data, loading, error, status, analyze };
 }

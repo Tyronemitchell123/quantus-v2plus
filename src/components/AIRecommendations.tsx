@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 import { motion } from "framer-motion";
-import { Brain, Sparkles, ArrowRight, AlertCircle } from "lucide-react";
+import { Brain, Sparkles, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAIAnalytics } from "@/hooks/use-ai-analytics";
-
+import AIFallbackBanner from "@/components/AIFallbackBanner";
 
 type ServiceRec = {
   recommendations: { title: string; reason: string; matchScore: number; estimatedROI: string }[];
@@ -20,7 +20,7 @@ const fallbackData: ServiceRec = {
 };
 
 const AIRecommendations = () => {
-  const { data, loading, error, analyze } = useAIAnalytics<ServiceRec>();
+  const { data, loading, error, status, analyze } = useAIAnalytics<ServiceRec>();
 
   useEffect(() => {
     analyze("recommend-services");
@@ -49,6 +49,7 @@ const AIRecommendations = () => {
             Personalized for <span className="text-gold-gradient">You</span>
           </h2>
           <p className="text-muted-foreground text-sm mt-3 max-w-lg mx-auto">{displayData.profileSummary}</p>
+          <AIFallbackBanner status={status} onRetry={() => analyze("recommend-services")} loading={loading} className="mt-5 max-w-md mx-auto" />
         </motion.div>
 
         <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
