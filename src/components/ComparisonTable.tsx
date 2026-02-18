@@ -51,11 +51,11 @@ const categories: { label: string; rows: FeatureRow[] }[] = [
   {
     label: "Support & SLA",
     rows: [
-      { feature: "Support channels", tooltip: "How you can reach our support team — from standard email and chat to dedicated phone lines and Slack channels.", starter: "Email & Chat", professional: "Priority 24/7", enterprise: "Dedicated" },
+      { feature: "Support channels", tooltip: "AI-powered support across multiple channels — from intelligent email and chat to priority escalation and dedicated AI concierge.", starter: "Email & Chat", professional: "Priority 24/7", enterprise: "AI Concierge" },
       { feature: "Priority AI concierge", tooltip: "Elevated AI concierge access with faster response times, deeper analysis, and priority queue processing.", starter: false, professional: true, enterprise: true },
       { feature: "Uptime SLA", tooltip: "Guaranteed platform availability percentage, backed by service credits if we fall below the commitment.", starter: "99.9%", professional: "99.95%", enterprise: "99.99%" },
       { feature: "AI-guided onboarding", tooltip: "An intelligent onboarding experience powered by AI — automated data migration, interactive walkthroughs, and adaptive setup tailored to your workflow.", starter: false, professional: false, enterprise: true },
-      { feature: "Executive strategy sessions", tooltip: "Quarterly sessions with our AI leadership team to align platform usage with your strategic business objectives.", starter: false, professional: false, enterprise: true },
+      { feature: "AI strategic advisory", tooltip: "Quarterly AI-generated strategy reports and interactive sessions that align platform usage with your business objectives — fully automated, zero human overhead.", starter: false, professional: false, enterprise: true },
       { feature: "Performance reports", tooltip: "Scheduled reports summarizing AI impact, usage trends, ROI metrics, and optimization recommendations.", starter: "Weekly", professional: "Daily", enterprise: "Real-time" },
     ],
   },
