@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { TrendingUp, Users, DollarSign, Activity, Brain, AlertTriangle, Zap, RefreshCw, Sparkles, Shield } from "lucide-react";
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Line, ComposedChart } from "recharts";
 import { useAIAnalytics } from "@/hooks/use-ai-analytics";
+import AICreditsBanner from "@/components/AICreditsBanner";
 
 type DashboardData = {
   metrics: { id: string; label: string; value: string; change: string; trend: string; icon: string }[];
@@ -110,6 +111,7 @@ const Dashboard = () => {
 
         {displayData && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
+            {error && <AICreditsBanner />}
             {/* Metric cards */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
               {displayData.metrics.map((m, i) => {
