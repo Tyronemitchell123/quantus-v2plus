@@ -21,7 +21,7 @@ const faqs = [
   },
   {
     q: "How does the Enterprise pricing work?",
-    a: "Enterprise pricing is tailored to your organization's scale, usage patterns, and support requirements. Contact our sales team for a custom proposal within 24 hours.",
+    a: "Enterprise pricing is tailored to your organization's scale, usage patterns, and support requirements. Request a custom proposal through our AI-powered configurator and receive it within 24 hours.",
   },
   {
     q: "Can I cancel my subscription at any time?",

@@ -60,9 +60,9 @@ const tiers = [
       "On-premise deployment option",
       "Custom SLA (99.99% uptime)",
       "AI-guided onboarding",
-      "Dedicated AI engineering team",
+      "Autonomous AI engineering pipeline",
       "Private model fine-tuning",
-      "Executive strategy sessions",
+      "AI-led strategic advisory",
     ],
     cta: "Contact Sales",
     highlight: false,
@@ -249,7 +249,7 @@ const Pricing = () => {
               Need a Custom <span className="text-gold-gradient">Solution</span>?
             </h2>
             <p className="text-muted-foreground text-lg max-w-xl mx-auto mb-8">
-              Our enterprise team will architect an AI strategy tailored to your organization's unique requirements.
+              Our AI platform will architect a bespoke intelligence strategy tailored to your organization's unique requirements.
             </p>
             <Link
               to="/contact"
