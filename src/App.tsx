@@ -22,6 +22,7 @@ import Auth from "./pages/Auth";
 import ResetPassword from "./pages/ResetPassword";
 import QuantumComputing from "./pages/QuantumComputing";
 import CaseStudies from "./pages/CaseStudies";
+import Benefits from "./pages/Benefits";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -38,6 +39,7 @@ const AnimatedRoutes = () => {
         <Route path="/quantum" element={<PageTransition><QuantumComputing /><Footer /></PageTransition>} />
         <Route path="/contact" element={<PageTransition><Contact /><Footer /></PageTransition>} />
         <Route path="/case-studies" element={<PageTransition><CaseStudies /><Footer /></PageTransition>} />
+        <Route path="/benefits" element={<PageTransition><Benefits /><Footer /></PageTransition>} />
         <Route path="/auth" element={<PageTransition><Auth /></PageTransition>} />
         <Route path="/reset-password" element={<PageTransition><ResetPassword /></PageTransition>} />
         <Route
