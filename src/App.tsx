@@ -11,6 +11,7 @@ import ScrollProgress from "@/components/ScrollProgress";
 import CursorGlow from "@/components/CursorGlow";
 import PageTransition from "@/components/PageTransition";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import TrialExpirationNotifier from "@/components/TrialExpirationNotifier";
 import Index from "./pages/Index";
 import About from "./pages/About";
 import Services from "./pages/Services";
@@ -74,6 +75,7 @@ const App = () => (
         <ScrollProgress />
         <Navbar />
         <AnimatedRoutes />
+        <TrialExpirationNotifier />
         <ConciergeWidget />
       </BrowserRouter>
     </TooltipProvider>
