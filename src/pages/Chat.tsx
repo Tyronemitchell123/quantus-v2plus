@@ -7,13 +7,15 @@ import { useVoice } from "@/hooks/use-voice";
 import { streamChat } from "@/lib/stream-chat";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
-
+import UsageLimitBanner from "@/components/UsageLimitBanner";
+import { useUsageTracking } from "@/hooks/use-usage-tracking";
 
 const HolographicAvatar = lazy(() => import("@/components/HolographicAvatar"));
 
 type Message = { role: "user" | "assistant"; content: string };
 
 const Chat = () => {
+  const usage = useUsageTracking();
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
@@ -43,6 +45,10 @@ const Chat = () => {
   const send = async () => {
     const text = input.trim();
     if (!text || loading || sendingRef.current) return;
+    if (usage.isAtLimit) {
+      toast.error("Monthly query limit reached. Upgrade your plan to continue.");
+      return;
+    }
     sendingRef.current = true;
     setInput("");
     const userMsg: Message = { role: "user", content: text };
@@ -50,7 +56,7 @@ const Chat = () => {
     setMessages(allMessages);
     setLoading(true);
     assistantRef.current = "";
-
+    usage.trackQuery();
     await streamChat({
       messages: allMessages,
       onDelta: (chunk) => {
@@ -182,6 +188,17 @@ const Chat = () => {
           {/* Messages */}
           <div className="flex-1 overflow-y-auto px-4 py-6">
             <div className="max-w-2xl mx-auto space-y-6">
+              {!usage.loading && (usage.isNearLimit || usage.isAtLimit) && (
+                <UsageLimitBanner
+                  used={usage.used}
+                  limit={usage.limit}
+                  percentage={usage.percentage}
+                  isNearLimit={usage.isNearLimit}
+                  isAtLimit={usage.isAtLimit}
+                  tier={usage.tier}
+                  className="mb-2"
+                />
+              )}
               <AnimatePresence>
                 {messages.map((m, i) => (
                   <motion.div
