@@ -4,7 +4,8 @@ import { TrendingUp, Users, DollarSign, Activity, Brain, AlertTriangle, Zap, Ref
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Line, ComposedChart } from "recharts";
 import { useAIAnalytics } from "@/hooks/use-ai-analytics";
 import AIFallbackBanner from "@/components/AIFallbackBanner";
-
+import UsageLimitBanner from "@/components/UsageLimitBanner";
+import { useUsageTracking } from "@/hooks/use-usage-tracking";
 
 type DashboardData = {
   metrics: { id: string; label: string; value: string; change: string; trend: string; icon: string }[];
@@ -64,6 +65,7 @@ const fallbackDashboard: DashboardData = {
 const Dashboard = () => {
   const { data, loading, error, status, analyze } = useAIAnalytics<DashboardData>();
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const usage = useUsageTracking();
 
   const fetchData = async () => {
     const result = await analyze("dashboard-insights");
@@ -102,6 +104,18 @@ const Dashboard = () => {
         </motion.div>
 
         <AIFallbackBanner status={status} onRetry={fetchData} loading={loading} className="mb-6" />
+
+        {!usage.loading && (
+          <UsageLimitBanner
+            used={usage.used}
+            limit={usage.limit}
+            percentage={usage.percentage}
+            isNearLimit={usage.isNearLimit}
+            isAtLimit={usage.isAtLimit}
+            tier={usage.tier}
+            className="mb-6"
+          />
+        )}
 
         {/* Loading state */}
         <AnimatePresence>
