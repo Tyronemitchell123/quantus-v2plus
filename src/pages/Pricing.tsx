@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
-import { Check, ArrowRight, Sparkles, Zap, Crown, Loader2 } from "lucide-react";
+import { Check, ArrowRight, Sparkles, Zap, Crown, Loader2, Gift } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useSubscription } from "@/hooks/use-subscription";
 import { useToast } from "@/hooks/use-toast";
@@ -14,6 +14,23 @@ import useDocumentHead from "@/hooks/use-document-head";
 import HeroVideoBackground from "@/components/HeroVideoBackground";
 
 const tiers = [
+  {
+    name: "Free",
+    key: "free" as const,
+    monthly: 0,
+    annual: 0,
+    description: "Experience quantum AI with zero commitment.",
+    icon: Gift,
+    features: [
+      "100 AI queries/month",
+      "Basic analytics dashboard",
+      "AI concierge (limited)",
+      "1 API integration",
+      "Community support",
+    ],
+    cta: "Start Free",
+    highlight: false,
+  },
   {
     name: "Starter",
     key: "starter" as const,
@@ -85,8 +102,8 @@ const Pricing = () => {
   const { subscription, createPayment, isActive, tier: currentTier } = useSubscription();
   const navigate = useNavigate();
   useDocumentHead({
-    title: "Pricing — Quantum AI Plans from $499/mo | QUANTUS AI",
-    description: "Transparent quantum AI pricing. Starter from $499/mo, Professional from $1,499/mo, Enterprise custom. Every plan includes our quantum AI engine.",
+    title: "Pricing — Free to Enterprise | QUANTUS AI",
+    description: "Start free with 100 AI queries/mo. Scale to Starter ($299/mo), Professional ($999/mo), or Enterprise custom. Every plan includes our quantum AI engine.",
     canonical: "https://quantus-loom.lovable.app/pricing",
   });
 
@@ -100,6 +117,11 @@ const Pricing = () => {
 
     if (tierKey === "enterprise") {
       navigate("/contact");
+      return;
+    }
+
+    if (tierKey === "free") {
+      toast({ title: "Welcome to QUANTUS AI!", description: "Your free plan is active with 100 AI queries/month." });
       return;
     }
 
@@ -121,6 +143,7 @@ const Pricing = () => {
   const getButtonLabel = (tier: typeof tiers[0]) => {
     if (isActive && currentTier === tier.key) return "Current Plan";
     if (tier.key === "enterprise") return "Request Demo";
+    if (tier.key === "free") return user ? "Current Plan" : "Start Free";
     return tier.cta;
   };
 
@@ -175,7 +198,7 @@ const Pricing = () => {
       {/* Pricing Cards */}
       <section className="pb-24">
         <div className="container mx-auto px-6">
-          <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto items-stretch">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto items-stretch">
             {tiers.map((tier, i) => (
               <motion.div
                 key={tier.name}
@@ -210,11 +233,11 @@ const Pricing = () => {
                       transition={{ duration: 0.2 }}
                       className="font-display text-4xl font-bold text-foreground inline-block"
                     >
-                      {formatPrice(annual ? tier.annual : tier.monthly)}
+                      {tier.key === "free" ? "Free" : tier.key === "enterprise" ? "Custom" : formatPrice(annual ? tier.annual : tier.monthly)}
                     </motion.span>
                   </AnimatePresence>
                   <span className="text-muted-foreground text-sm">
-                    {tier.monthly === 0 ? "" : annual ? "/mo, billed yearly" : "/month"}
+                    {tier.key === "free" ? "forever" : tier.key === "enterprise" ? "" : annual ? "/mo, billed yearly" : "/month"}
                   </span>
                 </div>
 
