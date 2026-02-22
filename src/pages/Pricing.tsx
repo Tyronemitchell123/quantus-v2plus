@@ -34,9 +34,9 @@ const tiers = [
   {
     name: "Starter",
     key: "starter" as const,
-    monthly: 299,
-    annual: 239,
-    description: "For growing teams ready to leverage AI automation.",
+    monthly: 29,
+    annual: 23,
+    description: "For individuals and small teams getting started with AI.",
     icon: Zap,
     features: [
       "14-day free trial — no card required",
@@ -54,9 +54,9 @@ const tiers = [
   {
     name: "Professional",
     key: "professional" as const,
-    monthly: 999,
-    annual: 799,
-    description: "For organizations demanding enterprise-grade intelligence.",
+    monthly: 99,
+    annual: 79,
+    description: "For teams demanding advanced intelligence and scale.",
     icon: Sparkles,
     features: [
       "Unlimited AI queries",
@@ -105,7 +105,7 @@ const Pricing = () => {
   const navigate = useNavigate();
   useDocumentHead({
     title: "Pricing — Free to Enterprise | QUANTUS AI",
-    description: "Start free with 100 AI queries/mo. Scale to Starter ($299/mo), Professional ($999/mo), or Enterprise custom. Every plan includes our quantum AI engine.",
+    description: "Start free with 100 AI queries/mo. Scale to Starter ($29/mo), Professional ($99/mo), or Enterprise custom. Every plan includes our quantum AI engine.",
     canonical: "https://quantus-loom.lovable.app/pricing",
   });
 
