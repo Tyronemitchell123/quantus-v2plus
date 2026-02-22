@@ -39,6 +39,7 @@ const tiers = [
     description: "For growing teams ready to leverage AI automation.",
     icon: Zap,
     features: [
+      "14-day free trial — no card required",
       "Up to 5,000 AI queries/month",
       "Predictive analytics dashboard",
       "AI concierge access",
@@ -46,8 +47,9 @@ const tiers = [
       "Standard API access",
       "Weekly performance reports",
     ],
-    cta: "Get Started",
+    cta: "Start 14-Day Trial",
     highlight: false,
+    trial: true,
   },
   {
     name: "Professional",
@@ -122,6 +124,24 @@ const Pricing = () => {
 
     if (tierKey === "free") {
       toast({ title: "Welcome to QUANTUS AI!", description: "Your free plan is active with 100 AI queries/month." });
+      return;
+    }
+
+    if (tierKey === "starter" && !isActive) {
+      // Activate 14-day trial
+      setPurchasing(tierKey);
+      try {
+        const result = await createPayment(tierKey as any, annual ? "annual" : "monthly");
+        if (result.demo) {
+          toast({ title: "🎉 Trial activated!", description: "Your 14-day Starter trial is live — no card required. Explore the full power of QUANTUS AI." });
+        } else if (result.hosted_payment_page) {
+          window.location.href = result.hosted_payment_page;
+        }
+      } catch (err: any) {
+        toast({ title: "Activation error", description: err.message, variant: "destructive" });
+      } finally {
+        setPurchasing(null);
+      }
       return;
     }
 
@@ -213,6 +233,11 @@ const Pricing = () => {
                 {tier.highlight && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-primary text-primary-foreground text-xs font-semibold tracking-wider uppercase">
                     Most Popular
+                  </div>
+                )}
+                {"trial" in tier && tier.trial && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-quantum-cyan/90 text-background text-xs font-semibold tracking-wider uppercase whitespace-nowrap">
+                    14-Day Free Trial
                   </div>
                 )}
 
