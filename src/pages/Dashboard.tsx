@@ -5,6 +5,7 @@ import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, R
 import { useAIAnalytics } from "@/hooks/use-ai-analytics";
 import AIFallbackBanner from "@/components/AIFallbackBanner";
 import UsageLimitBanner from "@/components/UsageLimitBanner";
+import TrialCountdownBanner from "@/components/TrialCountdownBanner";
 import { useUsageTracking } from "@/hooks/use-usage-tracking";
 
 type DashboardData = {
@@ -104,6 +105,8 @@ const Dashboard = () => {
         </motion.div>
 
         <AIFallbackBanner status={status} onRetry={fetchData} loading={loading} className="mb-6" />
+
+        <TrialCountdownBanner className="mb-6" />
 
         {!usage.loading && (
           <UsageLimitBanner
