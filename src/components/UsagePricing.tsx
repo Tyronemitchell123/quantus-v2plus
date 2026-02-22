@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Database, Cpu, Brain, Globe } from "lucide-react";
+import { Database, Brain, Globe } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -14,22 +14,14 @@ const usageItems = [
     price: "$0.003",
     unit: "per query",
     tooltip: "Standard AI inference queries — text analysis, classification, summarization.",
-    included: "10K included in Starter, unlimited in Professional",
-  },
-  {
-    icon: Cpu,
-    label: "Quantum Compute",
-    price: "$0.12",
-    unit: "per QPU-second",
-    tooltip: "Quantum processing unit time for optimization, simulation, and sampling tasks.",
-    included: "100 QPU-sec in Starter, 2,000 in Professional",
+    included: "5K included in Starter, unlimited in Professional",
   },
   {
     icon: Database,
     label: "Data Processing",
     price: "$0.40",
     unit: "per GB",
-    tooltip: "Data ingestion, transformation, and storage for predictive model training.",
+    tooltip: "Data ingestion and storage for analytics and reports.",
     included: "50 GB in Starter, 500 GB in Professional",
   },
   {
@@ -37,7 +29,7 @@ const usageItems = [
     label: "API Calls",
     price: "$0.0005",
     unit: "per call",
-    tooltip: "External API requests — webhooks, integrations, real-time data feeds.",
+    tooltip: "External API requests — webhooks, integrations, data feeds.",
     included: "100K in Starter, 1M in Professional",
   },
 ];
@@ -64,7 +56,7 @@ const UsagePricing = () => {
         </motion.div>
 
         <TooltipProvider>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 max-w-5xl mx-auto">
+          <div className="grid sm:grid-cols-3 gap-5 max-w-4xl mx-auto">
             {usageItems.map((item, i) => (
               <motion.div
                 key={item.label}

@@ -21,54 +21,45 @@ const categories: { label: string; rows: FeatureRow[] }[] = [
   {
     label: "AI & Analytics",
     rows: [
-      { feature: "AI queries / month", tooltip: "The number of AI-powered requests your organization can make each month, including predictions, classifications, and natural language queries.", starter: "5,000", professional: "Unlimited", enterprise: "Unlimited" },
-      { feature: "Predictive analytics", tooltip: "Machine learning models that forecast trends, revenue, churn, and other key business metrics based on your historical data.", starter: true, professional: true, enterprise: true },
-      { feature: "Real-time market intelligence", tooltip: "Live monitoring of market signals, competitor movements, and industry trends delivered directly to your dashboard.", starter: false, professional: true, enterprise: true },
-      { feature: "Custom AI model training", tooltip: "Train bespoke AI models on your proprietary data for domain-specific predictions and recommendations.", starter: false, professional: true, enterprise: true },
-      { feature: "Private model fine-tuning", tooltip: "Dedicated model instances fine-tuned exclusively on your data, hosted in an isolated environment for maximum security.", starter: false, professional: false, enterprise: true },
-      { feature: "Anomaly detection", tooltip: "Automatically identifies unusual patterns in your data — from revenue spikes to user behavior shifts — and triggers autonomous alerts.", starter: "Basic", professional: "Advanced", enterprise: "Custom" },
+      { feature: "AI queries / month", tooltip: "The number of AI-powered requests your organization can make each month.", starter: "5,000", professional: "Unlimited", enterprise: "Unlimited" },
+      { feature: "Predictive analytics", tooltip: "Machine learning models that forecast trends, revenue, churn, and other key business metrics.", starter: true, professional: true, enterprise: true },
+      { feature: "Anomaly detection", tooltip: "Automatically identifies unusual patterns in your data and triggers alerts.", starter: "Basic", professional: "Advanced", enterprise: "Custom" },
+      { feature: "Data export (CSV/JSON)", tooltip: "Export your dashboard data and reports in CSV or JSON format.", starter: true, professional: true, enterprise: true },
+      { feature: "PDF reports", tooltip: "Generate downloadable PDF reports of your analytics and predictions.", starter: false, professional: true, enterprise: true },
     ],
   },
   {
     label: "Usage & Limits",
     rows: [
       { feature: "AI query overage", tooltip: "Per-query cost once your included monthly AI query allowance is exceeded.", starter: "$0.003/query", professional: "Unlimited", enterprise: "Custom" },
-      { feature: "Quantum compute", tooltip: "Quantum processing unit time for optimization, simulation, and sampling tasks.", starter: "100 QPU-sec", professional: "2,000 QPU-sec", enterprise: "Unlimited" },
-      { feature: "QPU overage", tooltip: "Per-second cost for quantum compute time beyond your plan's included allowance.", starter: "$0.12/sec", professional: "$0.12/sec", enterprise: "Custom" },
-      { feature: "Data processing", tooltip: "Data ingestion, transformation, and storage capacity for predictive model training.", starter: "50 GB", professional: "500 GB", enterprise: "Unlimited" },
-      { feature: "Data overage", tooltip: "Per-GB cost for data processing beyond your plan's included storage.", starter: "$0.40/GB", professional: "$0.40/GB", enterprise: "Custom" },
-      { feature: "API calls", tooltip: "External API requests — webhooks, integrations, and real-time data feeds.", starter: "100K", professional: "1M", enterprise: "Unlimited" },
-      { feature: "API call overage", tooltip: "Per-call cost for API requests beyond your plan's included allowance.", starter: "$0.0005/call", professional: "$0.0005/call", enterprise: "Custom" },
+      { feature: "Data processing", tooltip: "Data ingestion and storage capacity for analytics.", starter: "50 GB", professional: "500 GB", enterprise: "Unlimited" },
+      { feature: "API calls", tooltip: "External API requests — webhooks, integrations, and data feeds.", starter: "100K", professional: "1M", enterprise: "Unlimited" },
     ],
   },
   {
     label: "Platform & Integration",
     rows: [
-      { feature: "API access", tooltip: "RESTful and GraphQL endpoints to programmatically access AI capabilities, data, and platform features from your own applications.", starter: "Standard", professional: "Full", enterprise: "Full + Priority" },
-      { feature: "Webhooks", tooltip: "Real-time HTTP callbacks that notify your systems instantly when events occur — new predictions, alerts, or data changes.", starter: false, professional: true, enterprise: true },
-      { feature: "On-premise deployment", tooltip: "Deploy the entire platform within your own infrastructure for complete data sovereignty and compliance requirements.", starter: false, professional: false, enterprise: true },
-      { feature: "SSO / SAML", tooltip: "Single Sign-On integration with your identity provider (Okta, Azure AD, Google Workspace) for centralized access management.", starter: false, professional: false, enterprise: true },
-      { feature: "Custom integrations", tooltip: "Connect to your existing tech stack — CRMs, ERPs, data warehouses, and other business tools via pre-built or custom connectors.", starter: false, professional: "Limited", enterprise: "Unlimited" },
+      { feature: "API access", tooltip: "RESTful endpoints to programmatically access AI capabilities and data.", starter: "Standard", professional: "Full", enterprise: "Full + Priority" },
+      { feature: "API key management", tooltip: "Generate, revoke, and manage API keys for secure programmatic access.", starter: false, professional: true, enterprise: true },
+      { feature: "Webhooks", tooltip: "Real-time HTTP callbacks that notify your systems when events occur.", starter: false, professional: true, enterprise: true },
+      { feature: "Custom integrations", tooltip: "Connect to your existing tech stack via API integrations.", starter: false, professional: "Limited", enterprise: "Unlimited" },
     ],
   },
   {
     label: "Access & Collaboration",
     rows: [
-      { feature: "API integrations", tooltip: "The number of concurrent API integrations that can connect to the platform under your subscription.", starter: "2", professional: "25", enterprise: "Unlimited" },
-      { feature: "Role-based access control", tooltip: "Define granular permissions — admin, analyst, viewer — to control who can access, modify, or export data and settings.", starter: false, professional: true, enterprise: true },
-      { feature: "Audit log", tooltip: "A complete, immutable record of every action taken on the platform for compliance, security reviews, and accountability.", starter: false, professional: true, enterprise: true },
-      { feature: "Shared dashboards", tooltip: "Collaboratively build and share interactive dashboards with stakeholders or clients with configurable access.", starter: false, professional: true, enterprise: true },
+      { feature: "API integrations", tooltip: "The number of concurrent API integrations under your subscription.", starter: "2", professional: "25", enterprise: "Unlimited" },
+      { feature: "Role-based access control", tooltip: "Define permissions — admin, analyst, viewer — to control data access.", starter: false, professional: true, enterprise: true },
+      { feature: "Audit log", tooltip: "A record of every action taken on the platform for compliance and accountability.", starter: false, professional: true, enterprise: true },
+      { feature: "Shared dashboards", tooltip: "Share interactive dashboards with stakeholders or clients.", starter: false, professional: true, enterprise: true },
     ],
   },
   {
     label: "Support & SLA",
     rows: [
-      { feature: "Support channels", tooltip: "AI-powered autonomous support across multiple channels — from intelligent concierge chat to priority escalation and dedicated AI advisory.", starter: "AI Chat", professional: "24/7 Autonomous", enterprise: "AI Concierge" },
-      { feature: "Priority AI concierge", tooltip: "Elevated AI concierge access with faster response times, deeper analysis, and priority queue processing.", starter: false, professional: true, enterprise: true },
-      { feature: "Uptime SLA", tooltip: "Guaranteed platform availability percentage, backed by service credits if we fall below the commitment.", starter: "99.9%", professional: "99.95%", enterprise: "99.99%" },
-      { feature: "AI-guided onboarding", tooltip: "An intelligent onboarding experience powered by AI — automated data migration, interactive walkthroughs, and adaptive setup tailored to your workflow.", starter: false, professional: false, enterprise: true },
-      { feature: "AI strategic advisory", tooltip: "Quarterly AI-generated strategy reports and interactive sessions that align platform usage with your business objectives — fully automated, zero human overhead.", starter: false, professional: false, enterprise: true },
-      { feature: "Performance reports", tooltip: "Scheduled reports summarizing AI impact, usage trends, ROI metrics, and optimization recommendations.", starter: "Weekly", professional: "Daily", enterprise: "Real-time" },
+      { feature: "Support channels", tooltip: "AI-powered support across multiple channels.", starter: "AI Chat", professional: "24/7 AI Support", enterprise: "Dedicated AI Concierge" },
+      { feature: "Uptime SLA", tooltip: "Guaranteed platform availability percentage.", starter: "99.9%", professional: "99.95%", enterprise: "99.99%" },
+      { feature: "Performance reports", tooltip: "Scheduled reports summarizing AI impact, usage trends, and recommendations.", starter: "Weekly", professional: "Daily", enterprise: "Real-time" },
     ],
   },
 ];
@@ -106,7 +97,6 @@ const ComparisonTable = () => (
         transition={{ duration: 0.6 }}
         className="glass-card rounded-2xl overflow-hidden min-w-[540px]"
       >
-        {/* Sticky header */}
         <div className="sticky top-16 z-10 grid grid-cols-[minmax(180px,1.2fr)_repeat(3,minmax(100px,1fr))] border-b border-border bg-card/95 backdrop-blur-md">
           <div className="p-5 sticky left-0 z-20 bg-card/95 backdrop-blur-md" />
           {tierHeaders.map((h, i) => (
@@ -123,7 +113,6 @@ const ComparisonTable = () => (
 
         {categories.map((cat, ci) => (
           <div key={cat.label}>
-            {/* Category header */}
             <div className="grid grid-cols-[minmax(180px,1.2fr)_repeat(3,minmax(100px,1fr))] bg-secondary/30 border-b border-border">
               <div className="p-4 pl-6 text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground sticky left-0 z-20 bg-secondary/30 backdrop-blur-md">
                 {cat.label}
