@@ -8,26 +8,24 @@ interface CompetitorRow {
   quantus: CellValue;
   palantir: CellValue;
   c3ai: CellValue;
-  ibmQuantum: CellValue;
   darktrace: CellValue;
 }
 
 const rows: CompetitorRow[] = [
-  { feature: "Quantum-enhanced AI", quantus: "yes", palantir: "no", c3ai: "no", ibmQuantum: "partial", darktrace: "no" },
-  { feature: "100% autonomous ops", quantus: "yes", palantir: "no", c3ai: "no", ibmQuantum: "no", darktrace: "partial" },
-  { feature: "Real-time predictive analytics", quantus: "yes", palantir: "yes", c3ai: "yes", ibmQuantum: "no", darktrace: "yes" },
-  { feature: "Post-quantum cryptography", quantus: "yes", palantir: "no", c3ai: "no", ibmQuantum: "partial", darktrace: "no" },
-  { feature: "On-premise deployment", quantus: "yes", palantir: "yes", c3ai: "partial", ibmQuantum: "no", darktrace: "yes" },
-  { feature: "Custom model fine-tuning", quantus: "yes", palantir: "partial", c3ai: "yes", ibmQuantum: "no", darktrace: "no" },
-  { feature: "Transparent usage pricing", quantus: "yes", palantir: "no", c3ai: "partial", ibmQuantum: "yes", darktrace: "no" },
-  { feature: "AI concierge (zero humans)", quantus: "yes", palantir: "no", c3ai: "no", ibmQuantum: "no", darktrace: "no" },
+  { feature: "AI-powered analytics", quantus: "yes", palantir: "yes", c3ai: "yes", darktrace: "partial" },
+  { feature: "Anomaly detection alerts", quantus: "yes", palantir: "partial", c3ai: "partial", darktrace: "yes" },
+  { feature: "Real-time predictive analytics", quantus: "yes", palantir: "yes", c3ai: "yes", darktrace: "yes" },
+  { feature: "Data export (CSV/JSON/PDF)", quantus: "yes", palantir: "partial", c3ai: "partial", darktrace: "no" },
+  { feature: "Webhook integrations", quantus: "yes", palantir: "yes", c3ai: "partial", darktrace: "yes" },
+  { feature: "API key management", quantus: "yes", palantir: "partial", c3ai: "yes", darktrace: "no" },
+  { feature: "Transparent usage pricing", quantus: "yes", palantir: "no", c3ai: "partial", darktrace: "no" },
+  { feature: "AI concierge chat", quantus: "yes", palantir: "no", c3ai: "no", darktrace: "no" },
 ];
 
 const competitors = [
   { key: "quantus" as const, label: "QUANTUS", highlight: true },
   { key: "palantir" as const, label: "Palantir" },
   { key: "c3ai" as const, label: "C3.ai" },
-  { key: "ibmQuantum" as const, label: "IBM Quantum" },
   { key: "darktrace" as const, label: "Darktrace" },
 ];
 
@@ -55,7 +53,7 @@ const CompetitorComparison = () => {
             QUANTUS vs the <span className="text-gold-gradient gold-glow-text">Competition</span>
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto mt-4">
-            The only platform combining quantum computing with fully autonomous AI — no human bottlenecks.
+            The only platform combining autonomous AI analytics with transparent pricing and real-time alerts.
           </p>
         </motion.div>
 

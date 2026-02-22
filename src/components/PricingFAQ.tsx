@@ -13,11 +13,11 @@ const faqs = [
   },
   {
     q: "What happens when I exceed my query limit?",
-    a: "On the Starter plan, additional queries are billed at $0.05 each. Professional and Enterprise plans include unlimited queries, so you'll never hit a ceiling.",
+    a: "On the Starter plan, additional queries are billed at $0.003 each. Professional and Enterprise plans include unlimited queries, so you'll never hit a ceiling.",
   },
   {
     q: "Is there a free trial available?",
-    a: "Yes — the Professional plan includes a 14-day free trial with full access to all features. No credit card required to start.",
+    a: "Yes — the Starter plan includes a 14-day free trial with full access to all Starter features. No credit card required to start.",
   },
   {
     q: "How does the Enterprise pricing work?",

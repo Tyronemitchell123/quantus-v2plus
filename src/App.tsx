@@ -24,6 +24,7 @@ import ResetPassword from "./pages/ResetPassword";
 import QuantumComputing from "./pages/QuantumComputing";
 import CaseStudies from "./pages/CaseStudies";
 import Benefits from "./pages/Benefits";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -56,6 +57,14 @@ const AnimatedRoutes = () => {
           element={
             <ProtectedRoute requiredTier="professional">
               <PageTransition><Chat /></PageTransition>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRoute requiredTier="starter">
+              <PageTransition><Settings /></PageTransition>
             </ProtectedRoute>
           }
         />
