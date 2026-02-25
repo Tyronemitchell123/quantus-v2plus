@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Bell, AlertTriangle, Info, Shield, Check, Loader2 } from "lucide-react";
+import { Bell, AlertTriangle, Info, Shield, Check, Loader2, RefreshCw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
 
 interface Alert {
   id: string;
@@ -25,7 +26,9 @@ const severityConfig: Record<string, { icon: any; color: string; bg: string }> =
 const AlertsPanel = () => {
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [loading, setLoading] = useState(true);
+  const [detecting, setDetecting] = useState(false);
   const { toast } = useToast();
+  const { user } = useAuth();
 
   const fetchAlerts = async () => {
     const { data, error } = await supabase
@@ -59,6 +62,26 @@ const AlertsPanel = () => {
     toast({ title: "All alerts marked as read" });
   };
 
+  const runDetection = async () => {
+    if (!user) return;
+    setDetecting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("anomaly-detection", {
+        body: { user_id: user.id },
+      });
+      if (error) throw error;
+      toast({
+        title: "Detection complete",
+        description: `${data.alerts_created} new alert${data.alerts_created !== 1 ? "s" : ""} created.`,
+      });
+      await fetchAlerts();
+    } catch (err: any) {
+      toast({ title: "Detection failed", description: err.message, variant: "destructive" });
+    } finally {
+      setDetecting(false);
+    }
+  };
+
   const unreadCount = alerts.filter((a) => !a.is_read).length;
 
   return (
@@ -70,14 +93,24 @@ const AlertsPanel = () => {
             {unreadCount > 0 ? `${unreadCount} unread alert${unreadCount > 1 ? "s" : ""}` : "All alerts read"}
           </p>
         </div>
-        {unreadCount > 0 && (
+        <div className="flex items-center gap-3">
           <button
-            onClick={markAllRead}
-            className="text-xs text-primary hover:underline font-medium"
+            onClick={runDetection}
+            disabled={detecting}
+            className="flex items-center gap-1.5 text-xs text-primary hover:underline font-medium disabled:opacity-50"
           >
-            Mark all as read
+            {detecting ? <Loader2 size={12} className="animate-spin" /> : <RefreshCw size={12} />}
+            Run Detection
           </button>
-        )}
+          {unreadCount > 0 && (
+            <button
+              onClick={markAllRead}
+              className="text-xs text-primary hover:underline font-medium"
+            >
+              Mark all as read
+            </button>
+          )}
+        </div>
       </div>
 
       {loading ? (
