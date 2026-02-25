@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.truelayer-payments]
 verify_jwt = false
+
+[functions.anomaly-detection]
+verify_jwt = false
