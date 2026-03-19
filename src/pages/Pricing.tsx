@@ -25,6 +25,7 @@ const tiers = [
       "100 AI queries/month",
       "Basic analytics dashboard",
       "AI concierge (limited)",
+      "10 quantum simulator jobs/month",
       "1 API integration",
       "Community support",
     ],
