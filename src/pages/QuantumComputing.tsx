@@ -92,7 +92,7 @@ export default function QuantumComputing() {
     <div className="pt-24">
       {/* Hero */}
       <header className="py-16 relative overflow-hidden">
-        <HeroVideoBackground />
+        <QuantumVideoBackground />
         <div className="absolute top-10 right-10 opacity-20 pointer-events-none">
           <QuantumOrbit size={200} />
         </div>
