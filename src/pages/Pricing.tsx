@@ -44,6 +44,7 @@ const tiers = [
       "Up to 5,000 AI queries/month",
       "Predictive analytics dashboard",
       "AI concierge access",
+      "50 quantum jobs/month (sim + QPU)",
       "2 API integrations",
       "Standard API access",
       "Weekly performance reports",
