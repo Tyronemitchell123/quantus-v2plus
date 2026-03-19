@@ -37,6 +37,15 @@ const categories: { label: string; rows: FeatureRow[] }[] = [
     ],
   },
   {
+    label: "Quantum Computing",
+    rows: [
+      { feature: "Quantum simulator jobs", tooltip: "Monthly limit for jobs submitted to quantum simulator devices (SV1, DM1, TN1).", starter: "50/month", professional: "Unlimited", enterprise: "Unlimited" },
+      { feature: "QPU device access", tooltip: "Submit jobs to real quantum processing units (IonQ, Rigetti, IQM).", starter: true, professional: true, enterprise: true },
+      { feature: "Max shots per job", tooltip: "Maximum measurement repetitions per circuit submission.", starter: "1,000", professional: "10,000", enterprise: "Unlimited" },
+      { feature: "Total shots / month", tooltip: "Combined shot budget across all jobs in a billing period.", starter: "10,000", professional: "Unlimited", enterprise: "Unlimited" },
+    ],
+  },
+  {
     label: "Platform & Integration",
     rows: [
       { feature: "API access", tooltip: "RESTful endpoints to programmatically access AI capabilities and data.", starter: "Standard", professional: "Full", enterprise: "Full + Priority" },
