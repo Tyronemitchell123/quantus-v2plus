@@ -13,6 +13,7 @@ import DeviceSelector from "@/components/quantum/DeviceSelector";
 import JobList from "@/components/quantum/JobList";
 import ResultsView from "@/components/quantum/ResultsView";
 import QuantumLimitsBanner from "@/components/quantum/QuantumLimitsBanner";
+import QuantumProgressLCD from "@/components/quantum/QuantumProgressLCD";
 import QuantumOrbit from "@/components/QuantumOrbit";
 import QuantumVideoBackground from "@/components/QuantumVideoBackground";
 
@@ -164,6 +165,12 @@ export default function QuantumComputing() {
                       <Send size={16} />
                       {submitting ? "Submitting…" : "Submit Job"}
                     </Button>
+
+                    {/* LCD Progress Display */}
+                    <QuantumProgressLCD
+                      jobStatus={selectedJob?.status ?? null}
+                      submitting={submitting}
+                    />
 
                     {/* Results */}
                     {selectedJob && (
