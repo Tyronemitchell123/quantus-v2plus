@@ -166,6 +166,12 @@ export default function QuantumComputing() {
                       {submitting ? "Submitting…" : "Submit Job"}
                     </Button>
 
+                    {/* LCD Progress Display */}
+                    <QuantumProgressLCD
+                      jobStatus={selectedJob?.status ?? null}
+                      submitting={submitting}
+                    />
+
                     {/* Results */}
                     {selectedJob && (
                       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="quantum-card rounded-xl p-6 space-y-4">
