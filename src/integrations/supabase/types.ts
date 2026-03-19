@@ -208,6 +208,89 @@ export type Database = {
         }
         Relationships: []
       }
+      quantum_job_results: {
+        Row: {
+          created_at: string
+          id: string
+          quantum_job_id: string
+          raw_result_json: Json | null
+          result_counts_json: Json
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          quantum_job_id: string
+          raw_result_json?: Json | null
+          result_counts_json?: Json
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          quantum_job_id?: string
+          raw_result_json?: Json | null
+          result_counts_json?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quantum_job_results_quantum_job_id_fkey"
+            columns: ["quantum_job_id"]
+            isOneToOne: false
+            referencedRelation: "quantum_jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quantum_jobs: {
+        Row: {
+          circuit_format: string
+          circuit_text: string
+          completed_at: string | null
+          cost_estimate_usd: number | null
+          created_at: string
+          device_arn: string
+          error_message: string | null
+          id: string
+          provider: string
+          provider_job_id: string | null
+          shots: number
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          circuit_format?: string
+          circuit_text: string
+          completed_at?: string | null
+          cost_estimate_usd?: number | null
+          created_at?: string
+          device_arn: string
+          error_message?: string | null
+          id?: string
+          provider?: string
+          provider_job_id?: string | null
+          shots?: number
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          circuit_format?: string
+          circuit_text?: string
+          completed_at?: string | null
+          cost_estimate_usd?: number | null
+          created_at?: string
+          device_arn?: string
+          error_message?: string | null
+          id?: string
+          provider?: string
+          provider_job_id?: string | null
+          shots?: number
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       subscriptions: {
         Row: {
           billing_cycle: string

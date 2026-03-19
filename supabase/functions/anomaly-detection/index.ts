@@ -170,6 +170,19 @@ serve(async (req) => {
           threshold: Math.round(daily_avg),
         });
       }
+
+      // Rule 5: Quantum job spike detection
+      if (feature === "quantum_job" && daily_avg > 0 && today > daily_avg * 2 && today > 3) {
+        alertsToCreate.push({
+          user_id,
+          title: `Quantum job submission spike`,
+          description: `Today's quantum job submissions (${today}) are ${(today / daily_avg).toFixed(1)}x above your daily average (${Math.round(daily_avg)}).`,
+          severity: today > daily_avg * 4 ? "critical" : "warning",
+          metric_name: "quantum_job_daily",
+          metric_value: today,
+          threshold: Math.round(daily_avg * 2),
+        });
+      }
     }
 
     // Deduplicate: don't create alerts that already exist today
