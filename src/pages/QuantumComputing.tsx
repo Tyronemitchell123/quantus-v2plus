@@ -14,7 +14,7 @@ import JobList from "@/components/quantum/JobList";
 import ResultsView from "@/components/quantum/ResultsView";
 import QuantumLimitsBanner from "@/components/quantum/QuantumLimitsBanner";
 import QuantumOrbit from "@/components/QuantumOrbit";
-import HeroVideoBackground from "@/components/HeroVideoBackground";
+import QuantumVideoBackground from "@/components/QuantumVideoBackground";
 
 const QubitVisualization = lazy(() => import("@/components/QubitVisualization"));
 
