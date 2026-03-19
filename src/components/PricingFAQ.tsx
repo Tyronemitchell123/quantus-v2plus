@@ -31,8 +31,23 @@ const faqs = [
     q: "What payment methods do you accept?",
     a: "We accept bank transfers via TrueLayer's open banking network, covering all major UK and European banks. Payments are instant and secure — no card details needed.",
   },
+  {
+    q: "What's the difference between a quantum simulator and a QPU?",
+    a: "Simulators run on classical hardware and emulate quantum behaviour — they're free, instant, and ideal for prototyping. QPU (Quantum Processing Unit) devices execute circuits on real quantum hardware with actual qubits, offering true quantum effects but variable queue times and potential per-job charges.",
+  },
+  {
+    q: "What circuit format does the Quantum Lab accept?",
+    a: "The Quantum Lab accepts OpenQASM 2.0 circuits. You can write circuits from scratch or use one of the built-in templates (Bell state, GHZ state, Random) to get started quickly.",
+  },
+  {
+    q: "How do quantum job limits work across tiers?",
+    a: "Free accounts get 10 simulator jobs per month with up to 100 shots each. Starter plans include 50 jobs (simulator + QPU) with 1,000 shots. Professional and Enterprise plans offer unlimited jobs across all devices with up to 10,000+ shots per job.",
+  },
+  {
+    q: "What are 'shots' in quantum computing?",
+    a: "Shots are the number of times a quantum circuit is executed to collect measurement statistics. More shots yield more accurate probability distributions. Your tier determines the maximum shots per job and total shots per month.",
+  },
 ];
-
 const PricingFAQ = () => (
   <section className="py-24 border-t border-border">
     <div className="container mx-auto px-6 max-w-3xl">
