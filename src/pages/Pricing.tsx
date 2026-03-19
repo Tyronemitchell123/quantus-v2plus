@@ -64,6 +64,7 @@ const tiers = [
       "Unlimited AI queries",
       "Advanced predictive analytics",
       "Anomaly detection alerts",
+      "Unlimited quantum jobs (all devices)",
       "25 API integrations",
       "Full API + Webhooks",
       "Data export (CSV, JSON, PDF)",
