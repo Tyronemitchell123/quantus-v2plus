@@ -135,12 +135,28 @@ export function useQuantumJobs() {
     }
   }, []);
 
+  // Initial fetch
   useEffect(() => {
     if (user) {
       fetchJobs();
       fetchLimits();
     }
   }, [user, fetchJobs, fetchLimits]);
+
+  // Auto-poll running/queued jobs every 5s
+  useEffect(() => {
+    const hasActiveJobs = jobs.some(j => j.status === "queued" || j.status === "running");
+    if (!hasActiveJobs) return;
+
+    const interval = setInterval(async () => {
+      const activeJobs = jobs.filter(j => j.status === "queued" || j.status === "running");
+      for (const job of activeJobs) {
+        await refreshJob(job.id);
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [jobs, refreshJob]);
 
   return {
     jobs,
