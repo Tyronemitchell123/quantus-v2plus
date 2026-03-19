@@ -36,20 +36,6 @@ npm i
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
 ## What technologies are used for this project?
 
 This project is built with:
@@ -59,6 +45,57 @@ This project is built with:
 - React
 - shadcn-ui
 - Tailwind CSS
+
+## Quantum Computing Integration (AWS Braket)
+
+QUANTUS AI integrates with **AWS Braket** for real quantum circuit execution.
+
+### Setup
+
+1. **Enable AWS Braket** in your AWS account (ensure Braket service is activated in your region).
+
+2. **Add the following secrets** in your Lovable Cloud project settings:
+   - `AWS_ACCESS_KEY_ID` — Your AWS IAM access key with Braket and S3 permissions
+   - `AWS_SECRET_ACCESS_KEY` — The corresponding secret key
+   - `AWS_REGION` — AWS region (e.g., `us-east-1`)
+
+3. **IAM Permissions Required**:
+   - `braket:CreateQuantumTask`
+   - `braket:GetQuantumTask`
+   - `braket:SearchQuantumTasks`
+   - `s3:GetObject` (for reading job results)
+   - `s3:PutObject` (Braket writes results to S3)
+
+### Local Simulator Mode
+
+If no AWS credentials are configured, the system runs a **built-in simulator** that produces statistically accurate results for common circuit patterns (Bell states, GHZ, uniform superposition). This is ideal for development and demo purposes.
+
+### Devices
+
+| Device | Type | Tier Required |
+|--------|------|---------------|
+| SV1 (State Vector) | Simulator | Free |
+| TN1 (Tensor Network) | Simulator | Free |
+| DM1 (Density Matrix) | Simulator | Free |
+| IonQ Aria-1 | QPU | Starter+ |
+| OQC Lucy | QPU | Starter+ |
+| Rigetti Aspen-M-3 | QPU | Starter+ |
+
+### Tier Limits
+
+| Limit | Free | Starter | Professional |
+|-------|------|---------|-------------|
+| Devices | Simulator only | All | All |
+| Max shots/job | 100 | 1,000 | 10,000 |
+| Jobs/month | 10 | 50 | Unlimited |
+| Total shots/month | 500 | 10,000 | Unlimited |
+
+### Important Notes
+
+- **QPU queue times** vary from minutes to hours depending on device availability.
+- **Results are probabilistic** — running the same circuit multiple times will yield slightly different measurement distributions.
+- **Cost controls** are enforced server-side. QPU runs may incur AWS charges on your account.
+- The system includes **anomaly detection** that flags unusual spikes in quantum job submissions.
 
 ## How can I deploy this project?
 
