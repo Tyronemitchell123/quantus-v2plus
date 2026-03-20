@@ -12,6 +12,8 @@ import UsagePricing from "@/components/UsagePricing";
 import CurrencyConverter, { useCurrency } from "@/components/CurrencyConverter";
 import useDocumentHead from "@/hooks/use-document-head";
 import HeroVideoBackground from "@/components/HeroVideoBackground";
+import PlatformBillingBanner from "@/components/PlatformBillingBanner";
+import { useMobilePricing } from "@/hooks/use-mobile-pricing";
 
 const tiers = [
   {
@@ -105,6 +107,7 @@ const Pricing = () => {
   const { currency, setCurrency, currencies, formatPrice } = useCurrency();
   const { user } = useAuth();
   const { subscription, createPayment, isActive, tier: currentTier } = useSubscription();
+  const { getPrice, isStoreBilling } = useMobilePricing(tiers, annual);
   const navigate = useNavigate();
   useDocumentHead({
     title: "Pricing — Free to Enterprise | QUANTUS AI",
@@ -221,6 +224,7 @@ const Pricing = () => {
       {/* Pricing Cards */}
       <section className="pb-24">
         <div className="container mx-auto px-6">
+          <PlatformBillingBanner className="max-w-7xl mx-auto mb-8" />
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto items-stretch">
             {tiers.map((tier, i) => (
               <motion.div
@@ -261,7 +265,7 @@ const Pricing = () => {
                       transition={{ duration: 0.2 }}
                       className="font-display text-4xl font-bold text-foreground inline-block"
                     >
-                      {tier.key === "free" ? "Free" : tier.key === "enterprise" ? "Custom" : formatPrice(annual ? tier.annual : tier.monthly)}
+                      {tier.key === "free" ? "Free" : tier.key === "enterprise" ? "Custom" : formatPrice(getPrice(tier.key))}
                     </motion.span>
                   </AnimatePresence>
                   <span className="text-muted-foreground text-sm">
