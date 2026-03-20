@@ -100,7 +100,6 @@ const CurrentPlanCard = ({ subscription, isActive, tier, onRefresh }: Props) => 
 
   const handleCancel = () => callManage("cancel");
   const handleReactivate = () => callManage("reactivate");
-  };
 
   return (
     <div className="rounded-2xl border border-border bg-card/60 backdrop-blur-sm p-6 md:p-8">
