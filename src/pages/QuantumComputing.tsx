@@ -143,7 +143,9 @@ export default function QuantumComputing() {
                   {/* Left: Editor + Submit */}
                   <div className="space-y-6">
                     <AICircuitGenerator onGenerated={setCircuit} />
+                    <VisualCircuitEditor onExport={setCircuit} />
                     <CircuitEditor value={circuit} onChange={setCircuit} />
+                    <CostOptimizer onSelectDevice={(arn, s) => { setDeviceArn(arn); setShots(s); }} />
 
                     <div className="grid sm:grid-cols-2 gap-4">
                       <DeviceSelector value={deviceArn} onChange={setDeviceArn} tier={tier} />
