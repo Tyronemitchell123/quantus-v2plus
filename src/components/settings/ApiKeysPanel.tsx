@@ -16,9 +16,9 @@ interface ApiKeyItem {
 
 const generateKey = () => {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  let result = "qai_";
-  for (let i = 0; i < 40; i++) result += chars.charAt(Math.floor(Math.random() * chars.length));
-  return result;
+  const bytes = new Uint8Array(40);
+  crypto.getRandomValues(bytes);
+  return "qai_" + Array.from(bytes).map((b) => chars[b % chars.length]).join("");
 };
 
 const hashKey = async (key: string): Promise<string> => {
