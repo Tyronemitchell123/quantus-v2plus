@@ -72,7 +72,7 @@ const AnimatedRoutes = () => {
           <Route
             path="/settings"
             element={
-              <ProtectedRoute requiredTier="starter">
+              <ProtectedRoute>
                 <PageTransition><Settings /></PageTransition>
               </ProtectedRoute>
             }
