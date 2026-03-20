@@ -31,6 +31,8 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [resourcesOpen, setResourcesOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const dropdownItemsRef = useRef<(HTMLAnchorElement | null)[]>([]);
+  const [focusIndex, setFocusIndex] = useState(-1);
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
