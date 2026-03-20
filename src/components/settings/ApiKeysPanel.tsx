@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Key, Plus, Trash2, Loader2, Copy, Eye, EyeOff } from "lucide-react";
+import { Key, Plus, Trash2, Loader2, Copy, Clock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -13,6 +13,15 @@ interface ApiKeyItem {
   expires_at: string | null;
   created_at: string;
 }
+
+const EXPIRY_OPTIONS = [
+  { label: "No expiration", value: "" },
+  { label: "30 days", value: "30" },
+  { label: "60 days", value: "60" },
+  { label: "90 days", value: "90" },
+  { label: "180 days", value: "180" },
+  { label: "1 year", value: "365" },
+];
 
 const generateKey = () => {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -28,12 +37,27 @@ const hashKey = async (key: string): Promise<string> => {
   return Array.from(new Uint8Array(hashBuffer)).map((b) => b.toString(16).padStart(2, "0")).join("");
 };
 
+const isExpired = (expiresAt: string | null): boolean => {
+  if (!expiresAt) return false;
+  return new Date(expiresAt) < new Date();
+};
+
+const formatExpiry = (expiresAt: string | null): string => {
+  if (!expiresAt) return "Never";
+  const date = new Date(expiresAt);
+  if (date < new Date()) return "Expired";
+  const days = Math.ceil((date.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+  if (days <= 7) return `${days}d left`;
+  return date.toLocaleDateString();
+};
+
 const ApiKeysPanel = () => {
   const [keys, setKeys] = useState<ApiKeyItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
   const [newKeyName, setNewKeyName] = useState("");
-  const [revealedKey, setRevealedKey] = useState<string | null>(null); // full key shown once
+  const [expiryDays, setExpiryDays] = useState("");
+  const [revealedKey, setRevealedKey] = useState<string | null>(null);
   const { toast } = useToast();
 
   const fetchKeys = async () => {
@@ -58,11 +82,16 @@ const ApiKeysPanel = () => {
     const keyHash = await hashKey(fullKey);
     const keyPrefix = fullKey.slice(0, 8) + "...";
 
+    const expiresAt = expiryDays
+      ? new Date(Date.now() + parseInt(expiryDays) * 24 * 60 * 60 * 1000).toISOString()
+      : null;
+
     const { error } = await supabase.from("api_keys").insert({
       user_id: session.user.id,
       name: newKeyName.trim(),
       key_prefix: keyPrefix,
       key_hash: keyHash,
+      expires_at: expiresAt,
     });
 
     if (error) {
@@ -70,6 +99,7 @@ const ApiKeysPanel = () => {
     } else {
       setRevealedKey(fullKey);
       setNewKeyName("");
+      setExpiryDays("");
       fetchKeys();
       toast({ title: "API key created", description: "Copy your key now — it won't be shown again." });
     }
@@ -104,6 +134,15 @@ const ApiKeysPanel = () => {
             placeholder="Key name (e.g. Production, Staging)"
             className="flex-1 bg-secondary border border-border rounded-lg px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
           />
+          <select
+            value={expiryDays}
+            onChange={(e) => setExpiryDays(e.target.value)}
+            className="bg-secondary border border-border rounded-lg px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+          >
+            {EXPIRY_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>{opt.label}</option>
+            ))}
+          </select>
           <button
             onClick={createKey}
             disabled={creating || !newKeyName.trim()}
@@ -151,32 +190,47 @@ const ApiKeysPanel = () => {
         </div>
       ) : (
         <div className="space-y-3">
-          {keys.map((k) => (
-            <motion.div
-              key={k.id}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="glass-card rounded-xl p-4"
-            >
-              <div className="flex items-center gap-3">
-                <Key size={16} className="text-primary shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-foreground">{k.name}</p>
-                  <div className="flex items-center gap-3 mt-0.5 text-[10px] text-muted-foreground">
-                    <code>{k.key_prefix}</code>
-                    <span>Created {new Date(k.created_at).toLocaleDateString()}</span>
-                    {k.last_used_at && <span>Last used {new Date(k.last_used_at).toLocaleDateString()}</span>}
+          {keys.map((k) => {
+            const expired = isExpired(k.expires_at);
+            const inactive = !k.is_active || expired;
+            return (
+              <motion.div
+                key={k.id}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className={`glass-card rounded-xl p-4 ${inactive ? "opacity-60" : ""}`}
+              >
+                <div className="flex items-center gap-3">
+                  <Key size={16} className={`shrink-0 ${inactive ? "text-muted-foreground" : "text-primary"}`} />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-medium text-foreground">{k.name}</p>
+                      {inactive && (
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-destructive/10 text-destructive font-medium">
+                          {expired ? "Expired" : "Revoked"}
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-3 mt-0.5 text-[10px] text-muted-foreground">
+                      <code>{k.key_prefix}</code>
+                      <span>Created {new Date(k.created_at).toLocaleDateString()}</span>
+                      {k.last_used_at && <span>Last used {new Date(k.last_used_at).toLocaleDateString()}</span>}
+                      <span className="flex items-center gap-0.5">
+                        <Clock size={9} />
+                        {formatExpiry(k.expires_at)}
+                      </span>
+                    </div>
                   </div>
+                  <button
+                    onClick={() => revokeKey(k.id)}
+                    className="text-muted-foreground hover:text-destructive transition-colors shrink-0"
+                  >
+                    <Trash2 size={16} />
+                  </button>
                 </div>
-                <button
-                  onClick={() => revokeKey(k.id)}
-                  className="text-muted-foreground hover:text-destructive transition-colors shrink-0"
-                >
-                  <Trash2 size={16} />
-                </button>
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            );
+          })}
         </div>
       )}
     </div>
