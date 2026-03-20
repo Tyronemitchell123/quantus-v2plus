@@ -107,6 +107,7 @@ const Pricing = () => {
   const { currency, setCurrency, currencies, formatPrice } = useCurrency();
   const { user } = useAuth();
   const { subscription, createPayment, isActive, tier: currentTier } = useSubscription();
+  const { getPrice, isStoreBilling } = useMobilePricing(tiers, annual);
   const navigate = useNavigate();
   useDocumentHead({
     title: "Pricing — Free to Enterprise | QUANTUS AI",
