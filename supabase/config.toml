@@ -1,22 +1,19 @@
 project_id = "eqxgnxgbvvrjaxjiznjo"
 
-[functions.concierge-chat]
-verify_jwt = false
-
-[functions.ai-analytics]
-verify_jwt = false
-
-[functions.truelayer-payments]
-verify_jwt = false
-
-[functions.anomaly-detection]
-verify_jwt = false
-
-[functions.quantum-jobs]
-verify_jwt = false
-
-[functions.nlp-tools]
-verify_jwt = false
-
-[functions.process-email-queue]
-verify_jwt = true
+[functions]
+  [functions.ai-analytics]
+    verify_jwt = false
+  [functions.anomaly-detection]
+    verify_jwt = false
+  [functions.auth-email-hook]
+    verify_jwt = false
+  [functions.concierge-chat]
+    verify_jwt = false
+  [functions.nlp-tools]
+    verify_jwt = false
+  [functions.process-email-queue]
+    verify_jwt = true
+  [functions.quantum-jobs]
+    verify_jwt = false
+  [functions.truelayer-payments]
+    verify_jwt = false
