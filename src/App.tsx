@@ -28,6 +28,7 @@ const CaseStudies = lazy(() => import("./pages/CaseStudies"));
 const Benefits = lazy(() => import("./pages/Benefits"));
 const Settings = lazy(() => import("./pages/Settings"));
 const SubscriptionManagement = lazy(() => import("./pages/SubscriptionManagement"));
+const NLPTools = lazy(() => import("./pages/NLPTools"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -77,6 +78,14 @@ const AnimatedRoutes = () => {
             element={
               <ProtectedRoute requiredTier="free">
                 <PageTransition><SubscriptionManagement /></PageTransition>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/nlp"
+            element={
+              <ProtectedRoute requiredTier="starter">
+                <PageTransition><NLPTools /><Footer /></PageTransition>
               </ProtectedRoute>
             }
           />
