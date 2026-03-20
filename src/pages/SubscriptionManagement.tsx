@@ -1,26 +1,6 @@
-import { useState } from "react";
 import { motion } from "framer-motion";
-import { Link, useNavigate } from "react-router-dom";
-import {
-  CreditCard,
-  ArrowUpRight,
-  ArrowDownRight,
-  XCircle,
-  CheckCircle2,
-  Clock,
-  AlertTriangle,
-  Loader2,
-  ArrowRight,
-  Receipt,
-  Gift,
-  Zap,
-  Sparkles,
-  Crown,
-} from "lucide-react";
-import { useSubscription, SubscriptionTier } from "@/hooks/use-subscription";
-import { useAuth } from "@/hooks/use-auth";
-import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { Loader2 } from "lucide-react";
+import { useSubscription } from "@/hooks/use-subscription";
 import useDocumentHead from "@/hooks/use-document-head";
 import CurrentPlanCard from "@/components/subscription/CurrentPlanCard";
 import PlanSwitcher from "@/components/subscription/PlanSwitcher";
@@ -35,8 +15,6 @@ const SubscriptionManagement = () => {
   });
 
   const { subscription, loading, isActive, tier, refresh } = useSubscription();
-  const { user } = useAuth();
-  const navigate = useNavigate();
 
   if (loading) {
     return (
@@ -44,11 +22,6 @@ const SubscriptionManagement = () => {
         <Loader2 className="animate-spin text-primary" size={32} />
       </div>
     );
-  }
-
-  if (!user) {
-    navigate("/auth");
-    return null;
   }
 
   return (
