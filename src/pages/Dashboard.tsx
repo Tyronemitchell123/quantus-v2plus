@@ -69,6 +69,7 @@ const Dashboard = () => {
   const { data, loading, error, status, analyze } = useAIAnalytics<DashboardData>();
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const usage = useUsageTracking();
+  const realtimeAlerts = useRealtimeAlerts();
 
   const fetchData = async () => {
     const result = await analyze("dashboard-insights");
