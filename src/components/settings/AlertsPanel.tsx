@@ -114,6 +114,7 @@ const AlertsPanel = () => {
                           <span>{alert.metric_name}: {alert.metric_value}</span>
                         )}
                       </div>
+                      <AnomalyNarrative alertId={alert.id} />
                     </div>
                     {!alert.is_read && (
                       <button
