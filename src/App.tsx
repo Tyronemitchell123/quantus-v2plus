@@ -35,43 +35,45 @@ const AnimatedRoutes = () => {
   const location = useLocation();
   return (
     <AnimatePresence mode="wait">
-      <Routes location={location} key={location.pathname}>
-        <Route path="/" element={<PageTransition><Index /><Footer /></PageTransition>} />
-        <Route path="/about" element={<PageTransition><About /><Footer /></PageTransition>} />
-        <Route path="/services" element={<PageTransition><Services /><Footer /></PageTransition>} />
-        <Route path="/pricing" element={<PageTransition><Pricing /><Footer /></PageTransition>} />
-        <Route path="/quantum" element={<PageTransition><QuantumComputing /><Footer /></PageTransition>} />
-        <Route path="/contact" element={<PageTransition><Contact /><Footer /></PageTransition>} />
-        <Route path="/case-studies" element={<PageTransition><CaseStudies /><Footer /></PageTransition>} />
-        <Route path="/benefits" element={<PageTransition><Benefits /><Footer /></PageTransition>} />
-        <Route path="/auth" element={<PageTransition><Auth /></PageTransition>} />
-        <Route path="/reset-password" element={<PageTransition><ResetPassword /></PageTransition>} />
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute requiredTier="starter">
-              <PageTransition><Dashboard /></PageTransition>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/chat"
-          element={
-            <ProtectedRoute requiredTier="professional">
-              <PageTransition><Chat /></PageTransition>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/settings"
-          element={
-            <ProtectedRoute requiredTier="starter">
-              <PageTransition><Settings /></PageTransition>
-            </ProtectedRoute>
-          }
-        />
-        <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
-      </Routes>
+      <Suspense fallback={<div className="min-h-screen bg-background" />}>
+        <Routes location={location} key={location.pathname}>
+          <Route path="/" element={<PageTransition><Index /><Footer /></PageTransition>} />
+          <Route path="/about" element={<PageTransition><About /><Footer /></PageTransition>} />
+          <Route path="/services" element={<PageTransition><Services /><Footer /></PageTransition>} />
+          <Route path="/pricing" element={<PageTransition><Pricing /><Footer /></PageTransition>} />
+          <Route path="/quantum" element={<PageTransition><QuantumComputing /><Footer /></PageTransition>} />
+          <Route path="/contact" element={<PageTransition><Contact /><Footer /></PageTransition>} />
+          <Route path="/case-studies" element={<PageTransition><CaseStudies /><Footer /></PageTransition>} />
+          <Route path="/benefits" element={<PageTransition><Benefits /><Footer /></PageTransition>} />
+          <Route path="/auth" element={<PageTransition><Auth /></PageTransition>} />
+          <Route path="/reset-password" element={<PageTransition><ResetPassword /></PageTransition>} />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute requiredTier="starter">
+                <PageTransition><Dashboard /></PageTransition>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/chat"
+            element={
+              <ProtectedRoute requiredTier="professional">
+                <PageTransition><Chat /></PageTransition>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <ProtectedRoute requiredTier="starter">
+                <PageTransition><Settings /></PageTransition>
+              </ProtectedRoute>
+            }
+          />
+          <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
+        </Routes>
+      </Suspense>
     </AnimatePresence>
   );
 };
