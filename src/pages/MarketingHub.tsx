@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/select";
 
 const tabs = [
+  { key: "analytics", label: "Analytics", icon: BarChart3 },
   { key: "blog", label: "Blog Posts", icon: FileText },
   { key: "social", label: "Social Media", icon: Share2 },
   { key: "ads", label: "Ad Copy", icon: Megaphone },
