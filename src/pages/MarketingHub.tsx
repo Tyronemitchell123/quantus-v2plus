@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FileText, Share2, Megaphone, Search, Sparkles, RefreshCw,
   Copy, Check, Loader2, Globe, Twitter, Linkedin, Facebook, Instagram,
   TrendingUp, BarChart3, ArrowRight, Eye, Pencil, Trash2
 } from "lucide-react";
+const AnalyticsTab = lazy(() => import("@/components/marketing/AnalyticsTab"));
 import useDocumentHead from "@/hooks/use-document-head";
 import { useMarketing } from "@/hooks/use-marketing";
 import { supabase } from "@/integrations/supabase/client";
@@ -19,6 +20,7 @@ import {
 } from "@/components/ui/select";
 
 const tabs = [
+  { key: "analytics", label: "Analytics", icon: BarChart3 },
   { key: "blog", label: "Blog Posts", icon: FileText },
   { key: "social", label: "Social Media", icon: Share2 },
   { key: "ads", label: "Ad Copy", icon: Megaphone },
@@ -469,7 +471,7 @@ const SEOTab = ({ generate, loading }: { generate: any; loading: boolean }) => {
 
 /* ---------- Main Page ---------- */
 const MarketingHub = () => {
-  const [activeTab, setActiveTab] = useState("blog");
+  const [activeTab, setActiveTab] = useState("analytics");
   const { generate, loading } = useMarketing();
 
   useDocumentHead({
@@ -511,6 +513,11 @@ const MarketingHub = () => {
 
         {/* Content */}
         <motion.div key={activeTab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}>
+          {activeTab === "analytics" && (
+            <Suspense fallback={<div className="flex justify-center py-16"><Loader2 className="animate-spin text-muted-foreground" size={24} /></div>}>
+              <AnalyticsTab />
+            </Suspense>
+          )}
           {activeTab === "blog" && <BlogTab generate={generate} loading={loading} />}
           {activeTab === "social" && <SocialTab generate={generate} loading={loading} />}
           {activeTab === "ads" && <AdsTab generate={generate} loading={loading} />}
