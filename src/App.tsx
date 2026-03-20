@@ -56,7 +56,7 @@ const AnimatedRoutes = () => {
           <Route
             path="/dashboard"
             element={
-              <ProtectedRoute requiredTier="starter">
+              <ProtectedRoute>
                 <PageTransition><Dashboard /></PageTransition>
               </ProtectedRoute>
             }
