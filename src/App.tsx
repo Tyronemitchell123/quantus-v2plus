@@ -56,7 +56,7 @@ const AnimatedRoutes = () => {
           <Route
             path="/dashboard"
             element={
-              <ProtectedRoute requiredTier="starter">
+              <ProtectedRoute>
                 <PageTransition><Dashboard /></PageTransition>
               </ProtectedRoute>
             }
@@ -72,7 +72,7 @@ const AnimatedRoutes = () => {
           <Route
             path="/settings"
             element={
-              <ProtectedRoute requiredTier="starter">
+              <ProtectedRoute>
                 <PageTransition><Settings /></PageTransition>
               </ProtectedRoute>
             }
@@ -80,7 +80,7 @@ const AnimatedRoutes = () => {
           <Route
             path="/account/subscription"
             element={
-              <ProtectedRoute requiredTier="free">
+              <ProtectedRoute>
                 <PageTransition><SubscriptionManagement /></PageTransition>
               </ProtectedRoute>
             }
