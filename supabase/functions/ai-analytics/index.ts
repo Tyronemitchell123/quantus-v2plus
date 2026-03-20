@@ -13,6 +13,11 @@ serve(async (req) => {
   }
 
   try {
+    // Authenticate via JWT or API key
+    const authResult = await authenticateRequest(req, corsHeaders);
+    if (authResult instanceof Response) return authResult;
+    const userId = authResult.userId;
+
     const { type } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");

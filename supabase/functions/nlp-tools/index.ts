@@ -158,6 +158,11 @@ serve(async (req) => {
   }
 
   try {
+    // Authenticate via JWT or API key
+    const authResult = await authenticateRequest(req, corsHeaders);
+    if (authResult instanceof Response) return authResult;
+    const userId = authResult.userId;
+
     const { mode, text, prompt: generationPrompt } = await req.json();
 
     if (!MODES.includes(mode)) {
