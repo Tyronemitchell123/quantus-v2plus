@@ -61,18 +61,34 @@ const CurrentPlanCard = ({ subscription, isActive, tier, onRefresh }: Props) => 
   const sMeta = STATUS_META[status] ?? STATUS_META.inactive;
   const StatusIcon = sMeta.icon;
 
-  const handleCancel = async () => {
+  const callManage = async (action: "cancel" | "reactivate") => {
     if (!subscription) return;
     setCanceling(true);
     try {
-      const { error } = await supabase
-        .from("subscriptions")
-        .update({ cancel_at_period_end: true })
-        .eq("id", subscription.id);
-      if (error) throw error;
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("Not authenticated");
+
+      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      const res = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/manage-subscription`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
+            "Content-Type": "application/json",
+            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+          },
+          body: JSON.stringify({ action }),
+        }
+      );
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Failed");
+
       toast({
-        title: "Subscription will cancel",
-        description: "Your plan stays active until the end of the current billing period.",
+        title: action === "cancel" ? "Subscription will cancel" : "Subscription reactivated",
+        description: action === "cancel"
+          ? "Your plan stays active until the end of the current billing period."
+          : "Your plan will continue as normal.",
       });
       onRefresh();
     } catch (err: any) {
@@ -82,23 +98,8 @@ const CurrentPlanCard = ({ subscription, isActive, tier, onRefresh }: Props) => 
     }
   };
 
-  const handleReactivate = async () => {
-    if (!subscription) return;
-    setCanceling(true);
-    try {
-      const { error } = await supabase
-        .from("subscriptions")
-        .update({ cancel_at_period_end: false })
-        .eq("id", subscription.id);
-      if (error) throw error;
-      toast({ title: "Subscription reactivated", description: "Your plan will continue as normal." });
-      onRefresh();
-    } catch (err: any) {
-      toast({ title: "Error", description: err.message, variant: "destructive" });
-    } finally {
-      setCanceling(false);
-    }
-  };
+  const handleCancel = () => callManage("cancel");
+  const handleReactivate = () => callManage("reactivate");
 
   return (
     <div className="rounded-2xl border border-border bg-card/60 backdrop-blur-sm p-6 md:p-8">

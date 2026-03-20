@@ -23,33 +23,44 @@ serve(async (req) => {
 
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabase = createClient(supabaseUrl, serviceKey);
 
-    // Optionally scope to a single user (e.g. called from dashboard)
-    let targetUserId: string | null = null;
-    try {
-      const body = await req.json();
-      targetUserId = body?.user_id ?? null;
-    } catch {
-      // no body – run for all users
+    // Authenticate the calling user
+    const authHeader = req.headers.get("authorization");
+    if (!authHeader) {
+      return new Response(JSON.stringify({ error: "Missing authorization" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
+    const userClient = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } },
+    });
+    const { data: { user }, error: authError } = await userClient.auth.getUser();
+    if (authError || !user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Use verified user ID — ignore any caller-supplied user_id
+    const targetUserId = user.id;
+    const supabase = createClient(supabaseUrl, serviceKey);
 
     const now = new Date();
     const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
     const todayStart = new Date(now);
     todayStart.setHours(0, 0, 0, 0);
 
-    // Fetch recent usage records
-    let query = supabase
+    // Fetch recent usage records — always scoped to authenticated user
+    const query = supabase
       .from("usage_records")
       .select("user_id, feature, quantity, recorded_at")
+      .eq("user_id", targetUserId)
       .gte("recorded_at", thirtyDaysAgo.toISOString())
       .order("recorded_at", { ascending: false });
-
-    if (targetUserId) {
-      query = query.eq("user_id", targetUserId);
-    }
 
     const { data: records, error: fetchError } = await query.limit(5000);
     if (fetchError) throw fetchError;
