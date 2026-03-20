@@ -75,21 +75,27 @@ serve(async (req) => {
         });
       }
 
-      const { tier, billing_cycle } = await req.json();
+      const { tier, billing_cycle, seats } = await req.json();
 
+      // Per-unit prices in minor currency (pence)
       const prices: Record<string, Record<string, number>> = {
         starter: { monthly: 49900, annual: 39900 },
         professional: { monthly: 149900, annual: 119900 },
+        teams: { monthly: 4900, annual: 3900 }, // per user
         enterprise: { monthly: 0, annual: 0 },
       };
 
-      const amountCents = prices[tier]?.[billing_cycle];
-      if (amountCents === undefined || amountCents === 0) {
+      const unitPrice = prices[tier]?.[billing_cycle];
+      if (unitPrice === undefined || unitPrice === 0) {
         return new Response(
           JSON.stringify({ error: "Invalid tier or contact sales for enterprise" }),
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
+
+      // Teams tier requires seats >= 1
+      const seatCount = tier === "teams" ? Math.max(1, Math.floor(Number(seats) || 1)) : 1;
+      const amountCents = unitPrice * seatCount;
 
       const accessToken = await getAccessToken();
       const paymentId = crypto.randomUUID();
