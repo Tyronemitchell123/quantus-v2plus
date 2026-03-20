@@ -33,7 +33,9 @@ const Navbar = () => {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [resourcesOpen, setResourcesOpen] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const accountDropdownRef = useRef<HTMLDivElement>(null);
   const dropdownItemsRef = useRef<(HTMLAnchorElement | null)[]>([]);
   const [focusIndex, setFocusIndex] = useState(-1);
   const location = useLocation();
