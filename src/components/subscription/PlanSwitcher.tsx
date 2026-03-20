@@ -94,7 +94,7 @@ const PlanSwitcher = ({ currentTier, isActive }: Props) => {
         Change Plan
       </h2>
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
         {PLANS.map((plan) => {
           const planIdx = TIER_ORDER.indexOf(plan.key);
           const isCurrent = plan.key === currentTier && isActive;
