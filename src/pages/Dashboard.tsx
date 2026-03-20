@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { TrendingUp, Users, DollarSign, Activity, Brain, AlertTriangle, Zap, RefreshCw, Sparkles, Shield } from "lucide-react";
+import { TrendingUp, Users, DollarSign, Activity, Brain, AlertTriangle, Zap, RefreshCw, Sparkles, Shield, Bell } from "lucide-react";
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Line, ComposedChart } from "recharts";
 import { useAIAnalytics } from "@/hooks/use-ai-analytics";
 import AIFallbackBanner from "@/components/AIFallbackBanner";
 import UsageLimitBanner from "@/components/UsageLimitBanner";
 import TrialCountdownBanner from "@/components/TrialCountdownBanner";
 import { useUsageTracking } from "@/hooks/use-usage-tracking";
+import { useRealtimeAlerts } from "@/hooks/use-realtime-alerts";
+import RealtimeAlertToast from "@/components/RealtimeAlertToast";
 
 type DashboardData = {
   metrics: { id: string; label: string; value: string; change: string; trend: string; icon: string }[];
