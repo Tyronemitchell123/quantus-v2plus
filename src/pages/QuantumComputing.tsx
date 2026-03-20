@@ -16,6 +16,8 @@ import QuantumLimitsBanner from "@/components/quantum/QuantumLimitsBanner";
 import QuantumProgressLCD from "@/components/quantum/QuantumProgressLCD";
 import AICircuitGenerator from "@/components/quantum/AICircuitGenerator";
 import LiveJobFeed from "@/components/quantum/LiveJobFeed";
+import VisualCircuitEditor from "@/components/quantum/VisualCircuitEditor";
+import CostOptimizer from "@/components/quantum/CostOptimizer";
 import QuantumOrbit from "@/components/QuantumOrbit";
 import QuantumVideoBackground from "@/components/QuantumVideoBackground";
 
@@ -141,7 +143,9 @@ export default function QuantumComputing() {
                   {/* Left: Editor + Submit */}
                   <div className="space-y-6">
                     <AICircuitGenerator onGenerated={setCircuit} />
+                    <VisualCircuitEditor onExport={setCircuit} />
                     <CircuitEditor value={circuit} onChange={setCircuit} />
+                    <CostOptimizer onSelectDevice={(arn, s) => { setDeviceArn(arn); setShots(s); }} />
 
                     <div className="grid sm:grid-cols-2 gap-4">
                       <DeviceSelector value={deviceArn} onChange={setDeviceArn} tier={tier} />
