@@ -59,6 +59,55 @@ const Navbar = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const handleDropdownKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (!resourcesOpen) {
+      if (e.key === "ArrowDown" || e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        setResourcesOpen(true);
+        setFocusIndex(0);
+      }
+      return;
+    }
+
+    switch (e.key) {
+      case "ArrowDown":
+        e.preventDefault();
+        setFocusIndex((prev) => (prev + 1) % resourceLinks.length);
+        break;
+      case "ArrowUp":
+        e.preventDefault();
+        setFocusIndex((prev) => (prev - 1 + resourceLinks.length) % resourceLinks.length);
+        break;
+      case "Home":
+        e.preventDefault();
+        setFocusIndex(0);
+        break;
+      case "End":
+        e.preventDefault();
+        setFocusIndex(resourceLinks.length - 1);
+        break;
+      case "Escape":
+        e.preventDefault();
+        setResourcesOpen(false);
+        setFocusIndex(-1);
+        break;
+      case "Tab":
+        setResourcesOpen(false);
+        setFocusIndex(-1);
+        break;
+    }
+  }, [resourcesOpen]);
+
+  useEffect(() => {
+    if (focusIndex >= 0 && dropdownItemsRef.current[focusIndex]) {
+      dropdownItemsRef.current[focusIndex]?.focus();
+    }
+  }, [focusIndex]);
+
+  useEffect(() => {
+    if (!resourcesOpen) setFocusIndex(-1);
+  }, [resourcesOpen]);
+
   const handleSignOut = async () => {
     await signOut();
     navigate("/");
