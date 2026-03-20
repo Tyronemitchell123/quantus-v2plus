@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FileText, Share2, Megaphone, Search, Sparkles, RefreshCw,
   Copy, Check, Loader2, Globe, Twitter, Linkedin, Facebook, Instagram,
   TrendingUp, BarChart3, ArrowRight, Eye, Pencil, Trash2
 } from "lucide-react";
+const AnalyticsTab = lazy(() => import("@/components/marketing/AnalyticsTab"));
 import useDocumentHead from "@/hooks/use-document-head";
 import { useMarketing } from "@/hooks/use-marketing";
 import { supabase } from "@/integrations/supabase/client";
