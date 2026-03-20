@@ -224,15 +224,20 @@ const Navbar = () => {
             canAccess(link.requiredTier) ? (
               <NavItem key={link.to} to={link.to} label={link.label} />
             ) : (
-              <Link
-                key={link.to}
-                to="/pricing"
-                className="relative flex items-center gap-1 px-3 py-2 text-sm font-medium tracking-wide text-muted-foreground/50 hover:text-muted-foreground transition-colors duration-300"
-                title={`Requires ${link.requiredTier} plan`}
-              >
-                {link.label}
-                <Lock size={10} className="opacity-60" />
-              </Link>
+              <Tooltip key={link.to}>
+                <TooltipTrigger asChild>
+                  <Link
+                    to="/pricing"
+                    className="relative flex items-center gap-1 px-3 py-2 text-sm font-medium tracking-wide text-muted-foreground/50 hover:text-muted-foreground transition-colors duration-300"
+                  >
+                    {link.label}
+                    <Lock size={10} className="opacity-60" />
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="text-xs">
+                  Upgrade to <span className="font-semibold capitalize">{link.requiredTier}</span> to unlock
+                </TooltipContent>
+              </Tooltip>
             )
           )}
 
