@@ -59,8 +59,8 @@ const tiers = [
   {
     name: "Professional",
     key: "professional" as const,
-    monthly: 99,
-    annual: 79,
+    monthly: 149,
+    annual: 119,
     description: "For teams demanding advanced intelligence and scale.",
     icon: Sparkles,
     features: [
@@ -76,6 +76,27 @@ const tiers = [
     ],
     cta: "Start Free Trial",
     highlight: true,
+  },
+  {
+    name: "Teams",
+    key: "teams" as const,
+    monthly: 49,
+    annual: 39,
+    description: "Per-user pricing for growing organizations.",
+    icon: Users,
+    perUser: true,
+    features: [
+      "Everything in Professional",
+      "Centralized team billing",
+      "Shared dashboards & reports",
+      "Team-wide API key management",
+      "Role-based access controls",
+      "Collaborative quantum workspace",
+      "Team usage analytics",
+      "Priority onboarding",
+    ],
+    cta: "Start Team Trial",
+    highlight: false,
   },
   {
     name: "Enterprise",
