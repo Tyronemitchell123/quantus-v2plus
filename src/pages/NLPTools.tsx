@@ -174,6 +174,13 @@ export default function NLPTools() {
           </TabsList>
 
           {/* Input area */}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".txt,.md,.csv,.json,.xml,.html,.pdf"
+            className="hidden"
+            onChange={handleFileInput}
+          />
           <motion.div layout className="bg-card border border-border rounded-xl p-6 mb-6">
             {activeTool === "generate" ? (
               <div className="space-y-3">
@@ -186,28 +193,103 @@ export default function NLPTools() {
                   className="bg-secondary/50 border-border"
                 />
                 <label className="text-sm font-medium text-muted-foreground">Optional context / reference text</label>
-                <Textarea
-                  placeholder="Paste any reference material here (optional)…"
-                  value={text}
-                  onChange={(e) => setText(e.target.value)}
-                  rows={4}
-                  className="bg-secondary/50 border-border resize-none"
-                />
+                {/* Drop zone for generate context */}
+                <div
+                  onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+                  onDragLeave={() => setDragOver(false)}
+                  onDrop={handleDrop}
+                  className={`relative transition-colors duration-200 rounded-lg ${dragOver ? "ring-2 ring-quantum-purple/50 bg-quantum-purple/5" : ""}`}
+                >
+                  {uploadedFile ? (
+                    <div className="flex items-center gap-3 bg-secondary/30 rounded-lg px-4 py-3 mb-2">
+                      <File size={16} className="text-quantum-purple shrink-0" />
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium text-foreground truncate">{uploadedFile.name}</p>
+                        <p className="text-xs text-muted-foreground">{formatFileSize(uploadedFile.size)}</p>
+                      </div>
+                      <Button variant="ghost" size="sm" onClick={clearFile} className="h-7 w-7 p-0 shrink-0">
+                        <X size={14} />
+                      </Button>
+                    </div>
+                  ) : null}
+                  <Textarea
+                    placeholder="Paste reference material or drop a file here…"
+                    value={text}
+                    onChange={(e) => { setText(e.target.value); if (uploadedFile) setUploadedFile(null); }}
+                    rows={4}
+                    className="bg-secondary/50 border-border resize-none"
+                  />
+                </div>
               </div>
             ) : (
               <div className="space-y-3">
-                <label className="text-sm font-medium text-foreground">
-                  {activeTool === "summarize" && "Paste text to summarise"}
-                  {activeTool === "sentiment" && "Paste text for sentiment analysis"}
-                  {activeTool === "extract-entities" && "Paste text to extract entities from"}
-                </label>
-                <Textarea
-                  placeholder="Paste or type your text here…"
-                  value={text}
-                  onChange={(e) => setText(e.target.value)}
-                  rows={6}
-                  className="bg-secondary/50 border-border resize-none"
-                />
+                <div className="flex items-center justify-between">
+                  <label className="text-sm font-medium text-foreground">
+                    {activeTool === "summarize" && "Paste text to summarise"}
+                    {activeTool === "sentiment" && "Paste text for sentiment analysis"}
+                    {activeTool === "extract-entities" && "Paste text to extract entities from"}
+                  </label>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={fileLoading}
+                    className="text-xs text-muted-foreground hover:text-quantum-purple gap-1.5 h-7"
+                  >
+                    {fileLoading ? <Loader2 size={12} className="animate-spin" /> : <Upload size={12} />}
+                    Upload file
+                  </Button>
+                </div>
+
+                {/* Drop zone */}
+                <div
+                  onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+                  onDragLeave={() => setDragOver(false)}
+                  onDrop={handleDrop}
+                  className="relative"
+                >
+                  <AnimatePresence>
+                    {dragOver && (
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="absolute inset-0 z-10 flex items-center justify-center rounded-lg border-2 border-dashed border-quantum-purple/50 bg-quantum-purple/5 backdrop-blur-sm"
+                      >
+                        <div className="text-center">
+                          <Upload size={24} className="mx-auto mb-2 text-quantum-purple" />
+                          <p className="text-sm font-medium text-quantum-purple">Drop file here</p>
+                          <p className="text-xs text-muted-foreground">.txt, .md, .csv, .json, .pdf</p>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
+                  {uploadedFile && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      className="flex items-center gap-3 bg-secondary/30 rounded-lg px-4 py-3 mb-2"
+                    >
+                      <File size={16} className="text-quantum-purple shrink-0" />
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium text-foreground truncate">{uploadedFile.name}</p>
+                        <p className="text-xs text-muted-foreground">{formatFileSize(uploadedFile.size)}</p>
+                      </div>
+                      <Button variant="ghost" size="sm" onClick={clearFile} className="h-7 w-7 p-0 shrink-0">
+                        <X size={14} />
+                      </Button>
+                    </motion.div>
+                  )}
+
+                  <Textarea
+                    placeholder={uploadedFile ? "File content loaded — edit below or run analysis" : "Paste or type your text here, or drag & drop a file…"}
+                    value={text}
+                    onChange={(e) => { setText(e.target.value); if (uploadedFile) setUploadedFile(null); }}
+                    rows={6}
+                    className="bg-secondary/50 border-border resize-none"
+                  />
+                </div>
               </div>
             )}
             <div className="flex justify-end mt-4">
