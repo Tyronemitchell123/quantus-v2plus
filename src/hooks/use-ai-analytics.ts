@@ -53,10 +53,13 @@ export function useAIAnalytics<T = any>() {
           setData(cached);
           setError("cached");
           setStatus("cached");
+          setLoading(false);
           return cached;
         }
+        // No cache — signal fallback immediately (don't leave loading=true)
         setError("unavailable");
         setStatus("fallback");
+        setLoading(false);
         return null;
       }
 
