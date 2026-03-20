@@ -64,7 +64,7 @@ const PlatformBillingBanner = ({ className = "" }: Props) => {
             </div>
           ) : (
             <div className="flex items-start gap-2">
-              <ShieldCheck size={14} className="text-emerald-500 shrink-0 mt-0.5" />
+              <ShieldCheck size={14} className="text-primary shrink-0 mt-0.5" />
               <p className="text-sm text-foreground/80 leading-relaxed">
                 {isMobile
                   ? "You're browsing on mobile web — enjoy direct billing with no platform fees. Subscribe here for the best price."
