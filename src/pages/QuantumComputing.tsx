@@ -14,6 +14,8 @@ import JobList from "@/components/quantum/JobList";
 import ResultsView from "@/components/quantum/ResultsView";
 import QuantumLimitsBanner from "@/components/quantum/QuantumLimitsBanner";
 import QuantumProgressLCD from "@/components/quantum/QuantumProgressLCD";
+import AICircuitGenerator from "@/components/quantum/AICircuitGenerator";
+import LiveJobFeed from "@/components/quantum/LiveJobFeed";
 import QuantumOrbit from "@/components/QuantumOrbit";
 import QuantumVideoBackground from "@/components/QuantumVideoBackground";
 
