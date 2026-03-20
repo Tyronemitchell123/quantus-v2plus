@@ -5,6 +5,18 @@ import {
   Zap,
   Sparkles,
   Crown,
+  Users,
+  CheckCircle2,
+  Clock,
+  AlertTriangle,
+  XCircle,
+  Loader2,
+} from "lucide-react";
+import {
+  Gift,
+  Zap,
+  Sparkles,
+  Crown,
   CheckCircle2,
   Clock,
   AlertTriangle,
