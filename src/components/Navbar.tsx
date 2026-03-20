@@ -158,23 +158,42 @@ const Navbar = () => {
             </AnimatePresence>
           </div>
 
-          {/* Tier-locked links – only show if user has access */}
+          {/* Tier-locked links – show with lock if no access */}
           {user && tierLinks.map((link) =>
             canAccess(link.requiredTier) ? (
               <NavItem key={link.to} to={link.to} label={link.label} />
-            ) : null
+            ) : (
+              <Link
+                key={link.to}
+                to="/pricing"
+                className="relative flex items-center gap-1 px-3 py-2 text-sm font-medium tracking-wide text-muted-foreground/50 hover:text-muted-foreground transition-colors duration-300"
+                title={`Requires ${link.requiredTier} plan`}
+              >
+                {link.label}
+                <Lock size={10} className="opacity-60" />
+              </Link>
+            )
           )}
 
           <ThemeToggle />
 
           {user ? (
             <div className="ml-2 flex items-center gap-2">
-              {canAccess("professional") && (
+              {canAccess("professional") ? (
                 <Link
                   to="/chat"
                   className="px-5 py-2 text-sm font-semibold rounded-full bg-primary text-primary-foreground hover:opacity-90 transition-all hover:shadow-lg hover:shadow-primary/20"
                 >
                   AI Chat
+                </Link>
+              ) : (
+                <Link
+                  to="/pricing"
+                  className="flex items-center gap-1.5 px-5 py-2 text-sm font-medium rounded-full border border-border text-muted-foreground/60 hover:text-muted-foreground transition-all"
+                  title="Requires professional plan"
+                >
+                  AI Chat
+                  <Lock size={10} className="opacity-60" />
                 </Link>
               )}
               <button
@@ -259,28 +278,29 @@ const Navbar = () => {
               </motion.div>
 
               {/* Tier-locked mobile links */}
-              {user && tierLinks.map((link) =>
-                canAccess(link.requiredTier) ? (
-                  <motion.div
-                    key={link.to}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: (mainLinks.length + 1) * 0.05 }}
-                  >
-                    <Link
-                      to={link.to}
-                      onClick={() => setOpen(false)}
-                      className={`block px-4 py-3 rounded-lg text-base font-medium transition-colors ${
-                        location.pathname === link.to
+              {user && tierLinks.map((link) => (
+                <motion.div
+                  key={link.to}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: (mainLinks.length + 1) * 0.05 }}
+                >
+                  <Link
+                    to={canAccess(link.requiredTier) ? link.to : "/pricing"}
+                    onClick={() => setOpen(false)}
+                    className={`flex items-center gap-2 px-4 py-3 rounded-lg text-base font-medium transition-colors ${
+                      canAccess(link.requiredTier)
+                        ? location.pathname === link.to
                           ? "text-primary bg-primary/10"
                           : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-                      }`}
-                    >
-                      {link.label}
-                    </Link>
-                  </motion.div>
-                ) : null
-              )}
+                        : "text-muted-foreground/50"
+                    }`}
+                  >
+                    {link.label}
+                    {!canAccess(link.requiredTier) && <Lock size={12} className="opacity-50" />}
+                  </Link>
+                </motion.div>
+              ))}
 
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
@@ -289,13 +309,22 @@ const Navbar = () => {
               >
                 {user ? (
                   <div className="flex flex-col gap-2 mt-2">
-                    {canAccess("professional") && (
+                    {canAccess("professional") ? (
                       <Link
                         to="/chat"
                         onClick={() => setOpen(false)}
                         className="text-center block px-5 py-3 font-semibold rounded-full bg-primary text-primary-foreground"
                       >
                         AI Chat
+                      </Link>
+                    ) : (
+                      <Link
+                        to="/pricing"
+                        onClick={() => setOpen(false)}
+                        className="flex items-center justify-center gap-2 px-5 py-3 font-medium rounded-full border border-border text-muted-foreground/60"
+                      >
+                        AI Chat
+                        <Lock size={12} className="opacity-50" />
                       </Link>
                     )}
                     <button
