@@ -133,7 +133,7 @@ const Pricing = () => {
   const navigate = useNavigate();
   useDocumentHead({
     title: "Pricing — Free to Enterprise | QUANTUS AI",
-    description: "Start free with 100 AI queries/mo. Scale to Starter ($29/mo), Professional ($99/mo), or Enterprise custom. Every plan includes our quantum AI engine.",
+    description: "Start free with 100 AI queries/mo. Scale to Starter ($29/mo), Professional ($149/mo), Teams ($49/user/mo), or Enterprise custom.",
     canonical: "https://quantus-loom.lovable.app/pricing",
   });
 
