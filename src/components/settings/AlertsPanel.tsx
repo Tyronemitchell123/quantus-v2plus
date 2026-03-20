@@ -1,21 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Bell, AlertTriangle, Info, Shield, Check, Loader2, RefreshCw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
-
-interface Alert {
-  id: string;
-  title: string;
-  description: string | null;
-  severity: string;
-  metric_name: string | null;
-  metric_value: number | null;
-  threshold: number | null;
-  is_read: boolean;
-  created_at: string;
-}
+import { useRealtimeAlerts } from "@/hooks/use-realtime-alerts";
 
 const severityConfig: Record<string, { icon: any; color: string; bg: string }> = {
   critical: { icon: AlertTriangle, color: "text-destructive", bg: "bg-destructive/10" },
@@ -24,43 +13,10 @@ const severityConfig: Record<string, { icon: any; color: string; bg: string }> =
 };
 
 const AlertsPanel = () => {
-  const [alerts, setAlerts] = useState<Alert[]>([]);
-  const [loading, setLoading] = useState(true);
   const [detecting, setDetecting] = useState(false);
   const { toast } = useToast();
   const { user } = useAuth();
-
-  const fetchAlerts = async () => {
-    const { data, error } = await supabase
-      .from("anomaly_alerts")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .limit(50);
-
-    if (error) {
-      toast({ title: "Error loading alerts", description: error.message, variant: "destructive" });
-    } else {
-      setAlerts((data as Alert[]) || []);
-    }
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    fetchAlerts();
-  }, []);
-
-  const markAsRead = async (id: string) => {
-    await supabase.from("anomaly_alerts").update({ is_read: true }).eq("id", id);
-    setAlerts((prev) => prev.map((a) => (a.id === id ? { ...a, is_read: true } : a)));
-  };
-
-  const markAllRead = async () => {
-    const unreadIds = alerts.filter((a) => !a.is_read).map((a) => a.id);
-    if (!unreadIds.length) return;
-    await supabase.from("anomaly_alerts").update({ is_read: true }).in("id", unreadIds);
-    setAlerts((prev) => prev.map((a) => ({ ...a, is_read: true })));
-    toast({ title: "All alerts marked as read" });
-  };
+  const { alerts, loading, unreadCount, markAsRead, markAllRead, refresh } = useRealtimeAlerts();
 
   const runDetection = async () => {
     if (!user) return;
@@ -74,7 +30,6 @@ const AlertsPanel = () => {
         title: "Detection complete",
         description: `${data.alerts_created} new alert${data.alerts_created !== 1 ? "s" : ""} created.`,
       });
-      await fetchAlerts();
     } catch (err: any) {
       toast({ title: "Detection failed", description: err.message, variant: "destructive" });
     } finally {
@@ -82,7 +37,10 @@ const AlertsPanel = () => {
     }
   };
 
-  const unreadCount = alerts.filter((a) => !a.is_read).length;
+  const handleMarkAllRead = async () => {
+    await markAllRead();
+    toast({ title: "All alerts marked as read" });
+  };
 
   return (
     <div className="space-y-4">
@@ -104,7 +62,7 @@ const AlertsPanel = () => {
           </button>
           {unreadCount > 0 && (
             <button
-              onClick={markAllRead}
+              onClick={handleMarkAllRead}
               className="text-xs text-primary hover:underline font-medium"
             >
               Mark all as read
@@ -120,7 +78,7 @@ const AlertsPanel = () => {
       ) : alerts.length === 0 ? (
         <div className="glass-card rounded-xl p-8 text-center">
           <Shield size={32} className="text-primary mx-auto mb-3" />
-          <p className="text-sm text-muted-foreground">No anomaly alerts yet. Alerts will appear here when unusual patterns are detected in your data.</p>
+          <p className="text-sm text-muted-foreground">No anomaly alerts yet. Alerts will appear here in real-time when unusual patterns are detected.</p>
         </div>
       ) : (
         <div className="space-y-3">
