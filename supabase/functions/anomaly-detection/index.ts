@@ -54,16 +54,13 @@ serve(async (req) => {
     const todayStart = new Date(now);
     todayStart.setHours(0, 0, 0, 0);
 
-    // Fetch recent usage records
-    let query = supabase
+    // Fetch recent usage records — always scoped to authenticated user
+    const query = supabase
       .from("usage_records")
       .select("user_id, feature, quantity, recorded_at")
+      .eq("user_id", targetUserId)
       .gte("recorded_at", thirtyDaysAgo.toISOString())
       .order("recorded_at", { ascending: false });
-
-    if (targetUserId) {
-      query = query.eq("user_id", targetUserId);
-    }
 
     const { data: records, error: fetchError } = await query.limit(5000);
     if (fetchError) throw fetchError;
