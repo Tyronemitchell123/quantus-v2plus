@@ -68,6 +68,7 @@ const Settings = () => {
           {activeTab === "alerts" && <AlertsPanel />}
           {activeTab === "webhooks" && <WebhooksPanel />}
           {activeTab === "api-keys" && <ApiKeysPanel />}
+          {activeTab === "audit" && <AuditLogPanel />}
         </motion.div>
       </div>
     </div>

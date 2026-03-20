@@ -189,9 +189,12 @@ export default function QuantumComputing() {
                     )}
                   </div>
 
-                  {/* Right: Job List */}
-                  <div className="quantum-card rounded-xl p-4 h-fit lg:sticky lg:top-24">
-                    <JobList jobs={jobs} loading={loading} onSelect={setSelectedJob} onRefresh={fetchJobs} />
+                  {/* Right: Job List + Live Feed */}
+                  <div className="space-y-4 lg:sticky lg:top-24">
+                    <div className="quantum-card rounded-xl p-4 h-fit">
+                      <JobList jobs={jobs} loading={loading} onSelect={setSelectedJob} onRefresh={fetchJobs} />
+                    </div>
+                    <LiveJobFeed />
                   </div>
                 </div>
               </>
