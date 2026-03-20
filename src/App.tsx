@@ -90,6 +90,7 @@ const AnimatedRoutes = () => {
               </ProtectedRoute>
             }
           />
+          <Route path="/guide" element={<PageTransition><UserGuide /><Footer /></PageTransition>} />
           <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
         </Routes>
       </Suspense>
