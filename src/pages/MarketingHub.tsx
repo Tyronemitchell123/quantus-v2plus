@@ -471,7 +471,7 @@ const SEOTab = ({ generate, loading }: { generate: any; loading: boolean }) => {
 
 /* ---------- Main Page ---------- */
 const MarketingHub = () => {
-  const [activeTab, setActiveTab] = useState("blog");
+  const [activeTab, setActiveTab] = useState("analytics");
   const { generate, loading } = useMarketing();
 
   useDocumentHead({
