@@ -323,7 +323,7 @@ const Index = () => {
       </section>
 
       {/* AI Recommendations */}
-      <AIRecommendations />
+      <Suspense fallback={null}><AIRecommendations /></Suspense>
 
       {/* CTA */}
       <section className="py-24">
