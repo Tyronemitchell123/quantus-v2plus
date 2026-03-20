@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import PricingFAQ from "@/components/PricingFAQ";
 import ComparisonTable from "@/components/ComparisonTable";
 import CompetitorComparison from "@/components/CompetitorComparison";
+import CostCalculator from "@/components/CostCalculator";
 import UsagePricing from "@/components/UsagePricing";
 import CurrencyConverter, { useCurrency } from "@/components/CurrencyConverter";
 import useDocumentHead from "@/hooks/use-document-head";
