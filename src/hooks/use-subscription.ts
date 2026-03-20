@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
-export type SubscriptionTier = "free" | "starter" | "professional" | "enterprise";
+export type SubscriptionTier = "free" | "starter" | "professional" | "teams" | "enterprise";
 export type SubscriptionStatus = "active" | "canceled" | "past_due" | "trialing" | "inactive";
 
 export interface Subscription {
@@ -19,6 +19,7 @@ const TIER_LIMITS: Record<SubscriptionTier, { queries: number; integrations: num
   free: { queries: 100, integrations: 1 },
   starter: { queries: 5000, integrations: 2 },
   professional: { queries: Infinity, integrations: 25 },
+  teams: { queries: Infinity, integrations: 50 },
   enterprise: { queries: Infinity, integrations: Infinity },
 };
 
@@ -69,7 +70,7 @@ export function useSubscription() {
   const canAccess = (requiredTier: SubscriptionTier): boolean => {
     if (requiredTier === "free") return true;
     if (!isActive) return false;
-    const tierOrder: SubscriptionTier[] = ["free", "starter", "professional", "enterprise"];
+    const tierOrder: SubscriptionTier[] = ["free", "starter", "professional", "teams", "enterprise"];
     return tierOrder.indexOf(tier) >= tierOrder.indexOf(requiredTier);
   };
 

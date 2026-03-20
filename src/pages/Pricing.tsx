@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
-import { Check, ArrowRight, Sparkles, Zap, Crown, Loader2, Gift } from "lucide-react";
+import { Check, ArrowRight, Sparkles, Zap, Crown, Loader2, Gift, Users } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useSubscription } from "@/hooks/use-subscription";
 import { useToast } from "@/hooks/use-toast";
@@ -59,8 +59,8 @@ const tiers = [
   {
     name: "Professional",
     key: "professional" as const,
-    monthly: 99,
-    annual: 79,
+    monthly: 149,
+    annual: 119,
     description: "For teams demanding advanced intelligence and scale.",
     icon: Sparkles,
     features: [
@@ -76,6 +76,27 @@ const tiers = [
     ],
     cta: "Start Free Trial",
     highlight: true,
+  },
+  {
+    name: "Teams",
+    key: "teams" as const,
+    monthly: 49,
+    annual: 39,
+    description: "Per-user pricing for growing organizations.",
+    icon: Users,
+    perUser: true,
+    features: [
+      "Everything in Professional",
+      "Centralized team billing",
+      "Shared dashboards & reports",
+      "Team-wide API key management",
+      "Role-based access controls",
+      "Collaborative quantum workspace",
+      "Team usage analytics",
+      "Priority onboarding",
+    ],
+    cta: "Start Team Trial",
+    highlight: false,
   },
   {
     name: "Enterprise",
@@ -112,7 +133,7 @@ const Pricing = () => {
   const navigate = useNavigate();
   useDocumentHead({
     title: "Pricing — Free to Enterprise | QUANTUS AI",
-    description: "Start free with 100 AI queries/mo. Scale to Starter ($29/mo), Professional ($99/mo), or Enterprise custom. Every plan includes our quantum AI engine.",
+    description: "Start free with 100 AI queries/mo. Scale to Starter ($29/mo), Professional ($149/mo), Teams ($49/user/mo), or Enterprise custom.",
     canonical: "https://quantus-loom.lovable.app/pricing",
   });
 
@@ -226,7 +247,7 @@ const Pricing = () => {
       <section className="pb-24">
         <div className="container mx-auto px-6">
           <PlatformBillingBanner className="max-w-7xl mx-auto mb-8" />
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto items-stretch">
+          <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-6 max-w-7xl mx-auto items-stretch">
             {tiers.map((tier, i) => (
               <motion.div
                 key={tier.name}
@@ -270,7 +291,7 @@ const Pricing = () => {
                     </motion.span>
                   </AnimatePresence>
                   <span className="text-muted-foreground text-sm">
-                    {tier.key === "free" ? "forever" : tier.key === "enterprise" ? "" : annual ? "/mo, billed yearly" : "/month"}
+                    {tier.key === "free" ? "forever" : tier.key === "enterprise" ? "" : ("perUser" in tier && tier.perUser) ? "/user/mo" : annual ? "/mo, billed yearly" : "/month"}
                   </span>
                 </div>
 

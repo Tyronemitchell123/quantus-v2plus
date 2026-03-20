@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowUpRight, ArrowDownRight, Gift, Zap, Sparkles, Crown, Loader2, Check } from "lucide-react";
+import { ArrowUpRight, ArrowDownRight, Gift, Zap, Sparkles, Crown, Users, Loader2, Check } from "lucide-react";
 import { SubscriptionTier, useSubscription } from "@/hooks/use-subscription";
 import { useToast } from "@/hooks/use-toast";
 
@@ -28,9 +28,16 @@ const PLANS: {
   {
     key: "professional",
     name: "Professional",
-    price: 99,
+    price: 149,
     icon: Sparkles,
     features: ["Unlimited queries", "Unlimited quantum jobs", "25 integrations"],
+  },
+  {
+    key: "teams",
+    name: "Teams",
+    price: 49,
+    icon: Users,
+    features: ["Everything in Pro", "Per-user billing", "Shared dashboards"],
   },
   {
     key: "enterprise",
@@ -41,7 +48,7 @@ const PLANS: {
   },
 ];
 
-const TIER_ORDER: SubscriptionTier[] = ["free", "starter", "professional", "enterprise"];
+const TIER_ORDER: SubscriptionTier[] = ["free", "starter", "professional", "teams", "enterprise"];
 
 interface Props {
   currentTier: SubscriptionTier;
@@ -87,7 +94,7 @@ const PlanSwitcher = ({ currentTier, isActive }: Props) => {
         Change Plan
       </h2>
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
         {PLANS.map((plan) => {
           const planIdx = TIER_ORDER.indexOf(plan.key);
           const isCurrent = plan.key === currentTier && isActive;
@@ -122,6 +129,8 @@ const PlanSwitcher = ({ currentTier, isActive }: Props) => {
                   ? "Free"
                   : plan.key === "enterprise"
                   ? "Custom"
+                  : plan.key === "teams"
+                  ? `$${plan.price}/user/mo`
                   : `$${plan.price}/mo`}
               </p>
 
