@@ -5,6 +5,7 @@ import { Menu, X, Sparkles, LogOut, ChevronDown, Lock } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
 import { useAuth } from "@/hooks/use-auth";
 import { useSubscription } from "@/hooks/use-subscription";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 const mainLinks = [
   { to: "/", label: "Home" },
@@ -223,15 +224,20 @@ const Navbar = () => {
             canAccess(link.requiredTier) ? (
               <NavItem key={link.to} to={link.to} label={link.label} />
             ) : (
-              <Link
-                key={link.to}
-                to="/pricing"
-                className="relative flex items-center gap-1 px-3 py-2 text-sm font-medium tracking-wide text-muted-foreground/50 hover:text-muted-foreground transition-colors duration-300"
-                title={`Requires ${link.requiredTier} plan`}
-              >
-                {link.label}
-                <Lock size={10} className="opacity-60" />
-              </Link>
+              <Tooltip key={link.to}>
+                <TooltipTrigger asChild>
+                  <Link
+                    to="/pricing"
+                    className="relative flex items-center gap-1 px-3 py-2 text-sm font-medium tracking-wide text-muted-foreground/50 hover:text-muted-foreground transition-colors duration-300"
+                  >
+                    {link.label}
+                    <Lock size={10} className="opacity-60" />
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="text-xs">
+                  Upgrade to <span className="font-semibold capitalize">{link.requiredTier}</span> to unlock
+                </TooltipContent>
+              </Tooltip>
             )
           )}
 
@@ -247,14 +253,20 @@ const Navbar = () => {
                   AI Chat
                 </Link>
               ) : (
-                <Link
-                  to="/pricing"
-                  className="flex items-center gap-1.5 px-5 py-2 text-sm font-medium rounded-full border border-border text-muted-foreground/60 hover:text-muted-foreground transition-all"
-                  title="Requires professional plan"
-                >
-                  AI Chat
-                  <Lock size={10} className="opacity-60" />
-                </Link>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Link
+                      to="/pricing"
+                      className="flex items-center gap-1.5 px-5 py-2 text-sm font-medium rounded-full border border-border text-muted-foreground/60 hover:text-muted-foreground transition-all"
+                    >
+                      AI Chat
+                      <Lock size={10} className="opacity-60" />
+                    </Link>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" className="text-xs">
+                    Upgrade to <span className="font-semibold">Professional</span> to unlock
+                  </TooltipContent>
+                </Tooltip>
               )}
               <button
                 onClick={handleSignOut}
