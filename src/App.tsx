@@ -27,6 +27,7 @@ const QuantumComputing = lazy(() => import("./pages/QuantumComputing"));
 const CaseStudies = lazy(() => import("./pages/CaseStudies"));
 const Benefits = lazy(() => import("./pages/Benefits"));
 const Settings = lazy(() => import("./pages/Settings"));
+const SubscriptionManagement = lazy(() => import("./pages/SubscriptionManagement"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
