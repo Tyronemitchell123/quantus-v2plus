@@ -124,7 +124,7 @@ const Pricing = () => {
     }
 
     if (tierKey === "enterprise") {
-      navigate("/contact");
+      navigate("/enterprise");
       return;
     }
 
