@@ -73,8 +73,8 @@ const AIRecommendations = () => {
               <p className="text-sm text-muted-foreground leading-relaxed flex-1">{rec.reason}</p>
               <div className="mt-5 pt-4 border-t border-border/50 flex items-center justify-between">
                 <span className="text-xs text-emerald font-semibold">Est. ROI: {rec.estimatedROI}</span>
-                <Link to="/services" className="text-primary text-xs font-medium flex items-center gap-1 hover:gap-2 transition-all">
-                  Learn More <ArrowRight size={12} />
+                <Link to="/services" className="text-primary text-xs font-medium flex items-center gap-1 hover:gap-2 transition-all" aria-label={`Learn more about ${rec.title}`}>
+                  Explore {rec.title} <ArrowRight size={12} />
                 </Link>
               </div>
             </motion.div>
