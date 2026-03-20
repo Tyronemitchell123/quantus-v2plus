@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
-import { Check, ArrowRight, Sparkles, Zap, Crown, Loader2, Gift } from "lucide-react";
+import { Check, ArrowRight, Sparkles, Zap, Crown, Loader2, Gift, Users } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useSubscription } from "@/hooks/use-subscription";
 import { useToast } from "@/hooks/use-toast";
