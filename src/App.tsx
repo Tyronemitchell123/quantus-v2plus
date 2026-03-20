@@ -7,7 +7,7 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import ConciergeWidget from "@/components/ConciergeWidget";
+const ConciergeWidget = lazy(() => import("@/components/ConciergeWidget"));
 import ScrollProgress from "@/components/ScrollProgress";
 import CursorGlow from "@/components/CursorGlow";
 import PageTransition from "@/components/PageTransition";
