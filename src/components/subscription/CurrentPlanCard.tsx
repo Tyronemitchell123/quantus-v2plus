@@ -44,7 +44,8 @@ const TIER_META: Record<
 > = {
   free: { label: "Free", icon: Gift, color: "text-muted-foreground", price: "$0" },
   starter: { label: "Starter", icon: Zap, color: "text-blue-400", price: "$29" },
-  professional: { label: "Professional", icon: Sparkles, color: "text-primary", price: "$99" },
+  professional: { label: "Professional", icon: Sparkles, color: "text-primary", price: "$149" },
+  teams: { label: "Teams", icon: Users, color: "text-quantum-cyan", price: "$49/user" },
   enterprise: { label: "Enterprise", icon: Crown, color: "text-amber-400", price: "Custom" },
 };
 

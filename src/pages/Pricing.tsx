@@ -291,7 +291,7 @@ const Pricing = () => {
                     </motion.span>
                   </AnimatePresence>
                   <span className="text-muted-foreground text-sm">
-                    {tier.key === "free" ? "forever" : tier.key === "enterprise" ? "" : annual ? "/mo, billed yearly" : "/month"}
+                    {tier.key === "free" ? "forever" : tier.key === "enterprise" ? "" : ("perUser" in tier && tier.perUser) ? "/user/mo" : annual ? "/mo, billed yearly" : "/month"}
                   </span>
                 </div>
 

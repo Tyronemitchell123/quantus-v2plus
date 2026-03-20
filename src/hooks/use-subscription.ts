@@ -70,7 +70,7 @@ export function useSubscription() {
   const canAccess = (requiredTier: SubscriptionTier): boolean => {
     if (requiredTier === "free") return true;
     if (!isActive) return false;
-    const tierOrder: SubscriptionTier[] = ["free", "starter", "professional", "enterprise"];
+    const tierOrder: SubscriptionTier[] = ["free", "starter", "professional", "teams", "enterprise"];
     return tierOrder.indexOf(tier) >= tierOrder.indexOf(requiredTier);
   };
 

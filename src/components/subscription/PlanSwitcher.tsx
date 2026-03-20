@@ -129,6 +129,8 @@ const PlanSwitcher = ({ currentTier, isActive }: Props) => {
                   ? "Free"
                   : plan.key === "enterprise"
                   ? "Custom"
+                  : plan.key === "teams"
+                  ? `$${plan.price}/user/mo`
                   : `$${plan.price}/mo`}
               </p>
 

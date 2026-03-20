@@ -6,7 +6,7 @@ import { Slider } from "@/components/ui/slider";
 const tiers = [
   { key: "free", label: "Free", base: 0, aiIncl: 100, dataIncl: 5, apiIncl: 10_000 },
   { key: "starter", label: "Starter", base: 29, aiIncl: 5_000, dataIncl: 50, apiIncl: 100_000 },
-  { key: "professional", label: "Professional", base: 99, aiIncl: Infinity, dataIncl: 500, apiIncl: 1_000_000 },
+  { key: "professional", label: "Professional", base: 149, aiIncl: Infinity, dataIncl: 500, apiIncl: 1_000_000 },
 ];
 
 const rates = { ai: 0.003, data: 0.40, api: 0.0005 };
