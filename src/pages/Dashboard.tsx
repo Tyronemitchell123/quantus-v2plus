@@ -125,6 +125,28 @@ const Dashboard = () => {
 
         <AIFallbackBanner status={status} onRetry={fetchData} loading={loading} className="mb-6" />
 
+        <AnimatePresence>
+          {creditsExhausted && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="mb-6 p-4 rounded-xl border border-primary/30 bg-primary/5 flex items-start gap-3"
+            >
+              <CreditCard size={18} className="text-primary shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-foreground">AI credits exhausted</p>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Live AI analytics are paused. You're seeing cached or sample data. Top up credits in <strong>Settings → Workspace → Usage</strong> to restore live insights.
+                </p>
+              </div>
+              <button onClick={fetchData} disabled={loading} className="text-xs text-primary font-medium hover:underline shrink-0">
+                {loading ? "Retrying…" : "Retry"}
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         <TrialCountdownBanner className="mb-6" />
 
         {!usage.loading && (
