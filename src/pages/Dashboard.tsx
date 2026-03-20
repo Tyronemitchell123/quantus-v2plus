@@ -66,10 +66,11 @@ const fallbackDashboard: DashboardData = {
 };
 
 const Dashboard = () => {
-  const { data, loading, error, status, analyze } = useAIAnalytics<DashboardData>();
+  const { data, loading, error, status, creditsExhausted, analyze } = useAIAnalytics<DashboardData>();
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const usage = useUsageTracking();
   const realtimeAlerts = useRealtimeAlerts();
+  const creditToastShown = useRef(false);
 
   const fetchData = async () => {
     const result = await analyze("dashboard-insights");
@@ -79,6 +80,12 @@ const Dashboard = () => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (creditsExhausted && !creditToastShown.current) {
+      creditToastShown.current = true;
+    }
+  }, [creditsExhausted]);
 
   const displayData = data || (error ? fallbackDashboard : null);
 
