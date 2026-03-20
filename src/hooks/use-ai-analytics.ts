@@ -27,11 +27,13 @@ export function useAIAnalytics<T = any>() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState<AIStatus>(null);
+  const [creditsExhausted, setCreditsExhausted] = useState(false);
 
   const analyze = useCallback(async (type: string) => {
     setLoading(true);
     setError(null);
     setStatus(null);
+    setCreditsExhausted(false);
     try {
       const resp = await fetch(AI_ANALYTICS_URL, {
         method: "POST",
@@ -43,7 +45,9 @@ export function useAIAnalytics<T = any>() {
       });
 
       if (!resp.ok) {
-        // Silently fall back to cache — no toasts
+        if (resp.status === 402) {
+          setCreditsExhausted(true);
+        }
         const cached = getCached<T>(type);
         if (cached) {
           setData(cached);
@@ -77,5 +81,5 @@ export function useAIAnalytics<T = any>() {
     }
   }, []);
 
-  return { data, loading, error, status, analyze };
+  return { data, loading, error, status, creditsExhausted, analyze };
 }

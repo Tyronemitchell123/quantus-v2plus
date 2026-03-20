@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { TrendingUp, Users, DollarSign, Activity, Brain, AlertTriangle, Zap, RefreshCw, Sparkles, Shield, Bell } from "lucide-react";
+import { TrendingUp, Users, DollarSign, Activity, Brain, AlertTriangle, Zap, RefreshCw, Sparkles, Shield, Bell, CreditCard } from "lucide-react";
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Line, ComposedChart } from "recharts";
 import { useAIAnalytics } from "@/hooks/use-ai-analytics";
 import AIFallbackBanner from "@/components/AIFallbackBanner";
@@ -66,10 +66,11 @@ const fallbackDashboard: DashboardData = {
 };
 
 const Dashboard = () => {
-  const { data, loading, error, status, analyze } = useAIAnalytics<DashboardData>();
+  const { data, loading, error, status, creditsExhausted, analyze } = useAIAnalytics<DashboardData>();
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const usage = useUsageTracking();
   const realtimeAlerts = useRealtimeAlerts();
+  const creditToastShown = useRef(false);
 
   const fetchData = async () => {
     const result = await analyze("dashboard-insights");
@@ -79,6 +80,12 @@ const Dashboard = () => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (creditsExhausted && !creditToastShown.current) {
+      creditToastShown.current = true;
+    }
+  }, [creditsExhausted]);
 
   const displayData = data || (error ? fallbackDashboard : null);
 
@@ -117,6 +124,28 @@ const Dashboard = () => {
         </motion.div>
 
         <AIFallbackBanner status={status} onRetry={fetchData} loading={loading} className="mb-6" />
+
+        <AnimatePresence>
+          {creditsExhausted && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="mb-6 p-4 rounded-xl border border-primary/30 bg-primary/5 flex items-start gap-3"
+            >
+              <CreditCard size={18} className="text-primary shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-foreground">AI credits exhausted</p>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Live AI analytics are paused. You're seeing cached or sample data. Top up credits in <strong>Settings → Workspace → Usage</strong> to restore live insights.
+                </p>
+              </div>
+              <button onClick={fetchData} disabled={loading} className="text-xs text-primary font-medium hover:underline shrink-0">
+                {loading ? "Retrying…" : "Retry"}
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         <TrialCountdownBanner className="mb-6" />
 
