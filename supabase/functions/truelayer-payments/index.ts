@@ -163,7 +163,7 @@ serve(async (req) => {
           amount_cents: amountCents,
           currency: "GBP",
           status: "executed",
-          metadata: { tier, billing_cycle },
+          metadata: { tier, billing_cycle, seats: seatCount },
         }).select().single();
 
         await supabase.from("subscriptions").update({
