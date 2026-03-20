@@ -89,7 +89,7 @@ const App = () => (
         <Navbar />
         <AnimatedRoutes />
         <TrialExpirationNotifier />
-        <ConciergeWidget />
+        <Suspense fallback={null}><ConciergeWidget /></Suspense>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
