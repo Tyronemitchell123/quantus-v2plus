@@ -1,10 +1,11 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Link } from "react-router-dom";
 import { ArrowRight, Atom, LineChart, Zap, Shield, Globe, Sparkles } from "lucide-react";
-import QuantumField from "@/components/QuantumField";
+import { lazy, Suspense, useRef } from "react";
 import QuantumOrbit from "@/components/QuantumOrbit";
 import { useTypewriter } from "@/hooks/use-typewriter";
-import { useRef } from "react";
+
+const QuantumField = lazy(() => import("@/components/QuantumField"));
 import AIRecommendations from "@/components/AIRecommendations";
 import HeroVideoBackground from "@/components/HeroVideoBackground";
 import WhyQuantus from "@/components/WhyQuantus";
@@ -55,7 +56,7 @@ const Index = () => {
       {/* Hero */}
       <section ref={heroRef} className="relative min-h-screen flex items-center justify-center overflow-hidden">
         <HeroVideoBackground />
-        <QuantumField />
+        <Suspense fallback={null}><QuantumField /></Suspense>
         <div className="absolute inset-0 bg-gradient-to-b from-background via-background/90 to-background pointer-events-none" />
         
         {/* Quantum ambient orbs */}
