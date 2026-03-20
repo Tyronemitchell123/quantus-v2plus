@@ -71,6 +71,46 @@ export default function NLPTools() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
+  const processFile = useCallback(async (file: File) => {
+    if (!ACCEPTED_TYPES.includes(file.type) && !file.name.match(/\.(txt|md|csv|json|xml|html|pdf)$/i)) {
+      toast({ title: "Unsupported file type", description: "Please upload a .txt, .md, .csv, .json, .xml, .html, or .pdf file.", variant: "destructive" });
+      return;
+    }
+    if (file.size > MAX_FILE_SIZE) {
+      toast({ title: "File too large", description: "Maximum file size is 5 MB.", variant: "destructive" });
+      return;
+    }
+    setFileLoading(true);
+    try {
+      const content = await file.text();
+      setText(content);
+      setUploadedFile({ name: file.name, size: file.size });
+      toast({ title: "File loaded", description: `${file.name} ready for analysis` });
+    } catch {
+      toast({ title: "Failed to read file", description: "Could not read the file contents.", variant: "destructive" });
+    } finally {
+      setFileLoading(false);
+    }
+  }, [toast]);
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOver(false);
+    const file = e.dataTransfer.files[0];
+    if (file) processFile(file);
+  }, [processFile]);
+
+  const handleFileInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) processFile(file);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  }, [processFile]);
+
+  const clearFile = () => {
+    setUploadedFile(null);
+    setText("");
+  };
+
   const run = async () => {
     if (activeTool === "generate" ? !genPrompt.trim() : !text.trim()) return;
     setLoading(true);
