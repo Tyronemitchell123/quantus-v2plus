@@ -164,6 +164,39 @@ export type Database = {
         }
         Relationships: []
       }
+      nlp_analyses: {
+        Row: {
+          created_at: string
+          id: string
+          input_text: string
+          mode: string
+          prompt: string | null
+          result: Json
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          input_text: string
+          mode: string
+          prompt?: string | null
+          result: Json
+          title: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          input_text?: string
+          mode?: string
+          prompt?: string | null
+          result?: Json
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       payments: {
         Row: {
           amount_cents: number
