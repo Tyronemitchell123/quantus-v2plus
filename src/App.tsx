@@ -72,6 +72,14 @@ const AnimatedRoutes = () => {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/account/subscription"
+            element={
+              <ProtectedRoute requiredTier="free">
+                <PageTransition><SubscriptionManagement /></PageTransition>
+              </ProtectedRoute>
+            }
+          />
           <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
         </Routes>
       </Suspense>
