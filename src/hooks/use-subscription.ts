@@ -74,7 +74,7 @@ export function useSubscription() {
     return tierOrder.indexOf(tier) >= tierOrder.indexOf(requiredTier);
   };
 
-  const createPayment = async (selectedTier: SubscriptionTier, billingCycle: "monthly" | "annual") => {
+  const createPayment = async (selectedTier: SubscriptionTier, billingCycle: "monthly" | "annual", seats?: number) => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) throw new Error("Not authenticated");
 
@@ -88,7 +88,7 @@ export function useSubscription() {
           "Content-Type": "application/json",
           apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
         },
-        body: JSON.stringify({ tier: selectedTier, billing_cycle: billingCycle }),
+        body: JSON.stringify({ tier: selectedTier, billing_cycle: billingCycle, seats: selectedTier === "teams" ? (seats || 1) : 1 }),
       }
     );
 
