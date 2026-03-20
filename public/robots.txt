@@ -13,4 +13,4 @@ Allow: /
 User-agent: *
 Allow: /
 
-Sitemap: https://quantus-loom.lovable.app/sitemap.xml
+Sitemap: https://eqxgnxgbvvrjaxjiznjo.supabase.co/functions/v1/sitemap
