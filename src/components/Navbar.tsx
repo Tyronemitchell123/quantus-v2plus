@@ -5,6 +5,7 @@ import { Menu, X, Sparkles, LogOut, ChevronDown, Lock } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
 import { useAuth } from "@/hooks/use-auth";
 import { useSubscription } from "@/hooks/use-subscription";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 const mainLinks = [
   { to: "/", label: "Home" },
