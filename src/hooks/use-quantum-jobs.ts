@@ -151,7 +151,14 @@ export function useQuantumJobs() {
     const interval = setInterval(async () => {
       const activeJobs = jobs.filter(j => j.status === "queued" || j.status === "running");
       for (const job of activeJobs) {
-        await refreshJob(job.id);
+        const updated = await refreshJob(job.id);
+        if (updated && updated.status === "completed" && navigator.serviceWorker?.controller) {
+          navigator.serviceWorker.controller.postMessage({
+            type: "QUANTUM_JOB_COMPLETE",
+            jobId: job.id,
+            message: `Job ${job.id.slice(0, 8)}… finished on ${job.device_arn.split("/").pop()}`,
+          });
+        }
       }
     }, 5000);
 
