@@ -647,6 +647,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      deactivate_expired_api_keys: { Args: never; Returns: number }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
