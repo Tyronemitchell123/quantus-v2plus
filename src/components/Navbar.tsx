@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Sparkles, LogOut, ChevronDown, Lock } from "lucide-react";
+import { Menu, X, Sparkles, LogOut, ChevronDown, Lock, User, CreditCard, Settings, BarChart3 } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
 import { useAuth } from "@/hooks/use-auth";
 import { useSubscription } from "@/hooks/use-subscription";
@@ -33,7 +33,9 @@ const Navbar = () => {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [resourcesOpen, setResourcesOpen] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const accountDropdownRef = useRef<HTMLDivElement>(null);
   const dropdownItemsRef = useRef<(HTMLAnchorElement | null)[]>([]);
   const [focusIndex, setFocusIndex] = useState(-1);
   const location = useLocation();
@@ -56,6 +58,9 @@ const Navbar = () => {
     const handleClickOutside = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setResourcesOpen(false);
+      }
+      if (accountDropdownRef.current && !accountDropdownRef.current.contains(e.target as Node)) {
+        setAccountOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -270,13 +275,61 @@ const Navbar = () => {
                   </TooltipContent>
                 </Tooltip>
               )}
-              <button
-                onClick={handleSignOut}
-                className="p-2 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
-                title="Sign out"
-              >
-                <LogOut size={16} />
-              </button>
+
+              {/* Account dropdown */}
+              <div ref={accountDropdownRef} className="relative">
+                <button
+                  onClick={() => setAccountOpen(!accountOpen)}
+                  className="p-2 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
+                  title="Account"
+                >
+                  <User size={16} />
+                </button>
+                <AnimatePresence>
+                  {accountOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                      transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
+                      className="absolute top-full right-0 mt-2 min-w-[200px] rounded-xl border border-border bg-popover/95 backdrop-blur-xl shadow-xl shadow-black/10 p-1.5"
+                    >
+                      <Link
+                        to="/dashboard"
+                        onClick={() => setAccountOpen(false)}
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
+                      >
+                        <BarChart3 size={14} />
+                        Analytics
+                      </Link>
+                      <Link
+                        to="/account/subscription"
+                        onClick={() => setAccountOpen(false)}
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
+                      >
+                        <CreditCard size={14} />
+                        Subscription
+                      </Link>
+                      <Link
+                        to="/settings"
+                        onClick={() => setAccountOpen(false)}
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
+                      >
+                        <Settings size={14} />
+                        Settings
+                      </Link>
+                      <div className="my-1 border-t border-border" />
+                      <button
+                        onClick={() => { handleSignOut(); setAccountOpen(false); }}
+                        className="flex items-center gap-2.5 w-full px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
+                      >
+                        <LogOut size={14} />
+                        Sign Out
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </div>
           ) : (
             <Link
@@ -383,6 +436,39 @@ const Navbar = () => {
               >
                 {user ? (
                   <div className="flex flex-col gap-2 mt-2">
+                    <p className="px-4 pt-2 pb-1 text-xs font-display tracking-[0.2em] uppercase text-muted-foreground/60">
+                      Account
+                    </p>
+                    <Link
+                      to="/dashboard"
+                      onClick={() => setOpen(false)}
+                      className={`flex items-center gap-2 px-4 py-3 rounded-lg text-base font-medium transition-colors ${
+                        location.pathname === "/dashboard" ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                      }`}
+                    >
+                      <BarChart3 size={16} />
+                      Analytics
+                    </Link>
+                    <Link
+                      to="/account/subscription"
+                      onClick={() => setOpen(false)}
+                      className={`flex items-center gap-2 px-4 py-3 rounded-lg text-base font-medium transition-colors ${
+                        location.pathname === "/account/subscription" ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                      }`}
+                    >
+                      <CreditCard size={16} />
+                      Subscription
+                    </Link>
+                    <Link
+                      to="/settings"
+                      onClick={() => setOpen(false)}
+                      className={`flex items-center gap-2 px-4 py-3 rounded-lg text-base font-medium transition-colors ${
+                        location.pathname === "/settings" ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                      }`}
+                    >
+                      <Settings size={16} />
+                      Settings
+                    </Link>
                     {canAccess("professional") ? (
                       <Link
                         to="/chat"
