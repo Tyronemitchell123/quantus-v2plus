@@ -436,6 +436,39 @@ const Navbar = () => {
               >
                 {user ? (
                   <div className="flex flex-col gap-2 mt-2">
+                    <p className="px-4 pt-2 pb-1 text-xs font-display tracking-[0.2em] uppercase text-muted-foreground/60">
+                      Account
+                    </p>
+                    <Link
+                      to="/dashboard"
+                      onClick={() => setOpen(false)}
+                      className={`flex items-center gap-2 px-4 py-3 rounded-lg text-base font-medium transition-colors ${
+                        location.pathname === "/dashboard" ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                      }`}
+                    >
+                      <BarChart3 size={16} />
+                      Analytics
+                    </Link>
+                    <Link
+                      to="/account/subscription"
+                      onClick={() => setOpen(false)}
+                      className={`flex items-center gap-2 px-4 py-3 rounded-lg text-base font-medium transition-colors ${
+                        location.pathname === "/account/subscription" ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                      }`}
+                    >
+                      <CreditCard size={16} />
+                      Subscription
+                    </Link>
+                    <Link
+                      to="/settings"
+                      onClick={() => setOpen(false)}
+                      className={`flex items-center gap-2 px-4 py-3 rounded-lg text-base font-medium transition-colors ${
+                        location.pathname === "/settings" ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                      }`}
+                    >
+                      <Settings size={16} />
+                      Settings
+                    </Link>
                     {canAccess("professional") ? (
                       <Link
                         to="/chat"
