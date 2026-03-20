@@ -12,17 +12,6 @@ import {
   XCircle,
   Loader2,
 } from "lucide-react";
-import {
-  Gift,
-  Zap,
-  Sparkles,
-  Crown,
-  CheckCircle2,
-  Clock,
-  AlertTriangle,
-  XCircle,
-  Loader2,
-} from "lucide-react";
 import { Subscription, SubscriptionTier } from "@/hooks/use-subscription";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
