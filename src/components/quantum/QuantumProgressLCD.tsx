@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import QuantumTerminalLog from "./QuantumTerminalLog";
 
 interface Step {
   label: string;
@@ -351,6 +352,7 @@ export default function QuantumProgressLCD({ jobStatus, submitting }: QuantumPro
           </div>
         </div>
       </div>
+      <QuantumTerminalLog jobStatus={jobStatus} submitting={submitting} />
     </div>
   );
 }
