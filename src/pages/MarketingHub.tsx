@@ -513,6 +513,11 @@ const MarketingHub = () => {
 
         {/* Content */}
         <motion.div key={activeTab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}>
+          {activeTab === "analytics" && (
+            <Suspense fallback={<div className="flex justify-center py-16"><Loader2 className="animate-spin text-muted-foreground" size={24} /></div>}>
+              <AnalyticsTab />
+            </Suspense>
+          )}
           {activeTab === "blog" && <BlogTab generate={generate} loading={loading} />}
           {activeTab === "social" && <SocialTab generate={generate} loading={loading} />}
           {activeTab === "ads" && <AdsTab generate={generate} loading={loading} />}
