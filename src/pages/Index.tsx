@@ -46,9 +46,9 @@ const Index = () => {
 
   const { displayed, done } = useTypewriter("Quantum", 80, 800);
   const heroRef = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
-  const heroY = useTransform(scrollYProgress, [0, 1], [0, 150]);
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+  const { scrollYProgress } = useScroll();
+  const heroY = useTransform(scrollYProgress, [0, 0.15], [0, 150]);
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.12], [1, 0]);
 
   return (
     <div className="relative">
