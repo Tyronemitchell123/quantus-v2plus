@@ -32,6 +32,7 @@ const NLPTools = lazy(() => import("./pages/NLPTools"));
 const UserGuide = lazy(() => import("./pages/UserGuide"));
 const MarketingHub = lazy(() => import("./pages/MarketingHub"));
 const Blog = lazy(() => import("./pages/Blog"));
+const Enterprise = lazy(() => import("./pages/Enterprise"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -100,6 +101,7 @@ const AnimatedRoutes = () => {
               </ProtectedRoute>
             }
           />
+          <Route path="/enterprise" element={<PageTransition><Enterprise /><Footer /></PageTransition>} />
           <Route path="/blog" element={<PageTransition><Blog /><Footer /></PageTransition>} />
           <Route path="/blog/:slug" element={<PageTransition><Blog /><Footer /></PageTransition>} />
           <Route path="/guide" element={<PageTransition><UserGuide /><Footer /></PageTransition>} />
