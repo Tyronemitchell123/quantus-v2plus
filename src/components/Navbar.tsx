@@ -179,12 +179,21 @@ const Navbar = () => {
 
           {user ? (
             <div className="ml-2 flex items-center gap-2">
-              {canAccess("professional") && (
+              {canAccess("professional") ? (
                 <Link
                   to="/chat"
                   className="px-5 py-2 text-sm font-semibold rounded-full bg-primary text-primary-foreground hover:opacity-90 transition-all hover:shadow-lg hover:shadow-primary/20"
                 >
                   AI Chat
+                </Link>
+              ) : (
+                <Link
+                  to="/pricing"
+                  className="flex items-center gap-1.5 px-5 py-2 text-sm font-medium rounded-full border border-border text-muted-foreground/60 hover:text-muted-foreground transition-all"
+                  title="Requires professional plan"
+                >
+                  AI Chat
+                  <Lock size={10} className="opacity-60" />
                 </Link>
               )}
               <button
