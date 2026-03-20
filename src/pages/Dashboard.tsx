@@ -84,6 +84,7 @@ const Dashboard = () => {
 
   return (
     <div className="pt-24 pb-16 min-h-screen">
+      <RealtimeAlertToast alert={realtimeAlerts.newAlert} onDismiss={realtimeAlerts.dismissNewAlert} />
       <div className="container mx-auto px-6">
         {/* Header */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8 flex items-start justify-between flex-wrap gap-4">
