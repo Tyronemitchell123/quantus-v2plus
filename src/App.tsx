@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -13,19 +14,20 @@ import PageTransition from "@/components/PageTransition";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import TrialExpirationNotifier from "@/components/TrialExpirationNotifier";
 import Index from "./pages/Index";
-import About from "./pages/About";
-import Services from "./pages/Services";
-import Dashboard from "./pages/Dashboard";
-import Contact from "./pages/Contact";
-import Pricing from "./pages/Pricing";
-import Chat from "./pages/Chat";
-import Auth from "./pages/Auth";
-import ResetPassword from "./pages/ResetPassword";
-import QuantumComputing from "./pages/QuantumComputing";
-import CaseStudies from "./pages/CaseStudies";
-import Benefits from "./pages/Benefits";
-import Settings from "./pages/Settings";
-import NotFound from "./pages/NotFound";
+
+const About = lazy(() => import("./pages/About"));
+const Services = lazy(() => import("./pages/Services"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Contact = lazy(() => import("./pages/Contact"));
+const Pricing = lazy(() => import("./pages/Pricing"));
+const Chat = lazy(() => import("./pages/Chat"));
+const Auth = lazy(() => import("./pages/Auth"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
+const QuantumComputing = lazy(() => import("./pages/QuantumComputing"));
+const CaseStudies = lazy(() => import("./pages/CaseStudies"));
+const Benefits = lazy(() => import("./pages/Benefits"));
+const Settings = lazy(() => import("./pages/Settings"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
 
