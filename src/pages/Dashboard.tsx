@@ -98,14 +98,22 @@ const Dashboard = () => {
               {loading ? "AI is analyzing..." : lastUpdated ? `Last AI analysis: ${lastUpdated.toLocaleTimeString()}` : error ? "Showing cached data • Click Refresh to retry" : "Initializing AI..."}
             </p>
           </div>
-          <button
-            onClick={fetchData}
-            disabled={loading}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 transition-all disabled:opacity-50"
-          >
-            <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
-            {loading ? "Analyzing..." : "Refresh AI"}
-          </button>
+          <div className="flex items-center gap-3">
+            {realtimeAlerts.unreadCount > 0 && (
+              <div className="relative flex items-center gap-1.5 px-3 py-2 rounded-full bg-destructive/10 border border-destructive/20 text-destructive text-xs font-semibold">
+                <Bell size={14} />
+                <span>{realtimeAlerts.unreadCount} alert{realtimeAlerts.unreadCount > 1 ? "s" : ""}</span>
+              </div>
+            )}
+            <button
+              onClick={fetchData}
+              disabled={loading}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 transition-all disabled:opacity-50"
+            >
+              <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
+              {loading ? "Analyzing..." : "Refresh AI"}
+            </button>
+          </div>
         </motion.div>
 
         <AIFallbackBanner status={status} onRetry={fetchData} loading={loading} className="mb-6" />
