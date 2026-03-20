@@ -6,7 +6,7 @@ import QuantumOrbit from "@/components/QuantumOrbit";
 import { useTypewriter } from "@/hooks/use-typewriter";
 
 const QuantumField = lazy(() => import("@/components/QuantumField"));
-import AIRecommendations from "@/components/AIRecommendations";
+const AIRecommendations = lazy(() => import("@/components/AIRecommendations"));
 import HeroVideoBackground from "@/components/HeroVideoBackground";
 import WhyQuantus from "@/components/WhyQuantus";
 import useDocumentHead from "@/hooks/use-document-head";
@@ -323,7 +323,7 @@ const Index = () => {
       </section>
 
       {/* AI Recommendations */}
-      <AIRecommendations />
+      <Suspense fallback={null}><AIRecommendations /></Suspense>
 
       {/* CTA */}
       <section className="py-24">
