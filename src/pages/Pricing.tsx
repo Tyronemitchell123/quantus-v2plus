@@ -265,7 +265,7 @@ const Pricing = () => {
                       transition={{ duration: 0.2 }}
                       className="font-display text-4xl font-bold text-foreground inline-block"
                     >
-                      {tier.key === "free" ? "Free" : tier.key === "enterprise" ? "Custom" : formatPrice(annual ? tier.annual : tier.monthly)}
+                      {tier.key === "free" ? "Free" : tier.key === "enterprise" ? "Custom" : formatPrice(getPrice(tier.key))}
                     </motion.span>
                   </AnimatePresence>
                   <span className="text-muted-foreground text-sm">
