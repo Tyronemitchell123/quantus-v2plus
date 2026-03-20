@@ -158,11 +158,21 @@ const Navbar = () => {
             </AnimatePresence>
           </div>
 
-          {/* Tier-locked links – only show if user has access */}
+          {/* Tier-locked links – show with lock if no access */}
           {user && tierLinks.map((link) =>
             canAccess(link.requiredTier) ? (
               <NavItem key={link.to} to={link.to} label={link.label} />
-            ) : null
+            ) : (
+              <Link
+                key={link.to}
+                to="/pricing"
+                className="relative flex items-center gap-1 px-3 py-2 text-sm font-medium tracking-wide text-muted-foreground/50 hover:text-muted-foreground transition-colors duration-300"
+                title={`Requires ${link.requiredTier} plan`}
+              >
+                {link.label}
+                <Lock size={10} className="opacity-60" />
+              </Link>
+            )
           )}
 
           <ThemeToggle />
