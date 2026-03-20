@@ -18,6 +18,7 @@ const mainLinks = [
 ];
 
 const resourceLinks = [
+  { to: "/blog", label: "Blog" },
   { to: "/benefits", label: "Benefits" },
   { to: "/guide", label: "User Guide" },
   { to: "/case-studies", label: "Case Studies" },
