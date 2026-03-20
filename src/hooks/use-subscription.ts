@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
-export type SubscriptionTier = "free" | "starter" | "professional" | "enterprise";
+export type SubscriptionTier = "free" | "starter" | "professional" | "teams" | "enterprise";
 export type SubscriptionStatus = "active" | "canceled" | "past_due" | "trialing" | "inactive";
 
 export interface Subscription {
