@@ -306,6 +306,8 @@ const Pricing = () => {
 
       <UsagePricing />
 
+      <CostCalculator />
+
       <ComparisonTable />
 
       <CompetitorComparison />
