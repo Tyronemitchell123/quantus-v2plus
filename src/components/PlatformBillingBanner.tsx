@@ -38,7 +38,7 @@ const PlatformBillingBanner = ({ className = "" }: Props) => {
           {requiresStoreBilling ? (
             <div className="space-y-2">
               <div className="flex items-start gap-2">
-                <AlertTriangle size={14} className="text-amber-500 shrink-0 mt-0.5" />
+                <AlertTriangle size={14} className="text-destructive shrink-0 mt-0.5" />
                 <p className="text-sm text-foreground/80 leading-relaxed">
                   In-app purchases are managed through the{" "}
                   <span className="font-medium text-foreground">
