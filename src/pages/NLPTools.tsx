@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  FileText, MessageSquareText, Wand2, Tags, Loader2, ArrowRight, Copy, Check, Sparkles, BarChart3,
+  FileText, Wand2, Tags, Loader2, ArrowRight, Copy, Check, Sparkles, BarChart3,
+  Upload, X, File,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -43,6 +44,19 @@ const entityTypeColors: Record<string, string> = {
   other: "bg-muted text-muted-foreground",
 };
 
+const ACCEPTED_TYPES = [
+  "text/plain", "text/markdown", "text/csv", "text/html",
+  "application/json", "application/xml", "text/xml",
+  "application/pdf",
+];
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
+
+function formatFileSize(bytes: number) {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
 export default function NLPTools() {
   useDocumentHead({ title: "AI Text Lab | QUANTUS", description: "NLP & LLM-powered text intelligence tools" });
   const [activeTool, setActiveTool] = useState<Tool>("summarize");
@@ -51,6 +65,10 @@ export default function NLPTools() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [copied, setCopied] = useState(false);
+  const [dragOver, setDragOver] = useState(false);
+  const [uploadedFile, setUploadedFile] = useState<{ name: string; size: number } | null>(null);
+  const [fileLoading, setFileLoading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   const run = async () => {
