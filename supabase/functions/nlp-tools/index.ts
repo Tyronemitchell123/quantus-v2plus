@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { authenticateRequest } from "../_shared/api-key-auth.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -157,6 +158,11 @@ serve(async (req) => {
   }
 
   try {
+    // Authenticate via JWT or API key
+    const authResult = await authenticateRequest(req, corsHeaders);
+    if (authResult instanceof Response) return authResult;
+    const userId = authResult.userId;
+
     const { mode, text, prompt: generationPrompt } = await req.json();
 
     if (!MODES.includes(mode)) {
