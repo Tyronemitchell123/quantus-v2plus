@@ -25,6 +25,7 @@ const resourceLinks = [
 
 const tierLinks = [
   { to: "/dashboard", label: "Analytics", requiredTier: "starter" as const },
+  { to: "/marketing", label: "Marketing", requiredTier: "enterprise" as const },
 ];
 
 const Navbar = () => {

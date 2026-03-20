@@ -30,6 +30,7 @@ const Settings = lazy(() => import("./pages/Settings"));
 const SubscriptionManagement = lazy(() => import("./pages/SubscriptionManagement"));
 const NLPTools = lazy(() => import("./pages/NLPTools"));
 const UserGuide = lazy(() => import("./pages/UserGuide"));
+const MarketingHub = lazy(() => import("./pages/MarketingHub"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -87,6 +88,14 @@ const AnimatedRoutes = () => {
             element={
               <ProtectedRoute requiredTier="free">
                 <PageTransition><NLPTools /><Footer /></PageTransition>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/marketing"
+            element={
+              <ProtectedRoute requiredTier="enterprise">
+                <PageTransition><MarketingHub /></PageTransition>
               </ProtectedRoute>
             }
           />

@@ -164,6 +164,174 @@ export type Database = {
         }
         Relationships: []
       }
+      marketing_ads: {
+        Row: {
+          body_text: string
+          campaign_name: string
+          created_at: string
+          cta: string | null
+          headline: string
+          id: string
+          platform: string | null
+          status: string
+          target_audience: string | null
+          user_id: string
+        }
+        Insert: {
+          body_text: string
+          campaign_name: string
+          created_at?: string
+          cta?: string | null
+          headline: string
+          id?: string
+          platform?: string | null
+          status?: string
+          target_audience?: string | null
+          user_id: string
+        }
+        Update: {
+          body_text?: string
+          campaign_name?: string
+          created_at?: string
+          cta?: string | null
+          headline?: string
+          id?: string
+          platform?: string | null
+          status?: string
+          target_audience?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      marketing_posts: {
+        Row: {
+          content: string
+          created_at: string
+          excerpt: string | null
+          id: string
+          meta_description: string | null
+          meta_title: string | null
+          og_image_prompt: string | null
+          published_at: string | null
+          slug: string
+          status: string
+          tags: string[] | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          excerpt?: string | null
+          id?: string
+          meta_description?: string | null
+          meta_title?: string | null
+          og_image_prompt?: string | null
+          published_at?: string | null
+          slug: string
+          status?: string
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          excerpt?: string | null
+          id?: string
+          meta_description?: string | null
+          meta_title?: string | null
+          og_image_prompt?: string | null
+          published_at?: string | null
+          slug?: string
+          status?: string
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      marketing_seo: {
+        Row: {
+          id: string
+          json_ld: Json | null
+          keywords: string[] | null
+          meta_description: string | null
+          meta_title: string | null
+          page_path: string
+          score: number | null
+          suggestions: string[] | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          json_ld?: Json | null
+          keywords?: string[] | null
+          meta_description?: string | null
+          meta_title?: string | null
+          page_path: string
+          score?: number | null
+          suggestions?: string[] | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          json_ld?: Json | null
+          keywords?: string[] | null
+          meta_description?: string | null
+          meta_title?: string | null
+          page_path?: string
+          score?: number | null
+          suggestions?: string[] | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      marketing_social: {
+        Row: {
+          content: string
+          created_at: string
+          hashtags: string[] | null
+          id: string
+          platform: string
+          post_url: string | null
+          scheduled_at: string | null
+          status: string
+          tone: string | null
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          hashtags?: string[] | null
+          id?: string
+          platform: string
+          post_url?: string | null
+          scheduled_at?: string | null
+          status?: string
+          tone?: string | null
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          hashtags?: string[] | null
+          id?: string
+          platform?: string
+          post_url?: string | null
+          scheduled_at?: string | null
+          status?: string
+          tone?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       nlp_analyses: {
         Row: {
           created_at: string
