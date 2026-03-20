@@ -202,7 +202,6 @@ export default function QuantumProgressLCD({ jobStatus, submitting }: QuantumPro
     return "PROCESSING...";
   })();
 
-  const completedCount = steps.filter((s) => s.status === "complete").length;
   const progressPct = (completedCount / steps.length) * 100;
 
   return (
