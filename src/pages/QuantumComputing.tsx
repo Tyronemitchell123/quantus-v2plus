@@ -140,6 +140,7 @@ export default function QuantumComputing() {
                 <div className="grid lg:grid-cols-[1fr_360px] gap-8">
                   {/* Left: Editor + Submit */}
                   <div className="space-y-6">
+                    <AICircuitGenerator onGenerated={setCircuit} />
                     <CircuitEditor value={circuit} onChange={setCircuit} />
 
                     <div className="grid sm:grid-cols-2 gap-4">
