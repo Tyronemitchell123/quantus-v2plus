@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Sparkles, LogOut, ChevronDown, Lock } from "lucide-react";
@@ -31,6 +31,8 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [resourcesOpen, setResourcesOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const dropdownItemsRef = useRef<(HTMLAnchorElement | null)[]>([]);
+  const [focusIndex, setFocusIndex] = useState(-1);
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
@@ -56,6 +58,55 @@ const Navbar = () => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  const handleDropdownKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (!resourcesOpen) {
+      if (e.key === "ArrowDown" || e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        setResourcesOpen(true);
+        setFocusIndex(0);
+      }
+      return;
+    }
+
+    switch (e.key) {
+      case "ArrowDown":
+        e.preventDefault();
+        setFocusIndex((prev) => (prev + 1) % resourceLinks.length);
+        break;
+      case "ArrowUp":
+        e.preventDefault();
+        setFocusIndex((prev) => (prev - 1 + resourceLinks.length) % resourceLinks.length);
+        break;
+      case "Home":
+        e.preventDefault();
+        setFocusIndex(0);
+        break;
+      case "End":
+        e.preventDefault();
+        setFocusIndex(resourceLinks.length - 1);
+        break;
+      case "Escape":
+        e.preventDefault();
+        setResourcesOpen(false);
+        setFocusIndex(-1);
+        break;
+      case "Tab":
+        setResourcesOpen(false);
+        setFocusIndex(-1);
+        break;
+    }
+  }, [resourcesOpen]);
+
+  useEffect(() => {
+    if (focusIndex >= 0 && dropdownItemsRef.current[focusIndex]) {
+      dropdownItemsRef.current[focusIndex]?.focus();
+    }
+  }, [focusIndex]);
+
+  useEffect(() => {
+    if (!resourcesOpen) setFocusIndex(-1);
+  }, [resourcesOpen]);
 
   const handleSignOut = async () => {
     await signOut();
@@ -111,9 +162,12 @@ const Navbar = () => {
           ))}
 
           {/* Resources dropdown */}
-          <div ref={dropdownRef} className="relative">
+          <div ref={dropdownRef} className="relative" onKeyDown={handleDropdownKeyDown}>
             <button
               onClick={() => setResourcesOpen(!resourcesOpen)}
+              aria-haspopup="true"
+              aria-expanded={resourcesOpen}
+              aria-controls="resources-menu"
               className={`relative flex items-center gap-1 px-3 py-2 text-sm font-medium tracking-wide transition-colors duration-300 ${
                 isResourceActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
               }`}
@@ -134,17 +188,23 @@ const Navbar = () => {
             <AnimatePresence>
               {resourcesOpen && (
                 <motion.div
+                  id="resources-menu"
+                  role="menu"
+                  aria-label="Resources"
                   initial={{ opacity: 0, y: 8, scale: 0.96 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 8, scale: 0.96 }}
                   transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
                   className="absolute top-full mt-2 left-0 min-w-[180px] rounded-xl border border-border bg-popover/95 backdrop-blur-xl shadow-xl shadow-black/10 p-1.5"
                 >
-                  {resourceLinks.map((link) => (
+                  {resourceLinks.map((link, i) => (
                     <Link
                       key={link.to}
                       to={link.to}
-                      className={`block px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      role="menuitem"
+                      tabIndex={focusIndex === i ? 0 : -1}
+                      ref={(el) => { dropdownItemsRef.current[i] = el; }}
+                      className={`block px-3 py-2 rounded-lg text-sm font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-primary/50 ${
                         location.pathname === link.to
                           ? "text-primary bg-primary/10"
                           : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
