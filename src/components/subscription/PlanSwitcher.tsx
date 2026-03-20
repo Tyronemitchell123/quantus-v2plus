@@ -48,7 +48,7 @@ const PLANS: {
   },
 ];
 
-const TIER_ORDER: SubscriptionTier[] = ["free", "starter", "professional", "enterprise"];
+const TIER_ORDER: SubscriptionTier[] = ["free", "starter", "professional", "teams", "enterprise"];
 
 interface Props {
   currentTier: SubscriptionTier;
