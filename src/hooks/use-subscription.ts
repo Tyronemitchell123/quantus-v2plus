@@ -67,6 +67,7 @@ export function useSubscription() {
   const limits = TIER_LIMITS[tier];
 
   const canAccess = (requiredTier: SubscriptionTier): boolean => {
+    if (requiredTier === "free") return true;
     if (!isActive) return false;
     const tierOrder: SubscriptionTier[] = ["free", "starter", "professional", "enterprise"];
     return tierOrder.indexOf(tier) >= tierOrder.indexOf(requiredTier);
