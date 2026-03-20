@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Sparkles, LogOut } from "lucide-react";
+import ThemeToggle from "@/components/ThemeToggle";
 import { useAuth } from "@/hooks/use-auth";
 
 const navLinks = [
