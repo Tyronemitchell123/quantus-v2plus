@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowUpRight, ArrowDownRight, Gift, Zap, Sparkles, Crown, Loader2, Check } from "lucide-react";
+import { ArrowUpRight, ArrowDownRight, Gift, Zap, Sparkles, Crown, Users, Loader2, Check } from "lucide-react";
 import { SubscriptionTier, useSubscription } from "@/hooks/use-subscription";
 import { useToast } from "@/hooks/use-toast";
 
