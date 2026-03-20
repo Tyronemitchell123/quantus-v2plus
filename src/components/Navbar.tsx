@@ -253,14 +253,20 @@ const Navbar = () => {
                   AI Chat
                 </Link>
               ) : (
-                <Link
-                  to="/pricing"
-                  className="flex items-center gap-1.5 px-5 py-2 text-sm font-medium rounded-full border border-border text-muted-foreground/60 hover:text-muted-foreground transition-all"
-                  title="Requires professional plan"
-                >
-                  AI Chat
-                  <Lock size={10} className="opacity-60" />
-                </Link>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Link
+                      to="/pricing"
+                      className="flex items-center gap-1.5 px-5 py-2 text-sm font-medium rounded-full border border-border text-muted-foreground/60 hover:text-muted-foreground transition-all"
+                    >
+                      AI Chat
+                      <Lock size={10} className="opacity-60" />
+                    </Link>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" className="text-xs">
+                    Upgrade to <span className="font-semibold">Professional</span> to unlock
+                  </TooltipContent>
+                </Tooltip>
               )}
               <button
                 onClick={handleSignOut}
