@@ -98,10 +98,85 @@ const LCDLine = ({ text, active }: { text: string; active: boolean }) => {
   );
 };
 
+// Synthesize a short blip sound via Web Audio API
+const playStepSound = (type: "complete" | "error" | "done") => {
+  try {
+    const ctx = new AudioContext();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    if (type === "complete") {
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(880, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(1320, ctx.currentTime + 0.06);
+      gain.gain.setValueAtTime(0.15, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.12);
+    } else if (type === "error") {
+      osc.type = "sawtooth";
+      osc.frequency.setValueAtTime(220, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(110, ctx.currentTime + 0.2);
+      gain.gain.setValueAtTime(0.12, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.25);
+    } else {
+      // "done" — rising two-tone chime
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(660, ctx.currentTime);
+      osc.frequency.setValueAtTime(990, ctx.currentTime + 0.1);
+      gain.gain.setValueAtTime(0.18, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.3);
+    }
+
+    // Try haptic feedback
+    if (navigator.vibrate) {
+      navigator.vibrate(type === "error" ? [50, 30, 50] : type === "done" ? [30, 20, 30, 20, 60] : [20]);
+    }
+  } catch {
+    // Audio not available — silent fallback
+  }
+};
+
 export default function QuantumProgressLCD({ jobStatus, submitting }: QuantumProgressLCDProps) {
   const steps = resolveSteps(jobStatus, submitting);
   const activeIndex = steps.findIndex((s) => s.status === "active");
   const hasActivity = submitting || (jobStatus && jobStatus !== "completed" && jobStatus !== "failed");
+
+  // Track completed count to detect step transitions
+  const prevCompletedRef = useRef(0);
+  const completedCount = steps.filter((s) => s.status === "complete").length;
+  const hasError = steps.some((s) => s.status === "error");
+  const allDone = jobStatus === "completed";
+
+  useEffect(() => {
+    const prev = prevCompletedRef.current;
+    if (completedCount > prev && prev > 0) {
+      if (allDone) {
+        playStepSound("done");
+      } else {
+        playStepSound("complete");
+      }
+    }
+    if (hasError && prev >= 0 && !prevCompletedRef.current) {
+      // Only fire once on error
+    }
+    prevCompletedRef.current = completedCount;
+  }, [completedCount, allDone, hasError]);
+
+  // Fire error sound when error first appears
+  const prevErrorRef = useRef(false);
+  useEffect(() => {
+    if (hasError && !prevErrorRef.current) {
+      playStepSound("error");
+    }
+    prevErrorRef.current = hasError;
+  }, [hasError]);
 
   // Scanline flicker
   const [scanlineY, setScanlineY] = useState(0);
@@ -127,7 +202,6 @@ export default function QuantumProgressLCD({ jobStatus, submitting }: QuantumPro
     return "PROCESSING...";
   })();
 
-  const completedCount = steps.filter((s) => s.status === "complete").length;
   const progressPct = (completedCount / steps.length) * 100;
 
   return (
