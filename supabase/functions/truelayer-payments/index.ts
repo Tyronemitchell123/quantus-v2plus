@@ -193,7 +193,7 @@ serve(async (req) => {
         amount_cents: amountCents,
         currency: "GBP",
         status: "pending",
-        metadata: { tier, billing_cycle, truelayer_resource_token: paymentData.resource_token },
+        metadata: { tier, billing_cycle, truelayer_resource_token: paymentData.resource_token, seats: seatCount },
       });
 
       return new Response(
