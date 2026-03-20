@@ -1,10 +1,11 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Link } from "react-router-dom";
 import { ArrowRight, Atom, LineChart, Zap, Shield, Globe, Sparkles } from "lucide-react";
-import QuantumField from "@/components/QuantumField";
+import { lazy, Suspense, useRef } from "react";
 import QuantumOrbit from "@/components/QuantumOrbit";
 import { useTypewriter } from "@/hooks/use-typewriter";
-import { useRef } from "react";
+
+const QuantumField = lazy(() => import("@/components/QuantumField"));
 import AIRecommendations from "@/components/AIRecommendations";
 import HeroVideoBackground from "@/components/HeroVideoBackground";
 import WhyQuantus from "@/components/WhyQuantus";
