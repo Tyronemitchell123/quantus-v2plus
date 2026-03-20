@@ -149,7 +149,7 @@ serve(async (req) => {
             },
           },
           user: { id: userId },
-          metadata: { tier, billing_cycle, user_id: userId },
+          metadata: { tier, billing_cycle, user_id: userId, seats: seatCount },
         }),
       });
 
