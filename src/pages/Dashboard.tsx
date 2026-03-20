@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { TrendingUp, Users, DollarSign, Activity, Brain, AlertTriangle, Zap, RefreshCw, Sparkles, Shield } from "lucide-react";
+import { TrendingUp, Users, DollarSign, Activity, Brain, AlertTriangle, Zap, RefreshCw, Sparkles, Shield, Bell } from "lucide-react";
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Line, ComposedChart } from "recharts";
 import { useAIAnalytics } from "@/hooks/use-ai-analytics";
 import AIFallbackBanner from "@/components/AIFallbackBanner";
 import UsageLimitBanner from "@/components/UsageLimitBanner";
 import TrialCountdownBanner from "@/components/TrialCountdownBanner";
 import { useUsageTracking } from "@/hooks/use-usage-tracking";
+import { useRealtimeAlerts } from "@/hooks/use-realtime-alerts";
+import RealtimeAlertToast from "@/components/RealtimeAlertToast";
 
 type DashboardData = {
   metrics: { id: string; label: string; value: string; change: string; trend: string; icon: string }[];
@@ -67,6 +69,7 @@ const Dashboard = () => {
   const { data, loading, error, status, analyze } = useAIAnalytics<DashboardData>();
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const usage = useUsageTracking();
+  const realtimeAlerts = useRealtimeAlerts();
 
   const fetchData = async () => {
     const result = await analyze("dashboard-insights");
@@ -81,6 +84,7 @@ const Dashboard = () => {
 
   return (
     <div className="pt-24 pb-16 min-h-screen">
+      <RealtimeAlertToast alert={realtimeAlerts.newAlert} onDismiss={realtimeAlerts.dismissNewAlert} />
       <div className="container mx-auto px-6">
         {/* Header */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8 flex items-start justify-between flex-wrap gap-4">
@@ -94,14 +98,22 @@ const Dashboard = () => {
               {loading ? "AI is analyzing..." : lastUpdated ? `Last AI analysis: ${lastUpdated.toLocaleTimeString()}` : error ? "Showing cached data • Click Refresh to retry" : "Initializing AI..."}
             </p>
           </div>
-          <button
-            onClick={fetchData}
-            disabled={loading}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 transition-all disabled:opacity-50"
-          >
-            <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
-            {loading ? "Analyzing..." : "Refresh AI"}
-          </button>
+          <div className="flex items-center gap-3">
+            {realtimeAlerts.unreadCount > 0 && (
+              <div className="relative flex items-center gap-1.5 px-3 py-2 rounded-full bg-destructive/10 border border-destructive/20 text-destructive text-xs font-semibold">
+                <Bell size={14} />
+                <span>{realtimeAlerts.unreadCount} alert{realtimeAlerts.unreadCount > 1 ? "s" : ""}</span>
+              </div>
+            )}
+            <button
+              onClick={fetchData}
+              disabled={loading}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 transition-all disabled:opacity-50"
+            >
+              <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
+              {loading ? "Analyzing..." : "Refresh AI"}
+            </button>
+          </div>
         </motion.div>
 
         <AIFallbackBanner status={status} onRetry={fetchData} loading={loading} className="mb-6" />
