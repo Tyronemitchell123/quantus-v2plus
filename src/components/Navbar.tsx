@@ -11,6 +11,7 @@ const navLinks = [
   { to: "/services", label: "Services" },
   { to: "/benefits", label: "Benefits" },
   { to: "/quantum", label: "Quantum" },
+  { to: "/nlp", label: "AI Lab" },
   { to: "/case-studies", label: "Case Studies" },
   { to: "/pricing", label: "Pricing" },
   { to: "/dashboard", label: "Analytics" },

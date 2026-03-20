@@ -81,6 +81,14 @@ const AnimatedRoutes = () => {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/nlp"
+            element={
+              <ProtectedRoute requiredTier="starter">
+                <PageTransition><NLPTools /><Footer /></PageTransition>
+              </ProtectedRoute>
+            }
+          />
           <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
         </Routes>
       </Suspense>
