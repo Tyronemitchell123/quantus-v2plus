@@ -19,6 +19,7 @@ const TIER_LIMITS: Record<SubscriptionTier, { queries: number; integrations: num
   free: { queries: 100, integrations: 1 },
   starter: { queries: 5000, integrations: 2 },
   professional: { queries: Infinity, integrations: 25 },
+  teams: { queries: Infinity, integrations: 50 },
   enterprise: { queries: Infinity, integrations: Infinity },
 };
 
