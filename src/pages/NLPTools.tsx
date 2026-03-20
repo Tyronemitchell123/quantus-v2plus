@@ -125,12 +125,17 @@ export default function NLPTools() {
       });
       if (error) throw error;
       if (data?.error) {
-        toast({ title: "Error", description: data.error, variant: "destructive" });
+        toast({ title: "Analysis failed", description: "Something went wrong. Please try again.", variant: "destructive" });
         return;
       }
       setResult(data?.data || data);
     } catch (e: any) {
-      toast({ title: "Failed", description: e.message || "Something went wrong", variant: "destructive" });
+      const status = e?.context?.status || e?.status;
+      const msg =
+        status === 429 ? "Rate limit reached — please wait a moment and try again." :
+        status === 402 ? "AI credits exhausted. Please add credits to continue." :
+        "Something went wrong. Please try again.";
+      toast({ title: "Analysis failed", description: msg, variant: "destructive" });
     } finally {
       setLoading(false);
     }
