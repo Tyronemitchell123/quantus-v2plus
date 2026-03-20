@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Bell, AlertTriangle, Info, Shield, Check, Loader2, RefreshCw } from "lucide-react";
+import AnomalyNarrative from "@/components/AnomalyNarrative";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
