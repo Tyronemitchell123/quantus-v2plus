@@ -275,13 +275,61 @@ const Navbar = () => {
                   </TooltipContent>
                 </Tooltip>
               )}
-              <button
-                onClick={handleSignOut}
-                className="p-2 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
-                title="Sign out"
-              >
-                <LogOut size={16} />
-              </button>
+
+              {/* Account dropdown */}
+              <div ref={accountDropdownRef} className="relative">
+                <button
+                  onClick={() => setAccountOpen(!accountOpen)}
+                  className="p-2 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
+                  title="Account"
+                >
+                  <User size={16} />
+                </button>
+                <AnimatePresence>
+                  {accountOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                      transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
+                      className="absolute top-full right-0 mt-2 min-w-[200px] rounded-xl border border-border bg-popover/95 backdrop-blur-xl shadow-xl shadow-black/10 p-1.5"
+                    >
+                      <Link
+                        to="/dashboard"
+                        onClick={() => setAccountOpen(false)}
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
+                      >
+                        <BarChart3 size={14} />
+                        Analytics
+                      </Link>
+                      <Link
+                        to="/account/subscription"
+                        onClick={() => setAccountOpen(false)}
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
+                      >
+                        <CreditCard size={14} />
+                        Subscription
+                      </Link>
+                      <Link
+                        to="/settings"
+                        onClick={() => setAccountOpen(false)}
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
+                      >
+                        <Settings size={14} />
+                        Settings
+                      </Link>
+                      <div className="my-1 border-t border-border" />
+                      <button
+                        onClick={() => { handleSignOut(); setAccountOpen(false); }}
+                        className="flex items-center gap-2.5 w-full px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
+                      >
+                        <LogOut size={14} />
+                        Sign Out
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </div>
           ) : (
             <Link
