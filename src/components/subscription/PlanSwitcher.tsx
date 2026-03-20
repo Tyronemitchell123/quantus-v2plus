@@ -28,9 +28,16 @@ const PLANS: {
   {
     key: "professional",
     name: "Professional",
-    price: 99,
+    price: 149,
     icon: Sparkles,
     features: ["Unlimited queries", "Unlimited quantum jobs", "25 integrations"],
+  },
+  {
+    key: "teams",
+    name: "Teams",
+    price: 49,
+    icon: Users,
+    features: ["Everything in Pro", "Per-user billing", "Shared dashboards"],
   },
   {
     key: "enterprise",
