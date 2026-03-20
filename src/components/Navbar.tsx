@@ -82,8 +82,10 @@ const Navbar = () => {
             );
           })}
 
+          <ThemeToggle />
+
           {user ? (
-            <div className="ml-4 flex items-center gap-2">
+            <div className="ml-2 flex items-center gap-2">
               <Link
                 to="/chat"
                 className="px-5 py-2 text-sm font-semibold rounded-full bg-primary text-primary-foreground hover:opacity-90 transition-all hover:shadow-lg hover:shadow-primary/20"
