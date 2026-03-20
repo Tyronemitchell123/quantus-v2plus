@@ -162,9 +162,12 @@ const Navbar = () => {
           ))}
 
           {/* Resources dropdown */}
-          <div ref={dropdownRef} className="relative">
+          <div ref={dropdownRef} className="relative" onKeyDown={handleDropdownKeyDown}>
             <button
               onClick={() => setResourcesOpen(!resourcesOpen)}
+              aria-haspopup="true"
+              aria-expanded={resourcesOpen}
+              aria-controls="resources-menu"
               className={`relative flex items-center gap-1 px-3 py-2 text-sm font-medium tracking-wide transition-colors duration-300 ${
                 isResourceActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
               }`}
@@ -185,17 +188,23 @@ const Navbar = () => {
             <AnimatePresence>
               {resourcesOpen && (
                 <motion.div
+                  id="resources-menu"
+                  role="menu"
+                  aria-label="Resources"
                   initial={{ opacity: 0, y: 8, scale: 0.96 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 8, scale: 0.96 }}
                   transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
                   className="absolute top-full mt-2 left-0 min-w-[180px] rounded-xl border border-border bg-popover/95 backdrop-blur-xl shadow-xl shadow-black/10 p-1.5"
                 >
-                  {resourceLinks.map((link) => (
+                  {resourceLinks.map((link, i) => (
                     <Link
                       key={link.to}
                       to={link.to}
-                      className={`block px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      role="menuitem"
+                      tabIndex={focusIndex === i ? 0 : -1}
+                      ref={(el) => { dropdownItemsRef.current[i] = el; }}
+                      className={`block px-3 py-2 rounded-lg text-sm font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-primary/50 ${
                         location.pathname === link.to
                           ? "text-primary bg-primary/10"
                           : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
