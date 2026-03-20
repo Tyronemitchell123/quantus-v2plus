@@ -1,17 +1,19 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Download, Bell, Webhook, Key, Brain } from "lucide-react";
+import { Download, Bell, Webhook, Key, Brain, Shield } from "lucide-react";
 import useDocumentHead from "@/hooks/use-document-head";
 import ExportPanel from "@/components/settings/ExportPanel";
 import AlertsPanel from "@/components/settings/AlertsPanel";
 import WebhooksPanel from "@/components/settings/WebhooksPanel";
 import ApiKeysPanel from "@/components/settings/ApiKeysPanel";
+import AuditLogPanel from "@/components/settings/AuditLogPanel";
 
 const tabs = [
   { key: "export", label: "Data Export", icon: Download },
   { key: "alerts", label: "Anomaly Alerts", icon: Bell },
   { key: "webhooks", label: "Webhooks", icon: Webhook },
   { key: "api-keys", label: "API Keys", icon: Key },
+  { key: "audit", label: "Audit Log", icon: Shield },
 ];
 
 const Settings = () => {
@@ -66,6 +68,7 @@ const Settings = () => {
           {activeTab === "alerts" && <AlertsPanel />}
           {activeTab === "webhooks" && <WebhooksPanel />}
           {activeTab === "api-keys" && <ApiKeysPanel />}
+          {activeTab === "audit" && <AuditLogPanel />}
         </motion.div>
       </div>
     </div>

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Sparkles, LogOut } from "lucide-react";
+import ThemeToggle from "@/components/ThemeToggle";
 import { useAuth } from "@/hooks/use-auth";
 
 const navLinks = [
@@ -81,8 +82,10 @@ const Navbar = () => {
             );
           })}
 
+          <ThemeToggle />
+
           {user ? (
-            <div className="ml-4 flex items-center gap-2">
+            <div className="ml-2 flex items-center gap-2">
               <Link
                 to="/chat"
                 className="px-5 py-2 text-sm font-semibold rounded-full bg-primary text-primary-foreground hover:opacity-90 transition-all hover:shadow-lg hover:shadow-primary/20"

@@ -14,6 +14,8 @@ import JobList from "@/components/quantum/JobList";
 import ResultsView from "@/components/quantum/ResultsView";
 import QuantumLimitsBanner from "@/components/quantum/QuantumLimitsBanner";
 import QuantumProgressLCD from "@/components/quantum/QuantumProgressLCD";
+import AICircuitGenerator from "@/components/quantum/AICircuitGenerator";
+import LiveJobFeed from "@/components/quantum/LiveJobFeed";
 import QuantumOrbit from "@/components/QuantumOrbit";
 import QuantumVideoBackground from "@/components/QuantumVideoBackground";
 
@@ -138,6 +140,7 @@ export default function QuantumComputing() {
                 <div className="grid lg:grid-cols-[1fr_360px] gap-8">
                   {/* Left: Editor + Submit */}
                   <div className="space-y-6">
+                    <AICircuitGenerator onGenerated={setCircuit} />
                     <CircuitEditor value={circuit} onChange={setCircuit} />
 
                     <div className="grid sm:grid-cols-2 gap-4">
@@ -186,9 +189,12 @@ export default function QuantumComputing() {
                     )}
                   </div>
 
-                  {/* Right: Job List */}
-                  <div className="quantum-card rounded-xl p-4 h-fit lg:sticky lg:top-24">
-                    <JobList jobs={jobs} loading={loading} onSelect={setSelectedJob} onRefresh={fetchJobs} />
+                  {/* Right: Job List + Live Feed */}
+                  <div className="space-y-4 lg:sticky lg:top-24">
+                    <div className="quantum-card rounded-xl p-4 h-fit">
+                      <JobList jobs={jobs} loading={loading} onSelect={setSelectedJob} onRefresh={fetchJobs} />
+                    </div>
+                    <LiveJobFeed />
                   </div>
                 </div>
               </>
