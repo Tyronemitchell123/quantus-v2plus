@@ -352,6 +352,7 @@ export default function QuantumProgressLCD({ jobStatus, submitting }: QuantumPro
           </div>
         </div>
       </div>
+      <QuantumTerminalLog jobStatus={jobStatus} submitting={submitting} />
     </div>
   );
 }
