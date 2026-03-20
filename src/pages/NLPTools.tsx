@@ -44,7 +44,7 @@ const entityTypeColors: Record<string, string> = {
 };
 
 export default function NLPTools() {
-  useDocumentHead("AI Text Lab | QUANTUS", "NLP & LLM-powered text intelligence tools");
+  useDocumentHead({ title: "AI Text Lab | QUANTUS", description: "NLP & LLM-powered text intelligence tools" });
   const [activeTool, setActiveTool] = useState<Tool>("summarize");
   const [text, setText] = useState("");
   const [genPrompt, setGenPrompt] = useState("");
