@@ -224,6 +224,7 @@ const Pricing = () => {
       {/* Pricing Cards */}
       <section className="pb-24">
         <div className="container mx-auto px-6">
+          <PlatformBillingBanner className="max-w-7xl mx-auto mb-8" />
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto items-stretch">
             {tiers.map((tier, i) => (
               <motion.div
