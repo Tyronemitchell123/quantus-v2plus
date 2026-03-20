@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { TrendingUp, Users, DollarSign, Activity, Brain, AlertTriangle, Zap, RefreshCw, Sparkles, Shield, Bell } from "lucide-react";
+import { TrendingUp, Users, DollarSign, Activity, Brain, AlertTriangle, Zap, RefreshCw, Sparkles, Shield, Bell, CreditCard } from "lucide-react";
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Line, ComposedChart } from "recharts";
 import { useAIAnalytics } from "@/hooks/use-ai-analytics";
 import AIFallbackBanner from "@/components/AIFallbackBanner";
