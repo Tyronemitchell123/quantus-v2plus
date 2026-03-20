@@ -63,14 +63,28 @@ export function useUsageTracking() {
     if (!user) return false;
     if (isAtLimit) return false;
 
-    await supabase.from("usage_records").insert({
-      user_id: user.id,
-      feature: "ai_query",
-      quantity: 1,
-    });
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return false;
 
-    setUsed((prev) => prev + 1);
-    return true;
+    const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+    const res = await fetch(
+      `https://${projectId}.supabase.co/functions/v1/track-usage`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+          "Content-Type": "application/json",
+          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+        },
+        body: JSON.stringify({ feature: "ai_query", quantity: 1 }),
+      }
+    );
+
+    if (res.ok) {
+      setUsed((prev) => prev + 1);
+      return true;
+    }
+    return false;
   }, [user, isAtLimit]);
 
   return {
