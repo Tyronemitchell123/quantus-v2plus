@@ -13,6 +13,9 @@ import UsagePricing from "@/components/UsagePricing";
 import CurrencyConverter, { useCurrency } from "@/components/CurrencyConverter";
 import useDocumentHead from "@/hooks/use-document-head";
 import HeroVideoBackground from "@/components/HeroVideoBackground";
+import AddonMarketplace from "@/components/AddonMarketplace";
+import ReferralProgram from "@/components/ReferralProgram";
+import OveragePricing from "@/components/OveragePricing";
 import PlatformBillingBanner from "@/components/PlatformBillingBanner";
 import { useMobilePricing } from "@/hooks/use-mobile-pricing";
 
