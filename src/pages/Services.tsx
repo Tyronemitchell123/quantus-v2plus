@@ -55,6 +55,18 @@ const tiers = [
 ];
 
 const Services = () => {
+  const [premiumAddons, setPremiumAddons] = useState<any[]>([]);
+
+  useEffect(() => {
+    supabase
+      .from("addons")
+      .select("*")
+      .eq("is_active", true)
+      .in("category", ["enterprise", "premium", "analytics", "compliance"])
+      .order("price_cents", { ascending: false })
+      .then(({ data }) => data && setPremiumAddons(data));
+  }, []);
+
   useDocumentHead({
     title: "Quantum AI Services — Strategy, Analytics & Finance | QUANTUS AI",
     description: "Enterprise quantum AI services: quantum strategy consulting, quantum predictive analytics, quantum marketing engine & quantum finance solutions.",
