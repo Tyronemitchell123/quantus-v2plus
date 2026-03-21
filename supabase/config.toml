@@ -19,5 +19,7 @@ project_id = "eqxgnxgbvvrjaxjiznjo"
     verify_jwt = false
   [functions.send-transactional-email]
     verify_jwt = false
+  [functions.send-welcome-email]
+    verify_jwt = false
   [functions.truelayer-payments]
     verify_jwt = false

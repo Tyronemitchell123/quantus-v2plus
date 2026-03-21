@@ -1,7 +1,7 @@
 import * as React from 'npm:react@18.3.1'
 import { renderAsync } from 'npm:@react-email/components@0.0.22'
 import { createClient } from 'npm:@supabase/supabase-js@2'
-import { ContactConfirmationEmail } from '../_shared/email-templates/contact-confirmation.tsx'
+import { WelcomeEmail } from '../_shared/email-templates/welcome.tsx'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -24,39 +24,16 @@ Deno.serve(async (req) => {
     )
 
     const body = await req.json()
-    const { name, email, company, message } = body as {
-      name: string
+    const { email, displayName } = body as {
       email: string
-      company?: string
-      message: string
+      displayName?: string
     }
 
-    // Validate required fields
-    if (!name || !email || !message) {
-      return new Response(JSON.stringify({ error: 'Missing required fields: name, email, message' }), {
+    if (!email) {
+      return new Response(JSON.stringify({ error: 'Missing email' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
-    }
-
-    // Basic email validation
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      return new Response(JSON.stringify({ error: 'Invalid email address' }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      })
-    }
-
-    // Save to contact_submissions
-    const { error: insertError } = await supabase.from('contact_submissions').insert({
-      name: name.slice(0, 100),
-      email: email.slice(0, 255),
-      company: company?.slice(0, 200) || null,
-      message: message.slice(0, 5000),
-    })
-
-    if (insertError) {
-      console.error('Failed to save contact submission', insertError)
     }
 
     // Check suppression list
@@ -67,35 +44,33 @@ Deno.serve(async (req) => {
       .limit(1)
 
     if (suppressed && suppressed.length > 0) {
-      console.log('Email suppressed, skipping confirmation', { email })
       return new Response(JSON.stringify({ success: true, emailSent: false, reason: 'suppressed' }), {
         status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
     }
 
-    // Render email
-    const templateProps = { name, message, siteUrl: SITE_URL }
-    const html = await renderAsync(React.createElement(ContactConfirmationEmail, templateProps))
-    const text = await renderAsync(React.createElement(ContactConfirmationEmail, templateProps), { plainText: true })
+    const name = displayName || email.split('@')[0]
+    const templateProps = { displayName: name, siteUrl: SITE_URL }
+    const html = await renderAsync(React.createElement(WelcomeEmail, templateProps))
+    const text = await renderAsync(React.createElement(WelcomeEmail, templateProps), { plainText: true })
 
     const messageId = crypto.randomUUID()
     const unsubscribeToken = crypto.randomUUID()
 
+    // Store unsubscribe token
     await supabase.from('email_unsubscribe_tokens').insert({
       email,
       token: unsubscribeToken,
     })
 
-    // Log pending
     await supabase.from('email_send_log').insert({
       message_id: messageId,
-      template_name: 'contact_confirmation',
+      template_name: 'welcome',
       recipient_email: email,
       status: 'pending',
     })
 
-    // Enqueue
     const { error: enqueueError } = await supabase.rpc('enqueue_email', {
       queue_name: 'transactional_emails',
       payload: {
@@ -103,33 +78,33 @@ Deno.serve(async (req) => {
         to: email,
         from: `${SITE_NAME} <noreply@${SENDER_DOMAIN}>`,
         sender_domain: SENDER_DOMAIN,
-        subject: 'We received your message — QUANTUS AI',
+        subject: 'Welcome to QUANTUS AI',
         html,
         text,
         purpose: 'transactional',
-        label: 'contact_confirmation',
-        idempotency_key: `contact-${messageId}`,
+        label: 'welcome',
+        idempotency_key: `welcome-${messageId}`,
         unsubscribe_token: unsubscribeToken,
         queued_at: new Date().toISOString(),
       },
     })
 
     if (enqueueError) {
-      console.error('Failed to enqueue contact confirmation email', enqueueError)
+      console.error('Failed to enqueue welcome email', enqueueError)
       return new Response(JSON.stringify({ success: true, emailSent: false, error: 'enqueue_failed' }), {
         status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
     }
 
-    console.log('Contact confirmation email enqueued', { email, messageId })
+    console.log('Welcome email enqueued', { email, messageId })
 
     return new Response(JSON.stringify({ success: true, emailSent: true, messageId }), {
       status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
   } catch (error) {
-    console.error('Handle contact error:', error)
+    console.error('Welcome email error:', error)
     const message = error instanceof Error ? error.message : 'Unknown error'
     return new Response(JSON.stringify({ error: message }), {
       status: 500,
