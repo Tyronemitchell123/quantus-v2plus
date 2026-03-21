@@ -158,32 +158,9 @@ const Pricing = () => {
       return;
     }
 
-    if (tierKey === "starter" && !isActive) {
-      // Activate 14-day trial
-      setPurchasing(tierKey);
-      try {
-        const result = await createPayment(tierKey as any, annual ? "annual" : "monthly");
-        if (result.demo) {
-          toast({ title: "🎉 Trial activated!", description: "Your 14-day Starter trial is live — no card required. Explore the full power of QUANTUS AI." });
-        } else if (result.hosted_payment_page) {
-          window.location.href = result.hosted_payment_page;
-        }
-      } catch (err: any) {
-        toast({ title: "Activation error", description: err.message, variant: "destructive" });
-      } finally {
-        setPurchasing(null);
-      }
-      return;
-    }
-
     setPurchasing(tierKey);
     try {
-      const result = await createPayment(tierKey as any, annual ? "annual" : "monthly");
-      if (result.demo) {
-        toast({ title: "Subscription activated!", description: `You're now on the ${tierKey} plan.` });
-      } else if (result.hosted_payment_page) {
-        window.location.href = result.hosted_payment_page;
-      }
+      await createPayment(tierKey as any, annual ? "annual" : "monthly");
     } catch (err: any) {
       toast({ title: "Payment error", description: err.message, variant: "destructive" });
     } finally {
