@@ -12,6 +12,7 @@ import {
   AlertTriangle,
   XCircle,
   Loader2,
+  ExternalLink,
 } from "lucide-react";
 import { Subscription, SubscriptionTier } from "@/hooks/use-subscription";
 import { supabase } from "@/integrations/supabase/client";
