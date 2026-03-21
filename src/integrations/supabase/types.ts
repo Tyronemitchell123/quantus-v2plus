@@ -14,6 +14,89 @@ export type Database = {
   }
   public: {
     Tables: {
+      addon_purchases: {
+        Row: {
+          addon_id: string
+          amount_cents: number
+          created_at: string
+          expires_at: string | null
+          id: string
+          quantity: number
+          status: string
+          user_id: string
+        }
+        Insert: {
+          addon_id: string
+          amount_cents: number
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          quantity?: number
+          status?: string
+          user_id: string
+        }
+        Update: {
+          addon_id?: string
+          amount_cents?: number
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          quantity?: number
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "addon_purchases_addon_id_fkey"
+            columns: ["addon_id"]
+            isOneToOne: false
+            referencedRelation: "addons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      addons: {
+        Row: {
+          billing_type: string
+          category: string
+          created_at: string
+          currency: string
+          description: string | null
+          features: Json | null
+          id: string
+          is_active: boolean
+          name: string
+          price_cents: number
+          sort_order: number
+        }
+        Insert: {
+          billing_type?: string
+          category?: string
+          created_at?: string
+          currency?: string
+          description?: string | null
+          features?: Json | null
+          id?: string
+          is_active?: boolean
+          name: string
+          price_cents: number
+          sort_order?: number
+        }
+        Update: {
+          billing_type?: string
+          category?: string
+          created_at?: string
+          currency?: string
+          description?: string | null
+          features?: Json | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          price_cents?: number
+          sort_order?: number
+        }
+        Relationships: []
+      }
       anomaly_alerts: {
         Row: {
           created_at: string
@@ -161,6 +244,36 @@ export type Database = {
           priority?: number | null
           sentiment?: string | null
           suggested_response?: string | null
+        }
+        Relationships: []
+      }
+      credit_transactions: {
+        Row: {
+          amount: number
+          created_at: string
+          description: string | null
+          id: string
+          reference_id: string | null
+          type: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          reference_id?: string | null
+          type: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          reference_id?: string | null
+          type?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -612,6 +725,77 @@ export type Database = {
         }
         Relationships: []
       }
+      referral_codes: {
+        Row: {
+          code: string
+          created_at: string
+          id: string
+          is_active: boolean
+          max_uses: number | null
+          reward_credits: number
+          user_id: string
+          uses_count: number
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          max_uses?: number | null
+          reward_credits?: number
+          user_id: string
+          uses_count?: number
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          max_uses?: number | null
+          reward_credits?: number
+          user_id?: string
+          uses_count?: number
+        }
+        Relationships: []
+      }
+      referral_redemptions: {
+        Row: {
+          created_at: string
+          credits_awarded: number
+          id: string
+          referral_code_id: string
+          referred_id: string
+          referrer_id: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          credits_awarded?: number
+          id?: string
+          referral_code_id: string
+          referred_id: string
+          referrer_id: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          credits_awarded?: number
+          id?: string
+          referral_code_id?: string
+          referred_id?: string
+          referrer_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referral_redemptions_referral_code_id_fkey"
+            columns: ["referral_code_id"]
+            isOneToOne: false
+            referencedRelation: "referral_codes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       subscriptions: {
         Row: {
           billing_cycle: string
@@ -675,6 +859,45 @@ export type Database = {
         }
         Relationships: []
       }
+      usage_overages: {
+        Row: {
+          billing_period_end: string
+          billing_period_start: string
+          created_at: string
+          feature: string
+          id: string
+          overage_quantity: number
+          rate_cents: number
+          status: string
+          total_cents: number
+          user_id: string
+        }
+        Insert: {
+          billing_period_end: string
+          billing_period_start: string
+          created_at?: string
+          feature: string
+          id?: string
+          overage_quantity: number
+          rate_cents: number
+          status?: string
+          total_cents: number
+          user_id: string
+        }
+        Update: {
+          billing_period_end?: string
+          billing_period_start?: string
+          created_at?: string
+          feature?: string
+          id?: string
+          overage_quantity?: number
+          rate_cents?: number
+          status?: string
+          total_cents?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       usage_records: {
         Row: {
           feature: string
@@ -695,6 +918,33 @@ export type Database = {
           id?: string
           quantity?: number
           recorded_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_credits: {
+        Row: {
+          balance: number
+          id: string
+          lifetime_earned: number
+          lifetime_spent: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          balance?: number
+          id?: string
+          lifetime_earned?: number
+          lifetime_spent?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          balance?: number
+          id?: string
+          lifetime_earned?: number
+          lifetime_spent?: number
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
