@@ -181,7 +181,78 @@ const Services = () => {
           ))}
         </div>
 
-        {/* Pricing */}
+        {/* Premium Add-On Services */}
+        {premiumAddons.length > 0 && (
+          <>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-12 mt-24"
+            >
+              <p className="text-quantum-cyan font-display text-sm tracking-[0.3em] uppercase mb-4">Premium Add-Ons</p>
+              <h2 className="font-display text-3xl md:text-5xl font-bold text-foreground">
+                Supercharge Your <span className="text-quantum-gradient">Capabilities</span>
+              </h2>
+              <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
+                Bolt on enterprise-grade services to any plan — from dedicated quantum pipelines to AI model training labs.
+              </p>
+            </motion.div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-24">
+              {premiumAddons.map((addon, i) => {
+                const Icon = premiumIcons[addon.category] || Rocket;
+                const features = Array.isArray(addon.features) ? addon.features : [];
+                return (
+                  <motion.div
+                    key={addon.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.08 }}
+                  >
+                    <Card className="border-border/40 bg-card/50 backdrop-blur-sm h-full hover:border-primary/40 transition-colors">
+                      <CardContent className="pt-6 space-y-4">
+                        <div className="flex items-start justify-between">
+                          <div className="p-2.5 rounded-lg bg-primary/10">
+                            <Icon size={20} className="text-primary" />
+                          </div>
+                          <Badge variant="secondary" className="text-xs capitalize">{addon.category}</Badge>
+                        </div>
+                        <div>
+                          <h3 className="font-display text-lg font-semibold text-foreground">{addon.name}</h3>
+                          <p className="text-sm text-muted-foreground mt-1 leading-relaxed">{addon.description}</p>
+                        </div>
+                        <div className="flex items-baseline gap-1">
+                          <span className="font-display text-2xl font-bold text-foreground">
+                            £{(addon.price_cents / 100).toLocaleString()}
+                          </span>
+                          <span className="text-sm text-muted-foreground">
+                            {addon.billing_type === "recurring" ? "/mo" : "one-time"}
+                          </span>
+                        </div>
+                        <ul className="space-y-1.5">
+                          {features.map((f: string) => (
+                            <li key={f} className="text-xs text-muted-foreground flex items-center gap-2">
+                              <span className="w-1 h-1 rounded-full bg-primary shrink-0" />
+                              {f}
+                            </li>
+                          ))}
+                        </ul>
+                        <Link to="/pricing">
+                          <Button variant="outline" size="sm" className="w-full mt-2">
+                            Add to Plan <ArrowRight size={14} className="ml-1" />
+                          </Button>
+                        </Link>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </>
+        )}
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
