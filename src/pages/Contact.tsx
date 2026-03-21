@@ -6,6 +6,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { useAIAnalytics } from "@/hooks/use-ai-analytics";
 import AIFallbackBanner from "@/components/AIFallbackBanner";
 import HeroVideoBackground from "@/components/HeroVideoBackground";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
 
 type ContactAnalysis = {
