@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
-import { Sparkles, Mail, Lock, User, ArrowRight, Chrome } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { Sparkles, Mail, Lock, User, ArrowRight, Chrome, Gift } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const Auth = () => {
@@ -10,10 +11,40 @@ const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
+  const [referralCode, setReferralCode] = useState("");
   const [loading, setLoading] = useState(false);
   const { signIn, signUp, signInWithGoogle, resetPassword } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { toast } = useToast();
+
+  // Pre-fill referral code from URL param e.g. /auth?ref=ABC123
+  useState(() => {
+    const ref = searchParams.get("ref");
+    if (ref) setReferralCode(ref);
+  });
+
+  const redeemReferral = async (code: string) => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      const res = await supabase.functions.invoke("redeem-referral", {
+        body: { referralCode: code },
+      });
+
+      if (res.error) {
+        console.warn("Referral redemption failed:", res.error);
+      } else if (res.data?.success) {
+        toast({
+          title: "Referral applied!",
+          description: `You earned ${res.data.credits_awarded} bonus credits.`,
+        });
+      }
+    } catch (err) {
+      console.warn("Referral redemption error:", err);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,10 +60,25 @@ const Auth = () => {
         const { error } = await signUp(email, password, fullName);
         if (error) throw error;
         toast({ title: "Account created", description: "Check your email to verify your account." });
+
+        // If a referral code was entered, try to redeem after signup confirmation
+        if (referralCode.trim()) {
+          // Store in localStorage so we can redeem after email verification
+          localStorage.setItem("pending_referral_code", referralCode.trim());
+        }
+
         setMode("login");
       } else {
         const { error } = await signIn(email, password);
         if (error) throw error;
+
+        // Check for pending referral code after login
+        const pendingCode = localStorage.getItem("pending_referral_code");
+        if (pendingCode) {
+          localStorage.removeItem("pending_referral_code");
+          await redeemReferral(pendingCode);
+        }
+
         navigate("/dashboard");
       }
     } catch (err: any) {
@@ -43,6 +89,9 @@ const Auth = () => {
   };
 
   const handleGoogle = async () => {
+    if (referralCode.trim()) {
+      localStorage.setItem("pending_referral_code", referralCode.trim());
+    }
     const { error } = await signInWithGoogle();
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
   };
@@ -127,6 +176,20 @@ const Auth = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={6}
+                className="w-full pl-11 pr-4 py-3 rounded-xl bg-secondary border border-border text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+              />
+            </div>
+          )}
+
+          {mode === "signup" && (
+            <div className="relative">
+              <Gift size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <input
+                type="text"
+                placeholder="Referral code (optional)"
+                value={referralCode}
+                onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
+                maxLength={20}
                 className="w-full pl-11 pr-4 py-3 rounded-xl bg-secondary border border-border text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
               />
             </div>
