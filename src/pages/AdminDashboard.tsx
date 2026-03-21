@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
-import { useDocumentHead } from "@/hooks/use-document-head";
+import useDocumentHead from "@/hooks/use-document-head";
 
 interface DashboardData {
   addonSales: {
