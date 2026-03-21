@@ -330,11 +330,17 @@ const Pricing = () => {
 
       <UsagePricing />
 
+      <OveragePricing />
+
+      <AddonMarketplace />
+
       <CostCalculator />
 
       <ComparisonTable />
 
       <CompetitorComparison />
+
+      <ReferralProgram />
 
       <PricingFAQ />
 
