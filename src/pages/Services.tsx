@@ -1,11 +1,16 @@
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Atom, TrendingUp, Megaphone, Coins, ArrowRight } from "lucide-react";
+import { Atom, TrendingUp, Megaphone, Coins, ArrowRight, Shield, Cpu, Zap, BarChart3, Users, Lock, Rocket } from "lucide-react";
 import { Link } from "react-router-dom";
 import useDocumentHead from "@/hooks/use-document-head";
 import quantumProcessor from "@/assets/quantum-processor.jpg";
 import quantumAnalytics from "@/assets/quantum-analytics.jpg";
 import QuantumOrbit from "@/components/QuantumOrbit";
 import HeroVideoBackground from "@/components/HeroVideoBackground";
+import { supabase } from "@/integrations/supabase/client";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 
 const services = [
   {
@@ -34,6 +39,15 @@ const services = [
   },
 ];
 
+const premiumIcons: Record<string, React.ElementType> = {
+  enterprise: Cpu,
+  premium: Rocket,
+  analytics: BarChart3,
+  compliance: Shield,
+  credits: Zap,
+  support: Users,
+};
+
 const tiers = [
   { name: "Growth", price: "$5,000", period: "/mo", features: ["1 quantum model", "Basic quantum analytics", "AI concierge access", "5 API integrations"] },
   { name: "Enterprise", price: "$25,000", period: "/mo", features: ["Unlimited quantum models", "Full quantum analytics suite", "24/7 quantum monitoring", "Unlimited integrations"], featured: true },
@@ -41,6 +55,18 @@ const tiers = [
 ];
 
 const Services = () => {
+  const [premiumAddons, setPremiumAddons] = useState<any[]>([]);
+
+  useEffect(() => {
+    supabase
+      .from("addons")
+      .select("*")
+      .eq("is_active", true)
+      .in("category", ["enterprise", "premium", "analytics", "compliance"])
+      .order("price_cents", { ascending: false })
+      .then(({ data }) => data && setPremiumAddons(data));
+  }, []);
+
   useDocumentHead({
     title: "Quantum AI Services — Strategy, Analytics & Finance | QUANTUS AI",
     description: "Enterprise quantum AI services: quantum strategy consulting, quantum predictive analytics, quantum marketing engine & quantum finance solutions.",
@@ -155,7 +181,78 @@ const Services = () => {
           ))}
         </div>
 
-        {/* Pricing */}
+        {/* Premium Add-On Services */}
+        {premiumAddons.length > 0 && (
+          <>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-12 mt-24"
+            >
+              <p className="text-quantum-cyan font-display text-sm tracking-[0.3em] uppercase mb-4">Premium Add-Ons</p>
+              <h2 className="font-display text-3xl md:text-5xl font-bold text-foreground">
+                Supercharge Your <span className="text-quantum-gradient">Capabilities</span>
+              </h2>
+              <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
+                Bolt on enterprise-grade services to any plan — from dedicated quantum pipelines to AI model training labs.
+              </p>
+            </motion.div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-24">
+              {premiumAddons.map((addon, i) => {
+                const Icon = premiumIcons[addon.category] || Rocket;
+                const features = Array.isArray(addon.features) ? addon.features : [];
+                return (
+                  <motion.div
+                    key={addon.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.08 }}
+                  >
+                    <Card className="border-border/40 bg-card/50 backdrop-blur-sm h-full hover:border-primary/40 transition-colors">
+                      <CardContent className="pt-6 space-y-4">
+                        <div className="flex items-start justify-between">
+                          <div className="p-2.5 rounded-lg bg-primary/10">
+                            <Icon size={20} className="text-primary" />
+                          </div>
+                          <Badge variant="secondary" className="text-xs capitalize">{addon.category}</Badge>
+                        </div>
+                        <div>
+                          <h3 className="font-display text-lg font-semibold text-foreground">{addon.name}</h3>
+                          <p className="text-sm text-muted-foreground mt-1 leading-relaxed">{addon.description}</p>
+                        </div>
+                        <div className="flex items-baseline gap-1">
+                          <span className="font-display text-2xl font-bold text-foreground">
+                            £{(addon.price_cents / 100).toLocaleString()}
+                          </span>
+                          <span className="text-sm text-muted-foreground">
+                            {addon.billing_type === "recurring" ? "/mo" : "one-time"}
+                          </span>
+                        </div>
+                        <ul className="space-y-1.5">
+                          {features.map((f: string) => (
+                            <li key={f} className="text-xs text-muted-foreground flex items-center gap-2">
+                              <span className="w-1 h-1 rounded-full bg-primary shrink-0" />
+                              {f}
+                            </li>
+                          ))}
+                        </ul>
+                        <Link to="/pricing">
+                          <Button variant="outline" size="sm" className="w-full mt-2">
+                            Add to Plan <ArrowRight size={14} className="ml-1" />
+                          </Button>
+                        </Link>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </>
+        )}
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
