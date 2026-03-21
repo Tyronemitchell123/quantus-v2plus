@@ -80,6 +80,12 @@ Deno.serve(async (req) => {
     const text = await renderAsync(React.createElement(ContactConfirmationEmail, templateProps), { plainText: true })
 
     const messageId = crypto.randomUUID()
+    const unsubscribeToken = crypto.randomUUID()
+
+    await supabase.from('email_unsubscribe_tokens').insert({
+      email,
+      token: unsubscribeToken,
+    })
 
     // Log pending
     await supabase.from('email_send_log').insert({
@@ -103,6 +109,7 @@ Deno.serve(async (req) => {
         purpose: 'transactional',
         label: 'contact_confirmation',
         idempotency_key: `contact-${messageId}`,
+        unsubscribe_token: unsubscribeToken,
         queued_at: new Date().toISOString(),
       },
     })
