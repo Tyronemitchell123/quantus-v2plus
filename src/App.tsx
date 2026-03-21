@@ -97,7 +97,7 @@ const AnimatedRoutes = () => {
           <Route
             path="/marketing"
             element={
-              <ProtectedRoute requiredTier="professional">
+              <ProtectedRoute requiredTier="professional" requiredRole="admin">
                 <PageTransition><MarketingHub /></PageTransition>
               </ProtectedRoute>
             }
