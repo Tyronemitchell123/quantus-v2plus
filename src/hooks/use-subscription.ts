@@ -23,6 +23,13 @@ const TIER_LIMITS: Record<SubscriptionTier, { queries: number; integrations: num
   enterprise: { queries: Infinity, integrations: Infinity },
 };
 
+// Stripe price IDs for each tier
+export const STRIPE_TIERS = {
+  starter: { price_id: "price_1TDDnJLHlfS2sSjxih5YxUbI", product_id: "prod_UBaz9IvwQ3JGPQ" },
+  professional: { price_id: "price_1TDDnaLHlfS2sSjxeGv5mMKR", product_id: "prod_UBazsHedGjIiur" },
+  teams: { price_id: "price_1TDDoJLHlfS2sSjxqj0bGYaa", product_id: "prod_UBb0bxM7kcxShs" },
+};
+
 export function useSubscription() {
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [loading, setLoading] = useState(true);
@@ -49,19 +56,62 @@ export function useSubscription() {
       return;
     }
 
-    const { data } = await supabase
-      .from("subscriptions")
-      .select("*")
-      .eq("user_id", user.id)
-      .maybeSingle();
+    try {
+      // Check Stripe subscription status
+      const { data, error } = await supabase.functions.invoke("check-subscription");
 
-    setSubscription(data as Subscription | null);
+      if (error) {
+        console.error("check-subscription error:", error);
+        // Fallback to DB
+        const { data: dbData } = await supabase
+          .from("subscriptions")
+          .select("*")
+          .eq("user_id", user.id)
+          .maybeSingle();
+        setSubscription(dbData as Subscription | null);
+      } else if (data?.subscribed) {
+        setSubscription({
+          id: "stripe",
+          user_id: user.id,
+          tier: (data.tier as SubscriptionTier) || "starter",
+          status: (data.status as SubscriptionStatus) || "active",
+          billing_cycle: "monthly",
+          current_period_start: null,
+          current_period_end: data.subscription_end || null,
+          cancel_at_period_end: data.cancel_at_period_end || false,
+        });
+      } else {
+        // No Stripe subscription — check DB for free tier
+        const { data: dbData } = await supabase
+          .from("subscriptions")
+          .select("*")
+          .eq("user_id", user.id)
+          .maybeSingle();
+        setSubscription(dbData as Subscription | null);
+      }
+    } catch (err) {
+      console.error("Subscription check failed:", err);
+      const { data: dbData } = await supabase
+        .from("subscriptions")
+        .select("*")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      setSubscription(dbData as Subscription | null);
+    }
+
     setLoading(false);
   }, [user]);
 
   useEffect(() => {
     fetchSubscription();
   }, [fetchSubscription]);
+
+  // Auto-refresh every 60s
+  useEffect(() => {
+    if (!user) return;
+    const interval = setInterval(fetchSubscription, 60000);
+    return () => clearInterval(interval);
+  }, [user, fetchSubscription]);
 
   const isActive = subscription?.status === "active" || subscription?.status === "trialing";
   const tier = subscription?.tier ?? "free";
@@ -74,29 +124,32 @@ export function useSubscription() {
     return tierOrder.indexOf(tier) >= tierOrder.indexOf(requiredTier);
   };
 
-  const createPayment = async (selectedTier: SubscriptionTier, billingCycle: "monthly" | "annual", seats?: number) => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) throw new Error("Not authenticated");
+  const createCheckout = async (selectedTier: SubscriptionTier, seats?: number) => {
+    const { data, error } = await supabase.functions.invoke("create-checkout", {
+      body: { tier: selectedTier, seats },
+    });
 
-    const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-    const response = await fetch(
-      `https://${projectId}.supabase.co/functions/v1/truelayer-payments?action=create-payment`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
-          "Content-Type": "application/json",
-          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-        },
-        body: JSON.stringify({ tier: selectedTier, billing_cycle: billingCycle, seats: selectedTier === "teams" ? (seats || 1) : 1 }),
-      }
-    );
+    if (error) throw new Error(error.message || "Checkout failed");
+    if (data?.error) throw new Error(data.error);
+    if (data?.url) {
+      window.location.href = data.url;
+    }
+    return data;
+  };
 
-    const result = await response.json();
-    if (!response.ok) throw new Error(result.error || "Payment failed");
+  const openCustomerPortal = async () => {
+    const { data, error } = await supabase.functions.invoke("customer-portal");
+    if (error) throw new Error(error.message || "Portal failed");
+    if (data?.error) throw new Error(data.error);
+    if (data?.url) {
+      window.location.href = data.url;
+    }
+    return data;
+  };
 
-    await fetchSubscription();
-    return result;
+  // Keep backward compat
+  const createPayment = async (selectedTier: SubscriptionTier, _billingCycle: "monthly" | "annual", seats?: number) => {
+    return createCheckout(selectedTier, seats);
   };
 
   return {
@@ -107,6 +160,8 @@ export function useSubscription() {
     limits,
     canAccess,
     createPayment,
+    createCheckout,
+    openCustomerPortal,
     refresh: fetchSubscription,
     user,
   };

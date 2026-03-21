@@ -71,16 +71,7 @@ const PlanSwitcher = ({ currentTier, isActive }: Props) => {
 
     setSwitching(targetTier);
     try {
-      const result = await createPayment(targetTier, "monthly");
-      if (result.demo) {
-        toast({
-          title: "Plan updated!",
-          description: `You're now on the ${targetTier} plan.`,
-        });
-        await refresh();
-      } else if (result.hosted_payment_page) {
-        window.location.href = result.hosted_payment_page;
-      }
+      await createPayment(targetTier, "monthly");
     } catch (err: any) {
       toast({ title: "Error", description: err.message, variant: "destructive" });
     } finally {
