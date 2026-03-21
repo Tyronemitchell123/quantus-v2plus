@@ -1,11 +1,16 @@
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Atom, TrendingUp, Megaphone, Coins, ArrowRight } from "lucide-react";
+import { Atom, TrendingUp, Megaphone, Coins, ArrowRight, Shield, Cpu, Zap, BarChart3, Users, Lock, Rocket } from "lucide-react";
 import { Link } from "react-router-dom";
 import useDocumentHead from "@/hooks/use-document-head";
 import quantumProcessor from "@/assets/quantum-processor.jpg";
 import quantumAnalytics from "@/assets/quantum-analytics.jpg";
 import QuantumOrbit from "@/components/QuantumOrbit";
 import HeroVideoBackground from "@/components/HeroVideoBackground";
+import { supabase } from "@/integrations/supabase/client";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 
 const services = [
   {
@@ -33,6 +38,15 @@ const services = [
     features: ["Quantum portfolio optimization", "Post-quantum cryptography", "Quantum-resistant smart contracts", "Quantum arbitrage detection"],
   },
 ];
+
+const premiumIcons: Record<string, React.ElementType> = {
+  enterprise: Cpu,
+  premium: Rocket,
+  analytics: BarChart3,
+  compliance: Shield,
+  credits: Zap,
+  support: Users,
+};
 
 const tiers = [
   { name: "Growth", price: "$5,000", period: "/mo", features: ["1 quantum model", "Basic quantum analytics", "AI concierge access", "5 API integrations"] },
