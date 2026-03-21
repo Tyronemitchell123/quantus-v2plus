@@ -143,13 +143,23 @@ const CurrentPlanCard = ({ subscription, isActive, tier, onRefresh }: Props) => 
           </div>
         </div>
 
-        {/* Price */}
-        <div className="text-right">
+        {/* Price + Manage */}
+        <div className="text-right space-y-2">
           <p className="font-display text-3xl font-bold text-foreground tabular-nums">
             {meta.price}
           </p>
           {tier !== "free" && tier !== "enterprise" && (
-            <p className="text-xs text-muted-foreground">/month</p>
+            <>
+              <p className="text-xs text-muted-foreground">/month</p>
+              <button
+                onClick={handleManageSubscription}
+                disabled={openingPortal}
+                className="text-xs font-semibold text-primary hover:text-primary/80 transition-colors disabled:opacity-50 flex items-center gap-1 ml-auto"
+              >
+                {openingPortal ? <Loader2 size={12} className="animate-spin" /> : <ExternalLink size={12} />}
+                Manage Subscription
+              </button>
+            </>
           )}
         </div>
       </div>
