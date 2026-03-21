@@ -33,6 +33,7 @@ const UserGuide = lazy(() => import("./pages/UserGuide"));
 const MarketingHub = lazy(() => import("./pages/MarketingHub"));
 const Blog = lazy(() => import("./pages/Blog"));
 const Enterprise = lazy(() => import("./pages/Enterprise"));
+const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
