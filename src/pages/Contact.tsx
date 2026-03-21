@@ -6,6 +6,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { useAIAnalytics } from "@/hooks/use-ai-analytics";
 import AIFallbackBanner from "@/components/AIFallbackBanner";
 import HeroVideoBackground from "@/components/HeroVideoBackground";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
 
 type ContactAnalysis = {
@@ -42,6 +44,21 @@ const Contact = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitted(true);
+
+    // Send confirmation email via edge function
+    try {
+      const { error } = await supabase.functions.invoke("handle-contact", {
+        body: { name, email, company, message },
+      });
+      if (error) {
+        console.error("Contact handler error:", error);
+      } else {
+        toast({ title: "Confirmation email sent", description: `A confirmation has been sent to ${email}` });
+      }
+    } catch (err) {
+      console.error("Failed to send contact email:", err);
+    }
+
     await analyze("analyze-contact");
   };
 
