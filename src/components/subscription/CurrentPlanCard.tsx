@@ -55,13 +55,26 @@ interface Props {
 
 const CurrentPlanCard = ({ subscription, isActive, tier, onRefresh }: Props) => {
   const [canceling, setCanceling] = useState(false);
+  const [openingPortal, setOpeningPortal] = useState(false);
   const { toast } = useToast();
+  const { openCustomerPortal } = useSubscription();
 
   const meta = TIER_META[tier];
   const Icon = meta.icon;
   const status = subscription?.status ?? "inactive";
   const sMeta = STATUS_META[status] ?? STATUS_META.inactive;
   const StatusIcon = sMeta.icon;
+
+  const handleManageSubscription = async () => {
+    setOpeningPortal(true);
+    try {
+      await openCustomerPortal();
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    } finally {
+      setOpeningPortal(false);
+    }
+  };
 
   const callManage = async (action: "cancel" | "reactivate") => {
     if (!subscription) return;
