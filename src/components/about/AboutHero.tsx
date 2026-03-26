@@ -1,17 +1,19 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
-import heroAbstract from "@/assets/hero-abstract.jpg";
+import aboutHeroVideo from "@/assets/about-hero-bg.mp4";
 
 const AboutHero = () => (
   <header className="relative min-h-[85vh] flex items-center overflow-hidden">
-    <img
-      src={heroAbstract}
-      alt=""
+    <video
+      autoPlay
+      loop
+      muted
+      playsInline
       className="absolute inset-0 w-full h-full object-cover"
-      width={1920}
-      height={1080}
-    />
+    >
+      <source src={aboutHeroVideo} type="video/mp4" />
+    </video>
     <div className="absolute inset-0 bg-gradient-to-b from-background/30 via-background/60 to-background" />
     <div className="absolute inset-0 bg-gradient-to-r from-background/50 via-transparent to-background/50" />
 

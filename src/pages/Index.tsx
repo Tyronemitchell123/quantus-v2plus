@@ -12,16 +12,22 @@ import heroEstate from "@/assets/hero-estate.jpg";
 import heroPrecision from "@/assets/hero-precision.jpg";
 import heroTravel from "@/assets/hero-travel.jpg";
 
+import videoAviationAsset from "@/assets/video-aviation.mp4.asset.json";
+import videoWellnessAsset from "@/assets/video-wellness.mp4.asset.json";
+import videoLifestyleAsset from "@/assets/video-lifestyle.mp4.asset.json";
+import videoEstateAsset from "@/assets/video-estate.mp4.asset.json";
+import videoPrecisionAsset from "@/assets/video-precision.mp4.asset.json";
+
 const heroImages = [heroAbstract, heroAviation, heroLifestyle];
 
 const modules = [
-  { icon: Plane, title: "Aviation Intelligence", desc: "Aircraft sourcing, jet valuation, buyer-seller matching, and ownership cost modeling.", image: heroAviation, link: "/dashboard" },
-  { icon: Heart, title: "Medical Travel & Wellness", desc: "Clinic matching, itinerary building, longevity programs, and post-care workflows.", image: heroWellness, link: "/dashboard" },
-  { icon: Users, title: "Household & Staffing", desc: "Role definition, staffing matchmaker, estate digital twin, and performance analytics.", image: heroEstate, link: "/dashboard" },
-  { icon: Globe, title: "Luxury Travel & Lifestyle", desc: "Ultra-luxury itineraries, hotel/yacht matching, visa compliance, and cultural curation.", image: heroLifestyle, link: "/dashboard" },
-  { icon: Truck, title: "Operational Logistics", desc: "Dispatch automation, incident triage, fleet analytics, and compliance documentation.", image: heroPrecision, link: "/dashboard" },
-  { icon: Handshake, title: "Partnership Intelligence", desc: "Partner scoring, revenue-share modeling, brand alignment, and licensing automation.", image: heroTravel, link: "/dashboard" },
-  { icon: MessageSquare, title: "Communication Engine", desc: "Cinematic messaging, narrative-driven updates, onboarding sequences, and follow-ups.", image: heroAbstract, link: "/dashboard" },
+  { icon: Plane, title: "Aviation Intelligence", desc: "Aircraft sourcing, jet valuation, buyer-seller matching, and ownership cost modeling.", image: heroAviation, video: videoAviationAsset.url, link: "/dashboard" },
+  { icon: Heart, title: "Medical Travel & Wellness", desc: "Clinic matching, itinerary building, longevity programs, and post-care workflows.", image: heroWellness, video: videoWellnessAsset.url, link: "/dashboard" },
+  { icon: Users, title: "Household & Staffing", desc: "Role definition, staffing matchmaker, estate digital twin, and performance analytics.", image: heroEstate, video: videoEstateAsset.url, link: "/dashboard" },
+  { icon: Globe, title: "Luxury Travel & Lifestyle", desc: "Ultra-luxury itineraries, hotel/yacht matching, visa compliance, and cultural curation.", image: heroLifestyle, video: videoLifestyleAsset.url, link: "/dashboard" },
+  { icon: Truck, title: "Operational Logistics", desc: "Dispatch automation, incident triage, fleet analytics, and compliance documentation.", image: heroPrecision, video: videoPrecisionAsset.url, link: "/dashboard" },
+  { icon: Handshake, title: "Partnership Intelligence", desc: "Partner scoring, revenue-share modeling, brand alignment, and licensing automation.", image: heroTravel, video: videoLifestyleAsset.url, link: "/dashboard" },
+  { icon: MessageSquare, title: "Communication Engine", desc: "Cinematic messaging, narrative-driven updates, onboarding sequences, and follow-ups.", image: heroAbstract, video: videoPrecisionAsset.url, link: "/dashboard" },
 ];
 
 const tiers = [
@@ -171,14 +177,20 @@ const Index = () => {
             <h2 className="font-display text-3xl sm:text-4xl font-medium">Seven verticals. One intelligence layer.</h2>
           </motion.div>
 
-          {/* Featured modules with large images */}
+          {/* Featured modules with video backgrounds */}
           <div className="grid lg:grid-cols-2 gap-6 max-w-6xl mx-auto mb-6">
             {modules.slice(0, 2).map((mod, i) => (
               <motion.div key={mod.title} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} custom={i * 0.5}
                 className="relative overflow-hidden group cursor-pointer"
               >
                 <Link to={mod.link}>
-                  <img src={mod.image} alt={mod.title} className="w-full h-72 sm:h-80 object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" width={1920} height={1080} />
+                  <video
+                    autoPlay loop muted playsInline
+                    poster={mod.image}
+                    className="w-full h-72 sm:h-80 object-cover transition-transform duration-700 group-hover:scale-105"
+                  >
+                    <source src={mod.video} type="video/mp4" />
+                  </video>
                   <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
                   <div className="absolute bottom-0 left-0 right-0 p-7">
                     <div className="flex items-center gap-3 mb-3">
@@ -196,14 +208,20 @@ const Index = () => {
             ))}
           </div>
 
-          {/* Remaining modules grid */}
+          {/* Remaining modules with video backgrounds */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
             {modules.slice(2).map((mod, i) => (
               <motion.div key={mod.title} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} custom={i * 0.3}
                 className="relative overflow-hidden group cursor-pointer"
               >
                 <Link to={mod.link}>
-                  <img src={mod.image} alt={mod.title} className="w-full h-52 object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" width={1920} height={1080} />
+                  <video
+                    autoPlay loop muted playsInline
+                    poster={mod.image}
+                    className="w-full h-52 object-cover transition-transform duration-700 group-hover:scale-105"
+                  >
+                    <source src={mod.video} type="video/mp4" />
+                  </video>
                   <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
                   <div className="absolute bottom-0 left-0 right-0 p-6">
                     <div className="flex items-center gap-2 mb-2">
@@ -221,20 +239,14 @@ const Index = () => {
 
       <div className="luxury-divider" />
 
-      {/* Full-width image break */}
+      {/* Full-width video break */}
       <section className="relative h-[50vh] overflow-hidden">
-        <motion.img
-          src={heroTravel}
-          alt="Luxury superyacht"
+        <video
+          autoPlay loop muted playsInline
           className="absolute inset-0 w-full h-full object-cover"
-          initial={{ scale: 1.1 }}
-          whileInView={{ scale: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1.5 }}
-          loading="lazy"
-          width={1920}
-          height={1080}
-        />
+        >
+          <source src={videoLifestyleAsset.url} type="video/mp4" />
+        </video>
         <div className="absolute inset-0 bg-background/60" />
         <div className="relative z-10 flex items-center justify-center h-full">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} custom={0} className="text-center">
