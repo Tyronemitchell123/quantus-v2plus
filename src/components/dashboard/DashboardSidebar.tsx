@@ -6,7 +6,7 @@ import {
 
 const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", to: "/dashboard" },
-  { icon: Briefcase, label: "Deals", to: "/intake" },
+  { icon: Briefcase, label: "Deals", to: "/deals" },
   { icon: Grid3X3, label: "Modules", to: "/dashboard/modules" },
   { icon: Bot, label: "AI Assistant", to: "/chat" },
   { icon: FileText, label: "Documents", to: "/documents" },

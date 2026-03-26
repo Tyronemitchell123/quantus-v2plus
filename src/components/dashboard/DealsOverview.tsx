@@ -9,7 +9,7 @@ const cards = [
     desc: "Active deals across modules",
     icon: Loader2,
     cta: "View Deals",
-    to: "/intake",
+    to: "/deals",
     ring: 65,
   },
   {
