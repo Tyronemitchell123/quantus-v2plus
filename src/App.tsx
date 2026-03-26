@@ -28,13 +28,14 @@ const Negotiation = lazy(() => import("./pages/Negotiation"));
 const Workflow = lazy(() => import("./pages/Workflow"));
 const DocumentsBilling = lazy(() => import("./pages/DocumentsBilling"));
 const DealCompletion = lazy(() => import("./pages/DealCompletion"));
+const DealEngine = lazy(() => import("./pages/DealEngine"));
 const Onboarding = lazy(() => import("./pages/Onboarding"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
 
 // Routes that use the dashboard shell (no global navbar/footer)
-const dashboardRoutes = ["/dashboard", "/chat", "/intake", "/sourcing", "/outreach", "/negotiation", "/workflow", "/documents", "/deal-completion", "/settings", "/account/subscription"];
+const dashboardRoutes = ["/dashboard", "/deals", "/chat", "/intake", "/sourcing", "/outreach", "/negotiation", "/workflow", "/documents", "/deal-completion", "/settings", "/account/subscription"];
 
 const AnimatedRoutes = () => {
   const location = useLocation();
