@@ -205,6 +205,69 @@ export type Database = {
         }
         Relationships: []
       }
+      commission_logs: {
+        Row: {
+          category: string
+          commission_cents: number
+          commission_rate: number | null
+          created_at: string
+          deal_id: string
+          deal_value_cents: number | null
+          id: string
+          invoice_id: string | null
+          notes: string | null
+          paid_at: string | null
+          status: string
+          user_id: string
+          vendor_name: string | null
+        }
+        Insert: {
+          category: string
+          commission_cents?: number
+          commission_rate?: number | null
+          created_at?: string
+          deal_id: string
+          deal_value_cents?: number | null
+          id?: string
+          invoice_id?: string | null
+          notes?: string | null
+          paid_at?: string | null
+          status?: string
+          user_id: string
+          vendor_name?: string | null
+        }
+        Update: {
+          category?: string
+          commission_cents?: number
+          commission_rate?: number | null
+          created_at?: string
+          deal_id?: string
+          deal_value_cents?: number | null
+          id?: string
+          invoice_id?: string | null
+          notes?: string | null
+          paid_at?: string | null
+          status?: string
+          user_id?: string
+          vendor_name?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "commission_logs_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "deals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "commission_logs_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contact_submissions: {
         Row: {
           auto_reply_sent: boolean
@@ -276,6 +339,62 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      deal_documents: {
+        Row: {
+          content: string | null
+          created_at: string
+          deal_id: string
+          document_type: string
+          fields: Json | null
+          id: string
+          metadata: Json | null
+          signed_at: string | null
+          signed_by: string | null
+          status: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string
+          deal_id: string
+          document_type: string
+          fields?: Json | null
+          id?: string
+          metadata?: Json | null
+          signed_at?: string | null
+          signed_by?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string | null
+          created_at?: string
+          deal_id?: string
+          document_type?: string
+          fields?: Json | null
+          id?: string
+          metadata?: Json | null
+          signed_at?: string | null
+          signed_by?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deal_documents_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "deals"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       deals: {
         Row: {
@@ -456,6 +575,80 @@ export type Database = {
           used_at?: string | null
         }
         Relationships: []
+      }
+      invoices: {
+        Row: {
+          amount_cents: number
+          created_at: string
+          currency: string
+          deal_id: string
+          due_date: string | null
+          id: string
+          invoice_number: string
+          invoice_type: string
+          last_reminder_at: string | null
+          line_items: Json | null
+          metadata: Json | null
+          notes: string | null
+          paid_at: string | null
+          recipient_email: string | null
+          recipient_name: string | null
+          reminder_count: number | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount_cents: number
+          created_at?: string
+          currency?: string
+          deal_id: string
+          due_date?: string | null
+          id?: string
+          invoice_number?: string
+          invoice_type?: string
+          last_reminder_at?: string | null
+          line_items?: Json | null
+          metadata?: Json | null
+          notes?: string | null
+          paid_at?: string | null
+          recipient_email?: string | null
+          recipient_name?: string | null
+          reminder_count?: number | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount_cents?: number
+          created_at?: string
+          currency?: string
+          deal_id?: string
+          due_date?: string | null
+          id?: string
+          invoice_number?: string
+          invoice_type?: string
+          last_reminder_at?: string | null
+          line_items?: Json | null
+          metadata?: Json | null
+          notes?: string | null
+          paid_at?: string | null
+          recipient_email?: string | null
+          recipient_name?: string | null
+          reminder_count?: number | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoices_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "deals"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       marketing_ads: {
         Row: {
