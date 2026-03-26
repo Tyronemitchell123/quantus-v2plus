@@ -19,7 +19,7 @@ const tabs = [
 ];
 
 const Settings = () => {
-  const [activeTab, setActiveTab] = useState("export");
+  const [activeTab, setActiveTab] = useState("commission");
 
   useDocumentHead({
     title: "Settings — QUANTUS AI",
