@@ -14,25 +14,30 @@ const Footer = () => (
           </p>
         </div>
         <div>
-          <h4 className="font-display text-sm font-medium text-foreground mb-4">Platform</h4>
-          <div className="flex flex-col gap-2.5">
-            <Link to="/modules" className="text-sm text-muted-foreground hover:text-primary transition-colors font-body">Modules</Link>
-            <Link to="/dashboard" className="text-sm text-muted-foreground hover:text-primary transition-colors font-body">Dashboard</Link>
-            <Link to="/pricing" className="text-sm text-muted-foreground hover:text-primary transition-colors font-body">Membership</Link>
-          </div>
-        </div>
-        <div>
           <h4 className="font-display text-sm font-medium text-foreground mb-4">Company</h4>
           <div className="flex flex-col gap-2.5">
             <Link to="/about" className="text-sm text-muted-foreground hover:text-primary transition-colors font-body">About</Link>
             <Link to="/contact" className="text-sm text-muted-foreground hover:text-primary transition-colors font-body">Contact</Link>
+            <Link to="/enterprise" className="text-sm text-muted-foreground hover:text-primary transition-colors font-body">Enterprise</Link>
           </div>
         </div>
         <div>
-          <h4 className="font-display text-sm font-medium text-foreground mb-4">Connect</h4>
-          <div className="flex flex-col gap-2.5 text-sm text-muted-foreground font-body">
-            <span>enquiries@quantus-ai.com</span>
-            <span>London, United Kingdom</span>
+          <h4 className="font-display text-sm font-medium text-foreground mb-4">Modules</h4>
+          <div className="flex flex-col gap-2.5">
+            <Link to="/dashboard" className="text-sm text-muted-foreground hover:text-primary transition-colors font-body">Aviation</Link>
+            <Link to="/dashboard" className="text-sm text-muted-foreground hover:text-primary transition-colors font-body">Medical</Link>
+            <Link to="/dashboard" className="text-sm text-muted-foreground hover:text-primary transition-colors font-body">Staffing</Link>
+            <Link to="/dashboard" className="text-sm text-muted-foreground hover:text-primary transition-colors font-body">Travel</Link>
+            <Link to="/dashboard" className="text-sm text-muted-foreground hover:text-primary transition-colors font-body">Logistics</Link>
+          </div>
+        </div>
+        <div>
+          <h4 className="font-display text-sm font-medium text-foreground mb-4">Legal</h4>
+          <div className="flex flex-col gap-2.5">
+            <span className="text-sm text-muted-foreground font-body">Privacy Policy</span>
+            <span className="text-sm text-muted-foreground font-body">Terms of Service</span>
+            <span className="text-sm text-muted-foreground font-body">enquiries@quantus-ai.com</span>
+            <span className="text-sm text-muted-foreground font-body">London, United Kingdom</span>
           </div>
         </div>
       </div>
