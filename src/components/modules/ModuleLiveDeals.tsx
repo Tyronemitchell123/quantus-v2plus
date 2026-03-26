@@ -81,7 +81,7 @@ const ModuleLiveDeals = ({ deals, sourcingResults, vendorOutreach, loading, cate
             <h3 className="font-body text-[9px] tracking-[0.2em] uppercase text-primary/60">
               Your Active {categoryLabel} Deals
             </h3>
-            <Link to="/deal-engine" className="font-body text-[9px] text-primary hover:underline flex items-center gap-1">
+            <Link to="/deals" className="font-body text-[9px] text-primary hover:underline flex items-center gap-1">
               View All <ArrowRight size={8} />
             </Link>
           </div>
