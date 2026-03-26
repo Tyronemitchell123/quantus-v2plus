@@ -33,12 +33,22 @@ const Shortlisting = lazy(() => import("./pages/Shortlisting"));
 const Onboarding = lazy(() => import("./pages/Onboarding"));
 const PartnerPortal = lazy(() => import("./pages/PartnerPortal"));
 const PartnerOnboarding = lazy(() => import("./pages/PartnerOnboarding"));
+const Services = lazy(() => import("./pages/Services"));
+const Blog = lazy(() => import("./pages/Blog"));
+const Benefits = lazy(() => import("./pages/Benefits"));
+const Enterprise = lazy(() => import("./pages/Enterprise"));
+const CaseStudies = lazy(() => import("./pages/CaseStudies"));
+const UserGuide = lazy(() => import("./pages/UserGuide"));
+const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
+const MarketingHub = lazy(() => import("./pages/MarketingHub"));
+const NLPTools = lazy(() => import("./pages/NLPTools"));
+const QuantumComputing = lazy(() => import("./pages/QuantumComputing"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
 
 // Routes that use the dashboard shell (no global navbar/footer)
-const dashboardRoutes = ["/dashboard", "/deals", "/chat", "/intake", "/sourcing", "/outreach", "/shortlist", "/negotiation", "/workflow", "/documents", "/deal-completion", "/settings", "/account/subscription", "/partner"];
+const dashboardRoutes = ["/dashboard", "/deals", "/chat", "/intake", "/sourcing", "/outreach", "/shortlist", "/negotiation", "/workflow", "/documents", "/deal-completion", "/settings", "/account/subscription", "/partner", "/admin", "/marketing", "/nlp", "/quantum"];
 
 const AnimatedRoutes = () => {
   const location = useLocation();
@@ -56,6 +66,12 @@ const AnimatedRoutes = () => {
             <Route path="/modules" element={<PageTransition><Index /><Footer /></PageTransition>} />
             <Route path="/pricing" element={<PageTransition><Pricing /><Footer /></PageTransition>} />
             <Route path="/contact" element={<PageTransition><Contact /><Footer /></PageTransition>} />
+            <Route path="/services" element={<PageTransition><Services /><Footer /></PageTransition>} />
+            <Route path="/blog" element={<PageTransition><Blog /><Footer /></PageTransition>} />
+            <Route path="/benefits" element={<PageTransition><Benefits /><Footer /></PageTransition>} />
+            <Route path="/enterprise" element={<PageTransition><Enterprise /><Footer /></PageTransition>} />
+            <Route path="/case-studies" element={<PageTransition><CaseStudies /><Footer /></PageTransition>} />
+            <Route path="/guide" element={<PageTransition><UserGuide /><Footer /></PageTransition>} />
             <Route path="/auth" element={<PageTransition><Auth /></PageTransition>} />
             <Route path="/reset-password" element={<PageTransition><ResetPassword /></PageTransition>} />
             <Route path="/onboarding" element={<ProtectedRoute><PageTransition><Onboarding /></PageTransition></ProtectedRoute>} />
@@ -78,6 +94,11 @@ const AnimatedRoutes = () => {
 
             <Route path="/partner" element={<ProtectedRoute><PartnerPortal /></ProtectedRoute>} />
             <Route path="/partner/onboarding" element={<ProtectedRoute><PageTransition><PartnerOnboarding /></PageTransition></ProtectedRoute>} />
+
+            <Route path="/admin" element={<ProtectedRoute><PageTransition><AdminDashboard /></PageTransition></ProtectedRoute>} />
+            <Route path="/marketing" element={<ProtectedRoute><PageTransition><MarketingHub /></PageTransition></ProtectedRoute>} />
+            <Route path="/nlp" element={<ProtectedRoute><PageTransition><NLPTools /></PageTransition></ProtectedRoute>} />
+            <Route path="/quantum" element={<ProtectedRoute><PageTransition><QuantumComputing /></PageTransition></ProtectedRoute>} />
 
             <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
           </Routes>
