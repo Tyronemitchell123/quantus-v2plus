@@ -345,10 +345,10 @@ const RecommendationEngine = () => {
             className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8"
           >
             {[
-              { icon: Sparkles, label: "Active Insights", value: "6", sub: "across 5 modules" },
-              { icon: AlertTriangle, label: "Risk Alerts", value: "1", sub: "critical" },
-              { icon: TrendingUp, label: "Opportunities", value: "2", sub: "time-sensitive" },
-              { icon: Target, label: "Confidence Avg", value: "92%", sub: "high accuracy" },
+              { icon: Sparkles, label: "Active Insights", value: String(liveStats.total || 6), sub: "across all modules" },
+              { icon: AlertTriangle, label: "Risk Alerts", value: String(liveStats.risks || 1), sub: liveStats.risks > 1 ? "attention needed" : "critical" },
+              { icon: TrendingUp, label: "Opportunities", value: String(liveStats.opportunities || 2), sub: "time-sensitive" },
+              { icon: Target, label: "Confidence Avg", value: `${liveStats.avgConfidence || 92}%`, sub: "high accuracy" },
             ].map((stat, i) => (
               <div key={stat.label} className="border border-border bg-card/50 p-4">
                 <div className="flex items-center gap-2 mb-2">
