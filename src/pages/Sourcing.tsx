@@ -106,10 +106,19 @@ export default function Sourcing() {
       });
       if (error) throw new Error(error.message);
       if (data?.error) throw new Error(data.error);
-      setResults((data.results as SourcingResult[]).sort((a, b) => b.overall_score - a.overall_score));
+      const sortedResults = (data.results as SourcingResult[]).sort((a, b) => b.overall_score - a.overall_score);
+      setResults(sortedResults);
       setPresentationMessage(data.presentation_message || "");
       if (deal) setDeal({ ...deal, status: "sourcing" });
       toast.success("Sourcing complete — shortlist ready");
+
+      // Send sourcing update email (non-blocking)
+      if (deal) {
+        sendDealPhaseEmail({
+          template: "deal_sourcing_update",
+          data: { dealNumber: deal.deal_number, category: deal.category, optionsCount: sortedResults.length },
+        });
+      }
     } catch (e: any) {
       toast.error(e.message || "Sourcing failed");
     } finally {
