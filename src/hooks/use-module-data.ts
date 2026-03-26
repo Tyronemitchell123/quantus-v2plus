@@ -87,7 +87,7 @@ export function useModuleData(category: string) {
         supabase
           .from("vendor_outreach")
           .select("id, deal_id, vendor_name, vendor_company, category, status, vendor_score, response_time_hours, follow_up_count, negotiation_ready, created_at")
-          .eq("category", category)
+          .eq("category", category as any)
           .order("created_at", { ascending: false })
           .limit(20),
       ]);
