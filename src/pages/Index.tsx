@@ -1,46 +1,13 @@
-import { useRef, useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
-import { Plane, Heart, Users, Globe, Truck, Handshake, MessageSquare, ArrowRight, Shield, Brain, Clock } from "lucide-react";
 import useDocumentHead from "@/hooks/use-document-head";
-
-import heroAbstract from "@/assets/hero-abstract.jpg";
-import heroAviation from "@/assets/hero-aviation.jpg";
-import heroWellness from "@/assets/hero-wellness.jpg";
-import heroLifestyle from "@/assets/hero-lifestyle.jpg";
-import heroEstate from "@/assets/hero-estate.jpg";
-import heroPrecision from "@/assets/hero-precision.jpg";
-import heroTravel from "@/assets/hero-travel.jpg";
-
-import videoAviationAsset from "@/assets/video-aviation.mp4.asset.json";
-import videoWellnessAsset from "@/assets/video-wellness.mp4.asset.json";
-import videoLifestyleAsset from "@/assets/video-lifestyle.mp4.asset.json";
-import videoEstateAsset from "@/assets/video-estate.mp4.asset.json";
-import videoPrecisionAsset from "@/assets/video-precision.mp4.asset.json";
-
-const heroImages = [heroAbstract, heroAviation, heroLifestyle];
-
-const modules = [
-  { icon: Plane, title: "Aviation Intelligence", desc: "Aircraft sourcing, jet valuation, buyer-seller matching, and ownership cost modeling.", image: heroAviation, video: videoAviationAsset.url, link: "/dashboard" },
-  { icon: Heart, title: "Medical Travel & Wellness", desc: "Clinic matching, itinerary building, longevity programs, and post-care workflows.", image: heroWellness, video: videoWellnessAsset.url, link: "/dashboard" },
-  { icon: Users, title: "Household & Staffing", desc: "Role definition, staffing matchmaker, estate digital twin, and performance analytics.", image: heroEstate, video: videoEstateAsset.url, link: "/dashboard" },
-  { icon: Globe, title: "Luxury Travel & Lifestyle", desc: "Ultra-luxury itineraries, hotel/yacht matching, visa compliance, and cultural curation.", image: heroLifestyle, video: videoLifestyleAsset.url, link: "/dashboard" },
-  { icon: Truck, title: "Operational Logistics", desc: "Dispatch automation, incident triage, fleet analytics, and compliance documentation.", image: heroPrecision, video: videoPrecisionAsset.url, link: "/dashboard" },
-  { icon: Handshake, title: "Partnership Intelligence", desc: "Partner scoring, revenue-share modeling, brand alignment, and licensing automation.", image: heroTravel, video: videoLifestyleAsset.url, link: "/dashboard" },
-  { icon: MessageSquare, title: "Communication Engine", desc: "Cinematic messaging, narrative-driven updates, onboarding sequences, and follow-ups.", image: heroAbstract, video: videoPrecisionAsset.url, link: "/dashboard" },
-];
-
-const tiers = [
-  { name: "Silver", price: "£99", period: "/mo", features: ["2 active modules", "Standard AI processing", "Email support", "Monthly reports"] },
-  { name: "Gold", price: "£499", period: "/mo", features: ["5 active modules", "Priority AI processing", "Dedicated advisor", "Weekly intelligence briefs"], featured: true },
-  { name: "Black", price: "£2,500", period: "/mo", features: ["All modules", "Real-time AI orchestration", "24/7 private line", "Custom integrations"] },
-  { name: "Obsidian", price: "£10,000", period: "/mo", features: ["Full platform access", "White-glove onboarding", "Bespoke AI models", "On-site consultations"] },
-];
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 30 },
-  visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.1, duration: 0.7, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] } }),
-};
+import HeroSection from "@/components/landing/HeroSection";
+import ValueProposition from "@/components/landing/ValueProposition";
+import ModuleShowcase from "@/components/landing/ModuleShowcase";
+import CinematicStrip from "@/components/landing/CinematicStrip";
+import MembershipTiers from "@/components/landing/MembershipTiers";
+import HowItWorks from "@/components/landing/HowItWorks";
+import PartnerEcosystem from "@/components/landing/PartnerEcosystem";
+import Testimonials from "@/components/landing/Testimonials";
+import FinalCTA from "@/components/landing/FinalCTA";
 
 const Index = () => {
   useDocumentHead({
@@ -48,272 +15,25 @@ const Index = () => {
     description: "A multi-vertical orchestration engine for UHNW clients. Aviation, medical travel, staffing, luxury lifestyle — unified in one private interface.",
   });
 
-  const [currentHeroImage, setCurrentHeroImage] = useState(0);
-  useEffect(() => {
-    const interval = setInterval(() => setCurrentHeroImage((p) => (p + 1) % heroImages.length), 6000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const heroRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
-  const heroScale = useTransform(scrollYProgress, [0, 0.7], [1, 1.05]);
-
   return (
     <main className="min-h-screen bg-background">
-      {/* Hero with rotating images */}
-      <motion.section ref={heroRef} style={{ opacity: heroOpacity }} className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentHeroImage}
-            initial={{ opacity: 0, scale: 1.1 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 1.5, ease: "easeInOut" }}
-            className="absolute inset-0"
-          >
-            <motion.img
-              src={heroImages[currentHeroImage]}
-              alt=""
-              className="absolute inset-0 w-full h-full object-cover"
-              style={{ scale: heroScale }}
-              width={1920}
-              height={1080}
-            />
-          </motion.div>
-        </AnimatePresence>
-        <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/70 to-background" />
-        <div className="absolute inset-0 bg-gradient-to-r from-background/60 via-transparent to-background/60" />
-
-        <div className="relative z-10 container mx-auto px-6 text-center max-w-4xl">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}>
-            <p className="font-body text-xs tracking-[0.35em] uppercase text-primary/80 mb-8">Private Intelligence Platform</p>
-            <h1 className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-medium leading-[0.95] tracking-tight mb-8">
-              <span className="text-gold-gradient">Quantus</span>
-              <br />
-              <span className="text-foreground font-light italic">A.I</span>
-            </h1>
-            <p className="font-body text-base sm:text-lg text-muted-foreground max-w-xl mx-auto leading-relaxed mb-12">
-              A multi-vertical orchestration engine designed for those who operate at the highest level. Aviation. Medical travel. Staffing. Lifestyle. Unified.
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link to="/auth" className="px-8 py-3.5 font-body text-sm font-medium tracking-widest uppercase bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300">
-                Request Access
-              </Link>
-              <Link to="/about" className="px-8 py-3.5 font-body text-sm font-medium tracking-widest uppercase border border-border text-foreground/70 hover:text-foreground hover:border-primary/30 transition-all duration-300">
-                Learn More
-              </Link>
-            </div>
-          </motion.div>
-        </div>
-
-        <motion.div className="absolute bottom-8 left-1/2 -translate-x-1/2" animate={{ y: [0, 8, 0] }} transition={{ duration: 2, repeat: Infinity }}>
-          <div className="w-px h-12 bg-gradient-to-b from-primary/40 to-transparent" />
-        </motion.div>
-      </motion.section>
-
+      <HeroSection />
       <div className="luxury-divider" />
-
-      {/* Philosophy with image */}
-      <section className="py-24 sm:py-32">
-        <div className="container mx-auto px-6">
-          <div className="grid lg:grid-cols-2 gap-16 items-center max-w-6xl mx-auto">
-            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeUp} custom={0}>
-              <p className="font-body text-xs tracking-[0.35em] uppercase text-primary/70 mb-6">Philosophy</p>
-              <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-medium leading-tight mb-8">
-                Not a concierge.
-                <br />
-                <span className="italic text-primary">An orchestration engine.</span>
-              </h2>
-              <p className="font-body text-muted-foreground leading-relaxed text-base sm:text-lg">
-                Quantus A.I anticipates, automates, and executes across every vertical of ultra-high-net-worth life — from sourcing a Gulfstream to scheduling a stem cell consultation, from placing a household chef to negotiating a brand partnership.
-              </p>
-            </motion.div>
-            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} custom={2}>
-              <div className="relative overflow-hidden group">
-                <img src={heroPrecision} alt="Precision engineering" className="w-full h-80 object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" width={1920} height={1080} />
-                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
-                <div className="absolute bottom-0 left-0 right-0 p-6">
-                  <p className="font-body text-xs tracking-[0.25em] uppercase text-primary/60">Precision at every level</p>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
+      <ValueProposition />
       <div className="luxury-divider" />
-
-      {/* Differentiators */}
-      <section className="py-24 sm:py-32">
-        <div className="container mx-auto px-6">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} custom={0} className="text-center mb-16">
-            <p className="font-body text-xs tracking-[0.35em] uppercase text-primary/70 mb-4">Why Quantus</p>
-            <h2 className="font-display text-3xl sm:text-4xl font-medium">Built for discretion. Designed for power.</h2>
-          </motion.div>
-          <div className="grid sm:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            {[
-              { icon: Shield, title: "Privacy-First", desc: "End-to-end encrypted workflows. No third-party data sharing. Ever." },
-              { icon: Brain, title: "Anticipatory Logic", desc: "AI that learns your patterns and acts before you ask." },
-              { icon: Clock, title: "Always On", desc: "24/7 autonomous operations across all time zones and verticals." },
-            ].map((item, i) => (
-              <motion.div key={item.title} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} custom={i + 1} className="glass-card p-8 text-center group hover:border-primary/20 transition-colors duration-500">
-                <item.icon className="w-6 h-6 text-primary mx-auto mb-5" strokeWidth={1.5} />
-                <h3 className="font-display text-lg font-medium mb-3">{item.title}</h3>
-                <p className="font-body text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
+      <ModuleShowcase />
       <div className="luxury-divider" />
-
-      {/* Modules with images */}
-      <section className="py-24 sm:py-32">
-        <div className="container mx-auto px-6">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} custom={0} className="text-center mb-16">
-            <p className="font-body text-xs tracking-[0.35em] uppercase text-primary/70 mb-4">Modules</p>
-            <h2 className="font-display text-3xl sm:text-4xl font-medium">Seven verticals. One intelligence layer.</h2>
-          </motion.div>
-
-          {/* Featured modules with video backgrounds */}
-          <div className="grid lg:grid-cols-2 gap-6 max-w-6xl mx-auto mb-6">
-            {modules.slice(0, 2).map((mod, i) => (
-              <motion.div key={mod.title} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} custom={i * 0.5}
-                className="relative overflow-hidden group cursor-pointer"
-              >
-                <Link to={mod.link}>
-                  <video
-                    autoPlay loop muted playsInline
-                    poster={mod.image}
-                    className="w-full h-72 sm:h-80 object-cover transition-transform duration-700 group-hover:scale-105"
-                  >
-                    <source src={mod.video} type="video/mp4" />
-                  </video>
-                  <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
-                  <div className="absolute bottom-0 left-0 right-0 p-7">
-                    <div className="flex items-center gap-3 mb-3">
-                      <mod.icon className="w-5 h-5 text-primary" strokeWidth={1.5} />
-                      <p className="font-body text-xs tracking-[0.25em] uppercase text-primary/70">{mod.title}</p>
-                    </div>
-                    <p className="font-body text-sm text-muted-foreground leading-relaxed">{mod.desc}</p>
-                    <div className="mt-4 flex items-center gap-1.5 text-primary/60 group-hover:text-primary transition-colors">
-                      <span className="font-body text-xs tracking-wider uppercase">Explore</span>
-                      <ArrowRight size={12} />
-                    </div>
-                  </div>
-                </Link>
-              </motion.div>
-            ))}
-          </div>
-
-          {/* Remaining modules with video backgrounds */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {modules.slice(2).map((mod, i) => (
-              <motion.div key={mod.title} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} custom={i * 0.3}
-                className="relative overflow-hidden group cursor-pointer"
-              >
-                <Link to={mod.link}>
-                  <video
-                    autoPlay loop muted playsInline
-                    poster={mod.image}
-                    className="w-full h-52 object-cover transition-transform duration-700 group-hover:scale-105"
-                  >
-                    <source src={mod.video} type="video/mp4" />
-                  </video>
-                  <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
-                  <div className="absolute bottom-0 left-0 right-0 p-6">
-                    <div className="flex items-center gap-2 mb-2">
-                      <mod.icon className="w-4 h-4 text-primary" strokeWidth={1.5} />
-                      <h3 className="font-body text-xs tracking-[0.2em] uppercase text-primary/70">{mod.title}</h3>
-                    </div>
-                    <p className="font-body text-xs text-muted-foreground leading-relaxed line-clamp-2">{mod.desc}</p>
-                  </div>
-                </Link>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
+      <CinematicStrip />
       <div className="luxury-divider" />
-
-      {/* Full-width video break */}
-      <section className="relative h-[50vh] overflow-hidden">
-        <video
-          autoPlay loop muted playsInline
-          className="absolute inset-0 w-full h-full object-cover"
-        >
-          <source src={videoLifestyleAsset.url} type="video/mp4" />
-        </video>
-        <div className="absolute inset-0 bg-background/60" />
-        <div className="relative z-10 flex items-center justify-center h-full">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} custom={0} className="text-center">
-            <p className="font-display text-3xl sm:text-4xl md:text-5xl font-medium italic text-primary">
-              Orchestrating excellence.
-            </p>
-          </motion.div>
-        </div>
-      </section>
-
+      <MembershipTiers />
       <div className="luxury-divider" />
-
-      {/* Membership */}
-      <section className="py-24 sm:py-32">
-        <div className="container mx-auto px-6">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} custom={0} className="text-center mb-16">
-            <p className="font-body text-xs tracking-[0.35em] uppercase text-primary/70 mb-4">Membership</p>
-            <h2 className="font-display text-3xl sm:text-4xl font-medium">Select your level of access.</h2>
-          </motion.div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
-            {tiers.map((tier, i) => (
-              <motion.div key={tier.name} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} custom={i * 0.5}
-                className={`p-7 flex flex-col transition-all duration-500 ${tier.featured ? "glass-card border-primary/30 gold-glow" : "glass-card hover:border-primary/15"}`}>
-                <p className="font-body text-xs tracking-[0.25em] uppercase text-primary/70 mb-4">{tier.name}</p>
-                <div className="mb-6">
-                  <span className="font-display text-3xl font-medium">{tier.price}</span>
-                  <span className="font-body text-sm text-muted-foreground">{tier.period}</span>
-                </div>
-                <ul className="flex-1 space-y-3 mb-8">
-                  {tier.features.map((f) => (
-                    <li key={f} className="font-body text-sm text-muted-foreground flex items-start gap-2">
-                      <span className="w-1 h-1 rounded-full bg-primary/60 mt-2 shrink-0" />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-                <Link to="/auth" className={`block text-center py-3 font-body text-xs tracking-widest uppercase transition-all duration-300 ${tier.featured ? "bg-primary text-primary-foreground hover:bg-primary/90" : "border border-border text-foreground/60 hover:text-foreground hover:border-primary/30"}`}>
-                  {tier.name === "Obsidian" ? "Apply" : "Select"}
-                </Link>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
+      <HowItWorks />
       <div className="luxury-divider" />
-
-      {/* CTA with background image */}
-      <section className="relative py-24 sm:py-32 overflow-hidden">
-        <img src={heroEstate} alt="" className="absolute inset-0 w-full h-full object-cover opacity-20" loading="lazy" width={1920} height={1080} />
-        <div className="absolute inset-0 bg-gradient-to-b from-background via-background/80 to-background" />
-        <div className="relative z-10 container mx-auto px-6 text-center max-w-2xl">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} custom={0}>
-            <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-medium leading-tight mb-6">
-              Your private office.
-              <br />
-              <span className="italic text-primary">One interface.</span>
-            </h2>
-            <p className="font-body text-muted-foreground mb-10 text-base sm:text-lg leading-relaxed">
-              Experience the future of ultra-premium service orchestration.
-            </p>
-            <Link to="/auth" className="inline-block px-10 py-4 font-body text-sm font-medium tracking-widest uppercase bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300">
-              Begin
-            </Link>
-          </motion.div>
-        </div>
-      </section>
+      <PartnerEcosystem />
+      <div className="luxury-divider" />
+      <Testimonials />
+      <div className="luxury-divider" />
+      <FinalCTA />
     </main>
   );
 };
