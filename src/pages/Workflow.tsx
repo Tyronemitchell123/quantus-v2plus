@@ -521,7 +521,7 @@ export default function Workflow() {
   const allComplete = totalCount > 0 && completedCount === totalCount;
 
   return (
-    <DealPhaseLayout currentPhase={6} dealId={dealId}>
+    <DealPhaseLayout currentPhase={6} dealId={dealId} phaseTitle="Workflow & Execution">
       <div className="max-w-7xl mx-auto">
         {loading ? (
           <div className="text-center py-20"><Loader2 size={24} className="animate-spin text-[hsl(var(--primary))] mx-auto" /></div>
