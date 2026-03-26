@@ -1,30 +1,34 @@
 import { Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, Briefcase, Grid3X3, Bot, User } from "lucide-react";
+import { LayoutDashboard, Briefcase, Grid3X3, Bot, User, MessageSquare } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface MobileBottomNavProps {
   onAIOpen: () => void;
+  onMessagingOpen?: () => void;
+  onTabChange?: (tab: "feed" | "modules" | "profile") => void;
+  activeTab?: string;
 }
 
-const navItems = [
-  { icon: LayoutDashboard, label: "Dashboard", to: "/dashboard" },
-  { icon: Briefcase, label: "Deals", to: "/deals" },
-  { icon: Grid3X3, label: "Modules", to: "/dashboard/modules" },
-  { icon: Bot, label: "AI", action: true },
-  { icon: User, label: "Profile", to: "/settings" },
-];
-
-const MobileBottomNav = ({ onAIOpen }: MobileBottomNavProps) => {
+const MobileBottomNav = ({ onAIOpen, onMessagingOpen, onTabChange, activeTab }: MobileBottomNavProps) => {
   const { pathname } = useLocation();
+
+  const navItems = [
+    { icon: LayoutDashboard, label: "Home", tab: "feed" as const },
+    { icon: Grid3X3, label: "Modules", tab: "modules" as const },
+    { icon: Bot, label: "AI", action: "ai" as const },
+    { icon: MessageSquare, label: "Messages", action: "msg" as const },
+    { icon: User, label: "Profile", tab: "profile" as const },
+  ];
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 lg:hidden border-t border-border bg-background/95 backdrop-blur-xl safe-area-bottom">
       <div className="flex items-center justify-around h-16 px-2">
         {navItems.map((item) => {
           const isAction = "action" in item && item.action;
-          const active = !isAction && pathname === item.to;
+          const isAI = item.action === "ai";
+          const active = !isAction && activeTab === item.tab;
 
-          if (isAction) {
+          if (isAI) {
             return (
               <button
                 key={item.label}
@@ -38,10 +42,25 @@ const MobileBottomNav = ({ onAIOpen }: MobileBottomNavProps) => {
             );
           }
 
+          if (isAction) {
+            return (
+              <button
+                key={item.label}
+                onClick={onMessagingOpen}
+                className="flex flex-col items-center gap-1 px-3 py-1 relative"
+              >
+                <item.icon size={18} strokeWidth={1.5} className="text-muted-foreground" />
+                <span className="font-body text-[9px] tracking-wider text-muted-foreground">
+                  {item.label}
+                </span>
+              </button>
+            );
+          }
+
           return (
-            <Link
+            <button
               key={item.label}
-              to={item.to!}
+              onClick={() => onTabChange?.(item.tab!)}
               className="flex flex-col items-center gap-1 px-3 py-1 relative"
             >
               <item.icon
@@ -63,7 +82,7 @@ const MobileBottomNav = ({ onAIOpen }: MobileBottomNavProps) => {
                   transition={{ type: "spring", stiffness: 400, damping: 30 }}
                 />
               )}
-            </Link>
+            </button>
           );
         })}
       </div>

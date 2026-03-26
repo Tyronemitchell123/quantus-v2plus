@@ -11,6 +11,10 @@ import DashboardFeed from "@/components/dashboard/DashboardFeed";
 import AIAssistantPanel from "@/components/dashboard/AIAssistantPanel";
 import MobileBottomNav from "@/components/mobile/MobileBottomNav";
 import MobileAIAssistant from "@/components/mobile/MobileAIAssistant";
+import MobileModuleCards from "@/components/mobile/MobileModuleCards";
+import MobileMessaging from "@/components/mobile/MobileMessaging";
+import MobileNotificationBanner from "@/components/mobile/MobileNotificationBanner";
+import MobileProfile from "@/components/mobile/MobileProfile";
 import ParticleGrid from "@/components/ParticleGrid";
 
 const mobileNavItems = [
@@ -39,7 +43,9 @@ const quickActions = [
 const Dashboard = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileAIOpen, setMobileAIOpen] = useState(false);
+  const [mobileMessagingOpen, setMobileMessagingOpen] = useState(false);
   const [aiPanelOpen, setAiPanelOpen] = useState(true);
+  const [mobileTab, setMobileTab] = useState<"feed" | "modules" | "profile">("feed");
   const { pathname } = useLocation();
 
   return (
@@ -133,7 +139,17 @@ const Dashboard = () => {
         </div>
 
         <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 pb-24 lg:pb-8">
-          <DashboardFeed />
+          {/* Desktop always shows feed */}
+          <div className="hidden lg:block">
+            <DashboardFeed />
+          </div>
+
+          {/* Mobile tab content */}
+          <div className="lg:hidden">
+            {mobileTab === "feed" && <DashboardFeed />}
+            {mobileTab === "modules" && <MobileModuleCards />}
+            {mobileTab === "profile" && <MobileProfile />}
+          </div>
         </main>
 
         {/* Footer */}
@@ -150,9 +166,16 @@ const Dashboard = () => {
         <AIAssistantPanel open={aiPanelOpen} onToggle={() => setAiPanelOpen(!aiPanelOpen)} />
       </div>
 
-      {/* Mobile bottom nav */}
-      <MobileBottomNav onAIOpen={() => setMobileAIOpen(true)} />
+      {/* Mobile systems */}
+      <MobileBottomNav
+        onAIOpen={() => setMobileAIOpen(true)}
+        onMessagingOpen={() => setMobileMessagingOpen(true)}
+        onTabChange={setMobileTab}
+        activeTab={mobileTab}
+      />
       <MobileAIAssistant open={mobileAIOpen} onClose={() => setMobileAIOpen(false)} />
+      <MobileMessaging open={mobileMessagingOpen} onClose={() => setMobileMessagingOpen(false)} />
+      <MobileNotificationBanner />
     </div>
   );
 };
