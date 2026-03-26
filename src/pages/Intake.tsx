@@ -366,16 +366,18 @@ export default function Intake() {
               </div>
 
               {/* Next Action */}
-              <div className="flex items-center justify-between border border-border bg-card p-5">
+              <Link
+                to={`/sourcing?deal=${currentDeal.id}`}
+                className="flex items-center justify-between border border-primary/20 bg-card p-5 hover:border-primary/40 transition-colors group"
+              >
                 <div>
                   <p className="font-body text-xs text-muted-foreground">Status</p>
                   <p className="font-body text-sm text-foreground capitalize">{currentDeal.status} Complete</p>
                 </div>
-                <div className="flex items-center gap-2 text-primary font-body text-xs tracking-widest uppercase">
-                  <span>Next: Begin Sourcing</span>
-                  <ArrowRight size={14} />
+                <div className="flex items-center gap-2 text-primary font-body text-xs tracking-widest uppercase group-hover:gap-3 transition-all">
+                  <span>Begin Sourcing →</span>
                 </div>
-              </div>
+              </Link>
             </motion.div>
           )}
         </AnimatePresence>
