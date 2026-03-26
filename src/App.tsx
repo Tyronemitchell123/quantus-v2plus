@@ -109,6 +109,14 @@ const AnimatedRoutes = () => {
             }
           />
           <Route
+            path="/deal-completion"
+            element={
+              <ProtectedRoute>
+                <PageTransition><DealCompletion /><Footer /></PageTransition>
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/settings"
             element={
               <ProtectedRoute>

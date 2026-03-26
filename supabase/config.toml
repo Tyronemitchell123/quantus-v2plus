@@ -33,3 +33,5 @@ project_id = "eqxgnxgbvvrjaxjiznjo"
     verify_jwt = false
   [functions.workflow-engine]
     verify_jwt = false
+  [functions.deal-completion]
+    verify_jwt = false
