@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useModuleData } from "@/hooks/use-module-data";
+import ModuleLiveDeals from "@/components/modules/ModuleLiveDeals";
 import { motion, AnimatePresence } from "framer-motion";
 import { Truck, Car, Shield, Globe, Zap, Package, Warehouse, Eye, Search, SlidersHorizontal, Bookmark, GitCompare, Star, AlertTriangle, MapPin, Clock, CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -249,9 +251,11 @@ const InsightsPanel = ({ category }: { category: string }) => {
 const LogisticsModule = () => {
   const [activeCategory, setActiveCategory] = useState("ground");
   const operations = opData[activeCategory] || [];
+  const { deals, sourcingResults, vendorOutreach, loading: liveLoading } = useModuleData("logistics");
 
   return (
     <div className="space-y-6">
+      <ModuleLiveDeals deals={deals} sourcingResults={sourcingResults} vendorOutreach={vendorOutreach} loading={liveLoading} categoryLabel="Logistics & Recovery" />
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">

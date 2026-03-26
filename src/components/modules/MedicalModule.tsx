@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useModuleData } from "@/hooks/use-module-data";
+import ModuleLiveDeals from "@/components/modules/ModuleLiveDeals";
 import { Link } from "react-router-dom";
 import {
   Heart, Search, ArrowRight, Bookmark, Columns, Sparkles, Shield,
@@ -170,9 +172,11 @@ const MedicalModule = () => {
   const [sortBy, setSortBy] = useState("best");
   const currentProviders = providerData[activeCategory] || [];
   const activeCat = categories.find(c => c.id === activeCategory);
+  const { deals, sourcingResults, vendorOutreach, loading: liveLoading } = useModuleData("medical");
 
   return (
     <div className="space-y-6">
+      <ModuleLiveDeals deals={deals} sourcingResults={sourcingResults} vendorOutreach={vendorOutreach} loading={liveLoading} categoryLabel="Medical & Wellness" />
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
         <div className="flex items-start justify-between mb-1">
           <div>

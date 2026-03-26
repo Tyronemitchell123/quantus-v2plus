@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useModuleData } from "@/hooks/use-module-data";
+import ModuleLiveDeals from "@/components/modules/ModuleLiveDeals";
 import { Link } from "react-router-dom";
 import {
   Plane, Search, BarChart3, ArrowRight, TrendingDown, TrendingUp,
@@ -177,9 +179,12 @@ const AviationModule = () => {
   const [activeCategory, setActiveCategory] = useState("super-mid");
   const [sortBy, setSortBy] = useState("best");
   const currentAircraft = aircraftData[activeCategory] || [];
+  const { deals, sourcingResults, vendorOutreach, loading: liveLoading } = useModuleData("aviation");
 
   return (
     <div className="space-y-6">
+      {/* Live Data */}
+      <ModuleLiveDeals deals={deals} sourcingResults={sourcingResults} vendorOutreach={vendorOutreach} loading={liveLoading} categoryLabel="Aviation" />
       {/* Header */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
         <div className="flex items-start justify-between mb-1">

@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useModuleData } from "@/hooks/use-module-data";
+import ModuleLiveDeals from "@/components/modules/ModuleLiveDeals";
 import { motion, AnimatePresence } from "framer-motion";
 import { Globe, Hotel, Home, Ship, Sparkles, UtensilsCrossed, Heart, Calendar, Eye, Search, SlidersHorizontal, Bookmark, GitCompare, Star, AlertTriangle, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -235,9 +237,11 @@ const InsightsPanel = ({ category }: { category: string }) => {
 const LifestyleModule = () => {
   const [activeCategory, setActiveCategory] = useState("hotels");
   const options = optionData[activeCategory] || [];
+  const { deals, sourcingResults, vendorOutreach, loading: liveLoading } = useModuleData("lifestyle");
 
   return (
     <div className="space-y-6">
+      <ModuleLiveDeals deals={deals} sourcingResults={sourcingResults} vendorOutreach={vendorOutreach} loading={liveLoading} categoryLabel="Lifestyle & Travel" />
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
