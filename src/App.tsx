@@ -64,7 +64,7 @@ const AnimatedRoutes = () => {
             {/* Public */}
             <Route path="/" element={<PageTransition><Index /><Footer /></PageTransition>} />
             <Route path="/about" element={<PageTransition><About /><Footer /></PageTransition>} />
-            <Route path="/modules" element={<PageTransition><Index /><Footer /></PageTransition>} />
+            <Route path="/modules" element={<ModulesRedirect />} />
             <Route path="/pricing" element={<PageTransition><Pricing /><Footer /></PageTransition>} />
             <Route path="/contact" element={<PageTransition><Contact /><Footer /></PageTransition>} />
             <Route path="/services" element={<PageTransition><Services /><Footer /></PageTransition>} />
