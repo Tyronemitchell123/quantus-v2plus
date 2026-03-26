@@ -1319,6 +1319,150 @@ export type Database = {
         }
         Relationships: []
       }
+      workflow_communications: {
+        Row: {
+          ai_generated: boolean | null
+          body: string
+          channel: string
+          created_at: string
+          deal_id: string
+          direction: string
+          id: string
+          recipient: string
+          sent_at: string | null
+          subject: string | null
+          tone: string | null
+          user_id: string
+          workflow_task_id: string
+        }
+        Insert: {
+          ai_generated?: boolean | null
+          body: string
+          channel?: string
+          created_at?: string
+          deal_id: string
+          direction?: string
+          id?: string
+          recipient: string
+          sent_at?: string | null
+          subject?: string | null
+          tone?: string | null
+          user_id: string
+          workflow_task_id: string
+        }
+        Update: {
+          ai_generated?: boolean | null
+          body?: string
+          channel?: string
+          created_at?: string
+          deal_id?: string
+          direction?: string
+          id?: string
+          recipient?: string
+          sent_at?: string | null
+          subject?: string | null
+          tone?: string | null
+          user_id?: string
+          workflow_task_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workflow_communications_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "deals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "workflow_communications_workflow_task_id_fkey"
+            columns: ["workflow_task_id"]
+            isOneToOne: false
+            referencedRelation: "workflow_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workflow_tasks: {
+        Row: {
+          assigned_to: string | null
+          completed_at: string | null
+          created_at: string
+          deal_id: string
+          dependencies: Json | null
+          description: string | null
+          due_at: string | null
+          id: string
+          metadata: Json | null
+          phase: string
+          priority: number
+          risk_level: string | null
+          risk_notes: string | null
+          status: string
+          task_type: string
+          title: string
+          updated_at: string
+          user_id: string
+          vendor_outreach_id: string | null
+        }
+        Insert: {
+          assigned_to?: string | null
+          completed_at?: string | null
+          created_at?: string
+          deal_id: string
+          dependencies?: Json | null
+          description?: string | null
+          due_at?: string | null
+          id?: string
+          metadata?: Json | null
+          phase?: string
+          priority?: number
+          risk_level?: string | null
+          risk_notes?: string | null
+          status?: string
+          task_type: string
+          title: string
+          updated_at?: string
+          user_id: string
+          vendor_outreach_id?: string | null
+        }
+        Update: {
+          assigned_to?: string | null
+          completed_at?: string | null
+          created_at?: string
+          deal_id?: string
+          dependencies?: Json | null
+          description?: string | null
+          due_at?: string | null
+          id?: string
+          metadata?: Json | null
+          phase?: string
+          priority?: number
+          risk_level?: string | null
+          risk_notes?: string | null
+          status?: string
+          task_type?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+          vendor_outreach_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workflow_tasks_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "deals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "workflow_tasks_vendor_outreach_id_fkey"
+            columns: ["vendor_outreach_id"]
+            isOneToOne: false
+            referencedRelation: "vendor_outreach"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
