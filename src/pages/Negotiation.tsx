@@ -3,13 +3,15 @@ import { useSearchParams, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Plane, Heart, Users, Globe, Truck, Handshake, Sparkles, Loader2,
-  ArrowLeft, ArrowRight, Target, Shield, ChevronDown, ChevronUp,
+  ArrowRight, Target, Shield, ChevronDown, ChevronUp,
   TrendingUp, TrendingDown, Minus, Zap, Brain, Send, CheckCircle2,
   AlertTriangle, Scale, Clock, BarChart3, Eye, MessageSquare, Gavel,
+  Lightbulb, ToggleLeft, ToggleRight, Star, FileText,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import useDocumentHead from "@/hooks/use-document-head";
+import DealPhaseLayout from "@/components/deal/DealPhaseLayout";
 
 const categoryIcons: Record<string, typeof Plane> = {
   aviation: Plane, medical: Heart, staffing: Users,
@@ -94,290 +96,56 @@ type VendorOutreach = {
   negotiation_ready: boolean;
   negotiation_prep: Record<string, any>;
   category: string;
+  response_time_hours: number | null;
 };
 
 const pricingColors: Record<string, string> = {
-  below_market: "text-emerald-400",
-  fair: "text-blue-400",
-  above_market: "text-amber-400",
-  premium: "text-red-400",
+  below_market: "text-success",
+  fair: "text-primary",
+  above_market: "text-accent",
+  premium: "text-destructive",
 };
 
 const motivationIcons: Record<string, typeof TrendingUp> = {
-  low: TrendingDown,
-  medium: Minus,
-  high: TrendingUp,
-  urgent: Zap,
+  low: TrendingDown, medium: Minus, high: TrendingUp, urgent: Zap,
 };
 
 const toneLabels: Record<string, string> = {
-  ultra_formal: "Ultra-Formal",
-  discreet: "Discreet",
-  assertive: "Assertive",
-  exploratory: "Exploratory",
-  high_urgency: "High Urgency",
-  soft_touch: "Soft Touch",
+  ultra_formal: "Ultra-Formal", discreet: "Discreet", assertive: "Assertive",
+  exploratory: "Exploratory", high_urgency: "High Urgency", soft_touch: "Soft Touch",
 };
 
 const approachLabels: Record<string, string> = {
-  price_reduction: "Price Reduction",
-  added_value: "Added Value",
-  faster_timeline: "Faster Timeline",
-  bundled_services: "Bundled Services",
-  conditional_acceptance: "Conditional Acceptance",
-  multi_option_leverage: "Multi-Option Leverage",
+  price_reduction: "Price Reduction", added_value: "Added Value",
+  faster_timeline: "Faster Timeline", bundled_services: "Bundled Services",
+  conditional_acceptance: "Conditional", multi_option_leverage: "Multi-Option",
 };
 
-function ScoreRing({ value, size = 64, label }: { value: number; size?: number; label?: string }) {
-  const r = (size - 8) / 2;
+function ScoreRing({ value, size = 48 }: { value: number; size?: number }) {
+  const r = (size - 6) / 2;
   const circ = 2 * Math.PI * r;
   const offset = circ - (value / 100) * circ;
-  const color = value >= 75 ? "stroke-emerald-400" : value >= 50 ? "stroke-primary" : value >= 25 ? "stroke-amber-400" : "stroke-red-400";
-
   return (
-    <div className="flex flex-col items-center gap-1">
+    <div className="relative" style={{ width: size, height: size }}>
       <svg width={size} height={size} className="-rotate-90">
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" strokeWidth={4} className="stroke-border" />
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" strokeWidth={2.5} className="stroke-muted" />
         <motion.circle
-          cx={size / 2} cy={size / 2} r={r} fill="none" strokeWidth={4}
-          className={color}
+          cx={size / 2} cy={size / 2} r={r} fill="none" strokeWidth={2.5}
+          className="stroke-primary" strokeLinecap="round"
           strokeDasharray={circ}
           initial={{ strokeDashoffset: circ }}
           animate={{ strokeDashoffset: offset }}
-          transition={{ duration: 1.5, ease: "easeOut" }}
-          strokeLinecap="round"
+          transition={{ duration: 1.2, ease: "easeOut" }}
         />
-        <text
-          x={size / 2} y={size / 2}
-          textAnchor="middle" dominantBaseline="central"
-          className="fill-foreground font-display text-sm rotate-90"
-          style={{ transformOrigin: `${size / 2}px ${size / 2}px` }}
-        >
-          {value}
-        </text>
       </svg>
-      {label && <span className="font-body text-[9px] tracking-wider uppercase text-muted-foreground">{label}</span>}
+      <span className="absolute inset-0 flex items-center justify-center font-display text-xs text-foreground">{value}</span>
     </div>
-  );
-}
-
-function VendorNegotiationCard({
-  vendor, index, onSendCounter, onSimulate, sending, simulation, simulating,
-}: {
-  vendor: VendorAnalysis;
-  index: number;
-  onSendCounter: (vendorName: string, message: string) => void;
-  onSimulate: (vendorName: string) => void;
-  sending: string | null;
-  simulation: SimulationResult | null;
-  simulating: string | null;
-}) {
-  const [expanded, setExpanded] = useState(false);
-  const [editingCounter, setEditingCounter] = useState(false);
-  const [counterText, setCounterText] = useState(vendor.counter_offer_draft);
-  const MotIcon = motivationIcons[vendor.motivation_level] || Minus;
-
-  const scenarioColors: Record<string, string> = {
-    best_case: "border-emerald-400/30 bg-emerald-400/5",
-    likely_case: "border-primary/30 bg-primary/5",
-    worst_case: "border-red-400/30 bg-red-400/5",
-  };
-  const scenarioLabels: Record<string, string> = {
-    best_case: "Best Case",
-    likely_case: "Likely Case",
-    worst_case: "Worst Case",
-  };
-
-  return (
-    <motion.div
-      layout
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.1 }}
-      className={`border bg-card overflow-hidden transition-colors ${expanded ? "border-primary/30" : "border-border hover:border-border/80"}`}
-    >
-      <button onClick={() => setExpanded(!expanded)} className="w-full text-left p-5 flex items-center gap-4">
-        <ScoreRing value={vendor.position_strength} size={48} />
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 flex-wrap mb-1">
-            <span className={`text-[10px] font-body tracking-widest uppercase ${pricingColors[vendor.pricing_fairness] || "text-muted-foreground"}`}>
-              {vendor.pricing_fairness?.replace("_", " ")}
-            </span>
-            <span className="text-[10px] font-body text-muted-foreground flex items-center gap-0.5">
-              <MotIcon size={9} /> {vendor.motivation_level}
-            </span>
-          </div>
-          <h3 className="font-display text-base text-foreground truncate">{vendor.vendor_name}</h3>
-          <p className="font-body text-xs text-muted-foreground mt-0.5">
-            {toneLabels[vendor.recommended_tone] || vendor.recommended_tone} · {approachLabels[vendor.recommended_approach] || vendor.recommended_approach}
-          </p>
-        </div>
-        <div className="text-right shrink-0">
-          <p className="font-display text-lg text-primary">{vendor.simulation?.acceptance_probability || 0}%</p>
-          <p className="font-body text-[9px] text-muted-foreground tracking-wider uppercase">Accept Prob.</p>
-        </div>
-        {expanded ? <ChevronUp size={16} className="text-muted-foreground" /> : <ChevronDown size={16} className="text-muted-foreground" />}
-      </button>
-
-      <AnimatePresence>
-        {expanded && (
-          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-            <div className="px-5 pb-5 space-y-5 border-t border-border/50 pt-5">
-
-              {/* Leverage & Risks */}
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div>
-                  <p className="font-body text-[10px] tracking-[0.2em] uppercase text-emerald-400/70 mb-2">Leverage Points</p>
-                  <ul className="space-y-1.5">
-                    {vendor.leverage_points?.map((p, i) => (
-                      <li key={i} className="font-body text-xs text-foreground/60 flex items-start gap-1.5">
-                        <CheckCircle2 size={10} className="text-emerald-400 shrink-0 mt-0.5" /> {p}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div>
-                  <p className="font-body text-[10px] tracking-[0.2em] uppercase text-amber-400/70 mb-2">Risk Flags</p>
-                  <ul className="space-y-1.5">
-                    {vendor.risk_flags?.map((r, i) => (
-                      <li key={i} className="font-body text-xs text-foreground/60 flex items-start gap-1.5">
-                        <AlertTriangle size={10} className="text-amber-400 shrink-0 mt-0.5" /> {r}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-
-              {/* Flexibility */}
-              {vendor.flexibility_indicators && vendor.flexibility_indicators.length > 0 && (
-                <div>
-                  <p className="font-body text-[10px] tracking-[0.2em] uppercase text-muted-foreground mb-2">Flexibility Indicators</p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {vendor.flexibility_indicators.map((f, i) => (
-                      <span key={i} className="px-2 py-0.5 bg-muted border border-border text-[10px] font-body text-muted-foreground">{f}</span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Simulation Prediction */}
-              {vendor.simulation && (
-                <div className="border border-border/50 bg-muted/20 p-4 space-y-3">
-                  <p className="font-body text-[10px] tracking-[0.2em] uppercase text-primary/70">AI Prediction</p>
-                  <p className="font-body text-xs text-foreground/70">{vendor.simulation.likely_response}</p>
-                  {vendor.simulation.walk_away_threshold && (
-                    <p className="font-body text-[10px] text-amber-400">
-                      Walk-Away Threshold: {vendor.simulation.walk_away_threshold}
-                    </p>
-                  )}
-                  {vendor.simulation.counter_scenarios && vendor.simulation.counter_scenarios.length > 0 && (
-                    <div>
-                      <p className="font-body text-[10px] text-muted-foreground mb-1">Counter-Counter Scenarios</p>
-                      <ul className="space-y-1">
-                        {vendor.simulation.counter_scenarios.map((s, i) => (
-                          <li key={i} className="font-body text-[11px] text-foreground/50 pl-3 border-l border-border">{s}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Counter-Offer Draft */}
-              <div className="border border-primary/20 bg-primary/5 p-4 space-y-3">
-                <div className="flex items-center justify-between">
-                  <p className="font-body text-[10px] tracking-[0.2em] uppercase text-primary">Counter-Offer Draft</p>
-                  <button
-                    onClick={() => setEditingCounter(!editingCounter)}
-                    className="font-body text-[10px] text-primary hover:underline"
-                  >
-                    {editingCounter ? "Preview" : "Edit"}
-                  </button>
-                </div>
-                {editingCounter ? (
-                  <textarea
-                    value={counterText}
-                    onChange={(e) => setCounterText(e.target.value)}
-                    className="w-full h-40 bg-card border border-border p-3 font-body text-xs text-foreground resize-none focus:outline-none focus:border-primary/50"
-                  />
-                ) : (
-                  <p className="font-body text-xs text-foreground/70 whitespace-pre-wrap leading-relaxed">{counterText}</p>
-                )}
-              </div>
-
-              {/* Actions */}
-              <div className="flex flex-wrap gap-2 pt-3 border-t border-border/50">
-                <button
-                  onClick={() => onSendCounter(vendor.vendor_name, counterText)}
-                  disabled={sending === vendor.vendor_name}
-                  className="flex items-center gap-1.5 px-5 py-2 bg-primary text-primary-foreground font-body text-[10px] tracking-widest uppercase hover:bg-primary/90 transition-all disabled:opacity-50"
-                >
-                  {sending === vendor.vendor_name ? <Loader2 size={10} className="animate-spin" /> : <Send size={10} />}
-                  Approve & Send Counter
-                </button>
-                <button
-                  onClick={() => onSimulate(vendor.vendor_name)}
-                  disabled={simulating === vendor.vendor_name}
-                  className="flex items-center gap-1.5 px-5 py-2 bg-muted border border-border text-foreground font-body text-[10px] tracking-widest uppercase hover:bg-muted/80 transition-all disabled:opacity-50"
-                >
-                  {simulating === vendor.vendor_name ? <Loader2 size={10} className="animate-spin" /> : <Brain size={10} />}
-                  Run Simulation
-                </button>
-              </div>
-
-              {/* Deep Simulation Results */}
-              {simulation && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4 pt-3">
-                  <p className="font-body text-[10px] tracking-[0.2em] uppercase text-primary">Negotiation Simulation</p>
-                  <div className="grid gap-3">
-                    {simulation.scenarios.map((s, i) => (
-                      <div key={i} className={`border p-4 ${scenarioColors[s.label] || "border-border bg-muted/10"}`}>
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="font-display text-sm text-foreground">{scenarioLabels[s.label] || s.label}</span>
-                          <span className="font-display text-lg text-primary">{s.probability}%</span>
-                        </div>
-                        <p className="font-body text-xs text-foreground/70 mb-2">{s.outcome}</p>
-                        <div className="flex flex-wrap gap-3 text-[10px] font-body text-muted-foreground">
-                          {s.final_price_estimate && <span>Est. Price: {s.final_price_estimate}</span>}
-                          <span>{s.rounds_to_close} round{s.rounds_to_close > 1 ? "s" : ""} to close</span>
-                        </div>
-                        {s.key_concessions && s.key_concessions.length > 0 && (
-                          <div className="mt-2 flex flex-wrap gap-1">
-                            {s.key_concessions.map((c, ci) => (
-                              <span key={ci} className="px-1.5 py-0.5 bg-background/50 border border-border text-[9px] font-body text-muted-foreground">{c}</span>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                  <div className="border border-primary/20 bg-primary/5 p-3">
-                    <p className="font-body text-[10px] text-primary mb-1">Recommended Next Move</p>
-                    <p className="font-body text-xs text-foreground/70">{simulation.recommended_next_move}</p>
-                  </div>
-                  {simulation.timing_advice && (
-                    <p className="font-body text-[10px] text-muted-foreground flex items-center gap-1">
-                      <Clock size={9} /> {simulation.timing_advice}
-                    </p>
-                  )}
-                  {simulation.walk_away_recommendation && (
-                    <p className="font-body text-[10px] text-red-400 flex items-center gap-1">
-                      <AlertTriangle size={9} /> AI recommends considering walk-away
-                    </p>
-                  )}
-                </motion.div>
-              )}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.div>
   );
 }
 
 export default function Negotiation() {
   useDocumentHead({
-    title: "Negotiation Framework — Quantus A.I",
+    title: "Negotiation — Quantus A.I",
     description: "AI-powered negotiation intelligence for UHNW deals.",
   });
 
@@ -391,6 +159,8 @@ export default function Negotiation() {
   const [analyzing, setAnalyzing] = useState(false);
   const [sending, setSending] = useState<string | null>(null);
   const [simulating, setSimulating] = useState<string | null>(null);
+  const [expandedVendor, setExpandedVendor] = useState<string | null>(null);
+  const [autoNegotiation, setAutoNegotiation] = useState(false);
 
   useEffect(() => {
     if (dealId) loadData(dealId);
@@ -400,13 +170,9 @@ export default function Negotiation() {
     setLoading(true);
     const { data: d } = await supabase.from("deals").select("*").eq("id", id).single();
     if (d) setDeal(d as unknown as Deal);
-
     const { data: outreach } = await supabase
-      .from("vendor_outreach")
-      .select("*")
-      .eq("deal_id", id)
+      .from("vendor_outreach").select("*").eq("deal_id", id)
       .order("vendor_score", { ascending: false });
-
     if (outreach) setOutreachList(outreach as unknown as VendorOutreach[]);
     setLoading(false);
   }
@@ -435,10 +201,9 @@ export default function Negotiation() {
       vendorName.toLowerCase().includes(o.vendor_name.toLowerCase())
     );
     if (!outreach) return toast.error("Vendor outreach not found");
-
     setSending(vendorName);
     try {
-      const { data, error } = await supabase.functions.invoke("negotiation-engine", {
+      const { error } = await supabase.functions.invoke("negotiation-engine", {
         body: { action: "counter_offer", outreach_id: outreach.id, approved_message: message },
       });
       if (error) throw new Error(error.message);
@@ -456,7 +221,6 @@ export default function Negotiation() {
       vendorName.toLowerCase().includes(o.vendor_name.toLowerCase())
     );
     if (!outreach) return toast.error("Vendor outreach not found");
-
     setSimulating(vendorName);
     try {
       const { data, error } = await supabase.functions.invoke("negotiation-engine", {
@@ -479,7 +243,8 @@ export default function Negotiation() {
         body: { action: "finalize", deal_id: dealId },
       });
       if (error) throw new Error(error.message);
-      toast.success("Negotiation complete — advancing to Workflow Orchestration");
+      toast.success("Negotiation complete — advancing to Workflow");
+      window.location.href = `/workflow?deal=${dealId}`;
     } catch (e: any) {
       toast.error(e.message || "Finalization failed");
     }
@@ -489,49 +254,95 @@ export default function Negotiation() {
   const a = analysis;
 
   return (
-    <div className="min-h-screen bg-background pt-24 pb-16">
-      <div className="container mx-auto px-6 max-w-5xl">
-        <Link to={dealId ? `/outreach?deal=${dealId}` : "/outreach"} className="inline-flex items-center gap-1.5 font-body text-xs text-muted-foreground hover:text-foreground transition-colors mb-8">
-          <ArrowLeft size={14} /> Back to Vendor Outreach
-        </Link>
-
+    <DealPhaseLayout
+      dealId={dealId}
+      currentPhase={5}
+      phaseTitle="Negotiation & Strategy"
+      showBottomBar={!!a}
+      onApprove={a ? handleFinalize : undefined}
+      approveLabel="Proceed to Workflow"
+    >
+      <div className="flex-1 min-h-0">
         {loading ? (
-          <div className="text-center py-20"><Loader2 size={24} className="animate-spin text-primary mx-auto" /></div>
+          <div className="text-center py-20">
+            <Loader2 size={24} className="animate-spin text-primary mx-auto" />
+          </div>
         ) : !deal ? (
           <div className="text-center py-20">
-            <p className="font-body text-sm text-muted-foreground">No deal selected. <Link to="/intake" className="text-primary hover:underline">Submit a request first</Link>.</p>
+            <p className="font-body text-sm text-muted-foreground">
+              No deal selected.{" "}
+              <Link to="/intake" className="text-primary hover:underline">Submit a request first</Link>.
+            </p>
           </div>
         ) : (
-          <>
+          <div className="container mx-auto px-4 md:px-6 max-w-7xl py-6 md:py-8">
             {/* Header */}
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-10">
-              <div className="flex items-start gap-4 mb-6">
-                <div className="w-12 h-12 bg-card border border-border flex items-center justify-center">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
+              <div className="flex items-start gap-4 mb-4">
+                <div className="w-12 h-12 rounded-xl bg-card border border-border flex items-center justify-center">
                   <CatIcon size={20} className="text-primary" />
                 </div>
                 <div className="flex-1">
-                  <p className="font-body text-xs tracking-[0.3em] uppercase text-primary/60 mb-1">Phase 4 — Negotiation Framework</p>
-                  <h1 className="font-display text-3xl md:text-4xl font-medium text-foreground mb-2">{deal.intent || deal.sub_category || "Deal"}</h1>
-                  <div className="flex flex-wrap gap-3 font-body text-xs text-muted-foreground">
-                    <span className="capitalize">{deal.category}</span>
-                    <span>·</span>
-                    <span>{deal.deal_number}</span>
-                    <span>·</span>
-                    <span>{outreachList.filter(o => o.negotiation_ready).length} vendors negotiation-ready</span>
-                  </div>
+                  <h1 className="font-display text-2xl md:text-3xl font-medium text-foreground mb-1">
+                    Optimizing your negotiation strategy.
+                  </h1>
+                  <motion.div
+                    initial={{ scaleX: 0 }}
+                    animate={{ scaleX: 1 }}
+                    transition={{ delay: 0.3, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                    className="w-20 h-px bg-primary/40 origin-left mb-2"
+                  />
+                  <p className="font-body text-xs text-gold-soft/70">
+                    Quantus A.I is preparing drafts, leverage points, and vendor-specific tactics.
+                  </p>
                 </div>
               </div>
 
-              {/* Analyze button or Assessment */}
-              {!a && !analyzing && (
-                <button onClick={runAnalysis}
-                  className="flex items-center gap-2 px-8 py-3 bg-primary text-primary-foreground font-body text-xs tracking-widest uppercase hover:bg-primary/90 transition-all">
-                  <Brain size={14} /> Analyze Negotiation Position
-                </button>
+              {/* Deal assessment stats */}
+              {a && (
+                <div className="grid grid-cols-4 gap-3">
+                  {[
+                    { label: "Readiness", value: a.deal_assessment.overall_readiness, type: "ring" as const },
+                    { label: "Confidence", value: a.deal_assessment.confidence_level, type: "ring" as const },
+                    { label: "Market", value: a.deal_assessment.market_position?.replace("_", " "), type: "text" as const, icon: Scale },
+                    { label: "Timeline", value: a.deal_assessment.recommended_timeline, type: "text" as const, icon: Clock },
+                  ].map((s) => (
+                    <motion.div key={s.label} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="glass-card rounded-xl p-4 flex flex-col items-center">
+                      {s.type === "ring" ? (
+                        <ScoreRing value={s.value as number} size={44} />
+                      ) : (
+                        <>
+                          {s.icon && <s.icon size={14} className="text-primary/40 mb-1" />}
+                          <p className="font-display text-sm text-foreground capitalize text-center">{s.value}</p>
+                        </>
+                      )}
+                      <p className="font-body text-[9px] tracking-[0.15em] uppercase text-muted-foreground mt-1.5">{s.label}</p>
+                    </motion.div>
+                  ))}
+                </div>
               )}
             </motion.div>
 
-            {/* Analyzing State */}
+            {/* Analyze CTA */}
+            {!a && !analyzing && (
+              <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="glass-card rounded-xl p-8 text-center mb-8">
+                <div className="w-16 h-16 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-4">
+                  <Brain size={24} className="text-primary" />
+                </div>
+                <h2 className="font-display text-xl font-medium text-foreground mb-2">Ready to Negotiate</h2>
+                <p className="font-body text-sm text-muted-foreground mb-6 max-w-md mx-auto">
+                  Quantus will analyze vendor positions, market dynamics, and craft strategic counter-offers.
+                </p>
+                <button
+                  onClick={runAnalysis}
+                  className="inline-flex items-center gap-2 px-8 py-3.5 bg-primary text-primary-foreground font-body text-xs tracking-[0.25em] uppercase hover:brightness-110 transition-all rounded-xl gold-glow"
+                >
+                  <Brain size={14} /> Analyze Negotiation Position
+                </button>
+              </motion.div>
+            )}
+
+            {/* Analyzing animation */}
             <AnimatePresence>
               {analyzing && (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-center py-16">
@@ -539,100 +350,114 @@ export default function Negotiation() {
                     <div className="w-16 h-16 rounded-full border-2 border-primary/20 flex items-center justify-center">
                       <Loader2 size={24} className="animate-spin text-primary" />
                     </div>
-                    <div>
-                      <p className="font-display text-lg text-foreground mb-1">Analyzing Negotiation Position</p>
-                      <p className="font-body text-xs text-muted-foreground">Evaluating vendor positions, market dynamics, and leverage opportunities…</p>
-                    </div>
+                    <p className="font-display text-lg text-foreground mb-1">Analyzing Negotiation Position</p>
+                    <p className="font-body text-xs text-muted-foreground">Evaluating vendor positions, market dynamics, and leverage opportunities…</p>
                   </div>
                 </motion.div>
               )}
             </AnimatePresence>
 
-            {/* Analysis Results */}
+            {/* 3-Column Strategic Grid */}
             {a && !analyzing && (
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                <div className="grid lg:grid-cols-[280px_1fr_300px] gap-6">
 
-                {/* Deal Assessment Cards */}
-                <div>
-                  <p className="font-body text-xs tracking-[0.3em] uppercase text-muted-foreground mb-4">Deal Assessment</p>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    <div className="bg-card border border-border p-4 flex flex-col items-center">
-                      <ScoreRing value={a.deal_assessment.overall_readiness} size={56} />
-                      <p className="font-body text-[9px] tracking-wider uppercase text-muted-foreground mt-2">Readiness</p>
-                    </div>
-                    <div className="bg-card border border-border p-4 flex flex-col items-center">
-                      <ScoreRing value={a.deal_assessment.confidence_level} size={56} />
-                      <p className="font-body text-[9px] tracking-wider uppercase text-muted-foreground mt-2">Close Confidence</p>
-                    </div>
-                    <div className="bg-card border border-border p-4 flex flex-col items-center justify-center">
-                      <Scale size={20} className="text-primary mb-2" />
-                      <p className="font-display text-sm text-foreground capitalize">{a.deal_assessment.market_position?.replace("_", " ")}</p>
-                      <p className="font-body text-[9px] tracking-wider uppercase text-muted-foreground mt-1">Market Position</p>
-                    </div>
-                    <div className="bg-card border border-border p-4 flex flex-col items-center justify-center">
-                      <Clock size={20} className="text-primary mb-2" />
-                      <p className="font-display text-sm text-foreground">{a.deal_assessment.recommended_timeline}</p>
-                      <p className="font-body text-[9px] tracking-wider uppercase text-muted-foreground mt-1">Timeline</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Strategy Summary */}
-                <div className="border border-primary/20 bg-primary/5 p-6 space-y-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Target size={14} className="text-primary" />
-                    <p className="font-body text-xs tracking-[0.2em] uppercase text-primary">Negotiation Playbook</p>
-                  </div>
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <div>
-                      <p className="font-body text-[10px] text-muted-foreground mb-1">Primary Strategy</p>
-                      <p className="font-body text-xs text-foreground/80">{a.strategy_summary.primary_strategy}</p>
-                    </div>
-                    <div>
-                      <p className="font-body text-[10px] text-muted-foreground mb-1">Fallback Strategy</p>
-                      <p className="font-body text-xs text-foreground/80">{a.strategy_summary.fallback_strategy}</p>
-                    </div>
-                  </div>
-                  <div className="grid sm:grid-cols-3 gap-4 pt-3 border-t border-primary/10">
-                    <div>
-                      <p className="font-body text-[10px] text-emerald-400/70 mb-1.5">Key Leverage</p>
-                      <ul className="space-y-1">
-                        {a.strategy_summary.key_leverage?.map((l, i) => (
-                          <li key={i} className="font-body text-[11px] text-foreground/60 flex items-start gap-1">
-                            <CheckCircle2 size={9} className="text-emerald-400 shrink-0 mt-0.5" /> {l}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div>
-                      <p className="font-body text-[10px] text-emerald-400/70 mb-1.5">Push For</p>
-                      <ul className="space-y-1">
-                        {a.strategy_summary.things_to_push?.map((p, i) => (
-                          <li key={i} className="font-body text-[11px] text-foreground/60 flex items-start gap-1">
-                            <ArrowRight size={9} className="text-primary shrink-0 mt-0.5" /> {p}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div>
-                      <p className="font-body text-[10px] text-amber-400/70 mb-1.5">Avoid</p>
-                      <ul className="space-y-1">
-                        {a.strategy_summary.things_to_avoid?.map((av, i) => (
-                          <li key={i} className="font-body text-[11px] text-foreground/60 flex items-start gap-1">
-                            <AlertTriangle size={9} className="text-amber-400 shrink-0 mt-0.5" /> {av}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Vendor Analyses */}
-                <div>
-                  <p className="font-body text-xs tracking-[0.3em] uppercase text-muted-foreground mb-4">Vendor Negotiation Positions</p>
+                  {/* LEFT — Vendor Profiles & Leverage */}
                   <div className="space-y-3">
+                    <p className="font-body text-[10px] tracking-[0.25em] uppercase text-gold-soft/50 mb-2">
+                      Vendor Profiles
+                    </p>
+                    {a.vendor_analyses.map((v, i) => {
+                      const MotIcon = motivationIcons[v.motivation_level] || Minus;
+                      const isExpanded = expandedVendor === v.vendor_name;
+
+                      return (
+                        <motion.div
+                          key={i}
+                          initial={{ opacity: 0, x: -16 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: i * 0.08 }}
+                          className={`glass-card rounded-xl overflow-hidden transition-all ${isExpanded ? "border-primary/30" : "hover:border-gold-soft/20"}`}
+                        >
+                          <button
+                            onClick={() => setExpandedVendor(isExpanded ? null : v.vendor_name)}
+                            className="w-full text-left p-4 flex items-center gap-3"
+                          >
+                            <ScoreRing value={v.position_strength} size={40} />
+                            <div className="flex-1 min-w-0">
+                              <h3 className="font-display text-xs text-foreground truncate">{v.vendor_name}</h3>
+                              <div className="flex items-center gap-2 mt-0.5">
+                                <span className={`text-[9px] font-body tracking-wider uppercase ${pricingColors[v.pricing_fairness]}`}>
+                                  {v.pricing_fairness?.replace("_", " ")}
+                                </span>
+                                <span className="text-[9px] font-body text-muted-foreground flex items-center gap-0.5">
+                                  <MotIcon size={8} /> {v.motivation_level}
+                                </span>
+                              </div>
+                            </div>
+                            {isExpanded ? <ChevronUp size={12} className="text-muted-foreground shrink-0" /> : <ChevronDown size={12} className="text-muted-foreground shrink-0" />}
+                          </button>
+
+                          <AnimatePresence>
+                            {isExpanded && (
+                              <motion.div initial={{ height: 0 }} animate={{ height: "auto" }} exit={{ height: 0 }} className="overflow-hidden">
+                                <div className="px-4 pb-4 space-y-3 border-t border-border/50 pt-3">
+                                  <div className="flex flex-wrap gap-1.5">
+                                    <span className="px-2 py-0.5 bg-muted border border-border text-[9px] font-body text-muted-foreground rounded">
+                                      {toneLabels[v.recommended_tone] || v.recommended_tone}
+                                    </span>
+                                    <span className="px-2 py-0.5 bg-muted border border-border text-[9px] font-body text-muted-foreground rounded">
+                                      {approachLabels[v.recommended_approach] || v.recommended_approach}
+                                    </span>
+                                  </div>
+
+                                  {/* Leverage points */}
+                                  <div>
+                                    <p className="font-body text-[9px] tracking-wider uppercase text-success/70 mb-1.5">Leverage Points</p>
+                                    <ul className="space-y-1">
+                                      {v.leverage_points?.map((p, j) => (
+                                        <li key={j} className="font-body text-[10px] text-foreground/60 flex items-start gap-1.5">
+                                          <CheckCircle2 size={8} className="text-success shrink-0 mt-0.5" /> {p}
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  </div>
+
+                                  {/* Risk flags */}
+                                  {v.risk_flags?.length > 0 && (
+                                    <div>
+                                      <p className="font-body text-[9px] tracking-wider uppercase text-accent/70 mb-1.5">Risk Flags</p>
+                                      <ul className="space-y-1">
+                                        {v.risk_flags.map((r, j) => (
+                                          <li key={j} className="font-body text-[10px] text-foreground/60 flex items-start gap-1.5">
+                                            <AlertTriangle size={8} className="text-accent shrink-0 mt-0.5" /> {r}
+                                          </li>
+                                        ))}
+                                      </ul>
+                                    </div>
+                                  )}
+
+                                  {/* Confidence dial */}
+                                  <div className="flex items-center justify-between pt-2 border-t border-border/30">
+                                    <span className="font-body text-[9px] text-muted-foreground">Accept Probability</span>
+                                    <span className="font-display text-sm text-primary">{v.simulation?.acceptance_probability || 0}%</span>
+                                  </div>
+                                </div>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+
+                  {/* CENTER — Negotiation Drafts */}
+                  <div className="space-y-4">
+                    <p className="font-body text-[10px] tracking-[0.25em] uppercase text-gold-soft/50 mb-2">
+                      Negotiation Drafts
+                    </p>
                     {a.vendor_analyses.map((v, i) => (
-                      <VendorNegotiationCard
+                      <NegotiationDraftCard
                         key={i}
                         vendor={v}
                         index={i}
@@ -644,24 +469,280 @@ export default function Negotiation() {
                       />
                     ))}
                   </div>
+
+                  {/* RIGHT — Strategy Panel */}
+                  <div className="space-y-4 lg:sticky lg:top-40">
+                    <p className="font-body text-[10px] tracking-[0.25em] uppercase text-gold-soft/50 mb-2">
+                      Quantus Core Strategy
+                    </p>
+
+                    {/* Strategy summary */}
+                    <div className="glass-card rounded-xl p-5 border-primary/10">
+                      <div className="flex items-center gap-2 mb-4">
+                        <Target size={12} className="text-primary" />
+                        <span className="font-display text-xs text-foreground">Recommended Approach</span>
+                        <motion.div
+                          initial={{ scaleX: 0 }}
+                          animate={{ scaleX: 1 }}
+                          transition={{ delay: 0.5, duration: 0.6 }}
+                          className="flex-1 h-px bg-primary/20 origin-left"
+                        />
+                      </div>
+                      <div className="space-y-3">
+                        <div>
+                          <p className="font-body text-[9px] tracking-wider uppercase text-muted-foreground mb-1">Primary</p>
+                          <p className="font-body text-[11px] text-foreground/80 leading-relaxed">{a.strategy_summary.primary_strategy}</p>
+                        </div>
+                        <div>
+                          <p className="font-body text-[9px] tracking-wider uppercase text-muted-foreground mb-1">Fallback</p>
+                          <p className="font-body text-[11px] text-foreground/70 leading-relaxed">{a.strategy_summary.fallback_strategy}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Key leverage & push/avoid */}
+                    <div className="glass-card rounded-xl p-5 border-primary/10">
+                      <div className="space-y-3">
+                        <div>
+                          <p className="font-body text-[9px] tracking-wider uppercase text-success/70 mb-1.5">Key Leverage</p>
+                          <ul className="space-y-1">
+                            {a.strategy_summary.key_leverage?.map((l, i) => (
+                              <li key={i} className="font-body text-[10px] text-foreground/60 flex items-start gap-1.5">
+                                <CheckCircle2 size={8} className="text-success shrink-0 mt-0.5" /> {l}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                        <div>
+                          <p className="font-body text-[9px] tracking-wider uppercase text-primary/70 mb-1.5">Push For</p>
+                          <ul className="space-y-1">
+                            {a.strategy_summary.things_to_push?.map((p, i) => (
+                              <li key={i} className="font-body text-[10px] text-foreground/60 flex items-start gap-1.5">
+                                <ArrowRight size={8} className="text-primary shrink-0 mt-0.5" /> {p}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                        <div>
+                          <p className="font-body text-[9px] tracking-wider uppercase text-accent/70 mb-1.5">Avoid</p>
+                          <ul className="space-y-1">
+                            {a.strategy_summary.things_to_avoid?.map((av, i) => (
+                              <li key={i} className="font-body text-[10px] text-foreground/60 flex items-start gap-1.5">
+                                <AlertTriangle size={8} className="text-accent shrink-0 mt-0.5" /> {av}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Auto-Negotiation toggle */}
+                    <div className="glass-card rounded-xl p-5 border-primary/10">
+                      <button
+                        onClick={() => setAutoNegotiation(!autoNegotiation)}
+                        className="w-full flex items-center justify-between"
+                      >
+                        <div className="text-left">
+                          <p className="font-body text-[11px] text-foreground">Auto-Negotiation</p>
+                          <p className="font-body text-[9px] text-muted-foreground">Allow Quantus to negotiate automatically</p>
+                        </div>
+                        {autoNegotiation ? (
+                          <ToggleRight size={20} className="text-primary shrink-0" />
+                        ) : (
+                          <ToggleLeft size={20} className="text-muted-foreground/40 shrink-0" />
+                        )}
+                      </button>
+                    </div>
+
+                    {/* Document checklist */}
+                    {a.strategy_summary.document_checklist?.length > 0 && (
+                      <div className="glass-card rounded-xl p-5 border-primary/10">
+                        <div className="flex items-center gap-2 mb-3">
+                          <FileText size={10} className="text-primary/60" />
+                          <span className="font-body text-[10px] tracking-wider uppercase text-muted-foreground">Document Checklist</span>
+                        </div>
+                        <ul className="space-y-1.5">
+                          {a.strategy_summary.document_checklist.map((d, i) => (
+                            <li key={i} className="font-body text-[10px] text-foreground/60 flex items-start gap-1.5">
+                              <div className="w-3 h-3 rounded border border-border shrink-0 mt-0.5" />
+                              {d}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
-                {/* Finalize */}
-                <div className="border-t border-border pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-                  <div>
-                    <p className="font-display text-lg text-foreground">Ready to Close?</p>
-                    <p className="font-body text-xs text-muted-foreground">Advance this deal to Phase 5 — Workflow Orchestration</p>
-                  </div>
-                  <Link to={`/workflow?deal=${dealId}`}
-                    className="flex items-center gap-2 px-8 py-3 bg-primary text-primary-foreground font-body text-xs tracking-widest uppercase hover:bg-primary/90 transition-all">
-                    <Gavel size={14} /> Begin Workflow <ArrowRight size={14} />
-                  </Link>
-                </div>
+                {/* Bottom CTA */}
+                <motion.div
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                  className="mt-6"
+                >
+                  <button
+                    onClick={handleFinalize}
+                    className="w-full flex items-center justify-between glass-card rounded-xl p-5 border-primary/20 hover:border-primary/40 transition-all group"
+                  >
+                    <div className="text-left">
+                      <p className="font-body text-[10px] tracking-[0.2em] uppercase text-primary/60 mb-1">Negotiation Complete</p>
+                      <p className="font-body text-sm text-foreground">Advance to Workflow Orchestration</p>
+                    </div>
+                    <div className="flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground font-body text-[10px] tracking-[0.2em] uppercase rounded-lg group-hover:brightness-110 transition-all gold-glow">
+                      Proceed to Workflow <ArrowRight size={12} />
+                    </div>
+                  </button>
+                </motion.div>
               </motion.div>
             )}
-          </>
+          </div>
         )}
       </div>
-    </div>
+    </DealPhaseLayout>
+  );
+}
+
+/* Center column draft card */
+function NegotiationDraftCard({
+  vendor, index, onSendCounter, onSimulate, sending, simulation, simulating,
+}: {
+  vendor: VendorAnalysis;
+  index: number;
+  onSendCounter: (vendorName: string, message: string) => void;
+  onSimulate: (vendorName: string) => void;
+  sending: string | null;
+  simulation: SimulationResult | null;
+  simulating: string | null;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [counterText, setCounterText] = useState(vendor.counter_offer_draft);
+
+  const scenarioColors: Record<string, string> = {
+    best_case: "border-success/30 bg-success/5",
+    likely_case: "border-primary/30 bg-primary/5",
+    worst_case: "border-destructive/30 bg-destructive/5",
+  };
+  const scenarioLabels: Record<string, string> = {
+    best_case: "Best Case", likely_case: "Likely Case", worst_case: "Worst Case",
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.1 }}
+      className="glass-card rounded-xl overflow-hidden border-primary/10 hover:border-primary/20 transition-all"
+    >
+      {/* Header */}
+      <div className="p-5 pb-0">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-3">
+            <ScoreRing value={vendor.position_strength} size={36} />
+            <div>
+              <h3 className="font-display text-sm text-foreground">{vendor.vendor_name}</h3>
+              <p className="font-body text-[9px] text-muted-foreground">
+                {toneLabels[vendor.recommended_tone]} · {approachLabels[vendor.recommended_approach]}
+              </p>
+            </div>
+          </div>
+          <div className="text-right">
+            <p className="font-display text-lg text-primary">{vendor.simulation?.acceptance_probability || 0}%</p>
+            <p className="font-body text-[8px] tracking-wider uppercase text-muted-foreground">Accept</p>
+          </div>
+        </div>
+
+        {/* AI optimization notes */}
+        <div className="flex flex-wrap gap-2 mb-3">
+          {vendor.recommended_tone && (
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-primary/5 border border-primary/10 text-[9px] font-body text-primary/70 rounded">
+              <Sparkles size={8} /> Tone optimized for {vendor.recommended_tone.replace("_", " ")}
+            </span>
+          )}
+          {vendor.pricing_fairness && (
+            <span className={`inline-flex items-center gap-1 px-2 py-0.5 border border-border text-[9px] font-body rounded ${pricingColors[vendor.pricing_fairness]}`}>
+              Price: {vendor.pricing_fairness.replace("_", " ")}
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Draft body */}
+      <div className="px-5 pb-5">
+        <div className="border border-primary/20 bg-card/50 rounded-lg p-4 mb-4">
+          <div className="flex items-center justify-between mb-2">
+            <p className="font-body text-[9px] tracking-[0.2em] uppercase text-primary/60">Counter-Offer Draft</p>
+            <button onClick={() => setEditing(!editing)} className="font-body text-[9px] text-primary hover:underline">
+              {editing ? "Preview" : "Edit"}
+            </button>
+          </div>
+          {editing ? (
+            <textarea
+              value={counterText}
+              onChange={(e) => setCounterText(e.target.value)}
+              className="w-full h-36 bg-background border border-border rounded-lg p-3 font-body text-xs text-foreground resize-none focus:outline-none focus:border-primary/50 placeholder:text-muted-foreground/40"
+            />
+          ) : (
+            <p className="font-body text-[11px] text-foreground/70 whitespace-pre-wrap leading-relaxed">{counterText}</p>
+          )}
+        </div>
+
+        {/* Actions */}
+        <div className="flex flex-wrap gap-2">
+          <button
+            onClick={() => onSendCounter(vendor.vendor_name, counterText)}
+            disabled={sending === vendor.vendor_name}
+            className="flex items-center gap-1.5 px-5 py-2.5 bg-primary text-primary-foreground font-body text-[9px] tracking-widest uppercase rounded-lg hover:brightness-110 transition-all disabled:opacity-50"
+          >
+            {sending === vendor.vendor_name ? <Loader2 size={10} className="animate-spin" /> : <Send size={10} />}
+            Approve & Send
+          </button>
+          <button
+            onClick={() => onSimulate(vendor.vendor_name)}
+            disabled={simulating === vendor.vendor_name}
+            className="flex items-center gap-1.5 px-5 py-2.5 border border-border font-body text-[9px] tracking-widest uppercase text-muted-foreground hover:text-foreground rounded-lg transition-all disabled:opacity-50"
+          >
+            {simulating === vendor.vendor_name ? <Loader2 size={10} className="animate-spin" /> : <Brain size={10} />}
+            Run Simulation
+          </button>
+        </div>
+
+        {/* Simulation results */}
+        {simulation && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-4 space-y-3 pt-4 border-t border-border/50">
+            <p className="font-body text-[9px] tracking-[0.2em] uppercase text-primary/60">Simulation Results</p>
+            <div className="grid gap-2">
+              {simulation.scenarios.map((s, i) => (
+                <div key={i} className={`border rounded-lg p-3 ${scenarioColors[s.label] || "border-border bg-muted/10"}`}>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="font-display text-xs text-foreground">{scenarioLabels[s.label] || s.label}</span>
+                    <span className="font-display text-sm text-primary">{s.probability}%</span>
+                  </div>
+                  <p className="font-body text-[10px] text-foreground/70 mb-1">{s.outcome}</p>
+                  <div className="flex flex-wrap gap-2 text-[9px] font-body text-muted-foreground">
+                    {s.final_price_estimate && <span>Est: {s.final_price_estimate}</span>}
+                    <span>{s.rounds_to_close} round{s.rounds_to_close > 1 ? "s" : ""}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="border border-primary/20 bg-primary/5 p-3 rounded-lg">
+              <p className="font-body text-[9px] text-primary mb-1">Next Move</p>
+              <p className="font-body text-[10px] text-foreground/70">{simulation.recommended_next_move}</p>
+            </div>
+            {simulation.timing_advice && (
+              <p className="font-body text-[9px] text-muted-foreground flex items-center gap-1">
+                <Clock size={8} /> {simulation.timing_advice}
+              </p>
+            )}
+            {simulation.walk_away_recommendation && (
+              <p className="font-body text-[9px] text-destructive flex items-center gap-1">
+                <AlertTriangle size={8} /> AI recommends considering walk-away
+              </p>
+            )}
+          </motion.div>
+        )}
+      </div>
+    </motion.div>
   );
 }
