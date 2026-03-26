@@ -40,7 +40,17 @@ const Onboarding = () => {
     return true;
   };
 
-  const handleFinish = () => navigate("/dashboard");
+  const handleFinish = async () => {
+    if (user) {
+      await persistOnboarding(user.id, {
+        role: selectedRole,
+        preferences: selectedPrefs,
+        modules: selectedModules,
+        tier: selectedTier,
+      });
+    }
+    navigate("/dashboard");
+  };
 
   const toggleModule = (id: string) => {
     setSelectedModules((prev) =>
