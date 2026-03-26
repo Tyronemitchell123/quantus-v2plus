@@ -79,7 +79,7 @@ const operationalAlerts = [
 
 /* ── Components ── */
 
-function AircraftCard({ aircraft, index }: { aircraft: typeof aircraftData["light"][0]; index: number }) {
+const AircraftCard = forwardRef<HTMLDivElement, { aircraft: typeof aircraftData["light"][0]; index: number }>(({ aircraft, index }, _ref) => {
   const [hovered, setHovered] = useState(false);
 
   return (
