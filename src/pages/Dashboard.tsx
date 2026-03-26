@@ -11,6 +11,10 @@ import DashboardFeed from "@/components/dashboard/DashboardFeed";
 import AIAssistantPanel from "@/components/dashboard/AIAssistantPanel";
 import MobileBottomNav from "@/components/mobile/MobileBottomNav";
 import MobileAIAssistant from "@/components/mobile/MobileAIAssistant";
+import MobileModuleCards from "@/components/mobile/MobileModuleCards";
+import MobileMessaging from "@/components/mobile/MobileMessaging";
+import MobileNotificationBanner from "@/components/mobile/MobileNotificationBanner";
+import MobileProfile from "@/components/mobile/MobileProfile";
 import ParticleGrid from "@/components/ParticleGrid";
 
 const mobileNavItems = [
