@@ -40,13 +40,15 @@ const ModuleShowcase = () => (
         </h2>
       </motion.div>
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-6xl mx-auto">
+      {/* Horizontal snap-scroll on mobile, grid on desktop */}
+      <div className="flex lg:grid lg:grid-cols-3 gap-5 max-w-6xl mx-auto overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-4 lg:pb-0 -mx-6 px-6 lg:mx-auto lg:px-0">
         {modules.map((mod, i) => (
           <motion.div
             key={mod.title}
             initial="hidden" whileInView="visible" viewport={{ once: true }}
             variants={fadeUp} custom={i}
-            className="relative overflow-hidden group cursor-pointer"
+            whileHover={{ scale: 1.02, rotateY: 2 }}
+            className="relative overflow-hidden group cursor-pointer snap-center min-w-[280px] sm:min-w-[320px] lg:min-w-0 shrink-0"
           >
             <Link to={mod.link}>
               <div className="relative h-64 overflow-hidden">
@@ -64,10 +66,12 @@ const ModuleShowcase = () => (
                   <h3 className="font-body text-xs tracking-[0.2em] uppercase text-primary/80">{mod.title}</h3>
                 </div>
                 <p className="font-body text-xs text-muted-foreground leading-relaxed mb-3">{mod.desc}</p>
+                {/* Gold underline animation on hover */}
                 <div className="flex items-center gap-1.5 text-primary/50 group-hover:text-primary transition-colors duration-300">
                   <span className="font-body text-[10px] tracking-[0.2em] uppercase">Explore Module</span>
                   <ArrowRight size={10} />
                 </div>
+                <div className="h-px mt-2 bg-primary/0 group-hover:bg-primary/40 transition-all duration-500 origin-left scale-x-0 group-hover:scale-x-100" />
               </div>
             </Link>
           </motion.div>

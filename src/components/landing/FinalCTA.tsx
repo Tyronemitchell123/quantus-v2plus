@@ -4,13 +4,21 @@ import { ArrowRight } from "lucide-react";
 
 const FinalCTA = () => (
   <section className="relative py-32 sm:py-40 overflow-hidden bg-background">
-    {/* Animated gold line */}
+    {/* Animated gold line sweep */}
     <motion.div
       initial={{ scaleX: 0 }}
       whileInView={{ scaleX: 1 }}
       viewport={{ once: true }}
       transition={{ duration: 2, ease: [0.22, 1, 0.36, 1] }}
       className="absolute top-1/2 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent origin-left"
+    />
+
+    {/* Slow particle wave effect */}
+    <motion.div
+      animate={{ x: ["-10%", "10%", "-10%"] }}
+      transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+      className="absolute inset-0 opacity-[0.03]"
+      style={{ background: "radial-gradient(ellipse 600px 300px at 50% 50%, hsl(var(--primary)), transparent)" }}
     />
 
     <div className="relative z-10 container mx-auto px-6 text-center max-w-2xl">
@@ -30,7 +38,7 @@ const FinalCTA = () => (
         </p>
         <Link
           to="/auth"
-          className="inline-flex items-center gap-2 px-10 py-4 font-body text-xs font-medium tracking-[0.3em] uppercase bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-500 gold-glow"
+          className="inline-flex items-center gap-2 px-10 py-4 font-body text-xs font-medium tracking-[0.3em] uppercase border-2 border-primary text-primary rounded-xl hover:bg-primary hover:text-primary-foreground transition-all duration-500 gold-glow"
         >
           Enter the Ecosystem
           <ArrowRight size={14} />

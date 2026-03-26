@@ -27,7 +27,9 @@ const ValueProposition = () => (
             viewport={{ once: true, margin: "-80px" }}
             variants={fadeUp}
             custom={i}
-            className="glass-card p-8 text-center group hover:border-primary/20 transition-all duration-500"
+            whileHover={{ scale: 1.04 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            className="glass-card p-8 text-center group hover:border-gold-soft/20 transition-all duration-500"
           >
             <card.icon className="w-6 h-6 text-primary mx-auto mb-5" strokeWidth={1.5} />
             <h3 className="font-display text-lg font-medium mb-3 text-foreground">{card.title}</h3>

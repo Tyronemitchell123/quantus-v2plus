@@ -16,7 +16,10 @@ const HeroSection = () => {
       className="relative min-h-screen flex items-center justify-center overflow-hidden bg-background"
     >
       <ParticleGrid />
-      <div className="absolute inset-0 bg-gradient-to-b from-background/20 via-background/40 to-background" />
+
+      {/* Jet-window glass reflection at top */}
+      <div className="absolute inset-x-0 top-0 h-48 bg-gradient-to-b from-foreground/[0.02] to-transparent pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/30 to-background pointer-events-none" />
 
       <motion.div
         style={{ y: heroY }}
@@ -27,10 +30,10 @@ const HeroSection = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
         >
-          <h1 className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-medium leading-[0.95] tracking-tight mb-6">
+          <h1 className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-[96px] font-semibold leading-[0.95] tracking-wide mb-6">
             <span className="text-gold-gradient">Quantus</span>
             <br />
-            <span className="text-foreground font-light italic">A.I</span>
+            <span className="text-foreground font-light italic text-4xl sm:text-5xl md:text-6xl lg:text-7xl">A.I</span>
           </h1>
 
           <motion.div
@@ -49,7 +52,7 @@ const HeroSection = () => {
 
           <Link
             to="/auth"
-            className="inline-block px-10 py-4 font-body text-xs font-medium tracking-[0.3em] uppercase bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-500 gold-glow"
+            className="inline-block px-10 py-4 font-body text-xs font-medium tracking-[0.3em] uppercase border-2 border-primary text-primary rounded-xl hover:bg-primary hover:text-primary-foreground transition-all duration-500 gold-glow"
           >
             Enter the Ecosystem
           </Link>
