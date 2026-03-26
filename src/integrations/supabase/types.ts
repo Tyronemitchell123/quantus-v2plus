@@ -1143,6 +1143,146 @@ export type Database = {
         }
         Relationships: []
       }
+      vendor_messages: {
+        Row: {
+          ai_generated: boolean | null
+          body: string
+          channel: string
+          created_at: string
+          direction: string
+          id: string
+          metadata: Json | null
+          outreach_id: string
+          sent_at: string | null
+          subject: string | null
+          tone: string | null
+          user_id: string
+        }
+        Insert: {
+          ai_generated?: boolean | null
+          body: string
+          channel?: string
+          created_at?: string
+          direction?: string
+          id?: string
+          metadata?: Json | null
+          outreach_id: string
+          sent_at?: string | null
+          subject?: string | null
+          tone?: string | null
+          user_id: string
+        }
+        Update: {
+          ai_generated?: boolean | null
+          body?: string
+          channel?: string
+          created_at?: string
+          direction?: string
+          id?: string
+          metadata?: Json | null
+          outreach_id?: string
+          sent_at?: string | null
+          subject?: string | null
+          tone?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vendor_messages_outreach_id_fkey"
+            columns: ["outreach_id"]
+            isOneToOne: false
+            referencedRelation: "vendor_outreach"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vendor_outreach: {
+        Row: {
+          category: string
+          created_at: string
+          deal_id: string
+          documents_received: Json | null
+          documents_requested: Json | null
+          follow_up_count: number | null
+          id: string
+          negotiation_prep: Json | null
+          negotiation_ready: boolean | null
+          next_follow_up_at: string | null
+          outreach_strategy: Json | null
+          response_time_hours: number | null
+          sourcing_result_id: string
+          status: string
+          updated_at: string
+          user_id: string
+          vendor_company: string | null
+          vendor_email: string | null
+          vendor_name: string
+          vendor_phone: string | null
+          vendor_score: number | null
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          deal_id: string
+          documents_received?: Json | null
+          documents_requested?: Json | null
+          follow_up_count?: number | null
+          id?: string
+          negotiation_prep?: Json | null
+          negotiation_ready?: boolean | null
+          next_follow_up_at?: string | null
+          outreach_strategy?: Json | null
+          response_time_hours?: number | null
+          sourcing_result_id: string
+          status?: string
+          updated_at?: string
+          user_id: string
+          vendor_company?: string | null
+          vendor_email?: string | null
+          vendor_name: string
+          vendor_phone?: string | null
+          vendor_score?: number | null
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          deal_id?: string
+          documents_received?: Json | null
+          documents_requested?: Json | null
+          follow_up_count?: number | null
+          id?: string
+          negotiation_prep?: Json | null
+          negotiation_ready?: boolean | null
+          next_follow_up_at?: string | null
+          outreach_strategy?: Json | null
+          response_time_hours?: number | null
+          sourcing_result_id?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+          vendor_company?: string | null
+          vendor_email?: string | null
+          vendor_name?: string
+          vendor_phone?: string | null
+          vendor_score?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vendor_outreach_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "deals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vendor_outreach_sourcing_result_id_fkey"
+            columns: ["sourcing_result_id"]
+            isOneToOne: false
+            referencedRelation: "sourcing_results"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       webhooks: {
         Row: {
           created_at: string
