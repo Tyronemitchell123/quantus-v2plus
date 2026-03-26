@@ -3,19 +3,15 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard, Briefcase, Grid3X3, Bot, FileText, CreditCard, Settings, X,
+  Search, Plus, Upload, MessageSquare, Headphones,
 } from "lucide-react";
 import DashboardTopBar from "@/components/dashboard/DashboardTopBar";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
-import HeroCard from "@/components/dashboard/HeroCard";
-import DealsOverview from "@/components/dashboard/DealsOverview";
-import ModuleShortcuts from "@/components/dashboard/ModuleShortcuts";
-import DealEngineStrip from "@/components/dashboard/DealEngineStrip";
-import DocumentsSnapshot from "@/components/dashboard/DocumentsSnapshot";
-import FinancialOverview from "@/components/dashboard/FinancialOverview";
+import DashboardFeed from "@/components/dashboard/DashboardFeed";
 import AIAssistantPanel from "@/components/dashboard/AIAssistantPanel";
 import MobileBottomNav from "@/components/mobile/MobileBottomNav";
 import MobileAIAssistant from "@/components/mobile/MobileAIAssistant";
-import MobileQuickActions from "@/components/mobile/MobileQuickActions";
+import ParticleGrid from "@/components/ParticleGrid";
 
 const mobileNavItems = [
   { icon: LayoutDashboard, label: "Dashboard", to: "/dashboard" },
@@ -33,13 +29,29 @@ const sampleNotifications = [
   { id: "3", text: "AI recommendation: Consider charter optimization", time: "3 hours ago" },
 ];
 
+const quickActions = [
+  { icon: Plus, label: "New Request", to: "/intake" },
+  { icon: Upload, label: "Upload Document", to: "/documents" },
+  { icon: Briefcase, label: "Start Deal", to: "/deals" },
+  { icon: Headphones, label: "Contact Support", to: "/contact" },
+];
+
 const Dashboard = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileAIOpen, setMobileAIOpen] = useState(false);
+  const [aiPanelOpen, setAiPanelOpen] = useState(true);
   const { pathname } = useLocation();
 
   return (
-    <div className="min-h-screen bg-background flex pt-16">
+    <div className="min-h-screen bg-background flex relative">
+      {/* Atmospheric background */}
+      <div className="fixed inset-0 pointer-events-none opacity-20 z-0">
+        <ParticleGrid />
+      </div>
+      <div className="fixed inset-0 pointer-events-none z-0" style={{
+        background: "radial-gradient(ellipse at center, transparent 60%, hsl(var(--background)) 100%)"
+      }} />
+
       {/* Desktop sidebar */}
       <DashboardSidebar />
 
@@ -59,7 +71,7 @@ const Dashboard = () => {
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "spring", damping: 30, stiffness: 300 }}
-              className="fixed top-0 left-0 h-full w-64 bg-sidebar-background border-r border-border z-50 lg:hidden"
+              className="fixed top-0 left-0 h-full w-64 bg-card border-r border-border z-50 lg:hidden"
             >
               <div className="h-16 flex items-center justify-between px-4 border-b border-border">
                 <span className="font-display text-sm">
@@ -78,8 +90,8 @@ const Dashboard = () => {
                       key={item.to}
                       to={item.to}
                       onClick={() => setMobileMenuOpen(false)}
-                      className={`flex items-center gap-3 px-3 py-2.5 font-body text-sm transition-colors ${
-                        active ? "text-primary bg-primary/8" : "text-muted-foreground hover:text-foreground"
+                      className={`flex items-center gap-3 px-3 py-2.5 rounded-lg font-body text-sm transition-colors ${
+                        active ? "text-primary bg-primary/[0.08]" : "text-muted-foreground hover:text-foreground"
                       }`}
                     >
                       <item.icon size={16} strokeWidth={1.5} />
@@ -94,26 +106,38 @@ const Dashboard = () => {
       </AnimatePresence>
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 relative z-10">
         <DashboardTopBar
-          title="Dashboard"
           onMobileMenuToggle={() => setMobileMenuOpen(true)}
           notifications={sampleNotifications}
         />
 
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 space-y-6 pb-24 lg:pb-8">
-          <HeroCard />
-          {/* Mobile quick actions */}
-          <MobileQuickActions />
-          <DealsOverview />
-          <DealEngineStrip />
-          <ModuleShortcuts />
-          <DocumentsSnapshot />
-          <FinancialOverview />
+        {/* Quick Actions strip */}
+        <div className="hidden sm:flex items-center gap-2 px-6 lg:px-8 py-3 border-b border-border/50">
+          {quickActions.map((action) => (
+            <Link
+              key={action.label}
+              to={action.to}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gold-soft/15 text-muted-foreground hover:border-gold-soft/30 hover:text-foreground font-body text-[11px] tracking-[0.15em] uppercase transition-all duration-300"
+            >
+              <action.icon size={13} strokeWidth={1.5} />
+              {action.label}
+            </Link>
+          ))}
+
+          {/* Global search */}
+          <div className="ml-auto flex items-center gap-2 px-4 py-2 rounded-lg border border-gold-soft/15 text-muted-foreground cursor-pointer hover:border-gold-soft/30 transition-all duration-300">
+            <Search size={13} strokeWidth={1.5} />
+            <span className="font-body text-[11px] tracking-wider">Search everything…</span>
+          </div>
+        </div>
+
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 pb-24 lg:pb-8">
+          <DashboardFeed />
         </main>
 
-        {/* Footer — hidden on mobile to avoid overlap with bottom nav */}
-        <footer className="hidden lg:flex px-6 py-3 border-t border-border items-center justify-between">
+        {/* Footer */}
+        <footer className="hidden lg:flex px-6 py-3 border-t border-border/50 items-center justify-between">
           <p className="font-body text-[9px] tracking-[0.2em] uppercase text-muted-foreground/40">
             Quantus A.I — The Obsidian Standard
           </p>
@@ -123,13 +147,11 @@ const Dashboard = () => {
 
       {/* AI Assistant — desktop panel */}
       <div className="hidden lg:block">
-        <AIAssistantPanel />
+        <AIAssistantPanel open={aiPanelOpen} onToggle={() => setAiPanelOpen(!aiPanelOpen)} />
       </div>
 
       {/* Mobile bottom nav */}
       <MobileBottomNav onAIOpen={() => setMobileAIOpen(true)} />
-
-      {/* Mobile AI assistant — full screen */}
       <MobileAIAssistant open={mobileAIOpen} onClose={() => setMobileAIOpen(false)} />
     </div>
   );
