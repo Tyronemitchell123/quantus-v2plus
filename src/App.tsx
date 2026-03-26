@@ -28,13 +28,14 @@ const Negotiation = lazy(() => import("./pages/Negotiation"));
 const Workflow = lazy(() => import("./pages/Workflow"));
 const DocumentsBilling = lazy(() => import("./pages/DocumentsBilling"));
 const DealCompletion = lazy(() => import("./pages/DealCompletion"));
+const DealEngine = lazy(() => import("./pages/DealEngine"));
 const Onboarding = lazy(() => import("./pages/Onboarding"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
 
 // Routes that use the dashboard shell (no global navbar/footer)
-const dashboardRoutes = ["/dashboard", "/chat", "/intake", "/sourcing", "/outreach", "/negotiation", "/workflow", "/documents", "/deal-completion", "/settings", "/account/subscription"];
+const dashboardRoutes = ["/dashboard", "/deals", "/chat", "/intake", "/sourcing", "/outreach", "/negotiation", "/workflow", "/documents", "/deal-completion", "/settings", "/account/subscription"];
 
 const AnimatedRoutes = () => {
   const location = useLocation();
@@ -59,6 +60,7 @@ const AnimatedRoutes = () => {
             {/* Dashboard shell routes */}
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/dashboard/modules" element={<ProtectedRoute><ModulesDashboard /></ProtectedRoute>} />
+            <Route path="/deals" element={<ProtectedRoute><DealEngine /></ProtectedRoute>} />
             <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
             <Route path="/intake" element={<ProtectedRoute><PageTransition><Intake /></PageTransition></ProtectedRoute>} />
             <Route path="/sourcing" element={<ProtectedRoute><PageTransition><Sourcing /></PageTransition></ProtectedRoute>} />

@@ -28,7 +28,7 @@ const HeroCard = () => {
             <Plus size={12} /> Create New Request
           </Link>
           <Link
-            to="/intake"
+            to="/deals"
             className="inline-flex items-center gap-2 px-5 py-2.5 border border-border text-foreground/70 font-body text-[11px] tracking-[0.2em] uppercase hover:border-primary/30 hover:text-foreground transition-all duration-300"
           >
             <Eye size={12} /> View Active Deals
