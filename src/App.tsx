@@ -100,6 +100,7 @@ const AnimatedRoutes = () => {
             <Route path="/marketing" element={<ProtectedRoute><PageTransition><MarketingHub /></PageTransition></ProtectedRoute>} />
             <Route path="/nlp" element={<ProtectedRoute><PageTransition><NLPTools /></PageTransition></ProtectedRoute>} />
             <Route path="/quantum" element={<ProtectedRoute><PageTransition><QuantumComputing /></PageTransition></ProtectedRoute>} />
+            <Route path="/recommendations" element={<ProtectedRoute><RecommendationEngine /></ProtectedRoute>} />
 
             <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
           </Routes>
