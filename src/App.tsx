@@ -30,6 +30,8 @@ const DocumentsBilling = lazy(() => import("./pages/DocumentsBilling"));
 const DealCompletion = lazy(() => import("./pages/DealCompletion"));
 const DealEngine = lazy(() => import("./pages/DealEngine"));
 const Onboarding = lazy(() => import("./pages/Onboarding"));
+const PartnerPortal = lazy(() => import("./pages/PartnerPortal"));
+const PartnerOnboarding = lazy(() => import("./pages/PartnerOnboarding"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
