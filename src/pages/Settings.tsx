@@ -66,6 +66,7 @@ const Settings = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.2 }}
         >
+          {activeTab === "commission" && <CommissionPanel />}
           {activeTab === "export" && <ExportPanel />}
           {activeTab === "alerts" && <AlertsPanel />}
           {activeTab === "webhooks" && <WebhooksPanel />}
