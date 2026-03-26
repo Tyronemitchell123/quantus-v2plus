@@ -139,7 +139,17 @@ const Dashboard = () => {
         </div>
 
         <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 pb-24 lg:pb-8">
-          <DashboardFeed />
+          {/* Desktop always shows feed */}
+          <div className="hidden lg:block">
+            <DashboardFeed />
+          </div>
+
+          {/* Mobile tab content */}
+          <div className="lg:hidden">
+            {mobileTab === "feed" && <DashboardFeed />}
+            {mobileTab === "modules" && <MobileModuleCards />}
+            {mobileTab === "profile" && <MobileProfile />}
+          </div>
         </main>
 
         {/* Footer */}
@@ -156,9 +166,11 @@ const Dashboard = () => {
         <AIAssistantPanel open={aiPanelOpen} onToggle={() => setAiPanelOpen(!aiPanelOpen)} />
       </div>
 
-      {/* Mobile bottom nav */}
+      {/* Mobile systems */}
       <MobileBottomNav onAIOpen={() => setMobileAIOpen(true)} />
       <MobileAIAssistant open={mobileAIOpen} onClose={() => setMobileAIOpen(false)} />
+      <MobileMessaging open={mobileMessagingOpen} onClose={() => setMobileMessagingOpen(false)} />
+      <MobileNotificationBanner />
     </div>
   );
 };
