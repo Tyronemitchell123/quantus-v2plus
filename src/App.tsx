@@ -64,6 +64,14 @@ const AnimatedRoutes = () => {
             }
           />
           <Route
+            path="/sourcing"
+            element={
+              <ProtectedRoute>
+                <PageTransition><Sourcing /><Footer /></PageTransition>
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/settings"
             element={
               <ProtectedRoute>
