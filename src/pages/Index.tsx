@@ -241,18 +241,12 @@ const Index = () => {
 
       {/* Full-width video break */}
       <section className="relative h-[50vh] overflow-hidden">
-        <motion.img
-          src={heroTravel}
-          alt="Luxury superyacht"
+        <video
+          autoPlay loop muted playsInline
           className="absolute inset-0 w-full h-full object-cover"
-          initial={{ scale: 1.1 }}
-          whileInView={{ scale: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1.5 }}
-          loading="lazy"
-          width={1920}
-          height={1080}
-        />
+        >
+          <source src={videoLifestyleAsset.url} type="video/mp4" />
+        </video>
         <div className="absolute inset-0 bg-background/60" />
         <div className="relative z-10 flex items-center justify-center h-full">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} custom={0} className="text-center">
