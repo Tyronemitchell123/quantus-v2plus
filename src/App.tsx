@@ -95,6 +95,7 @@ const AnimatedRoutes = () => {
             <Route path="/dashboard/outreach" element={<Navigate to="/outreach" replace />} />
             <Route path="/dashboard/settings" element={<Navigate to="/settings" replace />} />
             <Route path="/deals" element={<ProtectedRoute><DealEngine /></ProtectedRoute>} />
+            <Route path="/deals/:id" element={<Navigate to="/deals" replace />} />
             <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
             <Route path="/intake" element={<ProtectedRoute><PageTransition><Intake /></PageTransition></ProtectedRoute>} />
             <Route path="/sourcing" element={<ProtectedRoute><PageTransition><Sourcing /></PageTransition></ProtectedRoute>} />
