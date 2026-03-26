@@ -4,7 +4,7 @@ import {
   LayoutDashboard, Briefcase, MessageSquare, FileText, BarChart3,
   DollarSign, Settings2, Bell, Star, Clock, CheckCircle2,
   ArrowRight, Upload, TrendingUp, AlertTriangle, Shield, Send,
-  Paperclip, Globe, Phone, Mail, Users, ChevronRight,
+  Paperclip, Globe, Phone, Mail, Users, ChevronRight, Building2,
 } from "lucide-react";
 import useDocumentHead from "@/hooks/use-document-head";
 import ParticleGrid from "@/components/ParticleGrid";
