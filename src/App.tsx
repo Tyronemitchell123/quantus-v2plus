@@ -43,12 +43,13 @@ const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 const MarketingHub = lazy(() => import("./pages/MarketingHub"));
 const NLPTools = lazy(() => import("./pages/NLPTools"));
 const QuantumComputing = lazy(() => import("./pages/QuantumComputing"));
+const RecommendationEngine = lazy(() => import("./pages/RecommendationEngine"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
 
 // Routes that use the dashboard shell (no global navbar/footer)
-const dashboardRoutes = ["/dashboard", "/deals", "/chat", "/intake", "/sourcing", "/outreach", "/shortlist", "/negotiation", "/workflow", "/documents", "/deal-completion", "/settings", "/account/subscription", "/partner", "/admin", "/marketing", "/nlp", "/quantum"];
+const dashboardRoutes = ["/dashboard", "/deals", "/chat", "/intake", "/sourcing", "/outreach", "/shortlist", "/negotiation", "/workflow", "/documents", "/deal-completion", "/settings", "/account/subscription", "/partner", "/admin", "/marketing", "/nlp", "/quantum", "/recommendations"];
 
 const AnimatedRoutes = () => {
   const location = useLocation();
@@ -99,6 +100,7 @@ const AnimatedRoutes = () => {
             <Route path="/marketing" element={<ProtectedRoute><PageTransition><MarketingHub /></PageTransition></ProtectedRoute>} />
             <Route path="/nlp" element={<ProtectedRoute><PageTransition><NLPTools /></PageTransition></ProtectedRoute>} />
             <Route path="/quantum" element={<ProtectedRoute><PageTransition><QuantumComputing /></PageTransition></ProtectedRoute>} />
+            <Route path="/recommendations" element={<ProtectedRoute><RecommendationEngine /></ProtectedRoute>} />
 
             <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
           </Routes>
