@@ -91,6 +91,14 @@ const AnimatedRoutes = () => {
             }
           />
           <Route
+            path="/workflow"
+            element={
+              <ProtectedRoute>
+                <PageTransition><Workflow /><Footer /></PageTransition>
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/settings"
             element={
               <ProtectedRoute>
