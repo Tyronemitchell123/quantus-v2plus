@@ -29,6 +29,7 @@ const Workflow = lazy(() => import("./pages/Workflow"));
 const DocumentsBilling = lazy(() => import("./pages/DocumentsBilling"));
 const DealCompletion = lazy(() => import("./pages/DealCompletion"));
 const DealEngine = lazy(() => import("./pages/DealEngine"));
+const Shortlisting = lazy(() => import("./pages/Shortlisting"));
 const Onboarding = lazy(() => import("./pages/Onboarding"));
 const PartnerPortal = lazy(() => import("./pages/PartnerPortal"));
 const PartnerOnboarding = lazy(() => import("./pages/PartnerOnboarding"));
