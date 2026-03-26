@@ -73,6 +73,14 @@ const AnimatedRoutes = () => {
             }
           />
           <Route
+            path="/outreach"
+            element={
+              <ProtectedRoute>
+                <PageTransition><VendorOutreach /><Footer /></PageTransition>
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/settings"
             element={
               <ProtectedRoute>
