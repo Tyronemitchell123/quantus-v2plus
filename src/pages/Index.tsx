@@ -1,17 +1,27 @@
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import { Plane, Heart, Users, Globe, Truck, Handshake, MessageSquare, ArrowRight, Shield, Brain, Clock } from "lucide-react";
 import useDocumentHead from "@/hooks/use-document-head";
 
+import heroAbstract from "@/assets/hero-abstract.jpg";
+import heroAviation from "@/assets/hero-aviation.jpg";
+import heroWellness from "@/assets/hero-wellness.jpg";
+import heroLifestyle from "@/assets/hero-lifestyle.jpg";
+import heroEstate from "@/assets/hero-estate.jpg";
+import heroPrecision from "@/assets/hero-precision.jpg";
+import heroTravel from "@/assets/hero-travel.jpg";
+
+const heroImages = [heroAbstract, heroAviation, heroLifestyle];
+
 const modules = [
-  { icon: Plane, title: "Aviation Intelligence", desc: "Aircraft sourcing, jet valuation, buyer-seller matching, and ownership cost modeling.", link: "/dashboard" },
-  { icon: Heart, title: "Medical Travel & Wellness", desc: "Clinic matching, itinerary building, longevity programs, and post-care workflows.", link: "/dashboard" },
-  { icon: Users, title: "Household & Staffing", desc: "Role definition, staffing matchmaker, estate digital twin, and performance analytics.", link: "/dashboard" },
-  { icon: Globe, title: "Luxury Travel & Lifestyle", desc: "Ultra-luxury itineraries, hotel/yacht matching, visa compliance, and cultural curation.", link: "/dashboard" },
-  { icon: Truck, title: "Operational Logistics", desc: "Dispatch automation, incident triage, fleet analytics, and compliance documentation.", link: "/dashboard" },
-  { icon: Handshake, title: "Partnership Intelligence", desc: "Partner scoring, revenue-share modeling, brand alignment, and licensing automation.", link: "/dashboard" },
-  { icon: MessageSquare, title: "Communication Engine", desc: "Cinematic messaging, narrative-driven updates, onboarding sequences, and follow-ups.", link: "/dashboard" },
+  { icon: Plane, title: "Aviation Intelligence", desc: "Aircraft sourcing, jet valuation, buyer-seller matching, and ownership cost modeling.", image: heroAviation, link: "/dashboard" },
+  { icon: Heart, title: "Medical Travel & Wellness", desc: "Clinic matching, itinerary building, longevity programs, and post-care workflows.", image: heroWellness, link: "/dashboard" },
+  { icon: Users, title: "Household & Staffing", desc: "Role definition, staffing matchmaker, estate digital twin, and performance analytics.", image: heroEstate, link: "/dashboard" },
+  { icon: Globe, title: "Luxury Travel & Lifestyle", desc: "Ultra-luxury itineraries, hotel/yacht matching, visa compliance, and cultural curation.", image: heroLifestyle, link: "/dashboard" },
+  { icon: Truck, title: "Operational Logistics", desc: "Dispatch automation, incident triage, fleet analytics, and compliance documentation.", image: heroPrecision, link: "/dashboard" },
+  { icon: Handshake, title: "Partnership Intelligence", desc: "Partner scoring, revenue-share modeling, brand alignment, and licensing automation.", image: heroTravel, link: "/dashboard" },
+  { icon: MessageSquare, title: "Communication Engine", desc: "Cinematic messaging, narrative-driven updates, onboarding sequences, and follow-ups.", image: heroAbstract, link: "/dashboard" },
 ];
 
 const tiers = [
@@ -32,17 +42,42 @@ const Index = () => {
     description: "A multi-vertical orchestration engine for UHNW clients. Aviation, medical travel, staffing, luxury lifestyle — unified in one private interface.",
   });
 
+  const [currentHeroImage, setCurrentHeroImage] = useState(0);
+  useEffect(() => {
+    const interval = setInterval(() => setCurrentHeroImage((p) => (p + 1) % heroImages.length), 6000);
+    return () => clearInterval(interval);
+  }, []);
+
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const heroOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
-  const heroScale = useTransform(scrollYProgress, [0, 0.7], [1, 0.96]);
+  const heroScale = useTransform(scrollYProgress, [0, 0.7], [1, 1.05]);
 
   return (
     <main className="min-h-screen bg-background">
-      {/* Hero */}
-      <motion.section ref={heroRef} style={{ opacity: heroOpacity, scale: heroScale }} className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-background via-background to-background" />
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px]" />
+      {/* Hero with rotating images */}
+      <motion.section ref={heroRef} style={{ opacity: heroOpacity }} className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentHeroImage}
+            initial={{ opacity: 0, scale: 1.1 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.5, ease: "easeInOut" }}
+            className="absolute inset-0"
+          >
+            <motion.img
+              src={heroImages[currentHeroImage]}
+              alt=""
+              className="absolute inset-0 w-full h-full object-cover"
+              style={{ scale: heroScale }}
+              width={1920}
+              height={1080}
+            />
+          </motion.div>
+        </AnimatePresence>
+        <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/70 to-background" />
+        <div className="absolute inset-0 bg-gradient-to-r from-background/60 via-transparent to-background/60" />
 
         <div className="relative z-10 container mx-auto px-6 text-center max-w-4xl">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}>
@@ -73,20 +108,31 @@ const Index = () => {
 
       <div className="luxury-divider" />
 
-      {/* Philosophy */}
+      {/* Philosophy with image */}
       <section className="py-24 sm:py-32">
-        <div className="container mx-auto px-6 max-w-3xl text-center">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeUp} custom={0}>
-            <p className="font-body text-xs tracking-[0.35em] uppercase text-primary/70 mb-6">Philosophy</p>
-            <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-medium leading-tight mb-8">
-              Not a concierge.
-              <br />
-              <span className="italic text-primary">An orchestration engine.</span>
-            </h2>
-            <p className="font-body text-muted-foreground leading-relaxed text-base sm:text-lg">
-              Quantus A.I anticipates, automates, and executes across every vertical of ultra-high-net-worth life — from sourcing a Gulfstream to scheduling a stem cell consultation, from placing a household chef to negotiating a brand partnership.
-            </p>
-          </motion.div>
+        <div className="container mx-auto px-6">
+          <div className="grid lg:grid-cols-2 gap-16 items-center max-w-6xl mx-auto">
+            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeUp} custom={0}>
+              <p className="font-body text-xs tracking-[0.35em] uppercase text-primary/70 mb-6">Philosophy</p>
+              <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-medium leading-tight mb-8">
+                Not a concierge.
+                <br />
+                <span className="italic text-primary">An orchestration engine.</span>
+              </h2>
+              <p className="font-body text-muted-foreground leading-relaxed text-base sm:text-lg">
+                Quantus A.I anticipates, automates, and executes across every vertical of ultra-high-net-worth life — from sourcing a Gulfstream to scheduling a stem cell consultation, from placing a household chef to negotiating a brand partnership.
+              </p>
+            </motion.div>
+            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} custom={2}>
+              <div className="relative overflow-hidden group">
+                <img src={heroPrecision} alt="Precision engineering" className="w-full h-80 object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" width={1920} height={1080} />
+                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-6">
+                  <p className="font-body text-xs tracking-[0.25em] uppercase text-primary/60">Precision at every level</p>
+                </div>
+              </div>
+            </motion.div>
+          </div>
         </div>
       </section>
 
@@ -117,26 +163,85 @@ const Index = () => {
 
       <div className="luxury-divider" />
 
-      {/* Modules */}
+      {/* Modules with images */}
       <section className="py-24 sm:py-32">
         <div className="container mx-auto px-6">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} custom={0} className="text-center mb-16">
             <p className="font-body text-xs tracking-[0.35em] uppercase text-primary/70 mb-4">Modules</p>
             <h2 className="font-display text-3xl sm:text-4xl font-medium">Seven verticals. One intelligence layer.</h2>
           </motion.div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {modules.map((mod, i) => (
-              <motion.div key={mod.title} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} custom={i * 0.5} className="glass-card p-7 group hover:border-primary/20 transition-all duration-500 flex flex-col">
-                <mod.icon className="w-5 h-5 text-primary mb-5" strokeWidth={1.5} />
-                <h3 className="font-display text-base font-medium mb-2">{mod.title}</h3>
-                <p className="font-body text-sm text-muted-foreground leading-relaxed flex-1">{mod.desc}</p>
-                <div className="mt-5 flex items-center gap-1.5 text-primary/60 group-hover:text-primary transition-colors">
-                  <span className="font-body text-xs tracking-wider uppercase">Explore</span>
-                  <ArrowRight size={12} />
-                </div>
+
+          {/* Featured modules with large images */}
+          <div className="grid lg:grid-cols-2 gap-6 max-w-6xl mx-auto mb-6">
+            {modules.slice(0, 2).map((mod, i) => (
+              <motion.div key={mod.title} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} custom={i * 0.5}
+                className="relative overflow-hidden group cursor-pointer"
+              >
+                <Link to={mod.link}>
+                  <img src={mod.image} alt={mod.title} className="w-full h-72 sm:h-80 object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" width={1920} height={1080} />
+                  <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
+                  <div className="absolute bottom-0 left-0 right-0 p-7">
+                    <div className="flex items-center gap-3 mb-3">
+                      <mod.icon className="w-5 h-5 text-primary" strokeWidth={1.5} />
+                      <p className="font-body text-xs tracking-[0.25em] uppercase text-primary/70">{mod.title}</p>
+                    </div>
+                    <p className="font-body text-sm text-muted-foreground leading-relaxed">{mod.desc}</p>
+                    <div className="mt-4 flex items-center gap-1.5 text-primary/60 group-hover:text-primary transition-colors">
+                      <span className="font-body text-xs tracking-wider uppercase">Explore</span>
+                      <ArrowRight size={12} />
+                    </div>
+                  </div>
+                </Link>
               </motion.div>
             ))}
           </div>
+
+          {/* Remaining modules grid */}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+            {modules.slice(2).map((mod, i) => (
+              <motion.div key={mod.title} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} custom={i * 0.3}
+                className="relative overflow-hidden group cursor-pointer"
+              >
+                <Link to={mod.link}>
+                  <img src={mod.image} alt={mod.title} className="w-full h-52 object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" width={1920} height={1080} />
+                  <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
+                  <div className="absolute bottom-0 left-0 right-0 p-6">
+                    <div className="flex items-center gap-2 mb-2">
+                      <mod.icon className="w-4 h-4 text-primary" strokeWidth={1.5} />
+                      <h3 className="font-body text-xs tracking-[0.2em] uppercase text-primary/70">{mod.title}</h3>
+                    </div>
+                    <p className="font-body text-xs text-muted-foreground leading-relaxed line-clamp-2">{mod.desc}</p>
+                  </div>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <div className="luxury-divider" />
+
+      {/* Full-width image break */}
+      <section className="relative h-[50vh] overflow-hidden">
+        <motion.img
+          src={heroTravel}
+          alt="Luxury superyacht"
+          className="absolute inset-0 w-full h-full object-cover"
+          initial={{ scale: 1.1 }}
+          whileInView={{ scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1.5 }}
+          loading="lazy"
+          width={1920}
+          height={1080}
+        />
+        <div className="absolute inset-0 bg-background/60" />
+        <div className="relative z-10 flex items-center justify-center h-full">
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} custom={0} className="text-center">
+            <p className="font-display text-3xl sm:text-4xl md:text-5xl font-medium italic text-primary">
+              Orchestrating excellence.
+            </p>
+          </motion.div>
         </div>
       </section>
 
@@ -177,9 +282,11 @@ const Index = () => {
 
       <div className="luxury-divider" />
 
-      {/* CTA */}
-      <section className="py-24 sm:py-32">
-        <div className="container mx-auto px-6 text-center max-w-2xl">
+      {/* CTA with background image */}
+      <section className="relative py-24 sm:py-32 overflow-hidden">
+        <img src={heroEstate} alt="" className="absolute inset-0 w-full h-full object-cover opacity-20" loading="lazy" width={1920} height={1080} />
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-background/80 to-background" />
+        <div className="relative z-10 container mx-auto px-6 text-center max-w-2xl">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} custom={0}>
             <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-medium leading-tight mb-6">
               Your private office.
