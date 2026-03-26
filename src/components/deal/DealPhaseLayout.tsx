@@ -6,10 +6,11 @@ const phases = [
   { num: 1, label: "Intake", path: "/intake" },
   { num: 2, label: "Sourcing", path: "/sourcing" },
   { num: 3, label: "Outreach", path: "/outreach" },
-  { num: 4, label: "Negotiation", path: "/negotiation" },
-  { num: 5, label: "Workflow", path: "/workflow" },
-  { num: 6, label: "Documents", path: "/documents" },
-  { num: 7, label: "Completion", path: "/deal-completion" },
+  { num: 4, label: "Shortlist", path: "/shortlist" },
+  { num: 5, label: "Negotiation", path: "/negotiation" },
+  { num: 6, label: "Workflow", path: "/workflow" },
+  { num: 7, label: "Documents", path: "/documents" },
+  { num: 8, label: "Completion", path: "/deal-completion" },
 ];
 
 interface Props {
@@ -116,7 +117,7 @@ const DealPhaseLayout = ({
             <motion.div
               className="h-px bg-primary absolute left-0 top-0"
               initial={{ width: 0 }}
-              animate={{ width: `${((currentPhase - 1) / 6) * 100}%` }}
+              animate={{ width: `${((currentPhase - 1) / 7) * 100}%` }}
               transition={{ duration: 0.8, ease: "easeOut" }}
             />
           </div>
