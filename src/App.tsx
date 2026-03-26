@@ -20,6 +20,7 @@ const Settings = lazy(() => import("./pages/Settings"));
 const SubscriptionManagement = lazy(() => import("./pages/SubscriptionManagement"));
 const ModulesDashboard = lazy(() => import("./pages/ModulesDashboard"));
 const Chat = lazy(() => import("./pages/Chat"));
+const Intake = lazy(() => import("./pages/Intake"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -50,6 +51,14 @@ const AnimatedRoutes = () => {
             element={
               <ProtectedRoute>
                 <PageTransition><Chat /></PageTransition>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/intake"
+            element={
+              <ProtectedRoute>
+                <PageTransition><Intake /><Footer /></PageTransition>
               </ProtectedRoute>
             }
           />
