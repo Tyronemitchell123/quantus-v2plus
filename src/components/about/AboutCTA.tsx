@@ -1,44 +1,48 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import QuantumOrbit from "@/components/QuantumOrbit";
+import heroEstate from "@/assets/hero-estate.jpg";
 
 const AboutCTA = () => (
-  <section className="py-28 relative overflow-hidden" aria-label="Get Started">
-    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-quantum-cyan/[0.03] to-transparent" />
-    <div className="container mx-auto px-6 relative z-10 text-center">
+  <section className="relative py-28 overflow-hidden" aria-label="Call to Action">
+    <img
+      src={heroEstate}
+      alt=""
+      className="absolute inset-0 w-full h-full object-cover opacity-15"
+      loading="lazy"
+      width={1920}
+      height={1080}
+    />
+    <div className="absolute inset-0 bg-gradient-to-b from-background via-background/80 to-background" />
+
+    <div className="container mx-auto px-6 relative z-10">
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.7 }}
-        className="max-w-2xl mx-auto"
+        className="text-center max-w-2xl mx-auto"
       >
-        <motion.div
-          className="inline-block mb-8"
-          animate={{ rotate: 360 }}
-          transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-        >
-          <QuantumOrbit size={64} />
-        </motion.div>
-        <h2 className="font-display text-3xl md:text-5xl font-bold text-foreground leading-tight mb-6">
-          Ready to Think in{" "}
-          <span className="text-quantum-gradient">Superposition?</span>
+        <h2 className="font-display text-3xl md:text-5xl font-medium text-foreground mb-6 leading-tight">
+          Your Private Office.{" "}
+          <span className="text-gold-gradient italic">One Interface.</span>
         </h2>
-        <p className="text-muted-foreground text-lg leading-relaxed mb-10">
-          Join the enterprises already operating at quantum speed. No tickets. No wait times.
-          Just intelligence that compounds.
+        <p className="text-muted-foreground text-lg leading-relaxed mb-10 font-body">
+          Join a select circle of operators who demand intelligence that matches their ambition.
         </p>
         <div className="flex flex-wrap justify-center gap-4">
-          <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-display">
-            <Link to="/contact">
-              Start Your Quantum Journey <ArrowRight className="ml-2 h-4 w-4" />
-            </Link>
-          </Button>
-          <Button asChild variant="outline" size="lg" className="font-display border-border hover:bg-accent">
-            <Link to="/pricing">View Pricing</Link>
-          </Button>
+          <Link
+            to="/contact"
+            className="px-8 py-3.5 font-body text-sm font-medium tracking-widest uppercase bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300 inline-flex items-center gap-2"
+          >
+            Request Access <ArrowRight className="h-4 w-4" />
+          </Link>
+          <Link
+            to="/pricing"
+            className="px-8 py-3.5 font-body text-sm font-medium tracking-widest uppercase border border-border text-foreground/70 hover:text-foreground hover:border-primary/30 transition-all duration-300"
+          >
+            View Membership
+          </Link>
         </div>
       </motion.div>
     </div>

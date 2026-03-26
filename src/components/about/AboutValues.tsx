@@ -1,11 +1,11 @@
 import { motion } from "framer-motion";
-import { Atom, Eye, Target, Lock, Cpu } from "lucide-react";
+import { Shield, Eye, Target, Lock, Cpu } from "lucide-react";
 
 const values = [
   {
-    icon: Atom,
-    title: "Quantum-First Thinking",
-    desc: "Every algorithm, every model, every insight begins with quantum-enhanced computation — not as an afterthought, but as the foundation.",
+    icon: Shield,
+    title: "Privacy-First Architecture",
+    desc: "End-to-end encrypted workflows. No third-party data sharing. Your operations remain yours — always.",
   },
   {
     icon: Eye,
@@ -15,16 +15,16 @@ const values = [
   {
     icon: Target,
     title: "Outcome Obsession",
-    desc: "We measure success by your ROI — not by feature count. If it doesn't move revenue, reduce risk, or unlock alpha, we don't ship it.",
+    desc: "We measure success by your ROI — not by feature count. If it doesn't move revenue or reduce risk, we don't ship it.",
   },
   {
     icon: Lock,
-    title: "Post-Quantum Security",
-    desc: "Lattice-based cryptography, zero-knowledge proofs, and SOC 2 Type II compliance. Your data stays yours — always.",
+    title: "Discreet Power",
+    desc: "Designed for those who value discretion above all. Every interaction, every data point, protected with institutional-grade security.",
   },
   {
     icon: Cpu,
-    title: "Zero-Human Operations",
+    title: "Autonomous Operations",
     desc: "No tickets. No wait times. AI agents handle every interaction from onboarding to strategic advisory — 24/7/365.",
   },
 ];
@@ -40,11 +40,11 @@ const AboutValues = () => (
         viewport={{ once: true }}
         className="text-center mb-16"
       >
-        <p className="text-primary font-display text-xs tracking-[0.4em] uppercase mb-4">
+        <p className="text-primary font-body text-xs tracking-[0.4em] uppercase mb-4">
           Our Principles
         </p>
-        <h2 className="font-display text-3xl md:text-5xl font-bold text-foreground">
-          What We <span className="text-quantum-gradient">Stand For</span>
+        <h2 className="font-display text-3xl md:text-5xl font-medium text-foreground">
+          What We <span className="text-gold-gradient italic">Stand For</span>
         </h2>
       </motion.div>
 
@@ -57,15 +57,15 @@ const AboutValues = () => (
             viewport={{ once: true }}
             transition={{ delay: i * 0.08, duration: 0.5 }}
             whileHover={{ y: -6, transition: { duration: 0.3 } }}
-            className={`quantum-card rounded-xl p-8 group hover:quantum-glow transition-all duration-300 ${
+            className={`glass-card p-8 group hover:border-primary/20 transition-all duration-300 ${
               i === 3 ? "lg:col-start-1" : i === 4 ? "lg:col-start-2" : ""
             }`}
           >
-            <div className="w-12 h-12 rounded-xl bg-quantum-cyan/10 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300">
-              <v.icon className="text-quantum-cyan" size={24} />
+            <div className="w-12 h-12 rounded-none bg-primary/10 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300">
+              <v.icon className="text-primary" size={24} strokeWidth={1.5} />
             </div>
-            <h3 className="font-display text-lg font-semibold text-foreground mb-2">{v.title}</h3>
-            <p className="text-sm text-muted-foreground leading-relaxed">{v.desc}</p>
+            <h3 className="font-display text-lg font-medium text-foreground mb-2">{v.title}</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed font-body">{v.desc}</p>
           </motion.div>
         ))}
       </div>
