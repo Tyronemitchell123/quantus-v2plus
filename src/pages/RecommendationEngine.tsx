@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Sparkles, Brain, Zap, TrendingUp, Shield, Clock, Target,
   ChevronRight, Lightbulb, BarChart3, FileText, Users,
