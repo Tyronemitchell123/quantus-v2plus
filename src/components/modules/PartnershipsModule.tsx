@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useModuleData } from "@/hooks/use-module-data";
+import ModuleLiveDeals from "@/components/modules/ModuleLiveDeals";
 import { motion, AnimatePresence } from "framer-motion";
 import { Handshake, Plane, Heart, Users, Hotel, Truck, Shield, Sparkles, Eye, Clock, Search, SlidersHorizontal, Bookmark, GitCompare, Star, CheckCircle, AlertTriangle, FileText } from "lucide-react";
 import { Link } from "react-router-dom";

@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useModuleData } from "@/hooks/use-module-data";
+import ModuleLiveDeals from "@/components/modules/ModuleLiveDeals";
 import { Link } from "react-router-dom";
 import {
   Plane, Search, BarChart3, ArrowRight, TrendingDown, TrendingUp,
