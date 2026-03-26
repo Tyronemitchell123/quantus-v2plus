@@ -167,7 +167,12 @@ const Dashboard = () => {
       </div>
 
       {/* Mobile systems */}
-      <MobileBottomNav onAIOpen={() => setMobileAIOpen(true)} />
+      <MobileBottomNav
+        onAIOpen={() => setMobileAIOpen(true)}
+        onMessagingOpen={() => setMobileMessagingOpen(true)}
+        onTabChange={setMobileTab}
+        activeTab={mobileTab}
+      />
       <MobileAIAssistant open={mobileAIOpen} onClose={() => setMobileAIOpen(false)} />
       <MobileMessaging open={mobileMessagingOpen} onClose={() => setMobileMessagingOpen(false)} />
       <MobileNotificationBanner />
