@@ -381,7 +381,7 @@ const PartnerPortal = () => {
                   </motion.div>
 
                   <div className="space-y-3">
-                    {mockRequests.map((req) => (
+                    {activeRequests.map((req) => (
                       <motion.div key={req.id} variants={fadeUp}
                         onClick={() => setSelectedRequest(req.id)}
                         className="bg-[#111114]/80 border border-[hsl(var(--gold))]/[0.08] rounded-xl p-5 hover:border-[hsl(var(--gold))]/20 transition-all duration-300 cursor-pointer group">
