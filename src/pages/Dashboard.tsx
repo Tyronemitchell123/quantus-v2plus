@@ -43,7 +43,10 @@ const quickActions = [
 const Dashboard = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileAIOpen, setMobileAIOpen] = useState(false);
+  const [mobileMessagingOpen, setMobileMessagingOpen] = useState(false);
   const [aiPanelOpen, setAiPanelOpen] = useState(true);
+  const [mobileTab, setMobileTab] = useState<"feed" | "modules" | "profile">("feed");
+  const { pathname } = useLocation();
   const { pathname } = useLocation();
 
   return (
