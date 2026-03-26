@@ -221,7 +221,7 @@ const PartnerPortal = () => {
                       <button onClick={() => setSection("requests")} className="font-body text-[9px] tracking-[0.2em] uppercase text-[hsl(var(--gold))]/50 hover:text-[hsl(var(--gold))] transition-colors">View All</button>
                     </div>
                     <div className="space-y-3">
-                      {mockRequests.filter(r => r.status !== "Completed").map((req, i) => (
+                      {activeRequests.filter(r => r.status !== "Completed").map((req, i) => (
                         <motion.div key={req.id} variants={fadeUp}
                           onClick={() => setSelectedRequest(req.id)}
                           className="bg-[#111114]/80 border border-[hsl(var(--gold))]/[0.08] rounded-xl p-5 flex items-center justify-between hover:border-[hsl(var(--gold))]/20 transition-all duration-300 cursor-pointer group">
