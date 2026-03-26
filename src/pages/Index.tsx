@@ -12,16 +12,22 @@ import heroEstate from "@/assets/hero-estate.jpg";
 import heroPrecision from "@/assets/hero-precision.jpg";
 import heroTravel from "@/assets/hero-travel.jpg";
 
+import videoAviationAsset from "@/assets/video-aviation.mp4.asset.json";
+import videoWellnessAsset from "@/assets/video-wellness.mp4.asset.json";
+import videoLifestyleAsset from "@/assets/video-lifestyle.mp4.asset.json";
+import videoEstateAsset from "@/assets/video-estate.mp4.asset.json";
+import videoPrecisionAsset from "@/assets/video-precision.mp4.asset.json";
+
 const heroImages = [heroAbstract, heroAviation, heroLifestyle];
 
 const modules = [
-  { icon: Plane, title: "Aviation Intelligence", desc: "Aircraft sourcing, jet valuation, buyer-seller matching, and ownership cost modeling.", image: heroAviation, link: "/dashboard" },
-  { icon: Heart, title: "Medical Travel & Wellness", desc: "Clinic matching, itinerary building, longevity programs, and post-care workflows.", image: heroWellness, link: "/dashboard" },
-  { icon: Users, title: "Household & Staffing", desc: "Role definition, staffing matchmaker, estate digital twin, and performance analytics.", image: heroEstate, link: "/dashboard" },
-  { icon: Globe, title: "Luxury Travel & Lifestyle", desc: "Ultra-luxury itineraries, hotel/yacht matching, visa compliance, and cultural curation.", image: heroLifestyle, link: "/dashboard" },
-  { icon: Truck, title: "Operational Logistics", desc: "Dispatch automation, incident triage, fleet analytics, and compliance documentation.", image: heroPrecision, link: "/dashboard" },
-  { icon: Handshake, title: "Partnership Intelligence", desc: "Partner scoring, revenue-share modeling, brand alignment, and licensing automation.", image: heroTravel, link: "/dashboard" },
-  { icon: MessageSquare, title: "Communication Engine", desc: "Cinematic messaging, narrative-driven updates, onboarding sequences, and follow-ups.", image: heroAbstract, link: "/dashboard" },
+  { icon: Plane, title: "Aviation Intelligence", desc: "Aircraft sourcing, jet valuation, buyer-seller matching, and ownership cost modeling.", image: heroAviation, video: videoAviationAsset.url, link: "/dashboard" },
+  { icon: Heart, title: "Medical Travel & Wellness", desc: "Clinic matching, itinerary building, longevity programs, and post-care workflows.", image: heroWellness, video: videoWellnessAsset.url, link: "/dashboard" },
+  { icon: Users, title: "Household & Staffing", desc: "Role definition, staffing matchmaker, estate digital twin, and performance analytics.", image: heroEstate, video: videoEstateAsset.url, link: "/dashboard" },
+  { icon: Globe, title: "Luxury Travel & Lifestyle", desc: "Ultra-luxury itineraries, hotel/yacht matching, visa compliance, and cultural curation.", image: heroLifestyle, video: videoLifestyleAsset.url, link: "/dashboard" },
+  { icon: Truck, title: "Operational Logistics", desc: "Dispatch automation, incident triage, fleet analytics, and compliance documentation.", image: heroPrecision, video: videoPrecisionAsset.url, link: "/dashboard" },
+  { icon: Handshake, title: "Partnership Intelligence", desc: "Partner scoring, revenue-share modeling, brand alignment, and licensing automation.", image: heroTravel, video: videoLifestyleAsset.url, link: "/dashboard" },
+  { icon: MessageSquare, title: "Communication Engine", desc: "Cinematic messaging, narrative-driven updates, onboarding sequences, and follow-ups.", image: heroAbstract, video: videoPrecisionAsset.url, link: "/dashboard" },
 ];
 
 const tiers = [
