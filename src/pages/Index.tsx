@@ -177,14 +177,20 @@ const Index = () => {
             <h2 className="font-display text-3xl sm:text-4xl font-medium">Seven verticals. One intelligence layer.</h2>
           </motion.div>
 
-          {/* Featured modules with large images */}
+          {/* Featured modules with video backgrounds */}
           <div className="grid lg:grid-cols-2 gap-6 max-w-6xl mx-auto mb-6">
             {modules.slice(0, 2).map((mod, i) => (
               <motion.div key={mod.title} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} custom={i * 0.5}
                 className="relative overflow-hidden group cursor-pointer"
               >
                 <Link to={mod.link}>
-                  <img src={mod.image} alt={mod.title} className="w-full h-72 sm:h-80 object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" width={1920} height={1080} />
+                  <video
+                    autoPlay loop muted playsInline
+                    poster={mod.image}
+                    className="w-full h-72 sm:h-80 object-cover transition-transform duration-700 group-hover:scale-105"
+                  >
+                    <source src={mod.video} type="video/mp4" />
+                  </video>
                   <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
                   <div className="absolute bottom-0 left-0 right-0 p-7">
                     <div className="flex items-center gap-3 mb-3">
@@ -202,14 +208,20 @@ const Index = () => {
             ))}
           </div>
 
-          {/* Remaining modules grid */}
+          {/* Remaining modules with video backgrounds */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
             {modules.slice(2).map((mod, i) => (
               <motion.div key={mod.title} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} custom={i * 0.3}
                 className="relative overflow-hidden group cursor-pointer"
               >
                 <Link to={mod.link}>
-                  <img src={mod.image} alt={mod.title} className="w-full h-52 object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" width={1920} height={1080} />
+                  <video
+                    autoPlay loop muted playsInline
+                    poster={mod.image}
+                    className="w-full h-52 object-cover transition-transform duration-700 group-hover:scale-105"
+                  >
+                    <source src={mod.video} type="video/mp4" />
+                  </video>
                   <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
                   <div className="absolute bottom-0 left-0 right-0 p-6">
                     <div className="flex items-center gap-2 mb-2">
@@ -222,12 +234,6 @@ const Index = () => {
               </motion.div>
             ))}
           </div>
-        </div>
-      </section>
-
-      <div className="luxury-divider" />
-
-      {/* Full-width image break */}
       <section className="relative h-[50vh] overflow-hidden">
         <motion.img
           src={heroTravel}
