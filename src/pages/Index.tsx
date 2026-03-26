@@ -233,7 +233,12 @@ const Index = () => {
                 </Link>
               </motion.div>
             ))}
-          </div>
+        </div>
+      </section>
+
+      <div className="luxury-divider" />
+
+      {/* Full-width video break */}
       <section className="relative h-[50vh] overflow-hidden">
         <motion.img
           src={heroTravel}
