@@ -54,7 +54,7 @@ const LogisticsModule = () => (
           ].map((r, i) => (
             <div key={i} className="flex items-center justify-between px-3 py-2 border border-border">
               <div className="flex items-center gap-2">
-                {r.risk === "Low" ? <CheckCircle size={10} className="text-primary" /> : <AlertTriangle size={10} className="text-yellow-500" />}
+                {r.risk === "Low" ? <CheckCircle size={10} className="text-primary" /> : <AlertTriangle size={10} className="text-destructive/70" />}
                 <p className="font-body text-xs text-muted-foreground">{r.label}</p>
               </div>
               <div className="flex items-center gap-2">
