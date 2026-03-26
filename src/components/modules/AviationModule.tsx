@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, forwardRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useModuleData } from "@/hooks/use-module-data";
 import ModuleLiveDeals from "@/components/modules/ModuleLiveDeals";
@@ -79,7 +79,7 @@ const operationalAlerts = [
 
 /* ── Components ── */
 
-function AircraftCard({ aircraft, index }: { aircraft: typeof aircraftData["light"][0]; index: number }) {
+const AircraftCard = forwardRef<HTMLDivElement, { aircraft: typeof aircraftData["light"][0]; index: number }>(({ aircraft, index }, _ref) => {
   const [hovered, setHovered] = useState(false);
 
   return (
@@ -172,7 +172,8 @@ function AircraftCard({ aircraft, index }: { aircraft: typeof aircraftData["ligh
       </div>
     </motion.div>
   );
-}
+});
+AircraftCard.displayName = "AircraftCard";
 
 /* ── Main Module ── */
 const AviationModule = () => {

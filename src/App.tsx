@@ -3,13 +3,21 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PageTransition from "@/components/PageTransition";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
+import { useAuth } from "@/hooks/use-auth";
+
+const ModulesRedirect = () => {
+  const { user, loading } = useAuth();
+  if (loading) return <div className="min-h-screen bg-background" />;
+  if (user) return <Navigate to="/dashboard/modules" replace />;
+  return <PageTransition><Index /><Footer /></PageTransition>;
+};
 
 const About = lazy(() => import("./pages/About"));
 const Contact = lazy(() => import("./pages/Contact"));
@@ -64,7 +72,7 @@ const AnimatedRoutes = () => {
             {/* Public */}
             <Route path="/" element={<PageTransition><Index /><Footer /></PageTransition>} />
             <Route path="/about" element={<PageTransition><About /><Footer /></PageTransition>} />
-            <Route path="/modules" element={<PageTransition><Index /><Footer /></PageTransition>} />
+            <Route path="/modules" element={<ModulesRedirect />} />
             <Route path="/pricing" element={<PageTransition><Pricing /><Footer /></PageTransition>} />
             <Route path="/contact" element={<PageTransition><Contact /><Footer /></PageTransition>} />
             <Route path="/services" element={<PageTransition><Services /><Footer /></PageTransition>} />
@@ -102,6 +110,8 @@ const AnimatedRoutes = () => {
             <Route path="/quantum" element={<ProtectedRoute><PageTransition><QuantumComputing /></PageTransition></ProtectedRoute>} />
             <Route path="/recommendations" element={<ProtectedRoute><RecommendationEngine /></ProtectedRoute>} />
 
+            <Route path="/privacy" element={<PageTransition><div className="min-h-screen bg-background pt-24 px-6"><div className="max-w-3xl mx-auto"><h1 className="font-display text-3xl mb-6">Privacy Policy</h1><p className="font-body text-muted-foreground">Privacy policy content coming soon.</p></div></div><Footer /></PageTransition>} />
+            <Route path="/terms" element={<PageTransition><div className="min-h-screen bg-background pt-24 px-6"><div className="max-w-3xl mx-auto"><h1 className="font-display text-3xl mb-6">Terms of Service</h1><p className="font-body text-muted-foreground">Terms of service content coming soon.</p></div></div><Footer /></PageTransition>} />
             <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
           </Routes>
         </Suspense>

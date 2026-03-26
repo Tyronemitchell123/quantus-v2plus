@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard, Briefcase, MessageSquare, FileText, BarChart3,
@@ -76,8 +76,47 @@ const PartnerPortal = () => {
   useDocumentHead({ title: "Partner Portal — Quantus A.I", description: "Elite vendor operations suite." });
   const [section, setSection] = useState<PortalSection>("dashboard");
   const [selectedRequest, setSelectedRequest] = useState<string | null>(null);
+  const [liveDeals, setLiveDeals] = useState<typeof mockRequests>([]);
+  const [liveCommissions, setLiveCommissions] = useState<{ total: number; count: number }>({ total: 0, count: 0 });
 
-  const openRequest = mockRequests.find(r => r.id === selectedRequest);
+  useEffect(() => {
+    const fetchData = async () => {
+      const { supabase } = await import("@/integrations/supabase/client");
+      
+      // Fetch deals for requests view
+      const { data: deals } = await supabase
+        .from("deals")
+        .select("id, deal_number, category, status, intent, created_at, updated_at, timeline_days")
+        .order("updated_at", { ascending: false })
+        .limit(20);
+
+      if (deals && deals.length > 0) {
+        const mapped = deals.map(d => ({
+          id: d.deal_number,
+          category: d.category.charAt(0).toUpperCase() + d.category.slice(1),
+          title: d.intent || `${d.category} request`,
+          deadline: d.timeline_days ? new Date(Date.now() + d.timeline_days * 86400000).toLocaleDateString("en-GB", { month: "short", day: "numeric", year: "numeric" }) : "Open",
+          responseTime: "—",
+          status: (d.status === "completed" ? "Completed" : d.status === "intake" || d.status === "sourcing" ? "Pending" : "In Progress") as "Pending" | "In Progress" | "Completed",
+        }));
+        setLiveDeals(mapped);
+      }
+
+      // Fetch commission totals
+      const { data: commissions } = await supabase
+        .from("commission_logs")
+        .select("commission_cents, status");
+
+      if (commissions && commissions.length > 0) {
+        const total = commissions.reduce((sum, c) => sum + (c.commission_cents || 0), 0);
+        setLiveCommissions({ total: Math.round(total / 100), count: commissions.filter(c => c.status === "paid").length });
+      }
+    };
+    fetchData();
+  }, []);
+
+  const activeRequests = liveDeals.length > 0 ? liveDeals : mockRequests;
+  const openRequest = activeRequests.find(r => r.id === selectedRequest);
 
   return (
     <div className="min-h-screen bg-[#0A0A0C] flex relative overflow-hidden">
@@ -164,8 +203,8 @@ const PartnerPortal = () => {
                     {[
                       { label: "Response Time", value: "1.8h", icon: Clock },
                       { label: "Reliability", value: "96%", icon: CheckCircle2 },
-                      { label: "Deals Completed", value: "18", icon: Briefcase },
-                      { label: "Commission Earned", value: "£124K", icon: DollarSign },
+                      { label: "Deals Active", value: String(activeRequests.filter(r => r.status !== "Completed").length || 18), icon: Briefcase },
+                      { label: "Commission Earned", value: liveCommissions.total > 0 ? `£${(liveCommissions.total / 1000).toFixed(0)}K` : "£124K", icon: DollarSign },
                     ].map(({ label, value, icon: Icon }) => (
                       <div key={label} className="bg-[#111114]/80 border border-[hsl(var(--gold))]/[0.08] rounded-xl p-5 text-center backdrop-blur-sm">
                         <Icon size={14} className="text-[hsl(var(--gold))]/60 mx-auto mb-2" strokeWidth={1.5} />
@@ -182,7 +221,7 @@ const PartnerPortal = () => {
                       <button onClick={() => setSection("requests")} className="font-body text-[9px] tracking-[0.2em] uppercase text-[hsl(var(--gold))]/50 hover:text-[hsl(var(--gold))] transition-colors">View All</button>
                     </div>
                     <div className="space-y-3">
-                      {mockRequests.filter(r => r.status !== "Completed").map((req, i) => (
+                      {activeRequests.filter(r => r.status !== "Completed").map((req, i) => (
                         <motion.div key={req.id} variants={fadeUp}
                           onClick={() => setSelectedRequest(req.id)}
                           className="bg-[#111114]/80 border border-[hsl(var(--gold))]/[0.08] rounded-xl p-5 flex items-center justify-between hover:border-[hsl(var(--gold))]/20 transition-all duration-300 cursor-pointer group">
@@ -342,7 +381,7 @@ const PartnerPortal = () => {
                   </motion.div>
 
                   <div className="space-y-3">
-                    {mockRequests.map((req) => (
+                    {activeRequests.map((req) => (
                       <motion.div key={req.id} variants={fadeUp}
                         onClick={() => setSelectedRequest(req.id)}
                         className="bg-[#111114]/80 border border-[hsl(var(--gold))]/[0.08] rounded-xl p-5 hover:border-[hsl(var(--gold))]/20 transition-all duration-300 cursor-pointer group">
