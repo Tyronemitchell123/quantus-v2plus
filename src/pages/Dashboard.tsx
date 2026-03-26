@@ -35,6 +35,7 @@ const sampleNotifications = [
 
 const Dashboard = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileAIOpen, setMobileAIOpen] = useState(false);
   const { pathname } = useLocation();
 
   return (
