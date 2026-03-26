@@ -2,14 +2,16 @@ import { useState, useEffect } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  FileText, Loader2, ArrowLeft, ArrowRight, CheckCircle2, Clock,
-  AlertTriangle, DollarSign, Send, Eye, Zap, Receipt, Sparkles,
+  FileText, Loader2, ArrowRight, CheckCircle2, Clock,
+  AlertTriangle, DollarSign, Send, Sparkles, Receipt,
   Plane, Heart, Users, Globe, Truck, Handshake, PenTool, Bell,
   TrendingUp, BarChart3, Download, ChevronDown, ChevronUp,
+  FolderOpen, FileSignature, LayoutTemplate, ClipboardList, Settings2, Filter,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import useDocumentHead from "@/hooks/use-document-head";
+import DocumentsAIPanel from "@/components/documents/DocumentsAIPanel";
 
 const categoryIcons: Record<string, typeof Plane> = {
   aviation: Plane, medical: Heart, staffing: Users,
@@ -41,20 +43,54 @@ type CommissionSummary = {
   by_category: Record<string, { expected: number; paid: number; count: number }>;
 };
 
-const statusConfig: Record<string, { label: string; color: string; icon: typeof CheckCircle2 }> = {
-  draft: { label: "Draft", color: "text-muted-foreground", icon: FileText },
-  generated: { label: "Generated", color: "text-blue-400", icon: Sparkles },
-  issued: { label: "Issued", color: "text-amber-400", icon: Send },
-  sent: { label: "Sent", color: "text-blue-400", icon: Send },
-  signed: { label: "Signed", color: "text-emerald-400", icon: PenTool },
-  paid: { label: "Paid", color: "text-emerald-400", icon: CheckCircle2 },
-  overdue: { label: "Overdue", color: "text-destructive", icon: AlertTriangle },
+type NavSection = "all" | "contracts" | "invoices" | "receipts" | "reports" | "templates" | "commissions" | "settings";
+
+const navItems: { key: NavSection; icon: typeof FileText; label: string }[] = [
+  { key: "all", icon: FolderOpen, label: "All Documents" },
+  { key: "contracts", icon: FileSignature, label: "Contracts" },
+  { key: "invoices", icon: Receipt, label: "Invoices" },
+  { key: "receipts", icon: ClipboardList, label: "Receipts" },
+  { key: "reports", icon: BarChart3, label: "Reports" },
+  { key: "templates", icon: LayoutTemplate, label: "Templates" },
+  { key: "commissions", icon: DollarSign, label: "Commissions" },
+  { key: "settings", icon: Settings2, label: "Settings" },
+];
+
+const statusConfig: Record<string, { label: string; icon: typeof CheckCircle2 }> = {
+  draft: { label: "Draft", icon: FileText },
+  generated: { label: "Generated", icon: Sparkles },
+  issued: { label: "Issued", icon: Send },
+  sent: { label: "Sent", icon: Send },
+  signed: { label: "Signed", icon: PenTool },
+  paid: { label: "Paid", icon: CheckCircle2 },
+  overdue: { label: "Overdue", icon: AlertTriangle },
+  archived: { label: "Archived", icon: FolderOpen },
+};
+
+const templateLibrary = [
+  { title: "Letter of Intent", category: "LOI" },
+  { title: "Service Agreement", category: "Contract" },
+  { title: "Non-Disclosure Agreement", category: "NDA" },
+  { title: "Commission Invoice", category: "Invoice" },
+  { title: "Medical Consent Form", category: "Medical" },
+  { title: "Staffing Placement Agreement", category: "Staffing" },
+];
+
+const aiPromptsBySection: Record<NavSection, string[]> = {
+  all: ["Summarize all documents", "Find pending signatures", "Prepare closing package", "Generate revised version"],
+  contracts: ["Summarize this contract", "Highlight key risks", "Prepare signature request", "Generate revised version"],
+  invoices: ["Send payment reminder", "Generate commission invoice", "Prepare consolidated billing", "Calculate outstanding"],
+  receipts: ["Generate receipt for payment", "Export receipts as PDF", "Summarize payment history"],
+  reports: ["Generate deal report", "Prepare financial summary", "Vendor performance review", "Annual review"],
+  templates: ["Customize template for deal", "Generate new template", "Compare template versions"],
+  commissions: ["Aviation commission forecast", "Staffing margin analysis", "Outstanding commissions report", "Category breakdown"],
+  settings: ["Update invoice branding", "Configure tax settings", "Set payment instructions"],
 };
 
 const DocumentsBilling = () => {
   useDocumentHead({
-    title: "Documents & Billing — QUANTUS AI",
-    description: "Automated document generation, invoicing, and commission tracking.",
+    title: "Documents & Billing — Quantus A.I",
+    description: "Automated contracts, invoices, commission tracking, and closing packages.",
   });
 
   const [searchParams] = useSearchParams();
@@ -66,8 +102,9 @@ const DocumentsBilling = () => {
   const [commissionSummary, setCommissionSummary] = useState<CommissionSummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
-  const [activeTab, setActiveTab] = useState<"documents" | "invoices" | "commissions">("documents");
+  const [activeSection, setActiveSection] = useState<NavSection>("all");
   const [expandedDoc, setExpandedDoc] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<string>("all");
 
   useEffect(() => { fetchDeals(); fetchCommissions(); }, []);
   useEffect(() => { if (selectedDeal) { fetchDocuments(); fetchInvoices(); } }, [selectedDeal]);
@@ -95,11 +132,6 @@ const DocumentsBilling = () => {
   const fetchCommissions = async () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) return;
-    const res = await supabase.functions.invoke("document-billing", {
-      body: {},
-      headers: { "Content-Type": "application/json" },
-    });
-    // Use direct fetch for query params
     const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/document-billing?action=commission_summary`;
     const r = await fetch(url, { headers: { Authorization: `Bearer ${session.access_token}`, "Content-Type": "application/json", apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY } });
     const result = await r.json();
@@ -171,10 +203,15 @@ const DocumentsBilling = () => {
   };
 
   const deal = deals.find(d => d.id === selectedDeal);
-  const DealIcon = deal ? (categoryIcons[deal.category] || Globe) : Globe;
-
   const formatCurrency = (cents: number, currency: string = "GBP") =>
     new Intl.NumberFormat("en-GB", { style: "currency", currency }).format(cents / 100);
+
+  const filteredDocs = documents.filter(d => {
+    if (activeSection === "contracts") return ["LOI", "contract", "nda", "agreement"].some(t => d.document_type.toLowerCase().includes(t));
+    if (activeSection === "receipts") return d.document_type.toLowerCase().includes("receipt");
+    if (activeSection === "reports") return d.document_type.toLowerCase().includes("report");
+    return true;
+  }).filter(d => statusFilter === "all" || d.status === statusFilter);
 
   if (loading) return (
     <div className="pt-16 min-h-screen flex items-center justify-center">
@@ -183,254 +220,334 @@ const DocumentsBilling = () => {
   );
 
   return (
-    <div className="pt-16 min-h-screen">
-      <section className="py-16 md:py-24">
-        <div className="container mx-auto px-6 max-w-6xl">
-          {/* Header */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}>
-            <div className="flex items-center gap-3 mb-2">
-              <Link to="/workflow" className="text-muted-foreground hover:text-primary transition-colors"><ArrowLeft size={18} /></Link>
-              <p className="text-primary font-display text-sm tracking-[0.3em] uppercase">Phase 6</p>
-            </div>
-            <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-2">Documents & Billing</h1>
-            <p className="text-muted-foreground text-base mb-8">Automated contracts, invoices, commission tracking, and closing packages.</p>
-          </motion.div>
+    <div className="min-h-screen bg-background pt-20 pb-12">
+      <div className="container mx-auto px-4 sm:px-6">
+        {/* Header */}
+        <div className="mb-8">
+          <p className="font-body text-xs tracking-[0.35em] uppercase text-primary/70 mb-2">Private Office</p>
+          <h1 className="font-display text-2xl sm:text-3xl font-medium">Documents & Billing</h1>
+          <p className="font-body text-sm text-muted-foreground mt-1">Contracts, invoices, signatures, and financial intelligence.</p>
+        </div>
 
-          {/* Deal Selector */}
-          {deals.length === 0 ? (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="rounded-2xl border border-border bg-card/60 backdrop-blur-sm p-12 text-center">
-              <FileText size={48} className="mx-auto text-muted-foreground/30 mb-4" />
-              <p className="text-muted-foreground">No deals in negotiation or execution phase.</p>
-              <Link to="/intake" className="text-primary text-sm mt-2 inline-block hover:underline">Start a new deal →</Link>
-            </motion.div>
-          ) : (
-            <>
-              {/* Deal chips */}
-              <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="flex flex-wrap gap-2 mb-8">
-                {deals.map(d => {
-                  const Icon = categoryIcons[d.category] || Globe;
-                  return (
-                    <button key={d.id} onClick={() => setSelectedDeal(d.id)}
-                      className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm border transition-all ${d.id === selectedDeal ? "border-primary bg-primary/10 text-primary" : "border-border bg-card/40 text-muted-foreground hover:border-primary/40"}`}>
-                      <Icon size={14} />{d.deal_number}
-                    </button>
-                  );
-                })}
-              </motion.div>
+        {/* Deal selector chips */}
+        {deals.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-6">
+            {deals.map(d => {
+              const Icon = categoryIcons[d.category] || Globe;
+              return (
+                <button key={d.id} onClick={() => setSelectedDeal(d.id)}
+                  className={`flex items-center gap-2 px-3 py-1.5 font-body text-xs transition-all ${d.id === selectedDeal ? "border border-primary/30 bg-primary/10 text-primary" : "border border-border text-muted-foreground hover:border-primary/20"}`}>
+                  <Icon size={12} />{d.deal_number}
+                </button>
+              );
+            })}
+          </div>
+        )}
 
-              {/* Commission Dashboard */}
-              {commissionSummary && (
-                <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                  {[
-                    { label: "Expected Revenue", value: commissionSummary.total_expected, icon: TrendingUp, color: "text-primary" },
-                    { label: "Paid", value: commissionSummary.total_paid, icon: CheckCircle2, color: "text-emerald-400" },
-                    { label: "Outstanding", value: commissionSummary.total_outstanding, icon: Clock, color: "text-amber-400" },
-                  ].map(({ label, value, icon: Icon, color }) => (
-                    <div key={label} className="rounded-xl border border-border bg-card/60 backdrop-blur-sm p-5">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs uppercase tracking-wider text-muted-foreground">{label}</span>
-                        <Icon size={14} className={color} />
-                      </div>
-                      <p className={`text-2xl font-display font-bold ${color} tabular-nums`}>{formatCurrency(value)}</p>
-                    </div>
-                  ))}
-                </motion.div>
-              )}
-
-              {/* Tabs */}
-              <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="flex gap-1 mb-6 p-1 rounded-xl bg-secondary/40 w-fit">
-                {(["documents", "invoices", "commissions"] as const).map(tab => (
-                  <button key={tab} onClick={() => setActiveTab(tab)}
-                    className={`px-5 py-2 rounded-lg text-sm font-medium transition-all capitalize ${activeTab === tab ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}>
-                    {tab}
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* Left Navigation Rail */}
+          <div className="lg:w-48 shrink-0">
+            <div className="glass-card p-2 flex lg:flex-col gap-1 overflow-x-auto lg:overflow-x-visible">
+              {navItems.map((item) => {
+                const active = activeSection === item.key;
+                return (
+                  <button key={item.key} onClick={() => setActiveSection(item.key)}
+                    className={`flex items-center gap-3 px-4 py-2.5 text-left font-body text-xs transition-all duration-300 whitespace-nowrap shrink-0 ${active ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-secondary/30"}`}>
+                    <item.icon size={14} strokeWidth={1.5} />
+                    <span className="hidden lg:inline">{item.label}</span>
                   </button>
-                ))}
-              </motion.div>
+                );
+              })}
+            </div>
+          </div>
 
-              {/* Documents Tab */}
-              {activeTab === "documents" && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <p className="text-xs uppercase tracking-wider text-muted-foreground">{documents.length} document{documents.length !== 1 ? "s" : ""}</p>
-                    <button onClick={generateDocuments} disabled={generating}
-                      className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50">
-                      {generating ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
-                      Generate Documents
-                    </button>
-                  </div>
+          {/* Main Canvas */}
+          <div className="flex-1 min-w-0">
+            <AnimatePresence mode="wait">
+              <motion.div key={activeSection} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} transition={{ duration: 0.3 }}>
+                <div className="flex flex-col xl:flex-row gap-6">
+                  <div className="flex-1 min-w-0 space-y-6">
 
-                  {documents.length === 0 ? (
-                    <div className="rounded-xl border border-border bg-card/60 p-12 text-center">
-                      <FileText size={40} className="mx-auto text-muted-foreground/30 mb-3" />
-                      <p className="text-muted-foreground text-sm">No documents yet. Click "Generate Documents" to create the full package.</p>
-                    </div>
-                  ) : (
-                    <div className="space-y-3">
-                      {documents.map((doc, i) => {
-                        const config = statusConfig[doc.status] || statusConfig.draft;
-                        const isExpanded = expandedDoc === doc.id;
-                        return (
-                          <motion.div key={doc.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
-                            className="rounded-xl border border-border bg-card/60 backdrop-blur-sm overflow-hidden">
-                            <button onClick={() => setExpandedDoc(isExpanded ? null : doc.id)}
-                              className="w-full flex items-center justify-between p-4 hover:bg-secondary/20 transition-colors text-left">
-                              <div className="flex items-center gap-3">
-                                <div className={`w-8 h-8 rounded-lg bg-secondary flex items-center justify-center`}>
-                                  <config.icon size={14} className={config.color} />
-                                </div>
-                                <div>
-                                  <p className="text-sm font-medium text-foreground">{doc.document_type}</p>
-                                  <p className="text-xs text-muted-foreground">{doc.title}</p>
-                                </div>
-                              </div>
-                              <div className="flex items-center gap-3">
-                                <span className={`text-[10px] uppercase tracking-wider font-semibold ${config.color}`}>{config.label}</span>
-                                {isExpanded ? <ChevronUp size={14} className="text-muted-foreground" /> : <ChevronDown size={14} className="text-muted-foreground" />}
-                              </div>
+                    {/* === ALL DOCUMENTS / CONTRACTS / RECEIPTS / REPORTS === */}
+                    {["all", "contracts", "receipts", "reports"].includes(activeSection) && (
+                      <>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <h2 className="font-display text-lg font-medium capitalize">
+                              {activeSection === "all" ? "All Documents" : activeSection}
+                            </h2>
+                            <span className="font-body text-[10px] text-muted-foreground">{filteredDocs.length} items</span>
+                          </div>
+                          <div className="flex gap-2">
+                            <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}
+                              className="bg-secondary/50 border border-border px-3 py-1.5 font-body text-xs text-foreground focus:outline-none focus:border-primary/30">
+                              <option value="all">All Status</option>
+                              <option value="draft">Draft</option>
+                              <option value="generated">Generated</option>
+                              <option value="signed">Signed</option>
+                              <option value="archived">Archived</option>
+                            </select>
+                            <button onClick={generateDocuments} disabled={generating || !selectedDeal}
+                              className="flex items-center gap-2 px-4 py-1.5 bg-primary text-primary-foreground font-body text-xs tracking-wider hover:bg-primary/90 transition-colors disabled:opacity-50">
+                              {generating ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}
+                              Generate
                             </button>
-                            <AnimatePresence>
-                              {isExpanded && (
-                                <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-                                  <div className="px-4 pb-4 border-t border-border/50">
-                                    <pre className="text-xs text-muted-foreground whitespace-pre-wrap mt-3 font-sans leading-relaxed max-h-60 overflow-y-auto">{doc.content}</pre>
-                                    {doc.fields && Object.keys(doc.fields).length > 0 && (
-                                      <div className="mt-3 flex flex-wrap gap-2">
-                                        {Object.entries(doc.fields).map(([k, v]) => (
-                                          <span key={k} className="text-[10px] bg-secondary px-2 py-1 rounded text-muted-foreground">
-                                            {k}: <span className="text-foreground">{String(v)}</span>
-                                          </span>
-                                        ))}
+                          </div>
+                        </div>
+
+                        {filteredDocs.length === 0 ? (
+                          <div className="glass-card p-12 text-center">
+                            <FileText size={36} className="mx-auto text-muted-foreground/20 mb-3" />
+                            <p className="font-body text-sm text-muted-foreground">No documents found. Generate to create the full package.</p>
+                          </div>
+                        ) : (
+                          <div className="space-y-3">
+                            {filteredDocs.map((doc, i) => {
+                              const cfg = statusConfig[doc.status] || statusConfig.draft;
+                              const isExpanded = expandedDoc === doc.id;
+                              return (
+                                <motion.div key={doc.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}
+                                  className="glass-card overflow-hidden">
+                                  <button onClick={() => setExpandedDoc(isExpanded ? null : doc.id)}
+                                    className="w-full flex items-center justify-between p-4 hover:bg-secondary/20 transition-colors text-left">
+                                    <div className="flex items-center gap-3">
+                                      <div className="w-8 h-8 border border-border flex items-center justify-center">
+                                        <cfg.icon size={12} className="text-primary" />
                                       </div>
+                                      <div>
+                                        <p className="font-body text-xs font-medium text-foreground">{doc.document_type}</p>
+                                        <p className="font-body text-[10px] text-muted-foreground">{doc.title} · {deal?.deal_number}</p>
+                                      </div>
+                                    </div>
+                                    <div className="flex items-center gap-3">
+                                      <span className="font-body text-[9px] tracking-[0.15em] uppercase text-primary/60">{cfg.label}</span>
+                                      {isExpanded ? <ChevronUp size={12} className="text-muted-foreground" /> : <ChevronDown size={12} className="text-muted-foreground" />}
+                                    </div>
+                                  </button>
+                                  <AnimatePresence>
+                                    {isExpanded && (
+                                      <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
+                                        <div className="px-4 pb-4 border-t border-border/50">
+                                          {/* Action bar */}
+                                          <div className="flex gap-2 mt-3 mb-3">
+                                            {["Download", "Request Signature", "Archive", "Share"].map(action => (
+                                              <button key={action} className="px-3 py-1 border border-border font-body text-[10px] text-muted-foreground hover:text-foreground hover:border-primary/20 transition-colors">
+                                                {action}
+                                              </button>
+                                            ))}
+                                          </div>
+                                          <pre className="text-xs text-muted-foreground whitespace-pre-wrap font-sans leading-relaxed max-h-48 overflow-y-auto">{doc.content}</pre>
+                                          {doc.fields && Object.keys(doc.fields).length > 0 && (
+                                            <div className="mt-3 flex flex-wrap gap-2">
+                                              {Object.entries(doc.fields).map(([k, v]) => (
+                                                <span key={k} className="text-[10px] bg-secondary px-2 py-1 text-muted-foreground">
+                                                  {k}: <span className="text-foreground">{String(v)}</span>
+                                                </span>
+                                              ))}
+                                            </div>
+                                          )}
+                                        </div>
+                                      </motion.div>
                                     )}
+                                  </AnimatePresence>
+                                </motion.div>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </>
+                    )}
+
+                    {/* === INVOICES === */}
+                    {activeSection === "invoices" && (
+                      <>
+                        <div className="flex items-center justify-between">
+                          <h2 className="font-display text-lg font-medium">Invoice Center</h2>
+                          <button onClick={generateInvoice} disabled={generating || !selectedDeal}
+                            className="flex items-center gap-2 px-4 py-1.5 bg-primary text-primary-foreground font-body text-xs tracking-wider hover:bg-primary/90 transition-colors disabled:opacity-50">
+                            {generating ? <Loader2 size={12} className="animate-spin" /> : <Receipt size={12} />}
+                            Create Invoice
+                          </button>
+                        </div>
+
+                        {/* Invoice filter pills */}
+                        <div className="flex gap-2">
+                          {["All", "Unpaid", "Paid", "Overdue"].map(f => (
+                            <button key={f} className="px-3 py-1 border border-border font-body text-[10px] tracking-wider uppercase text-muted-foreground hover:text-primary hover:border-primary/20 transition-colors">
+                              {f}
+                            </button>
+                          ))}
+                        </div>
+
+                        {invoices.length === 0 ? (
+                          <div className="glass-card p-12 text-center">
+                            <Receipt size={36} className="mx-auto text-muted-foreground/20 mb-3" />
+                            <p className="font-body text-sm text-muted-foreground">No invoices yet. Generate one for this deal.</p>
+                          </div>
+                        ) : (
+                          <div className="space-y-3">
+                            {invoices.map((inv, i) => {
+                              const isOverdue = inv.due_date && new Date(inv.due_date) < new Date() && inv.status !== "paid";
+                              return (
+                                <motion.div key={inv.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}
+                                  className={`glass-card p-5 ${isOverdue ? "border-destructive/30" : ""}`}>
+                                  <div className="flex items-start justify-between">
+                                    <div>
+                                      <div className="flex items-center gap-2 mb-1">
+                                        <p className="font-body text-xs font-medium text-foreground font-mono">{inv.invoice_number}</p>
+                                        <span className={`font-body text-[9px] tracking-[0.15em] uppercase px-2 py-0.5 ${isOverdue ? "bg-destructive/10 text-destructive" : "text-primary/60"}`}>
+                                          {isOverdue ? "Overdue" : inv.status}
+                                        </span>
+                                      </div>
+                                      <p className="font-body text-[10px] text-muted-foreground">{inv.recipient_name || "—"} · {inv.invoice_type}</p>
+                                      {inv.due_date && <p className="font-body text-[10px] text-muted-foreground mt-1">Due: {new Date(inv.due_date).toLocaleDateString()}</p>}
+                                    </div>
+                                    <p className="font-display text-lg font-medium text-foreground tabular-nums">{formatCurrency(inv.amount_cents, inv.currency)}</p>
+                                  </div>
+
+                                  {inv.status !== "paid" && (
+                                    <div className="flex gap-2 mt-4">
+                                      <button onClick={() => sendReminder(inv.id)}
+                                        className="flex items-center gap-1.5 px-3 py-1.5 border border-border font-body text-[10px] text-muted-foreground hover:text-foreground hover:border-primary/20 transition-colors">
+                                        <Bell size={10} />Remind ({inv.reminder_count})
+                                      </button>
+                                      <button onClick={() => markPaid(inv.id)}
+                                        className="flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 border border-primary/20 text-primary font-body text-[10px] hover:bg-primary/20 transition-colors">
+                                        <CheckCircle2 size={10} />Mark Paid
+                                      </button>
+                                    </div>
+                                  )}
+                                </motion.div>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </>
+                    )}
+
+                    {/* === COMMISSIONS === */}
+                    {activeSection === "commissions" && (
+                      <>
+                        <h2 className="font-display text-lg font-medium">Commission Dashboard</h2>
+
+                        {/* Summary cards */}
+                        {commissionSummary && (
+                          <div className="grid sm:grid-cols-3 gap-4">
+                            {[
+                              { label: "Total Earned", value: commissionSummary.total_expected, icon: TrendingUp },
+                              { label: "Paid", value: commissionSummary.total_paid, icon: CheckCircle2 },
+                              { label: "Outstanding", value: commissionSummary.total_outstanding, icon: Clock },
+                            ].map(({ label, value, icon: Icon }) => (
+                              <div key={label} className="glass-card p-5 text-center">
+                                <Icon size={14} className="text-primary mx-auto mb-2" />
+                                <p className="font-display text-xl font-medium text-primary mb-1">{formatCurrency(value)}</p>
+                                <p className="font-body text-[9px] tracking-[0.15em] uppercase text-muted-foreground">{label}</p>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Category breakdown */}
+                        {commissionSummary && Object.keys(commissionSummary.by_category).length > 0 ? (
+                          <div className="space-y-3">
+                            {Object.entries(commissionSummary.by_category).map(([cat, data], i) => {
+                              const Icon = categoryIcons[cat] || Globe;
+                              const paidPercent = data.expected > 0 ? Math.round((data.paid / data.expected) * 100) : 0;
+                              return (
+                                <motion.div key={cat} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
+                                  className="glass-card p-5">
+                                  <div className="flex items-center justify-between mb-3">
+                                    <div className="flex items-center gap-2">
+                                      <Icon size={14} className="text-primary" />
+                                      <p className="font-body text-xs font-medium text-foreground capitalize">{cat}</p>
+                                      <span className="font-body text-[10px] text-muted-foreground">({data.count} deal{data.count !== 1 ? "s" : ""})</span>
+                                    </div>
+                                    <p className="font-body text-sm font-medium text-foreground tabular-nums">{formatCurrency(data.expected)}</p>
+                                  </div>
+                                  <div className="w-full h-1 bg-secondary rounded-full overflow-hidden">
+                                    <motion.div initial={{ width: 0 }} animate={{ width: `${paidPercent}%` }} transition={{ duration: 1 }}
+                                      className="h-full rounded-full bg-primary" />
+                                  </div>
+                                  <div className="flex justify-between mt-2">
+                                    <span className="font-body text-[10px] text-primary">Paid: {formatCurrency(data.paid)}</span>
+                                    <span className="font-body text-[10px] text-muted-foreground">{paidPercent}%</span>
                                   </div>
                                 </motion.div>
-                              )}
-                            </AnimatePresence>
-                          </motion.div>
-                        );
-                      })}
-                    </div>
-                  )}
-                </motion.div>
-              )}
+                              );
+                            })}
+                          </div>
+                        ) : (
+                          <div className="glass-card p-12 text-center">
+                            <BarChart3 size={36} className="mx-auto text-muted-foreground/20 mb-3" />
+                            <p className="font-body text-sm text-muted-foreground">No commission data yet.</p>
+                          </div>
+                        )}
+                      </>
+                    )}
 
-              {/* Invoices Tab */}
-              {activeTab === "invoices" && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <p className="text-xs uppercase tracking-wider text-muted-foreground">{invoices.length} invoice{invoices.length !== 1 ? "s" : ""}</p>
-                    <button onClick={generateInvoice} disabled={generating}
-                      className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50">
-                      {generating ? <Loader2 size={14} className="animate-spin" /> : <Receipt size={14} />}
-                      Generate Invoice
-                    </button>
+                    {/* === TEMPLATES === */}
+                    {activeSection === "templates" && (
+                      <>
+                        <h2 className="font-display text-lg font-medium">Templates Library</h2>
+                        <div className="grid sm:grid-cols-2 gap-4">
+                          {templateLibrary.map((tpl, i) => (
+                            <motion.div key={tpl.title} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}
+                              className="glass-card p-5 group hover:border-primary/20 transition-all cursor-pointer">
+                              <LayoutTemplate size={14} className="text-primary mb-3" />
+                              <p className="font-body text-xs font-medium text-foreground mb-1">{tpl.title}</p>
+                              <p className="font-body text-[10px] text-muted-foreground mb-3">{tpl.category}</p>
+                              <button className="font-body text-[10px] tracking-[0.15em] uppercase text-primary/60 group-hover:text-primary transition-colors">
+                                Use Template →
+                              </button>
+                            </motion.div>
+                          ))}
+                        </div>
+                      </>
+                    )}
+
+                    {/* === SETTINGS === */}
+                    {activeSection === "settings" && (
+                      <>
+                        <h2 className="font-display text-lg font-medium">Document & Billing Settings</h2>
+                        <div className="space-y-3">
+                          {["Default Templates", "Signature Methods", "Invoice Branding", "Tax Settings", "Payment Instructions", "Document Retention"].map((setting) => (
+                            <div key={setting} className="glass-card p-4 flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <Settings2 size={12} className="text-primary" />
+                                <p className="font-body text-xs text-foreground">{setting}</p>
+                              </div>
+                              <button className="font-body text-[10px] text-primary/60 hover:text-primary transition-colors">Configure</button>
+                            </div>
+                          ))}
+                        </div>
+                      </>
+                    )}
+
+                    {/* Phase 7 Handoff */}
+                    {deal && (
+                      <Link to={`/deal-completion?deal=${deal.id}`}>
+                        <div className="mt-8 glass-card p-6 flex items-center justify-between hover:border-primary/20 transition-colors cursor-pointer">
+                          <div>
+                            <p className="font-body text-[10px] tracking-[0.2em] uppercase text-primary/60 mb-1">Next Phase</p>
+                            <p className="font-display text-sm font-medium">Phase 7 — Deal Completion</p>
+                            <p className="font-body text-[10px] text-muted-foreground mt-1">Close the deal, generate final reports, and trigger upsell opportunities.</p>
+                          </div>
+                          <ArrowRight size={16} className="text-primary" />
+                        </div>
+                      </Link>
+                    )}
                   </div>
 
-                  {invoices.length === 0 ? (
-                    <div className="rounded-xl border border-border bg-card/60 p-12 text-center">
-                      <Receipt size={40} className="mx-auto text-muted-foreground/30 mb-3" />
-                      <p className="text-muted-foreground text-sm">No invoices yet. Generate one for this deal.</p>
-                    </div>
-                  ) : (
-                    <div className="space-y-3">
-                      {invoices.map((inv, i) => {
-                        const config = statusConfig[inv.status] || statusConfig.draft;
-                        const isOverdue = inv.due_date && new Date(inv.due_date) < new Date() && inv.status !== "paid";
-                        return (
-                          <motion.div key={inv.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
-                            className={`rounded-xl border bg-card/60 backdrop-blur-sm p-5 ${isOverdue ? "border-destructive/40" : "border-border"}`}>
-                            <div className="flex items-start justify-between">
-                              <div>
-                                <div className="flex items-center gap-2 mb-1">
-                                  <p className="text-sm font-semibold text-foreground font-mono">{inv.invoice_number}</p>
-                                  <span className={`text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full ${isOverdue ? "bg-destructive/10 text-destructive" : `${config.color}`}`}>
-                                    {isOverdue ? "Overdue" : config.label}
-                                  </span>
-                                </div>
-                                <p className="text-xs text-muted-foreground">{inv.recipient_name || "—"} · {inv.invoice_type}</p>
-                                {inv.due_date && <p className="text-xs text-muted-foreground mt-1">Due: {new Date(inv.due_date).toLocaleDateString()}</p>}
-                              </div>
-                              <p className="text-xl font-display font-bold text-foreground tabular-nums">{formatCurrency(inv.amount_cents, inv.currency)}</p>
-                            </div>
-
-                            {inv.status !== "paid" && (
-                              <div className="flex gap-2 mt-4">
-                                <button onClick={() => sendReminder(inv.id)}
-                                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-xs text-muted-foreground hover:text-foreground hover:border-primary/40 transition-colors">
-                                  <Bell size={12} />Remind ({inv.reminder_count})
-                                </button>
-                                <button onClick={() => markPaid(inv.id)}
-                                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 text-xs hover:bg-emerald-500/20 transition-colors">
-                                  <CheckCircle2 size={12} />Mark Paid
-                                </button>
-                              </div>
-                            )}
-                          </motion.div>
-                        );
-                      })}
-                    </div>
-                  )}
-                </motion.div>
-              )}
-
-              {/* Commissions Tab */}
-              {activeTab === "commissions" && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
-                  {commissionSummary && Object.keys(commissionSummary.by_category).length > 0 ? (
-                    <div className="space-y-3">
-                      {Object.entries(commissionSummary.by_category).map(([cat, data], i) => {
-                        const Icon = categoryIcons[cat] || Globe;
-                        const paidPercent = data.expected > 0 ? Math.round((data.paid / data.expected) * 100) : 0;
-                        return (
-                          <motion.div key={cat} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
-                            className="rounded-xl border border-border bg-card/60 backdrop-blur-sm p-5">
-                            <div className="flex items-center justify-between mb-3">
-                              <div className="flex items-center gap-2">
-                                <Icon size={16} className="text-primary" />
-                                <p className="text-sm font-medium text-foreground capitalize">{cat}</p>
-                                <span className="text-xs text-muted-foreground">({data.count} deal{data.count !== 1 ? "s" : ""})</span>
-                              </div>
-                              <p className="text-sm font-semibold text-foreground tabular-nums">{formatCurrency(data.expected)}</p>
-                            </div>
-                            <div className="w-full h-2 rounded-full bg-secondary overflow-hidden">
-                              <motion.div initial={{ width: 0 }} animate={{ width: `${paidPercent}%` }} transition={{ duration: 1, ease: "easeOut" }}
-                                className="h-full rounded-full bg-emerald-500" />
-                            </div>
-                            <div className="flex justify-between mt-2">
-                              <span className="text-[10px] text-emerald-400">Paid: {formatCurrency(data.paid)}</span>
-                              <span className="text-[10px] text-muted-foreground">{paidPercent}% collected</span>
-                            </div>
-                          </motion.div>
-                        );
-                      })}
-                    </div>
-                  ) : (
-                    <div className="rounded-xl border border-border bg-card/60 p-12 text-center">
-                      <BarChart3 size={40} className="mx-auto text-muted-foreground/30 mb-3" />
-                      <p className="text-muted-foreground text-sm">No commission data yet. Generate invoices to start tracking.</p>
-                    </div>
-                  )}
-                </motion.div>
-              )}
-
-              {/* Phase 7 Handoff */}
-              {deal && (
-                <Link to={`/deal-completion?deal=${deal.id}`}>
-                  <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
-                    className="mt-12 rounded-2xl border border-primary/20 bg-primary/5 p-6 flex items-center justify-between hover:bg-primary/10 transition-colors cursor-pointer">
-                    <div>
-                      <p className="text-xs uppercase tracking-wider text-primary mb-1">Next Phase</p>
-                      <p className="text-foreground font-display font-semibold">Phase 7 — Deal Completion & Post-Deal</p>
-                      <p className="text-xs text-muted-foreground mt-1">Close the deal, generate final reports, and trigger upsell opportunities.</p>
-                    </div>
-                    <ArrowRight size={20} className="text-primary" />
-                  </motion.div>
-                </Link>
-              )}
-            </>
-          )}
+                  {/* Right AI Panel */}
+                  <div className="xl:w-72 shrink-0">
+                    <DocumentsAIPanel prompts={aiPromptsBySection[activeSection]} />
+                  </div>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          </div>
         </div>
-      </section>
+      </div>
     </div>
   );
 };
