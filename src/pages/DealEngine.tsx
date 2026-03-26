@@ -3,13 +3,15 @@ import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Plane, Heart, Users, Globe, Truck, Handshake, Sparkles, Loader2,
-  ArrowRight, Plus, Search, CheckCircle2, Clock, AlertTriangle,
-  FileText, MessageSquare, Bot, Eye,
+  ArrowRight, Plus, Search, CheckCircle2, AlertTriangle,
+  FileText, MessageSquare, Bot, Eye, Filter,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import DashboardTopBar from "@/components/dashboard/DashboardTopBar";
 import useDocumentHead from "@/hooks/use-document-head";
+import DealCard from "@/components/deal/DealCard";
+import DealPhaseTimeline from "@/components/deal/DealPhaseTimeline";
 
 const categoryIcons: Record<string, typeof Plane> = {
   aviation: Plane, medical: Heart, staffing: Users,
@@ -39,6 +41,7 @@ const DealEngine = () => {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string>("all");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [selectedDeal, setSelectedDeal] = useState<Deal | null>(null);
 
   useEffect(() => {
     fetchDeals();
@@ -57,14 +60,14 @@ const DealEngine = () => {
   const filtered = filter === "all" ? deals : deals.filter((d) => d.category === filter);
   const categories = ["all", ...new Set(deals.map((d) => d.category))];
 
-  const getPhaseLink = (deal: Deal) => {
-    const phase = statusToPhase[deal.status] || 1;
-    const paths = ["/intake", "/sourcing", "/outreach", "/negotiation", "/workflow", "/documents", "/deal-completion"];
-    return `${paths[phase - 1]}?deal=${deal.id}`;
-  };
+  // Stats
+  const totalDeals = deals.length;
+  const activeDeals = deals.filter(d => d.status !== "completed").length;
+  const completedDeals = deals.filter(d => d.status === "completed").length;
+  const highPriority = deals.filter(d => d.priority_score >= 80).length;
 
   return (
-    <div className="min-h-screen bg-background flex pt-16">
+    <div className="min-h-screen bg-background flex">
       <DashboardSidebar />
 
       <div className="flex-1 flex flex-col min-w-0">
@@ -77,14 +80,43 @@ const DealEngine = () => {
               <div>
                 <p className="font-body text-[10px] tracking-[0.3em] uppercase text-primary/60 mb-2">7-Phase Orchestration</p>
                 <h1 className="font-display text-2xl md:text-3xl font-medium text-foreground">Deal Engine</h1>
+                <motion.div
+                  initial={{ scaleX: 0 }}
+                  animate={{ scaleX: 1 }}
+                  transition={{ delay: 0.3, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                  className="w-16 h-px bg-primary/40 origin-left mt-2"
+                />
               </div>
               <Link
                 to="/intake"
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground font-body text-[10px] tracking-[0.2em] uppercase hover:bg-primary/90 transition-all"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground font-body text-[10px] tracking-[0.2em] uppercase hover:bg-primary/90 transition-all rounded-lg gold-glow"
               >
                 <Plus size={12} /> New Request
               </Link>
             </div>
+
+            {/* Stats strip */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+              {[
+                { label: "Total Deals", value: totalDeals },
+                { label: "Active", value: activeDeals },
+                { label: "Completed", value: completedDeals },
+                { label: "High Priority", value: highPriority },
+              ].map((stat) => (
+                <motion.div
+                  key={stat.label}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="glass-card p-4 rounded-xl text-center"
+                >
+                  <p className="font-display text-xl font-medium text-primary mb-1">{stat.value}</p>
+                  <p className="font-body text-[9px] tracking-[0.2em] uppercase text-muted-foreground">{stat.label}</p>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* 7-Phase Pipeline Overview */}
+            <DealPhaseTimeline deals={deals} />
 
             {/* Category filters */}
             <div className="flex gap-2 mb-6 overflow-x-auto pb-2 scrollbar-hide">
@@ -92,7 +124,7 @@ const DealEngine = () => {
                 <button
                   key={cat}
                   onClick={() => setFilter(cat)}
-                  className={`px-4 py-1.5 font-body text-[10px] tracking-[0.15em] uppercase border transition-all whitespace-nowrap ${
+                  className={`px-4 py-2 font-body text-[10px] tracking-[0.15em] uppercase border rounded-lg transition-all whitespace-nowrap ${
                     filter === cat
                       ? "border-primary/40 bg-primary/5 text-primary"
                       : "border-border text-muted-foreground hover:border-primary/20"
@@ -109,7 +141,7 @@ const DealEngine = () => {
                 <Loader2 size={24} className="animate-spin text-primary mx-auto" />
               </div>
             ) : filtered.length === 0 ? (
-              <div className="glass-card p-12 text-center">
+              <div className="glass-card p-12 text-center rounded-xl">
                 <Search size={32} className="mx-auto text-muted-foreground/30 mb-4" />
                 <p className="font-body text-sm text-muted-foreground mb-4">No deals found</p>
                 <Link to="/intake" className="font-body text-xs text-primary hover:underline">
@@ -118,67 +150,16 @@ const DealEngine = () => {
               </div>
             ) : (
               <div className="space-y-3">
-                {filtered.map((deal, i) => {
-                  const Icon = categoryIcons[deal.category] || Sparkles;
-                  const phase = statusToPhase[deal.status] || 1;
-                  const progress = Math.round(((phase - 1) / 6) * 100);
-
-                  return (
-                    <motion.div
-                      key={deal.id}
-                      initial={{ opacity: 0, y: 12 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: i * 0.04 }}
-                    >
-                      <Link
-                        to={getPhaseLink(deal)}
-                        className="glass-card p-5 flex items-center gap-4 group hover:border-primary/20 transition-all duration-500 block"
-                      >
-                        {/* Icon */}
-                        <div className="w-10 h-10 border border-border bg-muted flex items-center justify-center shrink-0">
-                          <Icon size={16} className="text-primary/60" />
-                        </div>
-
-                        {/* Deal info */}
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1 flex-wrap">
-                            <span className="font-body text-xs font-medium text-foreground">{deal.deal_number}</span>
-                            <span className="font-body text-[10px] tracking-wider uppercase text-primary/50 capitalize">{deal.category}</span>
-                            {deal.priority_score >= 80 && (
-                              <span className="font-body text-[9px] tracking-wider uppercase text-destructive flex items-center gap-0.5">
-                                <AlertTriangle size={8} /> High Priority
-                              </span>
-                            )}
-                          </div>
-                          <p className="font-body text-xs text-muted-foreground truncate">
-                            {deal.intent || deal.sub_category || "Request pending classification"}
-                          </p>
-                        </div>
-
-                        {/* Phase */}
-                        <div className="shrink-0 text-right hidden sm:block">
-                          <p className="font-body text-[10px] tracking-wider uppercase text-muted-foreground mb-1">
-                            Phase {phase}/7 — {phaseLabels[phase - 1]}
-                          </p>
-                          <div className="w-24 h-1 bg-border rounded-full overflow-hidden">
-                            <div className="h-full bg-primary rounded-full transition-all" style={{ width: `${progress}%` }} />
-                          </div>
-                        </div>
-
-                        {/* Status indicator */}
-                        <div className="shrink-0">
-                          {deal.status === "completed" ? (
-                            <CheckCircle2 size={16} className="text-emerald-400" />
-                          ) : (
-                            <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                          )}
-                        </div>
-
-                        <ArrowRight size={14} className="text-muted-foreground/30 group-hover:text-primary/50 transition-colors shrink-0" />
-                      </Link>
-                    </motion.div>
-                  );
-                })}
+                {filtered.map((deal, i) => (
+                  <DealCard
+                    key={deal.id}
+                    deal={deal}
+                    index={i}
+                    categoryIcons={categoryIcons}
+                    statusToPhase={statusToPhase}
+                    phaseLabels={phaseLabels}
+                  />
+                ))}
               </div>
             )}
 
@@ -193,7 +174,7 @@ const DealEngine = () => {
                 <Link
                   key={action.label}
                   to={action.to}
-                  className="glass-card p-4 flex items-center gap-3 hover:border-primary/20 transition-all duration-300"
+                  className="glass-card p-4 rounded-xl flex items-center gap-3 hover:border-gold-soft/30 transition-all duration-300"
                 >
                   <action.icon size={14} className="text-primary/60" />
                   <span className="font-body text-[10px] tracking-[0.15em] uppercase text-muted-foreground">
@@ -206,7 +187,7 @@ const DealEngine = () => {
         </main>
 
         {/* Footer */}
-        <footer className="px-6 py-3 border-t border-border flex items-center justify-between">
+        <footer className="px-6 py-3 border-t border-border/50 flex items-center justify-between">
           <p className="font-body text-[9px] tracking-[0.2em] uppercase text-muted-foreground/40">
             Quantus A.I — The Obsidian Standard
           </p>
