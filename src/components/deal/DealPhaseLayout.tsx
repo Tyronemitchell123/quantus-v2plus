@@ -117,7 +117,7 @@ const DealPhaseLayout = ({
             <motion.div
               className="h-px bg-primary absolute left-0 top-0"
               initial={{ width: 0 }}
-              animate={{ width: `${((currentPhase - 1) / 6) * 100}%` }}
+              animate={{ width: `${((currentPhase - 1) / 7) * 100}%` }}
               transition={{ duration: 0.8, ease: "easeOut" }}
             />
           </div>
