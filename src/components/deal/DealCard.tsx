@@ -82,7 +82,7 @@ const DealCard = ({ deal, index, categoryIcons, statusToPhase, phaseLabels }: Pr
         {/* Status indicator */}
         <div className="shrink-0">
           {deal.status === "completed" ? (
-            <CheckCircle2 size={16} className="text-emerald-400" />
+            <CheckCircle2 size={16} className="text-success" />
           ) : (
             <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
           )}
