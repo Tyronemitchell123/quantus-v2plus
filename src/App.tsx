@@ -95,6 +95,11 @@ const AnimatedRoutes = () => {
             <Route path="/partner" element={<ProtectedRoute><PartnerPortal /></ProtectedRoute>} />
             <Route path="/partner/onboarding" element={<ProtectedRoute><PageTransition><PartnerOnboarding /></PageTransition></ProtectedRoute>} />
 
+            <Route path="/admin" element={<ProtectedRoute><PageTransition><AdminDashboard /></PageTransition></ProtectedRoute>} />
+            <Route path="/marketing" element={<ProtectedRoute><PageTransition><MarketingHub /></PageTransition></ProtectedRoute>} />
+            <Route path="/nlp" element={<ProtectedRoute><PageTransition><NLPTools /></PageTransition></ProtectedRoute>} />
+            <Route path="/quantum" element={<ProtectedRoute><PageTransition><QuantumComputing /></PageTransition></ProtectedRoute>} />
+
             <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
           </Routes>
         </Suspense>
