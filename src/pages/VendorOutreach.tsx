@@ -135,6 +135,14 @@ export default function VendorOutreachPage() {
       if (data?.error) throw new Error(data.error);
       toast.success(`Outreach prepared for ${data.total} vendors`);
       await loadData(dealId);
+
+      // Send vendor match email (non-blocking)
+      if (deal) {
+        sendDealPhaseEmail({
+          template: "deal_vendor_match",
+          data: { dealNumber: deal.deal_number, vendorCount: data.total },
+        });
+      }
     } catch (e: any) {
       toast.error(e.message || "Failed to generate outreach");
     } finally {

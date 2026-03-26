@@ -240,6 +240,18 @@ const DealCompletion = () => {
       setSummary(data.summary);
       toast.success("Operation finalized successfully");
 
+      // Send completion summary email (non-blocking)
+      sendDealPhaseEmail({
+        template: "deal_completion_summary",
+        data: {
+          dealNumber: data.summary?.deal_number || "",
+          category: data.summary?.category || "",
+          vendorName: data.summary?.sub_category || "",
+          dealValue: data.summary?.total_revenue_cents ? `£${(data.summary.total_revenue_cents / 100).toLocaleString()}` : "",
+          commissionEarned: data.summary?.commission_cents ? `£${(data.summary.commission_cents / 100).toLocaleString()}` : "",
+        },
+      });
+
       const [upsellRes, tierRes] = await Promise.all([
         supabase.functions.invoke("deal-completion", { body: { action: "upsells", dealId } }),
         supabase.functions.invoke("deal-completion", { body: { action: "tier_check", dealId } }),
