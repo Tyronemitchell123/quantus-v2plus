@@ -2,43 +2,43 @@ import { Link } from "react-router-dom";
 
 const Footer = () => (
   <footer className="border-t border-border bg-background">
-    <div className="container mx-auto px-6 py-12">
-      <div className="grid md:grid-cols-4 gap-8">
+    <div className="container mx-auto px-6 py-16">
+      <div className="grid md:grid-cols-4 gap-10">
         <div>
-          <span className="font-display text-xl font-bold tracking-wider">
-            <span className="text-gold-gradient">QUANTUS</span>
-            <span className="text-foreground/80 ml-1 font-light">AI</span>
+          <span className="font-display text-xl tracking-wider">
+            <span className="text-gold-gradient font-semibold">Quantus</span>
+            <span className="text-foreground/60 ml-1 font-light italic">A.I</span>
           </span>
-          <p className="text-muted-foreground text-sm mt-3 leading-relaxed">
-            Quantum-powered intelligence for those who define the future.
+          <p className="text-muted-foreground text-sm mt-4 leading-relaxed font-body">
+            Private intelligence for those who operate at the highest level.
           </p>
         </div>
         <div>
-          <h4 className="font-display text-sm font-semibold text-foreground mb-4">Platform</h4>
-          <div className="flex flex-col gap-2">
-            <Link to="/services" className="text-sm text-muted-foreground hover:text-primary transition-colors">Services</Link>
-            <Link to="/dashboard" className="text-sm text-muted-foreground hover:text-primary transition-colors">Analytics</Link>
-            <Link to="/chat" className="text-sm text-muted-foreground hover:text-primary transition-colors">AI Chat</Link>
+          <h4 className="font-display text-sm font-medium text-foreground mb-4">Platform</h4>
+          <div className="flex flex-col gap-2.5">
+            <Link to="/modules" className="text-sm text-muted-foreground hover:text-primary transition-colors font-body">Modules</Link>
+            <Link to="/dashboard" className="text-sm text-muted-foreground hover:text-primary transition-colors font-body">Dashboard</Link>
+            <Link to="/pricing" className="text-sm text-muted-foreground hover:text-primary transition-colors font-body">Membership</Link>
           </div>
         </div>
         <div>
-          <h4 className="font-display text-sm font-semibold text-foreground mb-4">Company</h4>
-          <div className="flex flex-col gap-2">
-            <Link to="/about" className="text-sm text-muted-foreground hover:text-primary transition-colors">About</Link>
-            <Link to="/contact" className="text-sm text-muted-foreground hover:text-primary transition-colors">Contact</Link>
+          <h4 className="font-display text-sm font-medium text-foreground mb-4">Company</h4>
+          <div className="flex flex-col gap-2.5">
+            <Link to="/about" className="text-sm text-muted-foreground hover:text-primary transition-colors font-body">About</Link>
+            <Link to="/contact" className="text-sm text-muted-foreground hover:text-primary transition-colors font-body">Contact</Link>
           </div>
         </div>
         <div>
-          <h4 className="font-display text-sm font-semibold text-foreground mb-4">Connect</h4>
-          <div className="flex flex-col gap-2 text-sm text-muted-foreground">
-            <span>hello@quantus-ai.com</span>
-            <span>Twitter / X</span>
-            <span>LinkedIn</span>
+          <h4 className="font-display text-sm font-medium text-foreground mb-4">Connect</h4>
+          <div className="flex flex-col gap-2.5 text-sm text-muted-foreground font-body">
+            <span>enquiries@quantus-ai.com</span>
+            <span>London, United Kingdom</span>
           </div>
         </div>
       </div>
-      <div className="mt-12 pt-6 border-t border-border text-center text-xs text-muted-foreground">
-        © 2026 QUANTUS AI. All rights reserved.
+      <div className="luxury-divider mt-12 mb-6" />
+      <div className="text-center text-xs text-muted-foreground font-body tracking-wider">
+        © 2026 Quantus A.I — All rights reserved.
       </div>
     </div>
   </footer>
