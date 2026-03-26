@@ -77,6 +77,7 @@ const ModuleShowcase = () => (
           </motion.div>
         ))}
       </div>
+    </div>
   </section>
 );
 
