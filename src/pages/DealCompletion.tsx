@@ -38,7 +38,7 @@ type ArchivedDeal = {
 };
 
 const DealCompletion = () => {
-  useDocumentHead({ title: "Deal Completion | Quantus A.I" });
+  useDocumentHead({ title: "Deal Completion | Quantus A.I", description: "Close deals, generate post-deal intelligence, and unlock upsell opportunities." });
   const [params] = useSearchParams();
   const dealId = params.get("deal");
 
