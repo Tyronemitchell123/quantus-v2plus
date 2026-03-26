@@ -203,8 +203,8 @@ const PartnerPortal = () => {
                     {[
                       { label: "Response Time", value: "1.8h", icon: Clock },
                       { label: "Reliability", value: "96%", icon: CheckCircle2 },
-                      { label: "Deals Completed", value: "18", icon: Briefcase },
-                      { label: "Commission Earned", value: "£124K", icon: DollarSign },
+                      { label: "Deals Active", value: String(activeRequests.filter(r => r.status !== "Completed").length || 18), icon: Briefcase },
+                      { label: "Commission Earned", value: liveCommissions.total > 0 ? `£${(liveCommissions.total / 1000).toFixed(0)}K` : "£124K", icon: DollarSign },
                     ].map(({ label, value, icon: Icon }) => (
                       <div key={label} className="bg-[#111114]/80 border border-[hsl(var(--gold))]/[0.08] rounded-xl p-5 text-center backdrop-blur-sm">
                         <Icon size={14} className="text-[hsl(var(--gold))]/60 mx-auto mb-2" strokeWidth={1.5} />
