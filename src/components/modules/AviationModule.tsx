@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, forwardRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useModuleData } from "@/hooks/use-module-data";
 import ModuleLiveDeals from "@/components/modules/ModuleLiveDeals";
