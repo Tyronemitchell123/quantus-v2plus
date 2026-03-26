@@ -33,6 +33,16 @@ const Shortlisting = lazy(() => import("./pages/Shortlisting"));
 const Onboarding = lazy(() => import("./pages/Onboarding"));
 const PartnerPortal = lazy(() => import("./pages/PartnerPortal"));
 const PartnerOnboarding = lazy(() => import("./pages/PartnerOnboarding"));
+const Services = lazy(() => import("./pages/Services"));
+const Blog = lazy(() => import("./pages/Blog"));
+const Benefits = lazy(() => import("./pages/Benefits"));
+const Enterprise = lazy(() => import("./pages/Enterprise"));
+const CaseStudies = lazy(() => import("./pages/CaseStudies"));
+const UserGuide = lazy(() => import("./pages/UserGuide"));
+const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
+const MarketingHub = lazy(() => import("./pages/MarketingHub"));
+const NLPTools = lazy(() => import("./pages/NLPTools"));
+const QuantumComputing = lazy(() => import("./pages/QuantumComputing"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
