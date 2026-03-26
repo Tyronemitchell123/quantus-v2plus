@@ -1,136 +1,82 @@
 
 
-## Plan: Real Quantum Provider Integration (AWS Braket)
+## Analysis: No External API Keys Needed
 
-This is a large feature. Since this project runs on Lovable Cloud (Supabase Edge Functions, not Express/Node.js), the "backend" will be implemented as Supabase Edge Functions, not an Express server. The frontend is React (not vanilla JS). The plan adapts the requirements to the actual stack.
+Your project already has all the API keys it needs:
+- **LOVABLE_API_KEY** — powers all AI features (concierge chat, circuit generator, cost optimizer, analytics, NLP tools, etc.)
+- **STRIPE_SECRET_KEY** — handles payments and subscriptions
 
----
-
-### Architecture Overview
-
-```text
-Frontend (React)                Edge Functions (Deno)           AWS Braket
-─────────────────              ─────────────────────           ──────────
-/quantum page         ──►      quantum-jobs (CRUD)      ──►   CreateQuantumTask
-  - Circuit editor             - submit, list, get,            GetQuantumTask
-  - Job list                     results                       GetDevice
-  - Results histogram          - tier/limit enforcement
-  - Device selector            - usage tracking
-```
+No additional external API keys are required. The AI features use Lovable's built-in AI gateway, which supports multiple models without separate keys.
 
 ---
 
-### Phase 1: Database Tables
+## Broken Links & Non-Functional Elements Found
 
-**Table: `quantum_jobs`**
-- id, user_id, provider, provider_job_id, device_arn, shots, circuit_format, circuit_text, status (queued/running/completed/failed/cancelled), created_at, updated_at, completed_at, error_message, cost_estimate_usd
+After analyzing routes, navigation, buttons, and page logic, here are the issues to fix:
 
-**Table: `quantum_job_results`**
-- id, quantum_job_id (FK), result_counts_json (jsonb), raw_result_json (jsonb), created_at
+### 1. `/modules` route redirects to landing page instead of modules
+The public `/modules` route renders `<Index />` (the landing page) instead of showing the module showcase. Should redirect logged-in users to `/dashboard/modules`.
 
-RLS: Users can only read/create their own jobs and results. No cross-user access.
+### 2. Footer module links require auth but don't indicate it
+Footer links (Aviation, Medical, Staffing, Travel, Logistics) all point to `/dashboard/modules` which is behind `ProtectedRoute`. Unauthenticated users clicking these get redirected to auth with no context.
 
----
+### 3. Footer "Privacy Policy" and "Terms of Service" are dead `<span>` elements
+They are plain text, not links — users cannot click them.
 
-### Phase 2: Edge Function — `quantum-jobs`
+### 4. RecommendationEngine uses only hardcoded mock data
+Despite the earlier work to connect modules to live data, this page still renders static arrays. It should query deals/sourcing data from the database to generate live recommendations.
 
-Single edge function handling all quantum job operations via query param `action`:
+### 5. `DealPhaseTimeline` ref warning
+Console error: "Function components cannot be given refs" in `DealPhaseTimeline` — needs `forwardRef` or ref removal.
 
-- **submit**: Validate inputs (OpenQASM text, device ARN, shots). Check tier limits (free = simulator only, max 100 shots; starter = 1000 shots, 50 jobs/month; pro = unlimited). Call AWS Braket `CreateQuantumTask` API. Store job record. Track usage.
-- **list**: Return user's jobs with pagination and status/date filters.
-- **get**: Return single job. If status is queued/running, poll AWS Braket for updated status.
-- **results**: Fetch results from AWS Braket S3 output when completed. Cache in `quantum_job_results`.
+### 6. `DashboardTopBar` AnimatePresence ref warning
+Same ref warning pattern — function component receiving a ref it can't handle.
 
-AWS credentials: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION` as secrets (need to be added).
+### 7. Partner Portal uses entirely mock data
+The rebuilt Partner Portal renders hardcoded requests, messages, payments, and metrics instead of querying real data.
 
-AWS Braket API will be called via direct HTTP (REST API signing with AWS Signature V4) since there's no Deno SDK.
-
----
-
-### Phase 3: Frontend — `/quantum` Page Rebuild
-
-Replace the current educational `/quantum` page content with a functional quantum computing lab:
-
-1. **Device Selector** — Dropdown with simulator devices (default: `arn:aws:braket:::device/quantum-simulator/amazon/sv1`) and QPU devices (labeled as paid-tier with queue warnings).
-
-2. **Circuit Editor** — Textarea for OpenQASM with 3 template buttons: Bell State, GHZ (3-qubit), Random Bitstring.
-
-3. **Submit Controls** — Shots input (enforced per tier), submit button. Confirmation modal for QPU runs showing cost/queue warning. Blocked with upgrade link if at limit.
-
-4. **Job List** — Table showing user's jobs: status pill, device, shots, created time. Click to expand details.
-
-5. **Results View** — Bar chart histogram of measurement counts + normalized probabilities table. Uses Recharts (already in project).
-
-6. **Limits Banner** — Show current quantum job usage vs. tier limits. Link to /pricing when near/over.
-
-Keep the existing Bloch sphere visualization and algorithm explainers as a secondary tab or section below the lab.
+### 8. DocumentsAIPanel "Send" button does nothing
+The send button in the documents AI panel has no `onClick` handler — it's purely visual.
 
 ---
 
-### Phase 4: Tier Limits & Cost Controls
+## Implementation Plan
 
-| Limit | Free | Starter | Professional |
-|-------|------|---------|-------------|
-| Devices | Simulator only | Simulator + QPU | All devices |
-| Max shots/job | 100 | 1,000 | 10,000 |
-| Jobs/month | 10 | 50 | Unlimited |
-| Total shots/month | 500 | 10,000 | Unlimited |
+### Step 1: Fix `/modules` route
+- Redirect authenticated users to `/dashboard/modules`, show landing page `ModuleShowcase` section for unauthenticated users.
 
-Enforced server-side in the edge function. Frontend shows limits and blocks submissions with clear messaging.
+### Step 2: Fix Footer dead links
+- Make Privacy Policy and Terms of Service actual links (to `/privacy` and `/terms` placeholder pages, or anchor scrolls).
+- Add visual indication on module links that they require sign-in.
 
----
+### Step 3: Fix ref warnings
+- Wrap `DealPhaseTimeline` with `React.forwardRef` or remove the ref being passed to it.
+- Fix the same issue in `DashboardTopBar`.
 
-### Phase 5: Anomaly Detection Integration
+### Step 4: Wire RecommendationEngine to live data
+- Query `deals`, `sourcing_results`, and `vendor_outreach` tables.
+- Generate dynamic recommendations based on deal status, stale deals, and module activity.
+- Keep mock data as fallback when no deals exist.
 
-Add quantum job spike detection rule to the existing `anomaly-detection` edge function — flag users submitting >2x their daily average quantum jobs.
+### Step 5: Wire DocumentsAIPanel send button
+- Connect to the concierge-chat edge function for document-specific AI queries.
 
----
-
-### Phase 6: AWS Secrets Setup
-
-Require user to add three secrets via the secrets tool:
-- `AWS_ACCESS_KEY_ID`
-- `AWS_SECRET_ACCESS_KEY`
-- `AWS_REGION`
-
-The edge function will use AWS Signature V4 to authenticate Braket API calls directly (no SDK needed in Deno).
+### Step 6: Connect Partner Portal to live data
+- Query `contact_submissions` or relevant partner tables for real requests.
+- Show actual data where available, graceful empty states where not.
 
 ---
 
-### Phase 7: Documentation
+## Technical Details
 
-Update README with:
-- How to enable AWS Braket (add secrets, enable in AWS console)
-- Required env vars
-- Simulator vs QPU device notes
-- Cost controls and tier limits
+**Files to modify:**
+- `src/App.tsx` — fix `/modules` route
+- `src/components/Footer.tsx` — fix dead links
+- `src/components/deal/DealPhaseTimeline.tsx` — add forwardRef
+- `src/components/dashboard/DashboardTopBar.tsx` — fix ref warning
+- `src/pages/RecommendationEngine.tsx` — wire to live DB data
+- `src/components/documents/DocumentsAIPanel.tsx` — wire send button
+- `src/pages/PartnerPortal.tsx` — wire to live data where possible
 
----
-
-### Technical Details
-
-- **AWS Braket REST API**: Direct HTTP calls with SigV4 signing implemented in the edge function. Endpoints: `braket.{region}.amazonaws.com` for CreateQuantumTask, GetQuantumTask. S3 for result retrieval.
-- **No Express server**: All backend logic in Supabase Edge Functions (Deno runtime).
-- **Circuit validation**: Basic OpenQASM syntax check (header present, valid structure) before submission.
-- **Status polling**: When user fetches a job that's queued/running, the edge function polls Braket and updates the DB record.
-- **Result caching**: Once fetched from S3, results are stored in `quantum_job_results` so subsequent loads are instant.
-
----
-
-### Files to Create/Edit
-
-| File | Action |
-|------|--------|
-| Migration SQL | Create `quantum_jobs` and `quantum_job_results` tables with RLS |
-| `supabase/functions/quantum-jobs/index.ts` | New edge function (submit, list, get, results) |
-| `supabase/config.toml` | Register new function |
-| `src/pages/QuantumComputing.tsx` | Rebuild with lab UI + keep educational content |
-| `src/hooks/use-quantum-jobs.ts` | New hook for quantum job CRUD |
-| `src/components/quantum/CircuitEditor.tsx` | OpenQASM editor with templates |
-| `src/components/quantum/DeviceSelector.tsx` | Device picker with tier gating |
-| `src/components/quantum/JobList.tsx` | Job table with status pills |
-| `src/components/quantum/ResultsView.tsx` | Histogram + probabilities |
-| `src/components/quantum/QuantumLimitsBanner.tsx` | Usage limits display |
-| `supabase/functions/anomaly-detection/index.ts` | Add quantum job spike rule |
-| `README.md` | Add quantum setup docs |
+**No new API keys or secrets needed.**
 
