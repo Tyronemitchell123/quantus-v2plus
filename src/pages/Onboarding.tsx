@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, ArrowLeft, Check } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
+import { persistOnboarding } from "@/hooks/use-onboarding-persist";
 import ParticleGrid from "@/components/ParticleGrid";
 import OnboardingWelcome from "@/components/onboarding/OnboardingWelcome";
 import OnboardingRoles from "@/components/onboarding/OnboardingRoles";
@@ -39,7 +40,17 @@ const Onboarding = () => {
     return true;
   };
 
-  const handleFinish = () => navigate("/dashboard");
+  const handleFinish = async () => {
+    if (user) {
+      await persistOnboarding(user.id, {
+        role: selectedRole,
+        preferences: selectedPrefs,
+        modules: selectedModules,
+        tier: selectedTier,
+      });
+    }
+    navigate("/dashboard");
+  };
 
   const toggleModule = (id: string) => {
     setSelectedModules((prev) =>
