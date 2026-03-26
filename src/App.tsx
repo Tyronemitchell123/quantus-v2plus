@@ -26,6 +26,7 @@ const VendorOutreach = lazy(() => import("./pages/VendorOutreach"));
 const Negotiation = lazy(() => import("./pages/Negotiation"));
 const Workflow = lazy(() => import("./pages/Workflow"));
 const DocumentsBilling = lazy(() => import("./pages/DocumentsBilling"));
+const DealCompletion = lazy(() => import("./pages/DealCompletion"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -104,6 +105,14 @@ const AnimatedRoutes = () => {
             element={
               <ProtectedRoute>
                 <PageTransition><DocumentsBilling /><Footer /></PageTransition>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/deal-completion"
+            element={
+              <ProtectedRoute>
+                <PageTransition><DealCompletion /><Footer /></PageTransition>
               </ProtectedRoute>
             }
           />

@@ -415,15 +415,17 @@ const DocumentsBilling = () => {
 
               {/* Phase 7 Handoff */}
               {deal && (
-                <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
-                  className="mt-12 rounded-2xl border border-primary/20 bg-primary/5 p-6 flex items-center justify-between">
-                  <div>
-                    <p className="text-xs uppercase tracking-wider text-primary mb-1">Next Phase</p>
-                    <p className="text-foreground font-display font-semibold">Phase 7 — Deal Completion & Post-Deal</p>
-                    <p className="text-xs text-muted-foreground mt-1">Close the deal, generate final reports, and trigger upsell opportunities.</p>
-                  </div>
-                  <ArrowRight size={20} className="text-primary" />
-                </motion.div>
+                <Link to={`/deal-completion?deal=${deal.id}`}>
+                  <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
+                    className="mt-12 rounded-2xl border border-primary/20 bg-primary/5 p-6 flex items-center justify-between hover:bg-primary/10 transition-colors cursor-pointer">
+                    <div>
+                      <p className="text-xs uppercase tracking-wider text-primary mb-1">Next Phase</p>
+                      <p className="text-foreground font-display font-semibold">Phase 7 — Deal Completion & Post-Deal</p>
+                      <p className="text-xs text-muted-foreground mt-1">Close the deal, generate final reports, and trigger upsell opportunities.</p>
+                    </div>
+                    <ArrowRight size={20} className="text-primary" />
+                  </motion.div>
+                </Link>
               )}
             </>
           )}
