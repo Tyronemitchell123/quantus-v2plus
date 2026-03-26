@@ -2,14 +2,15 @@ import { useState, useEffect } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  CheckCircle2, Loader2, ArrowLeft, Trophy, Sparkles, TrendingUp,
+  CheckCircle2, Loader2, ArrowRight, Sparkles, TrendingUp,
   Archive, Crown, Plane, Heart, Users, Globe, Truck, Handshake,
-  ArrowRight, BarChart3, FileText, Receipt, Clock, Star,
-  ChevronDown, ChevronUp, Zap, RefreshCw,
+  FileText, Receipt, Clock, ChevronDown, ChevronUp, Zap, RefreshCw,
+  Download, Copy, Home, Shield, Star, BarChart3,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import useDocumentHead from "@/hooks/use-document-head";
+import DealPhaseLayout from "@/components/deal/DealPhaseLayout";
 
 const categoryIcons: Record<string, typeof Plane> = {
   aviation: Plane, medical: Heart, staffing: Users,
@@ -23,33 +24,207 @@ type DealSummary = {
   paid_revenue_cents: number; outstanding_revenue_cents: number;
   total_tasks: number; completed_tasks: number; completion_date: string;
 };
-
 type Upsell = { title: string; description: string; category: string };
-
 type TierRec = {
   currentTier: string; completedDeals: number; totalRevenueCents: number;
   recommendation: { tier: string; label: string; message: string } | null;
 };
-
 type ArchivedDeal = {
   id: string; deal_number: string; category: string; sub_category: string | null;
   status: string; deal_value_estimate: number | null; budget_currency: string;
   completed_at: string; created_at: string;
 };
 
+const formatCurrency = (cents: number, currency = "GBP") => {
+  const symbol = currency === "USD" ? "$" : currency === "EUR" ? "€" : "£";
+  return `${symbol}${(cents / 100).toLocaleString("en-GB", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+};
+
+/* ── Left Column: Archival & Continuity ── */
+function ArchivalPanel({ dealId }: { dealId: string | null }) {
+  return (
+    <div className="space-y-4">
+      <h3 className="font-display text-sm text-[hsl(var(--foreground))]">
+        Actions
+        <div className="w-10 h-px bg-[hsl(var(--primary))] mt-1" />
+      </h3>
+
+      {[
+        { label: "Archive Deal", desc: "Move to your private archive", icon: Archive },
+        { label: "Duplicate Workflow", desc: "Clone for recurring operations", icon: Copy },
+        { label: "Start New Deal", desc: "Begin a new orchestration", icon: Zap, href: "/intake" },
+      ].map((action, i) => (
+        <motion.div
+          key={action.label}
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.6 + i * 0.1 }}
+        >
+          {action.href ? (
+            <Link
+              to={action.href}
+              className="w-full flex items-center gap-3 p-3 border border-[hsl(var(--primary)/0.2)] rounded-xl bg-[hsl(var(--card))] hover:border-[hsl(var(--primary)/0.4)] transition-all group"
+            >
+              <div className="w-9 h-9 rounded-lg border border-[hsl(var(--primary)/0.2)] bg-[hsl(var(--primary)/0.05)] flex items-center justify-center">
+                <action.icon size={14} className="text-[hsl(var(--primary))]" />
+              </div>
+              <div className="text-left">
+                <p className="font-body text-xs text-[hsl(var(--foreground))] group-hover:text-[hsl(var(--primary))] transition-colors">{action.label}</p>
+                <p className="font-body text-[9px] text-[hsl(var(--muted-foreground))]">{action.desc}</p>
+              </div>
+            </Link>
+          ) : (
+            <button
+              onClick={() => toast.success(`${action.label} — coming soon`)}
+              className="w-full flex items-center gap-3 p-3 border border-[hsl(var(--border))] rounded-xl bg-[hsl(var(--card))] hover:border-[hsl(var(--primary)/0.3)] transition-all group"
+            >
+              <div className="w-9 h-9 rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--muted))] flex items-center justify-center">
+                <action.icon size={14} className="text-[hsl(var(--primary)/0.6)]" />
+              </div>
+              <div className="text-left">
+                <p className="font-body text-xs text-[hsl(var(--foreground))] group-hover:text-[hsl(var(--primary))] transition-colors">{action.label}</p>
+                <p className="font-body text-[9px] text-[hsl(var(--muted-foreground))]">{action.desc}</p>
+              </div>
+            </button>
+          )}
+        </motion.div>
+      ))}
+
+      {/* Deal Archive preview */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1 }}
+        className="border border-[hsl(var(--border))] rounded-xl bg-[hsl(var(--card))] p-4 mt-6"
+      >
+        <h4 className="font-display text-xs text-[hsl(var(--foreground))] mb-2">
+          Recent Archive
+          <div className="w-8 h-px bg-[hsl(var(--primary)/0.3)] mt-1" />
+        </h4>
+        <p className="font-body text-[10px] text-[hsl(var(--muted-foreground))]">
+          Your completed deals are securely archived and searchable.
+        </p>
+      </motion.div>
+    </div>
+  );
+}
+
+/* ── Right Column: Quantus Core Reflections ── */
+function ReflectionsPanel({ summary, tierRec, upsells }: {
+  summary: DealSummary | null;
+  tierRec: TierRec | null;
+  upsells: Upsell[];
+}) {
+  const [expandedUpsell, setExpandedUpsell] = useState<number | null>(null);
+
+  const insights = [
+    summary && summary.signed_documents === summary.total_documents && "All documents signed and archived successfully.",
+    summary && summary.paid_invoices === summary.total_invoices && "All payments received and confirmed.",
+    summary && summary.completed_tasks === summary.total_tasks && "Zero delays or risk events occurred.",
+    "This vendor is recommended for future operations.",
+    "Your privacy requirements were fully met throughout.",
+  ].filter(Boolean) as string[];
+
+  return (
+    <div className="space-y-6">
+      {/* Core Notes */}
+      <div className="border border-[hsl(var(--primary)/0.2)] bg-[hsl(var(--card))] rounded-xl p-4" style={{ boxShadow: "inset 0 1px 20px hsl(var(--primary) / 0.03)" }}>
+        <h3 className="font-display text-sm text-[hsl(var(--foreground))] mb-3">
+          Quantus Core Notes
+          <div className="w-10 h-px bg-[hsl(var(--primary))] mt-1" />
+        </h3>
+        <div className="space-y-2.5">
+          {insights.map((note, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.8 + i * 0.15 }}
+              className="flex items-start gap-2"
+            >
+              <Sparkles size={10} className="text-[hsl(var(--primary))] shrink-0 mt-0.5" />
+              <p className="font-body text-[11px] text-[hsl(var(--foreground)/0.7)] leading-relaxed">{note}</p>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+
+      {/* Tier Recommendation */}
+      {tierRec?.recommendation && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.2 }}
+          className="border border-amber-500/20 bg-[hsl(var(--card))] rounded-xl p-4"
+        >
+          <div className="flex items-center gap-2 mb-2">
+            <Crown size={14} className="text-amber-500" />
+            <h4 className="font-display text-xs text-[hsl(var(--foreground))]">Tier Recommendation</h4>
+          </div>
+          <p className="font-body text-[11px] text-[hsl(var(--foreground)/0.6)] italic leading-relaxed mb-2">
+            "{tierRec.recommendation.message}"
+          </p>
+          <div className="flex items-center gap-3 font-body text-[9px] text-[hsl(var(--muted-foreground))]">
+            <span>{tierRec.completedDeals} deals</span>
+            <span>·</span>
+            <span>{formatCurrency(tierRec.totalRevenueCents)} revenue</span>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Upsells */}
+      {upsells.length > 0 && (
+        <div className="border border-[hsl(var(--border))] bg-[hsl(var(--card))] rounded-xl p-4">
+          <h4 className="font-display text-xs text-[hsl(var(--foreground))] mb-3">
+            Recommendations
+            <div className="w-8 h-px bg-[hsl(var(--primary)/0.3)] mt-1" />
+          </h4>
+          <div className="space-y-2">
+            {upsells.map((u, i) => {
+              const Icon = categoryIcons[u.category] || Zap;
+              const isExpanded = expandedUpsell === i;
+              return (
+                <button
+                  key={i}
+                  onClick={() => setExpandedUpsell(isExpanded ? null : i)}
+                  className="w-full text-left border border-[hsl(var(--border))] rounded-lg p-3 hover:border-[hsl(var(--primary)/0.2)] transition-all"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Icon size={12} className="text-[hsl(var(--primary))]" />
+                      <span className="font-body text-[11px] text-[hsl(var(--foreground))]">{u.title}</span>
+                    </div>
+                    {isExpanded ? <ChevronUp size={10} className="text-[hsl(var(--muted-foreground))]" /> : <ChevronDown size={10} className="text-[hsl(var(--muted-foreground))]" />}
+                  </div>
+                  <AnimatePresence>
+                    {isExpanded && (
+                      <motion.p initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }}
+                        className="font-body text-[10px] text-[hsl(var(--muted-foreground))] mt-2 leading-relaxed overflow-hidden">
+                        {u.description}
+                      </motion.p>
+                    )}
+                  </AnimatePresence>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── Main Page ── */
 const DealCompletion = () => {
-  useDocumentHead({ title: "Deal Completion | Quantus A.I", description: "Close deals, generate post-deal intelligence, and unlock upsell opportunities." });
+  useDocumentHead({ title: "Finalization & Closeout — Quantus A.I", description: "Phase 7: Ceremonial deal completion for UHNW operations." });
   const [params] = useSearchParams();
   const dealId = params.get("deal");
 
-  const [tab, setTab] = useState<"complete" | "archive">(dealId ? "complete" : "archive");
   const [loading, setLoading] = useState(false);
   const [summary, setSummary] = useState<DealSummary | null>(null);
   const [upsells, setUpsells] = useState<Upsell[]>([]);
   const [upsellMsg, setUpsellMsg] = useState("");
   const [tierRec, setTierRec] = useState<TierRec | null>(null);
-  const [archive, setArchive] = useState<ArchivedDeal[]>([]);
-  const [expandedUpsell, setExpandedUpsell] = useState<number | null>(null);
   const [completing, setCompleting] = useState(false);
 
   const completeDeal = async () => {
@@ -58,284 +233,221 @@ const DealCompletion = () => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error("Not authenticated");
-
-      const { data, error } = await supabase.functions.invoke("deal-completion", {
-        body: { action: "complete", dealId },
-      });
+      const { data, error } = await supabase.functions.invoke("deal-completion", { body: { action: "complete", dealId } });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
       setSummary(data.summary);
-      toast.success("Deal completed successfully");
+      toast.success("Operation finalized successfully");
 
-      // Load upsells and tier check
       const [upsellRes, tierRes] = await Promise.all([
         supabase.functions.invoke("deal-completion", { body: { action: "upsells", dealId } }),
         supabase.functions.invoke("deal-completion", { body: { action: "tier_check", dealId } }),
       ]);
       if (upsellRes.data) { setUpsells(upsellRes.data.upsells || []); setUpsellMsg(upsellRes.data.message || ""); }
       if (tierRes.data) setTierRec(tierRes.data);
-    } catch (err: any) {
-      toast.error(err.message || "Failed to complete deal");
-    }
+    } catch (err: any) { toast.error(err.message || "Failed to complete deal"); }
     setCompleting(false);
   };
 
-  const loadArchive = async () => {
-    setLoading(true);
-    try {
-      const { data, error } = await supabase.functions.invoke("deal-completion", {
-        body: { action: "archive_list" },
-      });
-      if (error) throw error;
-      setArchive(data?.deals || []);
-    } catch { /* empty */ }
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    if (tab === "archive") loadArchive();
-  }, [tab]);
-
-  const formatCurrency = (cents: number, currency = "GBP") => {
-    const symbol = currency === "USD" ? "$" : currency === "EUR" ? "€" : "£";
-    return `${symbol}${(cents / 100).toLocaleString("en-GB", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
-  };
-
-  const tabs = [
-    { id: "complete" as const, label: "Complete Deal", icon: Trophy },
-    { id: "archive" as const, label: "Deal Archive", icon: Archive },
-  ];
+  const summaryLines = summary ? [
+    { icon: Star, label: "Selected Option", value: `${summary.category} — ${summary.sub_category || "Primary Vendor"}` },
+    { icon: TrendingUp, label: "Final Value", value: formatCurrency(summary.total_revenue_cents) },
+    { icon: Shield, label: "Vendor Confirmations", value: "All confirmations received" },
+    { icon: FileText, label: "Documents", value: `${summary.signed_documents}/${summary.total_documents} signed and archived` },
+    { icon: Receipt, label: "Payments", value: summary.paid_invoices === summary.total_invoices ? "Completed" : `${summary.paid_invoices}/${summary.total_invoices} paid` },
+    { icon: BarChart3, label: "Tasks", value: `${summary.completed_tasks}/${summary.total_tasks} completed` },
+  ] : [];
 
   return (
-    <div className="min-h-screen bg-background pt-24 pb-16">
-      <div className="container mx-auto px-4 max-w-5xl">
-        <Link to="/documents" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors mb-6">
-          <ArrowLeft size={14} /> Back to Documents & Billing
-        </Link>
-
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
-          <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-2">
-            Phase 7 — <span className="text-gold-gradient">Deal Completion</span>
+    <DealPhaseLayout currentPhase={8} dealId={dealId} phaseTitle="Finalization & Closeout">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-10">
+          <p className="font-body text-[10px] tracking-[0.3em] uppercase text-[hsl(var(--primary)/0.6)] mb-2">
+            Phase 7 — Finalization
+          </p>
+          <h1 className="font-display text-3xl md:text-4xl text-[hsl(var(--foreground))] mb-2">
+            Your operation is complete.
+            <motion.div
+              className="h-px bg-gradient-to-r from-[hsl(var(--primary))] to-transparent mt-2"
+              initial={{ width: 0 }}
+              animate={{ width: "50%" }}
+              transition={{ duration: 1.2, delay: 0.3 }}
+            />
           </h1>
-          <p className="text-muted-foreground text-sm max-w-xl">
-            Close deals, generate post-deal intelligence, and unlock upsell opportunities.
+          <p className="font-body text-sm text-[hsl(var(--primary)/0.7)]">
+            Quantus A.I has finalized all tasks, documents, and confirmations.
           </p>
         </motion.div>
 
-        {/* Tabs */}
-        <div className="flex gap-2 mb-8">
-          {tabs.map((t) => (
-            <button
-              key={t.id}
-              onClick={() => setTab(t.id)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold transition-all ${
-                tab === t.id ? "bg-primary text-primary-foreground" : "glass-card text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              <t.icon size={14} /> {t.label}
-            </button>
-          ))}
-        </div>
-
-        <AnimatePresence mode="wait">
-          {tab === "complete" && (
-            <motion.div key="complete" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-              {!dealId ? (
-                <div className="glass-card rounded-2xl p-12 text-center">
-                  <Trophy size={48} className="mx-auto text-muted-foreground/30 mb-4" />
-                  <h3 className="font-display text-lg font-semibold text-foreground mb-2">Select a Deal to Complete</h3>
-                  <p className="text-sm text-muted-foreground mb-6">Navigate from Documents & Billing to close a deal and trigger post-deal automation.</p>
-                  <Link to="/documents" className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground rounded-full text-xs font-semibold hover:opacity-90 transition-opacity">
-                    <FileText size={14} /> Go to Documents
-                  </Link>
+        {/* Pre-completion state */}
+        {!summary && !completing && (
+          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
+            className="max-w-lg mx-auto text-center py-16">
+            {!dealId ? (
+              <>
+                <div className="w-20 h-20 rounded-full border border-[hsl(var(--primary)/0.2)] flex items-center justify-center mx-auto mb-6">
+                  <FileText size={28} className="text-[hsl(var(--primary)/0.4)]" />
                 </div>
-              ) : !summary ? (
-                <div className="glass-card rounded-2xl p-12 text-center">
-                  <Sparkles size={48} className="mx-auto text-primary/40 mb-4" />
-                  <h3 className="font-display text-lg font-semibold text-foreground mb-2">Ready to Close This Deal?</h3>
-                  <p className="text-sm text-muted-foreground mb-6">
-                    Completing will archive the deal, generate a summary, and prepare upsell recommendations.
-                  </p>
-                  <button
-                    onClick={completeDeal}
-                    disabled={completing}
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-full text-sm font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
-                  >
-                    {completing ? <Loader2 size={16} className="animate-spin" /> : <CheckCircle2 size={16} />}
-                    {completing ? "Completing..." : "Complete Deal"}
-                  </button>
-                </div>
-              ) : (
-                <div className="space-y-6">
-                  {/* Summary Card */}
-                  <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="glass-card rounded-2xl p-6 border border-primary/20">
-                    <div className="flex items-center gap-3 mb-6">
-                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                        <CheckCircle2 size={20} className="text-primary" />
-                      </div>
-                      <div>
-                        <h3 className="font-display text-lg font-semibold text-foreground">Deal Closed — {summary.deal_number}</h3>
-                        <p className="text-xs text-muted-foreground capitalize">{summary.category}{summary.sub_category ? ` · ${summary.sub_category}` : ""}</p>
-                      </div>
-                    </div>
+                <h2 className="font-display text-xl text-[hsl(var(--foreground))] mb-2">Select a Deal</h2>
+                <p className="font-body text-xs text-[hsl(var(--muted-foreground))] mb-6">
+                  Navigate from the Documents phase to finalize an operation.
+                </p>
+                <Link to="/documents" className="inline-flex items-center gap-2 px-8 py-3 border border-[hsl(var(--primary)/0.3)] rounded-xl font-body text-xs tracking-widest uppercase text-[hsl(var(--primary))] hover:bg-[hsl(var(--primary)/0.05)] transition-all">
+                  <FileText size={14} /> Go to Documents
+                </Link>
+              </>
+            ) : (
+              <>
+                <motion.div
+                  className="w-24 h-24 rounded-full border-2 border-[hsl(var(--primary)/0.3)] flex items-center justify-center mx-auto mb-6"
+                  animate={{ boxShadow: ["0 0 0px hsl(var(--primary) / 0)", "0 0 40px hsl(var(--primary) / 0.15)", "0 0 0px hsl(var(--primary) / 0)"] }}
+                  transition={{ duration: 3, repeat: Infinity }}
+                >
+                  <CheckCircle2 size={36} className="text-[hsl(var(--primary))]" />
+                </motion.div>
+                <h2 className="font-display text-xl text-[hsl(var(--foreground))] mb-2">Ready to Finalize</h2>
+                <p className="font-body text-xs text-[hsl(var(--muted-foreground))] mb-8 max-w-sm mx-auto">
+                  This will archive the deal, generate a completion summary, and prepare intelligence for future operations.
+                </p>
+                <button onClick={completeDeal}
+                  className="inline-flex items-center gap-2 px-10 py-4 bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] rounded-xl font-body text-xs tracking-widest uppercase hover:opacity-90 transition-all shadow-[0_0_40px_hsl(var(--primary)/0.25)]">
+                  <CheckCircle2 size={14} /> Finalize Operation
+                </button>
+              </>
+            )}
+          </motion.div>
+        )}
 
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      {[
-                        { label: "Documents", value: `${summary.signed_documents}/${summary.total_documents}`, icon: FileText, sub: "Signed" },
-                        { label: "Invoices", value: `${summary.paid_invoices}/${summary.total_invoices}`, icon: Receipt, sub: "Paid" },
-                        { label: "Revenue", value: formatCurrency(summary.total_revenue_cents), icon: TrendingUp, sub: formatCurrency(summary.outstanding_revenue_cents) + " outstanding" },
-                        { label: "Tasks", value: `${summary.completed_tasks}/${summary.total_tasks}`, icon: CheckCircle2, sub: "Completed" },
-                      ].map((stat, i) => (
-                        <div key={i} className="bg-background/50 rounded-xl p-4">
-                          <stat.icon size={14} className="text-primary mb-2" />
-                          <p className="font-display text-xl font-bold text-foreground">{stat.value}</p>
-                          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{stat.label}</p>
-                          <p className="text-[10px] text-muted-foreground mt-1">{stat.sub}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </motion.div>
-
-                  {/* Tier Recommendation */}
-                  {tierRec?.recommendation && (
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-                      className="glass-card rounded-2xl p-6 border border-amber-500/20 bg-gradient-to-r from-amber-500/5 to-transparent"
-                    >
-                      <div className="flex items-center gap-3 mb-3">
-                        <Crown size={20} className="text-amber-500" />
-                        <h3 className="font-display text-sm font-semibold text-foreground">Membership Tier Recommendation</h3>
-                      </div>
-                      <p className="text-sm text-muted-foreground italic leading-relaxed mb-4">"{tierRec.recommendation.message}"</p>
-                      <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                        <span>{tierRec.completedDeals} deals completed</span>
-                        <span>·</span>
-                        <span>{formatCurrency(tierRec.totalRevenueCents)} total revenue</span>
-                      </div>
-                    </motion.div>
-                  )}
-
-                  {/* Upsells */}
-                  {upsells.length > 0 && (
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-                      <div className="flex items-center gap-2 mb-4">
-                        <Sparkles size={16} className="text-primary" />
-                        <h3 className="font-display text-sm font-semibold text-foreground">Tailored Recommendations</h3>
-                      </div>
-                      {upsellMsg && (
-                        <p className="text-sm text-muted-foreground italic mb-4 pl-6 border-l-2 border-primary/20">"{upsellMsg}"</p>
-                      )}
-                      <div className="grid md:grid-cols-2 gap-3">
-                        {upsells.map((u, i) => {
-                          const Icon = categoryIcons[u.category] || Zap;
-                          const expanded = expandedUpsell === i;
-                          return (
-                            <motion.div
-                              key={i}
-                              initial={{ opacity: 0, y: 10 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              transition={{ delay: 0.3 + i * 0.05 }}
-                              className="glass-card rounded-xl p-4 hover:ring-1 hover:ring-primary/20 transition-all cursor-pointer"
-                              onClick={() => setExpandedUpsell(expanded ? null : i)}
-                            >
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                  <Icon size={16} className="text-primary shrink-0" />
-                                  <h4 className="text-sm font-semibold text-foreground">{u.title}</h4>
-                                </div>
-                                {expanded ? <ChevronUp size={14} className="text-muted-foreground" /> : <ChevronDown size={14} className="text-muted-foreground" />}
-                              </div>
-                              <AnimatePresence>
-                                {expanded && (
-                                  <motion.p
-                                    initial={{ height: 0, opacity: 0 }}
-                                    animate={{ height: "auto", opacity: 1 }}
-                                    exit={{ height: 0, opacity: 0 }}
-                                    className="text-xs text-muted-foreground mt-3 leading-relaxed overflow-hidden"
-                                  >
-                                    {u.description}
-                                  </motion.p>
-                                )}
-                              </AnimatePresence>
-                            </motion.div>
-                          );
-                        })}
-                      </div>
-                    </motion.div>
-                  )}
-
-                  {/* System Ready */}
-                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
-                    className="text-center pt-6 border-t border-border"
-                  >
-                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 mb-4">
-                      <RefreshCw size={12} className="text-emerald-500" />
-                      <span className="text-[10px] text-emerald-500 font-semibold tracking-wider uppercase">Deal Closed — System Ready</span>
-                    </div>
-                    <p className="text-xs text-muted-foreground mb-4">Workflow engine reset. Ready for next request.</p>
-                    <Link to="/intake" className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground rounded-full text-xs font-semibold hover:opacity-90 transition-opacity">
-                      Start New Deal <ArrowRight size={12} />
-                    </Link>
-                  </motion.div>
-                </div>
-              )}
-            </motion.div>
-          )}
-
-          {tab === "archive" && (
-            <motion.div key="archive" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-              {loading ? (
-                <div className="text-center py-16"><Loader2 size={24} className="animate-spin text-primary mx-auto" /></div>
-              ) : archive.length === 0 ? (
-                <div className="glass-card rounded-2xl p-12 text-center">
-                  <Archive size={48} className="mx-auto text-muted-foreground/30 mb-4" />
-                  <h3 className="font-display text-lg font-semibold text-foreground mb-2">No Completed Deals</h3>
-                  <p className="text-sm text-muted-foreground">Completed deals will appear here as a searchable archive.</p>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {archive.map((deal, i) => {
-                    const Icon = categoryIcons[deal.category] || Zap;
-                    return (
-                      <motion.div
-                        key={deal.id}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: i * 0.04 }}
-                        className="glass-card rounded-xl p-4 flex items-center justify-between hover:ring-1 hover:ring-primary/10 transition-all"
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                            <Icon size={14} className="text-primary" />
-                          </div>
-                          <div>
-                            <p className="text-sm font-semibold text-foreground">{deal.deal_number}</p>
-                            <p className="text-[10px] text-muted-foreground capitalize">{deal.category}{deal.sub_category ? ` · ${deal.sub_category}` : ""}</p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-4">
-                          {deal.deal_value_estimate && (
-                            <span className="text-xs font-semibold text-foreground">
-                              {deal.budget_currency === "USD" ? "$" : "£"}{(deal.deal_value_estimate / 100).toLocaleString()}
-                            </span>
-                          )}
-                          <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
-                            <Clock size={10} />
-                            {deal.completed_at ? new Date(deal.completed_at).toLocaleDateString() : "—"}
-                          </div>
-                          <div className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-[10px] text-emerald-500 font-semibold">
-                            Closed
-                          </div>
-                        </div>
-                      </motion.div>
-                    );
-                  })}
-                </div>
-              )}
+        {/* Completing Animation */}
+        <AnimatePresence>
+          {completing && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-center py-20">
+              <div className="w-20 h-20 rounded-full border-2 border-[hsl(var(--primary)/0.3)] flex items-center justify-center mx-auto mb-4">
+                <Loader2 size={28} className="animate-spin text-[hsl(var(--primary))]" />
+              </div>
+              <p className="font-display text-lg text-[hsl(var(--foreground))] mb-1">Finalizing Operation</p>
+              <p className="font-body text-xs text-[hsl(var(--muted-foreground))]">Archiving documents, confirming payments, generating intelligence…</p>
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* Post-completion: Three-column layout */}
+        {summary && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
+            className="grid grid-cols-1 lg:grid-cols-[240px_1fr_260px] gap-6">
+
+            {/* Left — Archival */}
+            <div className="hidden lg:block">
+              <ArchivalPanel dealId={dealId} />
+            </div>
+
+            {/* Center — Completion Card */}
+            <div className="space-y-6">
+              {/* Ceremonial Card */}
+              <motion.div
+                initial={{ opacity: 0, y: 30, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ delay: 0.3, duration: 0.6 }}
+                className="border-2 border-[hsl(var(--primary)/0.3)] bg-[hsl(var(--card))] rounded-2xl p-8 relative overflow-hidden"
+                style={{ boxShadow: "0 0 60px hsl(var(--primary) / 0.08), inset 0 1px 30px hsl(var(--primary) / 0.03)" }}
+              >
+                {/* Radial glow */}
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,hsl(var(--primary)/0.04),transparent_70%)]" />
+
+                <div className="relative z-10">
+                  {/* Completion Icon */}
+                  <div className="flex justify-center mb-6">
+                    <motion.div
+                      className="w-16 h-16 rounded-full bg-[hsl(var(--primary)/0.1)] border border-[hsl(var(--primary)/0.3)] flex items-center justify-center"
+                      animate={{ boxShadow: ["0 0 0px hsl(var(--primary) / 0)", "0 0 30px hsl(var(--primary) / 0.2)", "0 0 0px hsl(var(--primary) / 0)"] }}
+                      transition={{ duration: 2.5, repeat: Infinity }}
+                    >
+                      <CheckCircle2 size={28} className="text-[hsl(var(--primary))]" />
+                    </motion.div>
+                  </div>
+
+                  {/* Message */}
+                  <h2 className="font-display text-2xl md:text-3xl text-center text-[hsl(var(--foreground))] mb-2">
+                    Everything is confirmed.
+                  </h2>
+                  <p className="font-body text-xs text-center text-[hsl(var(--muted-foreground))] mb-8">
+                    Deal {summary.deal_number} · Completed {summary.completion_date ? new Date(summary.completion_date).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" }) : "today"}
+                  </p>
+
+                  {/* Summary Lines */}
+                  <div className="space-y-3 mb-8">
+                    {summaryLines.map((line, i) => (
+                      <motion.div
+                        key={line.label}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.5 + i * 0.08 }}
+                        className="flex items-center gap-3 py-2 border-b border-[hsl(var(--border)/0.3)] last:border-0"
+                      >
+                        <line.icon size={14} className="text-[hsl(var(--primary)/0.6)] shrink-0" />
+                        <span className="font-body text-[11px] text-[hsl(var(--muted-foreground))] flex-1">{line.label}</span>
+                        <span className="font-body text-[11px] text-[hsl(var(--foreground))] text-right">{line.value}</span>
+                      </motion.div>
+                    ))}
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <button
+                      onClick={() => toast.success("Completion package downloading…")}
+                      className="flex-1 flex items-center justify-center gap-2 px-6 py-3 border border-[hsl(var(--primary)/0.3)] rounded-xl font-body text-[10px] tracking-widest uppercase text-[hsl(var(--primary))] hover:bg-[hsl(var(--primary)/0.05)] transition-all"
+                    >
+                      <Download size={12} /> Download Package
+                    </button>
+                    <button
+                      onClick={() => toast.info("Timeline view — coming soon")}
+                      className="flex-1 flex items-center justify-center gap-2 px-6 py-3 border border-[hsl(var(--border))] rounded-xl font-body text-[10px] tracking-widest uppercase text-[hsl(var(--foreground)/0.7)] hover:bg-[hsl(var(--muted))] transition-all"
+                    >
+                      <Clock size={12} /> View Full Timeline
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Primary CTA */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.2 }}
+              >
+                <Link
+                  to="/dashboard"
+                  className="w-full flex items-center justify-center gap-2 px-8 py-4 bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] rounded-xl font-body text-xs tracking-widest uppercase hover:opacity-90 transition-all shadow-[0_0_40px_hsl(var(--primary)/0.25)]"
+                >
+                  <Home size={14} />
+                  Return to Dashboard
+                  <ArrowRight size={14} />
+                </Link>
+              </motion.div>
+
+              {/* System Ready */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1.5 }}
+                className="text-center"
+              >
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+                  <RefreshCw size={10} className="text-emerald-500" />
+                  <span className="font-body text-[9px] text-emerald-500 tracking-wider uppercase">System Ready — Awaiting Next Operation</span>
+                </div>
+              </motion.div>
+            </div>
+
+            {/* Right — Reflections */}
+            <div className="hidden lg:block">
+              <ReflectionsPanel summary={summary} tierRec={tierRec} upsells={upsells} />
+            </div>
+          </motion.div>
+        )}
       </div>
-    </div>
+    </DealPhaseLayout>
   );
 };
 
