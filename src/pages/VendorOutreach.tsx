@@ -10,6 +10,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import useDocumentHead from "@/hooks/use-document-head";
+import { sendDealPhaseEmail } from "@/lib/deal-phase-emails";
 import DealPhaseLayout from "@/components/deal/DealPhaseLayout";
 import OutreachTimeline from "@/components/outreach/OutreachTimeline";
 import OutreachVendorCards from "@/components/outreach/OutreachVendorCards";
@@ -134,6 +135,14 @@ export default function VendorOutreachPage() {
       if (data?.error) throw new Error(data.error);
       toast.success(`Outreach prepared for ${data.total} vendors`);
       await loadData(dealId);
+
+      // Send vendor match email (non-blocking)
+      if (deal) {
+        sendDealPhaseEmail({
+          template: "deal_vendor_match",
+          data: { dealNumber: deal.deal_number, vendorCount: data.total },
+        });
+      }
     } catch (e: any) {
       toast.error(e.message || "Failed to generate outreach");
     } finally {

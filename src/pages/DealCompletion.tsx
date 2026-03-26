@@ -10,6 +10,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import useDocumentHead from "@/hooks/use-document-head";
+import { sendDealPhaseEmail } from "@/lib/deal-phase-emails";
 import DealPhaseLayout from "@/components/deal/DealPhaseLayout";
 
 const categoryIcons: Record<string, typeof Plane> = {
@@ -238,6 +239,18 @@ const DealCompletion = () => {
       if (data?.error) throw new Error(data.error);
       setSummary(data.summary);
       toast.success("Operation finalized successfully");
+
+      // Send completion summary email (non-blocking)
+      sendDealPhaseEmail({
+        template: "deal_completion_summary",
+        data: {
+          dealNumber: data.summary?.deal_number || "",
+          category: data.summary?.category || "",
+          vendorName: data.summary?.sub_category || "",
+          dealValue: data.summary?.total_revenue_cents ? `£${(data.summary.total_revenue_cents / 100).toLocaleString()}` : "",
+          commissionEarned: data.summary?.commission_cents ? `£${(data.summary.commission_cents / 100).toLocaleString()}` : "",
+        },
+      });
 
       const [upsellRes, tierRes] = await Promise.all([
         supabase.functions.invoke("deal-completion", { body: { action: "upsells", dealId } }),

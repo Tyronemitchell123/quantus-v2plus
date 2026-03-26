@@ -11,6 +11,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import useDocumentHead from "@/hooks/use-document-head";
+import { sendDealPhaseEmail } from "@/lib/deal-phase-emails";
 import DealPhaseLayout from "@/components/deal/DealPhaseLayout";
 
 const categoryIcons: Record<string, typeof Plane> = {
@@ -188,6 +189,18 @@ export default function Negotiation() {
       if (data?.error) throw new Error(data.error);
       setAnalysis(data as NegotiationAnalysis);
       toast.success("Negotiation analysis complete");
+
+      // Send negotiation progress email (non-blocking)
+      if (deal) {
+        sendDealPhaseEmail({
+          template: "deal_negotiation_progress",
+          data: {
+            dealNumber: deal.deal_number,
+            vendorName: data.vendor_analyses?.[0]?.vendor_name || "",
+            stage: "AI analysis complete",
+          },
+        });
+      }
     } catch (e: any) {
       toast.error(e.message || "Analysis failed");
     } finally {

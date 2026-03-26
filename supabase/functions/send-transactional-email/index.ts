@@ -5,6 +5,11 @@ import { WelcomeEmail } from '../_shared/email-templates/welcome.tsx'
 import { ContactConfirmationEmail } from '../_shared/email-templates/contact-confirmation.tsx'
 import { BookingConfirmationEmail } from '../_shared/email-templates/booking-confirmation.tsx'
 import { AccountNotificationEmail } from '../_shared/email-templates/account-notification.tsx'
+import { DealIntakeConfirmationEmail } from '../_shared/email-templates/deal-intake-confirmation.tsx'
+import { DealSourcingUpdateEmail } from '../_shared/email-templates/deal-sourcing-update.tsx'
+import { DealVendorMatchEmail } from '../_shared/email-templates/deal-vendor-match.tsx'
+import { DealNegotiationProgressEmail } from '../_shared/email-templates/deal-negotiation-progress.tsx'
+import { DealCompletionSummaryEmail } from '../_shared/email-templates/deal-completion-summary.tsx'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -16,7 +21,7 @@ const SENDER_DOMAIN = 'notify.crownprompts.com'
 const FROM_DOMAIN = 'notify.crownprompts.com'
 const SITE_URL = 'https://quantus-loom.lovable.app'
 
-const EMAIL_TEMPLATES: Record<string, { component: React.ComponentType<any>; subject: string }> = {
+const EMAIL_TEMPLATES: Record<string, { component: React.ComponentType<any>; subject: string | ((data: Record<string, any>) => string) }> = {
   welcome: {
     component: WelcomeEmail,
     subject: 'Welcome to QUANTUS AI',
@@ -32,6 +37,26 @@ const EMAIL_TEMPLATES: Record<string, { component: React.ComponentType<any>; sub
   account_notification: {
     component: AccountNotificationEmail,
     subject: 'Account activity alert',
+  },
+  deal_intake_confirmation: {
+    component: DealIntakeConfirmationEmail,
+    subject: (data) => `Request ${data?.dealNumber || ''} received — QUANTUS AI`,
+  },
+  deal_sourcing_update: {
+    component: DealSourcingUpdateEmail,
+    subject: (data) => `Sourcing underway for ${data?.dealNumber || 'your deal'}`,
+  },
+  deal_vendor_match: {
+    component: DealVendorMatchEmail,
+    subject: (data) => `Vendors matched for ${data?.dealNumber || 'your deal'}`,
+  },
+  deal_negotiation_progress: {
+    component: DealNegotiationProgressEmail,
+    subject: (data) => `Negotiation update — ${data?.dealNumber || 'your deal'}`,
+  },
+  deal_completion_summary: {
+    component: DealCompletionSummaryEmail,
+    subject: (data) => `Deal ${data?.dealNumber || ''} completed 🎉`,
   },
 }
 
@@ -106,7 +131,9 @@ Deno.serve(async (req) => {
     const text = await renderAsync(React.createElement(emailTemplate.component, templateProps), { plainText: true })
 
     const messageId = crypto.randomUUID()
-    const subject = data?.subject || emailTemplate.subject
+    const subject = typeof emailTemplate.subject === 'function'
+      ? emailTemplate.subject(data || {})
+      : (data?.subject || emailTemplate.subject)
 
     // Log pending
     await supabase.from('email_send_log').insert({

@@ -10,6 +10,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import useDocumentHead from "@/hooks/use-document-head";
+import { sendDealPhaseEmail } from "@/lib/deal-phase-emails";
 import DealPhaseLayout from "@/components/deal/DealPhaseLayout";
 import IntakeInputCard from "@/components/intake/IntakeInputCard";
 import IntakeAIPanel from "@/components/intake/IntakeAIPanel";
@@ -80,11 +81,18 @@ export default function Intake() {
       if (error) throw new Error(error.message || "Classification failed");
       if (data?.error) throw new Error(data.error);
 
-      setCurrentDeal(data.deal as Deal);
+      const createdDeal = data.deal as Deal;
+      setCurrentDeal(createdDeal);
       setMessage("");
       setCategory("");
       fetchRecentDeals();
       toast.success("Deal classified and routed");
+
+      // Send intake confirmation email (non-blocking)
+      sendDealPhaseEmail({
+        template: "deal_intake_confirmation",
+        data: { dealNumber: createdDeal.deal_number, category: createdDeal.category, rawInput: createdDeal.raw_input },
+      });
     } catch (e: any) {
       toast.error(e.message || "Something went wrong");
     } finally {
