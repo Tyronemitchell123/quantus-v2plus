@@ -47,7 +47,6 @@ const Dashboard = () => {
   const [aiPanelOpen, setAiPanelOpen] = useState(true);
   const [mobileTab, setMobileTab] = useState<"feed" | "modules" | "profile">("feed");
   const { pathname } = useLocation();
-  const { pathname } = useLocation();
 
   return (
     <div className="min-h-screen bg-background flex relative">
