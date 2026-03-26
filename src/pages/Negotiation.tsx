@@ -652,10 +652,10 @@ export default function Negotiation() {
                     <p className="font-display text-lg text-foreground">Ready to Close?</p>
                     <p className="font-body text-xs text-muted-foreground">Advance this deal to Phase 5 — Workflow Orchestration</p>
                   </div>
-                  <button onClick={handleFinalize}
+                  <Link to={`/workflow?deal=${dealId}`}
                     className="flex items-center gap-2 px-8 py-3 bg-primary text-primary-foreground font-body text-xs tracking-widest uppercase hover:bg-primary/90 transition-all">
-                    <Gavel size={14} /> Finalize Negotiation <ArrowRight size={14} />
-                  </button>
+                    <Gavel size={14} /> Begin Workflow <ArrowRight size={14} />
+                  </Link>
                 </div>
               </motion.div>
             )}
