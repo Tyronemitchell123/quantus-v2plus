@@ -1,14 +1,16 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Download, Bell, Webhook, Key, Brain, Shield } from "lucide-react";
+import { Download, Bell, Webhook, Key, Brain, Shield, Percent } from "lucide-react";
 import useDocumentHead from "@/hooks/use-document-head";
 import ExportPanel from "@/components/settings/ExportPanel";
 import AlertsPanel from "@/components/settings/AlertsPanel";
 import WebhooksPanel from "@/components/settings/WebhooksPanel";
 import ApiKeysPanel from "@/components/settings/ApiKeysPanel";
 import AuditLogPanel from "@/components/settings/AuditLogPanel";
+import CommissionPanel from "@/components/settings/CommissionPanel";
 
 const tabs = [
+  { key: "commission", label: "Commission Rates", icon: Percent },
   { key: "export", label: "Data Export", icon: Download },
   { key: "alerts", label: "Anomaly Alerts", icon: Bell },
   { key: "webhooks", label: "Webhooks", icon: Webhook },
@@ -17,7 +19,7 @@ const tabs = [
 ];
 
 const Settings = () => {
-  const [activeTab, setActiveTab] = useState("export");
+  const [activeTab, setActiveTab] = useState("commission");
 
   useDocumentHead({
     title: "Settings — QUANTUS AI",
@@ -64,6 +66,7 @@ const Settings = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.2 }}
         >
+          {activeTab === "commission" && <CommissionPanel />}
           {activeTab === "export" && <ExportPanel />}
           {activeTab === "alerts" && <AlertsPanel />}
           {activeTab === "webhooks" && <WebhooksPanel />}

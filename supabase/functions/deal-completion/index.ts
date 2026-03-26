@@ -61,6 +61,12 @@ Deno.serve(async (req) => {
     const { action, dealId } = await req.json();
 
     if (action === "complete") {
+      // Default commission rates by category
+      const DEFAULT_COMMISSION_RATES: Record<string, number> = {
+        aviation: 0.025, medical: 0.08, staffing: 0.20,
+        lifestyle: 0.10, logistics: 0.05, partnerships: 0.07,
+      };
+
       // Mark deal as completed
       const { data: deal, error: dealErr } = await supabase
         .from("deals")
@@ -70,6 +76,38 @@ Deno.serve(async (req) => {
         .select()
         .single();
       if (dealErr) throw dealErr;
+
+      // Determine commission rate: deal custom > vendor custom > category default
+      let commissionRate = DEFAULT_COMMISSION_RATES[deal.category] || 0.05;
+
+      if (deal.custom_commission_rate !== null && deal.custom_commission_rate !== undefined) {
+        commissionRate = deal.custom_commission_rate / 100; // stored as percentage
+      } else {
+        // Check if any vendor on this deal has a custom rate
+        const { data: vendorOutreach } = await supabase
+          .from("vendor_outreach")
+          .select("custom_commission_rate")
+          .eq("deal_id", dealId)
+          .not("custom_commission_rate", "is", null)
+          .limit(1);
+        if (vendorOutreach && vendorOutreach.length > 0 && vendorOutreach[0].custom_commission_rate !== null) {
+          commissionRate = vendorOutreach[0].custom_commission_rate / 100;
+        }
+      }
+
+      // Auto-create commission log if deal has value
+      if (deal.deal_value_estimate && deal.deal_value_estimate > 0) {
+        const commissionCents = Math.round(deal.deal_value_estimate * commissionRate * 100);
+        await supabase.from("commission_logs").insert({
+          deal_id: dealId,
+          user_id: user.id,
+          category: deal.category,
+          deal_value_cents: deal.deal_value_estimate * 100,
+          commission_rate: commissionRate,
+          commission_cents: commissionCents,
+          status: "pending",
+        });
+      }
 
       // Generate summary
       const { data: docs } = await supabase.from("deal_documents").select("*").eq("deal_id", dealId);
@@ -85,6 +123,7 @@ Deno.serve(async (req) => {
         category: deal.category,
         sub_category: deal.sub_category,
         deal_value: deal.deal_value_estimate,
+        commission_rate: commissionRate,
         total_documents: (docs || []).length,
         signed_documents: (docs || []).filter((d: any) => d.status === "signed").length,
         total_invoices: (invoices || []).length,
