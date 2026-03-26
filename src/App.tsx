@@ -27,6 +27,7 @@ const Negotiation = lazy(() => import("./pages/Negotiation"));
 const Workflow = lazy(() => import("./pages/Workflow"));
 const DocumentsBilling = lazy(() => import("./pages/DocumentsBilling"));
 const DealCompletion = lazy(() => import("./pages/DealCompletion"));
+const Onboarding = lazy(() => import("./pages/Onboarding"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -44,6 +45,14 @@ const AnimatedRoutes = () => {
           <Route path="/contact" element={<PageTransition><Contact /><Footer /></PageTransition>} />
           <Route path="/auth" element={<PageTransition><Auth /></PageTransition>} />
           <Route path="/reset-password" element={<PageTransition><ResetPassword /></PageTransition>} />
+          <Route
+            path="/onboarding"
+            element={
+              <ProtectedRoute>
+                <PageTransition><Onboarding /></PageTransition>
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/dashboard"
             element={
