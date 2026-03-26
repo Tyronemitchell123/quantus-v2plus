@@ -408,6 +408,7 @@ export type Database = {
           complexity_score: number | null
           constraints: Json | null
           created_at: string
+          custom_commission_rate: number | null
           deal_number: string
           deal_value_estimate: number | null
           id: string
@@ -438,6 +439,7 @@ export type Database = {
           complexity_score?: number | null
           constraints?: Json | null
           created_at?: string
+          custom_commission_rate?: number | null
           deal_number?: string
           deal_value_estimate?: number | null
           id?: string
@@ -468,6 +470,7 @@ export type Database = {
           complexity_score?: number | null
           constraints?: Json | null
           created_at?: string
+          custom_commission_rate?: number | null
           deal_number?: string
           deal_value_estimate?: number | null
           id?: string
@@ -1408,6 +1411,7 @@ export type Database = {
         Row: {
           category: string
           created_at: string
+          custom_commission_rate: number | null
           deal_id: string
           documents_received: Json | null
           documents_requested: Json | null
@@ -1431,6 +1435,7 @@ export type Database = {
         Insert: {
           category: string
           created_at?: string
+          custom_commission_rate?: number | null
           deal_id: string
           documents_received?: Json | null
           documents_requested?: Json | null
@@ -1454,6 +1459,7 @@ export type Database = {
         Update: {
           category?: string
           created_at?: string
+          custom_commission_rate?: number | null
           deal_id?: string
           documents_received?: Json | null
           documents_requested?: Json | null
