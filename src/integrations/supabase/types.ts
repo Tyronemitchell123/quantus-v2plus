@@ -889,6 +889,89 @@ export type Database = {
           },
         ]
       }
+      sourcing_results: {
+        Row: {
+          ai_notes: string | null
+          availability: string | null
+          category: string
+          cons: Json | null
+          cost_currency: string | null
+          created_at: string
+          deal_id: string
+          description: string | null
+          estimated_cost: number | null
+          id: string
+          location: string | null
+          name: string
+          overall_score: number
+          pros: Json | null
+          recommended_next_step: string | null
+          risk_level: string | null
+          score_breakdown: Json | null
+          specifications: Json | null
+          tier: string
+          user_id: string
+          vendor_contact: Json | null
+          vendor_prep: Json | null
+        }
+        Insert: {
+          ai_notes?: string | null
+          availability?: string | null
+          category: string
+          cons?: Json | null
+          cost_currency?: string | null
+          created_at?: string
+          deal_id: string
+          description?: string | null
+          estimated_cost?: number | null
+          id?: string
+          location?: string | null
+          name: string
+          overall_score?: number
+          pros?: Json | null
+          recommended_next_step?: string | null
+          risk_level?: string | null
+          score_breakdown?: Json | null
+          specifications?: Json | null
+          tier?: string
+          user_id: string
+          vendor_contact?: Json | null
+          vendor_prep?: Json | null
+        }
+        Update: {
+          ai_notes?: string | null
+          availability?: string | null
+          category?: string
+          cons?: Json | null
+          cost_currency?: string | null
+          created_at?: string
+          deal_id?: string
+          description?: string | null
+          estimated_cost?: number | null
+          id?: string
+          location?: string | null
+          name?: string
+          overall_score?: number
+          pros?: Json | null
+          recommended_next_step?: string | null
+          risk_level?: string | null
+          score_breakdown?: Json | null
+          specifications?: Json | null
+          tier?: string
+          user_id?: string
+          vendor_contact?: Json | null
+          vendor_prep?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sourcing_results_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "deals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       subscriptions: {
         Row: {
           billing_cycle: string

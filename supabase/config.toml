@@ -25,3 +25,5 @@ project_id = "eqxgnxgbvvrjaxjiznjo"
     verify_jwt = false
   [functions.intake-classify]
     verify_jwt = false
+  [functions.sourcing-engine]
+    verify_jwt = false
