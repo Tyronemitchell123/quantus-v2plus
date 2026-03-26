@@ -212,8 +212,80 @@ const RecommendationEngine = () => {
   const [filter, setFilter] = useState<string>("all");
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [activeView, setActiveView] = useState<"recommendations" | "playbooks">("recommendations");
+  const [liveRecs, setLiveRecs] = useState<Recommendation[]>([]);
+  const [liveStats, setLiveStats] = useState({ total: 0, risks: 0, opportunities: 0, avgConfidence: 0 });
 
-  const filtered = filter === "all" ? recommendations : recommendations.filter((r) => r.type === filter);
+  useEffect(() => {
+    const fetchLiveData = async () => {
+      const { data: deals } = await supabase
+        .from("deals")
+        .select("id, deal_number, category, status, intent, priority_score, created_at, updated_at, budget_min, budget_max, timeline_days, location")
+        .order("updated_at", { ascending: false })
+        .limit(50);
+
+      if (!deals || deals.length === 0) return;
+
+      const dynamicRecs: Recommendation[] = [];
+      const moduleIcons: Record<string, any> = { aviation: Plane, medical: Heart, staffing: Users, lifestyle: Palmtree, logistics: Truck, partnerships: Handshake };
+      const now = new Date();
+
+      for (const deal of deals) {
+        const daysSinceUpdate = Math.floor((now.getTime() - new Date(deal.updated_at).getTime()) / (1000 * 60 * 60 * 24));
+        const Icon = moduleIcons[deal.category] || Target;
+        const moduleName = deal.category.charAt(0).toUpperCase() + deal.category.slice(1);
+
+        // Stale deal warning
+        if (daysSinceUpdate > 7 && deal.status !== "completed" && deal.status !== "cancelled") {
+          dynamicRecs.push({
+            id: `stale-${deal.id}`,
+            type: "risk",
+            module: moduleName,
+            moduleIcon: Icon,
+            title: `${deal.deal_number} inactive for ${daysSinceUpdate} days`,
+            description: `This ${moduleName.toLowerCase()} deal hasn't been updated in ${daysSinceUpdate} days. Consider advancing or reviewing.`,
+            confidence: 100,
+            urgency: daysSinceUpdate > 14 ? "critical" : "high",
+            impact: "Avoid deal stagnation",
+            action: "Review Deal",
+            actionTo: `/${deal.status === "intake" ? "intake" : deal.status === "sourcing" ? "sourcing" : "deals"}`,
+            reasoning: [`Last updated ${daysSinceUpdate} days ago`, `Current phase: ${deal.status}`, `Priority score: ${deal.priority_score}`],
+            timeframe: "Immediate",
+          });
+        }
+
+        // Deals ready to advance
+        if (deal.status === "sourcing" || deal.status === "matching") {
+          dynamicRecs.push({
+            id: `advance-${deal.id}`,
+            type: "opportunity",
+            module: moduleName,
+            moduleIcon: Icon,
+            title: `${deal.deal_number} ready for next phase`,
+            description: `Deal is in ${deal.status} phase${deal.intent ? ` — "${deal.intent}"` : ""}. Review sourcing results to advance.`,
+            confidence: 85,
+            urgency: "medium",
+            impact: "Accelerate deal progression",
+            action: "View Options",
+            actionTo: "/sourcing",
+            reasoning: [`Category: ${moduleName}`, `Current phase: ${deal.status}`, deal.location ? `Location: ${deal.location}` : "No location specified"],
+            timeframe: "This week",
+          });
+        }
+      }
+
+      setLiveRecs(dynamicRecs);
+      setLiveStats({
+        total: dynamicRecs.length + recommendations.length,
+        risks: dynamicRecs.filter(r => r.type === "risk").length + recommendations.filter(r => r.type === "risk").length,
+        opportunities: dynamicRecs.filter(r => r.type === "opportunity").length + recommendations.filter(r => r.type === "opportunity").length,
+        avgConfidence: Math.round([...dynamicRecs, ...recommendations].reduce((a, b) => a + b.confidence, 0) / ([...dynamicRecs, ...recommendations].length || 1)),
+      });
+    };
+    fetchLiveData();
+  }, []);
+
+  const allRecs = [...liveRecs, ...recommendations];
+  const filtered = filter === "all" ? allRecs : allRecs.filter((r) => r.type === filter);
 
   const filters = [
     { id: "all", label: "All Insights" },
