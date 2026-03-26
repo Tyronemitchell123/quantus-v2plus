@@ -82,6 +82,14 @@ const AnimatedRoutes = () => {
             }
           />
           <Route
+            path="/negotiation"
+            element={
+              <ProtectedRoute>
+                <PageTransition><Negotiation /><Footer /></PageTransition>
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/settings"
             element={
               <ProtectedRoute>
