@@ -25,8 +25,8 @@ const Footer = () => (
         <div>
           <h4 className="font-body text-[10px] tracking-[0.3em] uppercase text-gold-soft mb-5">Legal</h4>
           <div className="flex flex-col gap-3">
-            <span className="font-body text-xs text-muted-foreground">Privacy Policy</span>
-            <span className="font-body text-xs text-muted-foreground">Terms of Service</span>
+            <Link to="/privacy" className="font-body text-xs text-muted-foreground hover:text-primary transition-colors">Privacy Policy</Link>
+            <Link to="/terms" className="font-body text-xs text-muted-foreground hover:text-primary transition-colors">Terms of Service</Link>
           </div>
         </div>
       </div>
