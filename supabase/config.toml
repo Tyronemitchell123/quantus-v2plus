@@ -29,3 +29,5 @@ project_id = "eqxgnxgbvvrjaxjiznjo"
     verify_jwt = false
   [functions.vendor-outreach]
     verify_jwt = false
+  [functions.negotiation-engine]
+    verify_jwt = false

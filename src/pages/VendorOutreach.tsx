@@ -534,9 +534,16 @@ export default function VendorOutreach() {
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-3">
                 <div className="flex items-center justify-between mb-4">
                   <p className="font-body text-xs tracking-[0.3em] uppercase text-muted-foreground">Vendor Communications</p>
-                  <Link to={`/sourcing?deal=${dealId}`} className="font-body text-xs text-primary hover:underline flex items-center gap-1">
-                    View Sourcing Results <ArrowRight size={12} />
-                  </Link>
+                  <div className="flex items-center gap-3">
+                    {stats.ready > 0 && (
+                      <Link to={`/negotiation?deal=${dealId}`} className="font-body text-xs text-primary hover:underline flex items-center gap-1">
+                        Phase 4: Negotiation <ArrowRight size={12} />
+                      </Link>
+                    )}
+                    <Link to={`/sourcing?deal=${dealId}`} className="font-body text-xs text-muted-foreground hover:text-foreground flex items-center gap-1">
+                      View Sourcing <ArrowRight size={12} />
+                    </Link>
+                  </div>
                 </div>
                 {outreachList.map((o) => (
                   <OutreachCard
