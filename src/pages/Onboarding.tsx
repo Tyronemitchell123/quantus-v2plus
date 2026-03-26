@@ -32,7 +32,7 @@ const Onboarding = () => {
   const canContinue = () => {
     if (step === 0) return true;
     if (step === 1) return !!selectedRole;
-    if (step === 2) return Object.keys(selectedPrefs).length >= 2;
+    if (step === 2) return Object.keys(selectedPrefs).length >= 4;
     if (step === 3) return selectedModules.length > 0;
     if (step === 4) return !!selectedTier;
     if (step === 5) return true;
