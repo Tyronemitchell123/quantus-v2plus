@@ -76,8 +76,47 @@ const PartnerPortal = () => {
   useDocumentHead({ title: "Partner Portal — Quantus A.I", description: "Elite vendor operations suite." });
   const [section, setSection] = useState<PortalSection>("dashboard");
   const [selectedRequest, setSelectedRequest] = useState<string | null>(null);
+  const [liveDeals, setLiveDeals] = useState<typeof mockRequests>([]);
+  const [liveCommissions, setLiveCommissions] = useState<{ total: number; count: number }>({ total: 0, count: 0 });
 
-  const openRequest = mockRequests.find(r => r.id === selectedRequest);
+  useEffect(() => {
+    const fetchData = async () => {
+      const { supabase } = await import("@/integrations/supabase/client");
+      
+      // Fetch deals for requests view
+      const { data: deals } = await supabase
+        .from("deals")
+        .select("id, deal_number, category, status, intent, created_at, updated_at, timeline_days")
+        .order("updated_at", { ascending: false })
+        .limit(20);
+
+      if (deals && deals.length > 0) {
+        const mapped = deals.map(d => ({
+          id: d.deal_number,
+          category: d.category.charAt(0).toUpperCase() + d.category.slice(1),
+          title: d.intent || `${d.category} request`,
+          deadline: d.timeline_days ? new Date(Date.now() + d.timeline_days * 86400000).toLocaleDateString("en-GB", { month: "short", day: "numeric", year: "numeric" }) : "Open",
+          responseTime: "—",
+          status: (d.status === "completed" ? "Completed" : d.status === "intake" || d.status === "sourcing" ? "Pending" : "In Progress") as "Pending" | "In Progress" | "Completed",
+        }));
+        setLiveDeals(mapped);
+      }
+
+      // Fetch commission totals
+      const { data: commissions } = await supabase
+        .from("commission_logs")
+        .select("commission_cents, status");
+
+      if (commissions && commissions.length > 0) {
+        const total = commissions.reduce((sum, c) => sum + (c.commission_cents || 0), 0);
+        setLiveCommissions({ total: Math.round(total / 100), count: commissions.filter(c => c.status === "paid").length });
+      }
+    };
+    fetchData();
+  }, []);
+
+  const activeRequests = liveDeals.length > 0 ? liveDeals : mockRequests;
+  const openRequest = activeRequests.find(r => r.id === selectedRequest);
 
   return (
     <div className="min-h-screen bg-[#0A0A0C] flex relative overflow-hidden">
