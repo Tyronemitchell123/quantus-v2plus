@@ -13,6 +13,9 @@ import DealEngineStrip from "@/components/dashboard/DealEngineStrip";
 import DocumentsSnapshot from "@/components/dashboard/DocumentsSnapshot";
 import FinancialOverview from "@/components/dashboard/FinancialOverview";
 import AIAssistantPanel from "@/components/dashboard/AIAssistantPanel";
+import MobileBottomNav from "@/components/mobile/MobileBottomNav";
+import MobileAIAssistant from "@/components/mobile/MobileAIAssistant";
+import MobileQuickActions from "@/components/mobile/MobileQuickActions";
 
 const mobileNavItems = [
   { icon: LayoutDashboard, label: "Dashboard", to: "/dashboard" },
@@ -32,6 +35,7 @@ const sampleNotifications = [
 
 const Dashboard = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileAIOpen, setMobileAIOpen] = useState(false);
   const { pathname } = useLocation();
 
   return (
@@ -97,8 +101,10 @@ const Dashboard = () => {
           notifications={sampleNotifications}
         />
 
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 space-y-6">
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 space-y-6 pb-24 lg:pb-8">
           <HeroCard />
+          {/* Mobile quick actions */}
+          <MobileQuickActions />
           <DealsOverview />
           <DealEngineStrip />
           <ModuleShortcuts />
@@ -106,8 +112,8 @@ const Dashboard = () => {
           <FinancialOverview />
         </main>
 
-        {/* Footer */}
-        <footer className="px-6 py-3 border-t border-border flex items-center justify-between">
+        {/* Footer — hidden on mobile to avoid overlap with bottom nav */}
+        <footer className="hidden lg:flex px-6 py-3 border-t border-border items-center justify-between">
           <p className="font-body text-[9px] tracking-[0.2em] uppercase text-muted-foreground/40">
             Quantus A.I — The Obsidian Standard
           </p>
@@ -115,8 +121,16 @@ const Dashboard = () => {
         </footer>
       </div>
 
-      {/* AI Assistant */}
-      <AIAssistantPanel />
+      {/* AI Assistant — desktop panel */}
+      <div className="hidden lg:block">
+        <AIAssistantPanel />
+      </div>
+
+      {/* Mobile bottom nav */}
+      <MobileBottomNav onAIOpen={() => setMobileAIOpen(true)} />
+
+      {/* Mobile AI assistant — full screen */}
+      <MobileAIAssistant open={mobileAIOpen} onClose={() => setMobileAIOpen(false)} />
     </div>
   );
 };
