@@ -257,9 +257,11 @@ const InsightsPanel = ({ category }: { category: string }) => {
 const PartnershipsModule = () => {
   const [activeCategory, setActiveCategory] = useState("aviation");
   const vendors = vendorData[activeCategory] || [];
+  const { deals, sourcingResults, vendorOutreach, loading: liveLoading } = useModuleData("partnerships");
 
   return (
     <div className="space-y-6">
+      <ModuleLiveDeals deals={deals} sourcingResults={sourcingResults} vendorOutreach={vendorOutreach} loading={liveLoading} categoryLabel="Partnerships" />
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">

@@ -260,9 +260,11 @@ const InsightsPanel = ({ category }: { category: string }) => {
 const StaffingModule = () => {
   const [activeCategory, setActiveCategory] = useState("estate");
   const candidates = candidateData[activeCategory] || [];
+  const { deals, sourcingResults, vendorOutreach, loading: liveLoading } = useModuleData("staffing");
 
   return (
     <div className="space-y-6">
+      <ModuleLiveDeals deals={deals} sourcingResults={sourcingResults} vendorOutreach={vendorOutreach} loading={liveLoading} categoryLabel="Staffing" />
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
