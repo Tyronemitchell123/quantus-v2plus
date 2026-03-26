@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plane, Heart, Users, Globe, Truck, Handshake, MessageSquare, Search, Bell, BarChart3, FileText, DollarSign } from "lucide-react";
-import { useDocumentHead } from "@/hooks/use-document-head";
+import useDocumentHead from "@/hooks/use-document-head";
 
 type ModuleKey = "aviation" | "medical" | "staffing" | "travel" | "logistics" | "partnerships" | "communications";
 
