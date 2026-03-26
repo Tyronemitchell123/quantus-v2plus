@@ -104,6 +104,7 @@ const AnimatedRoutes = () => {
             <Route path="/workflow" element={<ProtectedRoute><PageTransition><Workflow /></PageTransition></ProtectedRoute>} />
             <Route path="/documents" element={<ProtectedRoute><PageTransition><DocumentsBilling /></PageTransition></ProtectedRoute>} />
             <Route path="/deal-completion" element={<ProtectedRoute><PageTransition><DealCompletion /></PageTransition></ProtectedRoute>} />
+            <Route path="/deal-engine" element={<Navigate to="/deals" replace />} />
             <Route path="/settings" element={<ProtectedRoute><PageTransition><Settings /></PageTransition></ProtectedRoute>} />
             <Route path="/account/subscription" element={<ProtectedRoute><PageTransition><SubscriptionManagement /></PageTransition></ProtectedRoute>} />
 
