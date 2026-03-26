@@ -22,6 +22,7 @@ const ModulesDashboard = lazy(() => import("./pages/ModulesDashboard"));
 const Chat = lazy(() => import("./pages/Chat"));
 const Intake = lazy(() => import("./pages/Intake"));
 const Sourcing = lazy(() => import("./pages/Sourcing"));
+const VendorOutreach = lazy(() => import("./pages/VendorOutreach"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -68,6 +69,14 @@ const AnimatedRoutes = () => {
             element={
               <ProtectedRoute>
                 <PageTransition><Sourcing /><Footer /></PageTransition>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/outreach"
+            element={
+              <ProtectedRoute>
+                <PageTransition><VendorOutreach /><Footer /></PageTransition>
               </ProtectedRoute>
             }
           />

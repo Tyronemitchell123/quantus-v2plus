@@ -27,3 +27,5 @@ project_id = "eqxgnxgbvvrjaxjiznjo"
     verify_jwt = false
   [functions.sourcing-engine]
     verify_jwt = false
+  [functions.vendor-outreach]
+    verify_jwt = false

@@ -474,16 +474,16 @@ export default function Sourcing() {
                 )}
 
                 {/* Status Footer */}
-                <div className="flex items-center justify-between border border-border bg-card p-5">
+                <Link to={`/outreach?deal=${dealId}`} className="flex items-center justify-between border border-primary/30 bg-card p-5 hover:border-primary/50 transition-colors group">
                   <div>
                     <p className="font-body text-xs text-muted-foreground">Status</p>
-                    <p className="font-body text-sm text-foreground">Sourcing Complete — Awaiting Vendor Outreach</p>
+                    <p className="font-body text-sm text-foreground">Sourcing Complete — Ready for Vendor Outreach</p>
                   </div>
-                  <div className="flex items-center gap-2 text-primary font-body text-xs tracking-widest uppercase">
-                    <span>Next: Phase 3 — Vendor Engagement</span>
+                  <div className="flex items-center gap-2 text-primary font-body text-xs tracking-widest uppercase group-hover:gap-3 transition-all">
+                    <span>Begin Phase 3 — Vendor Outreach</span>
                     <ArrowRight size={14} />
                   </div>
-                </div>
+                </Link>
               </motion.div>
             )}
           </>
