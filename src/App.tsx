@@ -27,6 +27,7 @@ const Negotiation = lazy(() => import("./pages/Negotiation"));
 const Workflow = lazy(() => import("./pages/Workflow"));
 const DocumentsBilling = lazy(() => import("./pages/DocumentsBilling"));
 const DealCompletion = lazy(() => import("./pages/DealCompletion"));
+const Onboarding = lazy(() => import("./pages/Onboarding"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
