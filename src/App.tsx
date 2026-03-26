@@ -68,6 +68,7 @@ const AnimatedRoutes = () => {
             <Route path="/intake" element={<ProtectedRoute><PageTransition><Intake /></PageTransition></ProtectedRoute>} />
             <Route path="/sourcing" element={<ProtectedRoute><PageTransition><Sourcing /></PageTransition></ProtectedRoute>} />
             <Route path="/outreach" element={<ProtectedRoute><PageTransition><VendorOutreach /></PageTransition></ProtectedRoute>} />
+            <Route path="/shortlist" element={<ProtectedRoute><PageTransition><Shortlisting /></PageTransition></ProtectedRoute>} />
             <Route path="/negotiation" element={<ProtectedRoute><PageTransition><Negotiation /></PageTransition></ProtectedRoute>} />
             <Route path="/workflow" element={<ProtectedRoute><PageTransition><Workflow /></PageTransition></ProtectedRoute>} />
             <Route path="/documents" element={<ProtectedRoute><PageTransition><DocumentsBilling /></PageTransition></ProtectedRoute>} />
