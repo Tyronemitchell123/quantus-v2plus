@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
-import { Sparkles, Mail, Lock, User, ArrowRight, Chrome, Gift } from "lucide-react";
+import { Mail, Lock, User, ArrowRight, Gift } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const Auth = () => {
@@ -18,7 +18,6 @@ const Auth = () => {
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
 
-  // Pre-fill referral code from URL param e.g. /auth?ref=ABC123
   useState(() => {
     const ref = searchParams.get("ref");
     if (ref) setReferralCode(ref);
@@ -28,28 +27,18 @@ const Auth = () => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
-
       const res = await supabase.functions.invoke("redeem-referral", {
         body: { referralCode: code },
       });
-
-      if (res.error) {
-        console.warn("Referral redemption failed:", res.error);
-      } else if (res.data?.success) {
-        toast({
-          title: "Referral applied!",
-          description: `You earned ${res.data.credits_awarded} bonus credits.`,
-        });
+      if (res.data?.success) {
+        toast({ title: "Referral applied!", description: `You earned ${res.data.credits_awarded} bonus credits.` });
       }
-    } catch (err) {
-      console.warn("Referral redemption error:", err);
-    }
+    } catch {}
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
     try {
       if (mode === "forgot") {
         const { error } = await resetPassword(email);
@@ -60,26 +49,17 @@ const Auth = () => {
         const { error } = await signUp(email, password, fullName);
         if (error) throw error;
         toast({ title: "Account created", description: "Check your email to verify your account." });
-
-        // If a referral code was entered, try to redeem after signup confirmation
-        if (referralCode.trim()) {
-          // Store in localStorage so we can redeem after email verification
-          localStorage.setItem("pending_referral_code", referralCode.trim());
-        }
-
+        if (referralCode.trim()) localStorage.setItem("pending_referral_code", referralCode.trim());
         setMode("login");
       } else {
         const { error } = await signIn(email, password);
         if (error) throw error;
-
-        // Check for pending referral code after login
         const pendingCode = localStorage.getItem("pending_referral_code");
         if (pendingCode) {
           localStorage.removeItem("pending_referral_code");
           await redeemReferral(pendingCode);
         }
-
-        navigate("/dashboard");
+        navigate("/onboarding");
       }
     } catch (err: any) {
       toast({ title: "Error", description: err.message, variant: "destructive" });
@@ -89,154 +69,163 @@ const Auth = () => {
   };
 
   const handleGoogle = async () => {
-    if (referralCode.trim()) {
-      localStorage.setItem("pending_referral_code", referralCode.trim());
-    }
+    if (referralCode.trim()) localStorage.setItem("pending_referral_code", referralCode.trim());
     const { error } = await signInWithGoogle();
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
   };
 
   return (
-    <div className="pt-16 min-h-screen flex items-center justify-center px-6">
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-primary/[0.04] rounded-full blur-[120px]" />
-      </div>
+    <div className="min-h-screen flex items-center justify-center bg-background relative overflow-hidden">
+      {/* Ambient glow */}
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-primary/[0.03] rounded-full blur-[150px] pointer-events-none" />
 
       <motion.div
-        initial={{ opacity: 0, y: 30 }}
+        initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="glass-card rounded-2xl p-8 md:p-12 w-full max-w-md relative"
+        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+        className="w-full max-w-md mx-6 relative"
       >
-        <div className="text-center mb-8">
-          <Sparkles className="text-primary mx-auto mb-3" size={28} />
-          <h1 className="font-display text-2xl font-bold text-foreground">
-            {mode === "login" ? "Welcome Back" : mode === "signup" ? "Start Your Journey" : "Reset Password"}
-          </h1>
-          <p className="text-muted-foreground text-sm mt-2">
-            {mode === "login"
-              ? "Sign in to access your AI dashboard"
-              : mode === "signup"
-              ? "Create your account to unlock AI intelligence"
-              : "Enter your email to reset your password"}
-          </p>
-        </div>
-
-        {mode !== "forgot" && (
-          <button
-            onClick={handleGoogle}
-            className="w-full flex items-center justify-center gap-3 py-3 rounded-full border border-border text-foreground font-medium text-sm hover:border-primary/50 transition-colors mb-6"
-          >
-            <Chrome size={18} />
-            Continue with Google
-          </button>
-        )}
-
-        {mode !== "forgot" && (
-          <div className="flex items-center gap-4 mb-6">
-            <div className="flex-1 h-px bg-border" />
-            <span className="text-muted-foreground text-xs">or</span>
-            <div className="flex-1 h-px bg-border" />
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {mode === "signup" && (
-            <div className="relative">
-              <User size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
-              <input
-                type="text"
-                placeholder="Full name"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                className="w-full pl-11 pr-4 py-3 rounded-xl bg-secondary border border-border text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
-              />
-            </div>
-          )}
-
-          <div className="relative">
-            <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            <input
-              type="email"
-              placeholder="Email address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full pl-11 pr-4 py-3 rounded-xl bg-secondary border border-border text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+        {/* Card */}
+        <div className="border border-primary/10 bg-card/50 backdrop-blur-sm p-8 md:p-10">
+          {/* Logo */}
+          <div className="text-center mb-10">
+            <h1 className="font-display text-2xl font-medium tracking-wide">
+              <span className="text-gold-gradient">Quantus</span>
+              <span className="text-foreground/60 ml-1.5 font-light italic">A.I</span>
+            </h1>
+            <motion.div
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ delay: 0.4, duration: 0.6 }}
+              className="w-10 h-px bg-primary/40 mx-auto mt-4"
             />
           </div>
 
-          {mode !== "forgot" && (
-            <div className="relative">
-              <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
-              <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                minLength={6}
-                className="w-full pl-11 pr-4 py-3 rounded-xl bg-secondary border border-border text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
-              />
-            </div>
-          )}
-
-          {mode === "signup" && (
-            <div className="relative">
-              <Gift size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
-              <input
-                type="text"
-                placeholder="Referral code (optional)"
-                value={referralCode}
-                onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
-                maxLength={20}
-                className="w-full pl-11 pr-4 py-3 rounded-xl bg-secondary border border-border text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
-              />
-            </div>
-          )}
-
-          {mode === "login" && (
-            <button
-              type="button"
-              onClick={() => setMode("forgot")}
-              className="text-xs text-primary hover:underline"
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={mode}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3 }}
             >
-              Forgot password?
-            </button>
-          )}
+              <h2 className="font-display text-lg font-medium text-foreground text-center mb-1">
+                {mode === "login" ? "Welcome Back" : mode === "signup" ? "Apply for Membership" : "Reset Password"}
+              </h2>
+              <p className="font-body text-xs text-muted-foreground text-center mb-8">
+                {mode === "login"
+                  ? "Sign in to your private intelligence platform."
+                  : mode === "signup"
+                    ? "Create your account to enter the ecosystem."
+                    : "Enter your email to receive a reset link."}
+              </p>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-3 rounded-full bg-primary text-primary-foreground font-semibold text-sm hover:opacity-90 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-          >
-            {loading ? (
-              <div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {mode === "signup" && (
+                  <div className="relative">
+                    <User size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                    <input
+                      type="text" placeholder="Full name" value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      className="w-full pl-10 pr-4 py-3 bg-background border border-border text-foreground text-sm font-body placeholder:text-muted-foreground focus:outline-none focus:border-primary/40 transition-colors"
+                    />
+                  </div>
+                )}
+
+                <div className="relative">
+                  <Mail size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                  <input
+                    type="email" placeholder="Email address" value={email}
+                    onChange={(e) => setEmail(e.target.value)} required
+                    className="w-full pl-10 pr-4 py-3 bg-background border border-border text-foreground text-sm font-body placeholder:text-muted-foreground focus:outline-none focus:border-primary/40 transition-colors"
+                  />
+                </div>
+
+                {mode !== "forgot" && (
+                  <div className="relative">
+                    <Lock size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                    <input
+                      type="password" placeholder="Password" value={password}
+                      onChange={(e) => setPassword(e.target.value)} required minLength={6}
+                      className="w-full pl-10 pr-4 py-3 bg-background border border-border text-foreground text-sm font-body placeholder:text-muted-foreground focus:outline-none focus:border-primary/40 transition-colors"
+                    />
+                  </div>
+                )}
+
+                {mode === "signup" && (
+                  <div className="relative">
+                    <Gift size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                    <input
+                      type="text" placeholder="Referral code (optional)" value={referralCode}
+                      onChange={(e) => setReferralCode(e.target.value.toUpperCase())} maxLength={20}
+                      className="w-full pl-10 pr-4 py-3 bg-background border border-border text-foreground text-sm font-body placeholder:text-muted-foreground focus:outline-none focus:border-primary/40 transition-colors"
+                    />
+                  </div>
+                )}
+
+                {mode === "login" && (
+                  <div className="flex justify-between items-center">
+                    <button type="button" onClick={() => setMode("forgot")}
+                      className="font-body text-[11px] text-primary/70 hover:text-primary transition-colors">
+                      Forgot Password
+                    </button>
+                    <span className="font-body text-[11px] text-muted-foreground/50">Partner Login →</span>
+                  </div>
+                )}
+
+                <button
+                  type="submit" disabled={loading}
+                  className="w-full py-3.5 bg-primary text-primary-foreground font-body text-xs tracking-[0.25em] uppercase font-medium hover:bg-primary/90 transition-all duration-300 gold-glow flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  {loading ? (
+                    <div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
+                  ) : (
+                    <>
+                      {mode === "login" ? "Sign In" : mode === "signup" ? "Create Account" : "Send Reset Link"}
+                      <ArrowRight size={14} />
+                    </>
+                  )}
+                </button>
+              </form>
+
+              {mode !== "forgot" && (
+                <>
+                  <div className="flex items-center gap-4 my-5">
+                    <div className="flex-1 h-px bg-border" />
+                    <span className="font-body text-[10px] tracking-wider text-muted-foreground uppercase">or</span>
+                    <div className="flex-1 h-px bg-border" />
+                  </div>
+                  <button
+                    onClick={handleGoogle}
+                    className="w-full py-3 border border-border text-foreground/70 font-body text-xs tracking-wider hover:border-primary/30 hover:text-foreground transition-all duration-300"
+                  >
+                    Continue with Google
+                  </button>
+                </>
+              )}
+            </motion.div>
+          </AnimatePresence>
+
+          <div className="mt-6 text-center">
+            {mode === "login" ? (
+              <p className="font-body text-xs text-muted-foreground">
+                No account?{" "}
+                <button onClick={() => setMode("signup")} className="text-primary hover:underline">Apply for Membership</button>
+              </p>
             ) : (
-              <>
-                {mode === "login" ? "Sign In" : mode === "signup" ? "Create Account" : "Send Reset Link"}
-                <ArrowRight size={16} />
-              </>
+              <p className="font-body text-xs text-muted-foreground">
+                Already a member?{" "}
+                <button onClick={() => setMode("login")} className="text-primary hover:underline">Sign in</button>
+              </p>
             )}
-          </button>
-        </form>
+          </div>
+        </div>
 
-        <div className="mt-6 text-center text-sm text-muted-foreground">
-          {mode === "login" ? (
-            <>
-              Don't have an account?{" "}
-              <button onClick={() => setMode("signup")} className="text-primary hover:underline font-medium">
-                Sign up
-              </button>
-            </>
-          ) : (
-            <>
-              Already have an account?{" "}
-              <button onClick={() => setMode("login")} className="text-primary hover:underline font-medium">
-                Sign in
-              </button>
-            </>
-          )}
+        {/* Continue with Private Link */}
+        <div className="text-center mt-6">
+          <span className="font-body text-[10px] tracking-[0.2em] uppercase text-muted-foreground/40">
+            Continue with Private Link
+          </span>
         </div>
       </motion.div>
     </div>
