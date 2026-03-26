@@ -524,7 +524,7 @@ export default function Workflow() {
                     <p className="font-display text-lg text-foreground">Workflow Complete?</p>
                     <p className="font-body text-xs text-muted-foreground">Advance to Phase 6 — Documentation & Billing</p>
                   </div>
-                  <Link to={`/documents?deal=${selectedDeal}`}
+                  <Link to={`/documents?deal=${dealId}`}
                     className="flex items-center gap-2 px-8 py-3 bg-primary text-primary-foreground font-body text-xs tracking-widest uppercase hover:bg-primary/90 transition-all">
                     <Gavel size={14} /> Begin Phase 6 <ArrowRight size={14} />
                   </Link>
