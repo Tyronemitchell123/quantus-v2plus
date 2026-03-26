@@ -172,7 +172,8 @@ const AircraftCard = forwardRef<HTMLDivElement, { aircraft: typeof aircraftData[
       </div>
     </motion.div>
   );
-}
+});
+AircraftCard.displayName = "AircraftCard";
 
 /* ── Main Module ── */
 const AviationModule = () => {
