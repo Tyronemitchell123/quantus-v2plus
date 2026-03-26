@@ -88,6 +88,12 @@ const AnimatedRoutes = () => {
             {/* Dashboard shell routes */}
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/dashboard/modules" element={<ProtectedRoute><ModulesDashboard /></ProtectedRoute>} />
+            <Route path="/dashboard/intake" element={<Navigate to="/intake" replace />} />
+            <Route path="/dashboard/deals" element={<Navigate to="/deals" replace />} />
+            <Route path="/dashboard/chat" element={<Navigate to="/chat" replace />} />
+            <Route path="/dashboard/sourcing" element={<Navigate to="/sourcing" replace />} />
+            <Route path="/dashboard/outreach" element={<Navigate to="/outreach" replace />} />
+            <Route path="/dashboard/settings" element={<Navigate to="/settings" replace />} />
             <Route path="/deals" element={<ProtectedRoute><DealEngine /></ProtectedRoute>} />
             <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
             <Route path="/intake" element={<ProtectedRoute><PageTransition><Intake /></PageTransition></ProtectedRoute>} />
