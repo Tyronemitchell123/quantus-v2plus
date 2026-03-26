@@ -277,6 +277,99 @@ export type Database = {
         }
         Relationships: []
       }
+      deals: {
+        Row: {
+          ai_classification_raw: Json | null
+          ai_confirmation: string | null
+          budget_currency: string | null
+          budget_max: number | null
+          budget_min: number | null
+          category: Database["public"]["Enums"]["deal_category"]
+          completed_at: string | null
+          complexity_score: number | null
+          constraints: Json | null
+          created_at: string
+          deal_number: string
+          deal_value_estimate: number | null
+          id: string
+          input_channel: string
+          intent: string | null
+          location: string | null
+          preferences: Json | null
+          priority_score: number
+          probability_score: number | null
+          raw_input: string
+          requirements: Json | null
+          routed_engine: string | null
+          status: Database["public"]["Enums"]["deal_status"]
+          sub_category: string | null
+          timeline_days: number | null
+          updated_at: string
+          urgency_score: number | null
+          user_id: string
+        }
+        Insert: {
+          ai_classification_raw?: Json | null
+          ai_confirmation?: string | null
+          budget_currency?: string | null
+          budget_max?: number | null
+          budget_min?: number | null
+          category: Database["public"]["Enums"]["deal_category"]
+          completed_at?: string | null
+          complexity_score?: number | null
+          constraints?: Json | null
+          created_at?: string
+          deal_number?: string
+          deal_value_estimate?: number | null
+          id?: string
+          input_channel?: string
+          intent?: string | null
+          location?: string | null
+          preferences?: Json | null
+          priority_score?: number
+          probability_score?: number | null
+          raw_input: string
+          requirements?: Json | null
+          routed_engine?: string | null
+          status?: Database["public"]["Enums"]["deal_status"]
+          sub_category?: string | null
+          timeline_days?: number | null
+          updated_at?: string
+          urgency_score?: number | null
+          user_id: string
+        }
+        Update: {
+          ai_classification_raw?: Json | null
+          ai_confirmation?: string | null
+          budget_currency?: string | null
+          budget_max?: number | null
+          budget_min?: number | null
+          category?: Database["public"]["Enums"]["deal_category"]
+          completed_at?: string | null
+          complexity_score?: number | null
+          constraints?: Json | null
+          created_at?: string
+          deal_number?: string
+          deal_value_estimate?: number | null
+          id?: string
+          input_channel?: string
+          intent?: string | null
+          location?: string | null
+          preferences?: Json | null
+          priority_score?: number
+          probability_score?: number | null
+          raw_input?: string
+          requirements?: Json | null
+          routed_engine?: string | null
+          status?: Database["public"]["Enums"]["deal_status"]
+          sub_category?: string | null
+          timeline_days?: number | null
+          updated_at?: string
+          urgency_score?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       email_send_log: {
         Row: {
           created_at: string
@@ -1044,6 +1137,21 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
+      deal_category:
+        | "aviation"
+        | "medical"
+        | "staffing"
+        | "lifestyle"
+        | "logistics"
+        | "partnerships"
+      deal_status:
+        | "intake"
+        | "sourcing"
+        | "matching"
+        | "negotiation"
+        | "execution"
+        | "completed"
+        | "cancelled"
       payment_status:
         | "pending"
         | "authorized"
@@ -1191,6 +1299,23 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user"],
+      deal_category: [
+        "aviation",
+        "medical",
+        "staffing",
+        "lifestyle",
+        "logistics",
+        "partnerships",
+      ],
+      deal_status: [
+        "intake",
+        "sourcing",
+        "matching",
+        "negotiation",
+        "execution",
+        "completed",
+        "cancelled",
+      ],
       payment_status: [
         "pending",
         "authorized",
