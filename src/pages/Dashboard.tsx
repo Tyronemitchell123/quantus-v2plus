@@ -13,6 +13,9 @@ import DealEngineStrip from "@/components/dashboard/DealEngineStrip";
 import DocumentsSnapshot from "@/components/dashboard/DocumentsSnapshot";
 import FinancialOverview from "@/components/dashboard/FinancialOverview";
 import AIAssistantPanel from "@/components/dashboard/AIAssistantPanel";
+import MobileBottomNav from "@/components/mobile/MobileBottomNav";
+import MobileAIAssistant from "@/components/mobile/MobileAIAssistant";
+import MobileQuickActions from "@/components/mobile/MobileQuickActions";
 
 const mobileNavItems = [
   { icon: LayoutDashboard, label: "Dashboard", to: "/dashboard" },
