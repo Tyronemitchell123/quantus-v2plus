@@ -75,13 +75,13 @@ export function useModuleData(category: string) {
         supabase
           .from("deals")
           .select("id, deal_number, category, sub_category, intent, priority_score, status, budget_min, budget_max, budget_currency, location, timeline_days, created_at, updated_at")
-          .eq("category", category)
+          .eq("category", category as any)
           .order("updated_at", { ascending: false })
           .limit(20),
         supabase
           .from("sourcing_results")
           .select("id, deal_id, name, description, category, tier, overall_score, estimated_cost, cost_currency, availability, location, risk_level, ai_notes, pros, cons, specifications, vendor_contact, created_at")
-          .eq("category", category)
+          .eq("category", category as any)
           .order("overall_score", { ascending: false })
           .limit(30),
         supabase
