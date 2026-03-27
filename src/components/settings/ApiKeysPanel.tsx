@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Key, Plus, Trash2, Loader2, Copy, Clock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { logAudit } from "@/lib/audit";
 
 interface ApiKeyItem {
   id: string;
@@ -101,6 +102,7 @@ const ApiKeysPanel = () => {
       setNewKeyName("");
       setExpiryDays("");
       fetchKeys();
+      logAudit("api_key.create", "api_key", null, { name: newKeyName.trim() });
       toast({ title: "API key created", description: "Copy your key now — it won't be shown again." });
     }
     setCreating(false);
@@ -109,6 +111,7 @@ const ApiKeysPanel = () => {
   const revokeKey = async (id: string) => {
     await supabase.from("api_keys").delete().eq("id", id);
     setKeys((prev) => prev.filter((k) => k.id !== id));
+    logAudit("api_key.delete", "api_key", id);
     toast({ title: "API key revoked" });
   };
 

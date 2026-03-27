@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Webhook, Plus, Trash2, Loader2, ToggleLeft, ToggleRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { logAudit } from "@/lib/audit";
 
 interface WebhookItem {
   id: string;
@@ -58,6 +59,7 @@ const WebhooksPanel = () => {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
       toast({ title: "Webhook added" });
+      logAudit("webhook.create", "webhook", null, { url: newUrl.trim() });
       setNewUrl("");
       setSelectedEvents(["anomaly.detected"]);
       fetchWebhooks();
@@ -73,6 +75,7 @@ const WebhooksPanel = () => {
   const deleteWebhook = async (id: string) => {
     await supabase.from("webhooks").delete().eq("id", id);
     setWebhooks((prev) => prev.filter((w) => w.id !== id));
+    logAudit("webhook.delete", "webhook", id);
     toast({ title: "Webhook deleted" });
   };
 

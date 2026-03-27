@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { logAudit } from "@/lib/audit";
 import type { User, Session } from "@supabase/supabase-js";
 
 export function useAuth() {
@@ -9,10 +10,15 @@ export function useAuth() {
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
+      (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
+        if (event === "SIGNED_IN" && session?.user) {
+          logAudit("login", "auth", session.user.id);
+        } else if (event === "SIGNED_OUT") {
+          logAudit("logout", "auth");
+        }
       }
     );
 
