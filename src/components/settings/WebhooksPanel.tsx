@@ -75,6 +75,7 @@ const WebhooksPanel = () => {
   const deleteWebhook = async (id: string) => {
     await supabase.from("webhooks").delete().eq("id", id);
     setWebhooks((prev) => prev.filter((w) => w.id !== id));
+    logAudit("webhook.delete", "webhook", id);
     toast({ title: "Webhook deleted" });
   };
 

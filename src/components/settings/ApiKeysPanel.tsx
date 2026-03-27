@@ -111,6 +111,7 @@ const ApiKeysPanel = () => {
   const revokeKey = async (id: string) => {
     await supabase.from("api_keys").delete().eq("id", id);
     setKeys((prev) => prev.filter((k) => k.id !== id));
+    logAudit("api_key.delete", "api_key", id);
     toast({ title: "API key revoked" });
   };
 
