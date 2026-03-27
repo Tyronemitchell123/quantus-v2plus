@@ -181,11 +181,13 @@ const DemoBookingForm = () => {
       <div className="grid md:grid-cols-2 gap-4">
         <div>
           <label className="text-sm font-medium text-foreground mb-1.5 block">Full Name *</label>
-          <Input required value={form.name} onChange={set("name")} placeholder="Jane Doe" className="bg-secondary border-border" />
+          <Input required value={form.name} onChange={set("name")} placeholder="Jane Doe" className={`bg-secondary border-border ${fieldErrors.name ? "border-destructive" : ""}`} />
+          {fieldErrors.name && <p className="text-xs text-destructive mt-1">{fieldErrors.name}</p>}
         </div>
         <div>
           <label className="text-sm font-medium text-foreground mb-1.5 block">Work Email *</label>
-          <Input required type="email" value={form.email} onChange={set("email")} placeholder="jane@acme.com" className="bg-secondary border-border" />
+          <Input required type="email" value={form.email} onChange={set("email")} placeholder="jane@acme.com" className={`bg-secondary border-border ${fieldErrors.email ? "border-destructive" : ""}`} />
+          {fieldErrors.email && <p className="text-xs text-destructive mt-1">{fieldErrors.email}</p>}
         </div>
       </div>
       <div className="grid md:grid-cols-2 gap-4">
