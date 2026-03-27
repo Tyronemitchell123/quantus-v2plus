@@ -6,6 +6,7 @@ const Terms = () => {
   useDocumentHead({
     title: "Terms of Service — QUANTUS AI",
     description: "Terms and conditions governing your use of the Quantus AI platform.",
+    canonical: "https://quantus-loom.lovable.app/terms",
   });
 
   const sections = [

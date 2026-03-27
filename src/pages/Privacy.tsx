@@ -6,6 +6,7 @@ const Privacy = () => {
   useDocumentHead({
     title: "Privacy Policy — QUANTUS AI",
     description: "Learn how Quantus AI collects, uses, and protects your personal data in compliance with GDPR.",
+    canonical: "https://quantus-loom.lovable.app/privacy",
   });
 
   const sections = [
