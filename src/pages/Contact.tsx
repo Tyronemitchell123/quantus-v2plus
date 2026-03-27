@@ -43,6 +43,18 @@ const Contact = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFieldErrors({});
+
+    const result = contactSchema.safeParse({ name, email, company, message });
+    if (!result.success) {
+      const errs: Record<string, string> = {};
+      result.error.errors.forEach((err) => {
+        if (err.path[0]) errs[String(err.path[0])] = err.message;
+      });
+      setFieldErrors(errs);
+      return;
+    }
+
     setSubmitted(true);
 
     // Send confirmation email via edge function
