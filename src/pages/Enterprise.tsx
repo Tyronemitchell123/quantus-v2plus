@@ -153,6 +153,7 @@ const DemoBookingForm = () => {
       if (error) throw error;
       setSubmitted(true);
       toast({ title: "Demo requested!", description: "Our enterprise team will reach out within 24 hours." });
+    } catch (err) {
       toast({ title: "Error", description: "Something went wrong. Please try again.", variant: "destructive" });
     } finally {
       setSubmitting(false);
