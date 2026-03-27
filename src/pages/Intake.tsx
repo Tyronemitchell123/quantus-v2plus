@@ -11,7 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import useDocumentHead from "@/hooks/use-document-head";
 import { sendDealPhaseEmail } from "@/lib/deal-phase-emails";
-import DealPhaseLayout from "@/components/deal/DealPhaseLayout";
+import { intakeSchema } from "@/lib/validation";
 import IntakeInputCard from "@/components/intake/IntakeInputCard";
 import IntakeAIPanel from "@/components/intake/IntakeAIPanel";
 import IntakeResultCard from "@/components/intake/IntakeResultCard";
