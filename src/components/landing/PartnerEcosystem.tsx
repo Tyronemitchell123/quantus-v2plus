@@ -13,8 +13,14 @@ const PartnerEcosystem = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.name || !form.company || !form.category) {
-      toast.error("Please complete all required fields.");
+    setFieldErrors({});
+    const validation = partnerSchema.safeParse(form);
+    if (!validation.success) {
+      const errs: Record<string, string> = {};
+      validation.error.errors.forEach((err) => {
+        if (err.path[0]) errs[String(err.path[0])] = err.message;
+      });
+      setFieldErrors(errs);
       return;
     }
     setSubmitting(true);
