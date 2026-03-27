@@ -7,8 +7,13 @@ import { Mail, Lock, User, ArrowRight, Gift } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import ParticleGrid from "@/components/ParticleGrid";
 import { loginSchema, signupSchema, forgotPasswordSchema } from "@/lib/validation";
+import useDocumentHead from "@/hooks/use-document-head";
 
 const Auth = () => {
+  useDocumentHead({
+    title: "Sign In — Quantus A.I",
+    description: "Sign in or create your Quantus A.I account to access the ultra-premium intelligence platform.",
+  });
   const [mode, setMode] = useState<"login" | "signup" | "forgot">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

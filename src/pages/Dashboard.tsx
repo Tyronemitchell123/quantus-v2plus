@@ -42,6 +42,7 @@ const quickActions = [
 ];
 
 const Dashboard = () => {
+  useDocumentHead({ title: "Dashboard — Quantus A.I", description: "Your private intelligence command centre." });
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileAIOpen, setMobileAIOpen] = useState(false);
   const [mobileMessagingOpen, setMobileMessagingOpen] = useState(false);
