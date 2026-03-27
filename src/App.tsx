@@ -56,6 +56,9 @@ const MarketingHub = lazy(() => import("./pages/MarketingHub"));
 const NLPTools = lazy(() => import("./pages/NLPTools"));
 const QuantumComputing = lazy(() => import("./pages/QuantumComputing"));
 const RecommendationEngine = lazy(() => import("./pages/RecommendationEngine"));
+const DealAutopilot = lazy(() => import("./pages/DealAutopilot"));
+const MarketIntelligence = lazy(() => import("./pages/MarketIntelligence"));
+const DocumentVault = lazy(() => import("./pages/DocumentVault"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
@@ -69,7 +72,7 @@ const R = ({ name, children }: { name: string; children: React.ReactNode }) => (
 );
 
 // Routes that use the dashboard shell (no global navbar/footer)
-const dashboardRoutes = ["/dashboard", "/deals", "/chat", "/intake", "/sourcing", "/outreach", "/shortlist", "/negotiation", "/workflow", "/documents", "/deal-completion", "/settings", "/account/subscription", "/partner", "/admin", "/marketing", "/nlp", "/quantum", "/recommendations"];
+const dashboardRoutes = ["/dashboard", "/deals", "/chat", "/intake", "/sourcing", "/outreach", "/shortlist", "/negotiation", "/workflow", "/documents", "/deal-completion", "/settings", "/account/subscription", "/partner", "/admin", "/marketing", "/nlp", "/quantum", "/recommendations", "/autopilot", "/intelligence", "/vault"];
 
 const AnimatedRoutes = () => {
   const location = useLocation();
@@ -130,6 +133,9 @@ const AnimatedRoutes = () => {
             <Route path="/nlp" element={<ProtectedRoute><R name="NLP Tools"><PageTransition><NLPTools /></PageTransition></R></ProtectedRoute>} />
             <Route path="/quantum" element={<ProtectedRoute><R name="Quantum"><PageTransition><QuantumComputing /></PageTransition></R></ProtectedRoute>} />
             <Route path="/recommendations" element={<ProtectedRoute><R name="Recommendations"><RecommendationEngine /></R></ProtectedRoute>} />
+            <Route path="/autopilot" element={<ProtectedRoute><R name="Autopilot"><DealAutopilot /></R></ProtectedRoute>} />
+            <Route path="/intelligence" element={<ProtectedRoute><R name="Intelligence"><MarketIntelligence /></R></ProtectedRoute>} />
+            <Route path="/vault" element={<ProtectedRoute><R name="Vault"><DocumentVault /></R></ProtectedRoute>} />
 
             <Route path="/privacy" element={<R name="Privacy"><PageTransition><Privacy /><Footer /></PageTransition></R>} />
             <Route path="/terms" element={<R name="Terms"><PageTransition><Terms /><Footer /></PageTransition></R>} />

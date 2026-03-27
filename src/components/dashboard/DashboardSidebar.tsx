@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
-  LayoutDashboard, Briefcase, Grid3X3, Bot, FileText, CreditCard, Settings, MessageSquare,
+  LayoutDashboard, Briefcase, Grid3X3, Bot, FileText, CreditCard, Settings, MessageSquare, Radar, FolderOpen,
 } from "lucide-react";
 
 const navItems = [
@@ -9,6 +9,9 @@ const navItems = [
   { icon: Briefcase, label: "Deals", to: "/deals" },
   { icon: Grid3X3, label: "Modules", to: "/dashboard/modules" },
   { icon: MessageSquare, label: "Messages", to: "/chat" },
+  { icon: Bot, label: "Autopilot", to: "/autopilot" },
+  { icon: Radar, label: "Intelligence", to: "/intelligence" },
+  { icon: FolderOpen, label: "Vault", to: "/vault" },
   { icon: FileText, label: "Documents", to: "/documents" },
   { icon: CreditCard, label: "Billing", to: "/account/subscription" },
   { icon: Settings, label: "Settings", to: "/settings" },
