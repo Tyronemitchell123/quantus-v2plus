@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { rateLimit } from "../_shared/rate-limit.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -12,6 +13,9 @@ serve(async (req) => {
   }
 
   try {
+    const rateLimited = rateLimit(req, corsHeaders);
+    if (rateLimited) return rateLimited;
+
     const { description, qubits } = await req.json();
     if (!description || typeof description !== "string") {
       return new Response(JSON.stringify({ error: "description is required" }), {
