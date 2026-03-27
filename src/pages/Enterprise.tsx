@@ -132,8 +132,17 @@ const DemoBookingForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFieldErrors({});
+    const validation = enterpriseDemoSchema.safeParse(form);
+    if (!validation.success) {
+      const errs: Record<string, string> = {};
+      validation.error.errors.forEach((err) => {
+        if (err.path[0]) errs[String(err.path[0])] = err.message;
+      });
+      setFieldErrors(errs);
+      return;
+    }
     setSubmitting(true);
-    try {
       const { error } = await supabase.from("contact_submissions").insert({
         name: form.name,
         email: form.email,
