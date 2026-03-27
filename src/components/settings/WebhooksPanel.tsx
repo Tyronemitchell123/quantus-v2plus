@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Webhook, Plus, Trash2, Loader2, ToggleLeft, ToggleRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { logAudit } from "@/lib/audit";
 
 interface WebhookItem {
   id: string;
