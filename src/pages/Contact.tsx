@@ -8,8 +8,7 @@ import AIFallbackBanner from "@/components/AIFallbackBanner";
 import HeroVideoBackground from "@/components/HeroVideoBackground";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-
-
+import { contactSchema } from "@/lib/validation";
 type ContactAnalysis = {
   classification: string;
   priority: number;
@@ -24,6 +23,7 @@ const Contact = () => {
   const [email, setEmail] = useState("");
   const [company, setCompany] = useState("");
   const [message, setMessage] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const { data: analysis, loading: analyzing, error: analyzeError, status: analyzeStatus, analyze } = useAIAnalytics<ContactAnalysis>();
 
   const fallbackAnalysis: ContactAnalysis = {
@@ -43,6 +43,18 @@ const Contact = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFieldErrors({});
+
+    const result = contactSchema.safeParse({ name, email, company, message });
+    if (!result.success) {
+      const errs: Record<string, string> = {};
+      result.error.errors.forEach((err) => {
+        if (err.path[0]) errs[String(err.path[0])] = err.message;
+      });
+      setFieldErrors(errs);
+      return;
+    }
+
     setSubmitted(true);
 
     // Send confirmation email via edge function
@@ -94,11 +106,13 @@ const Contact = () => {
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm font-medium text-foreground mb-2 block">Name</label>
-                    <Input required placeholder="Your full name" value={name} onChange={(e) => setName(e.target.value)} className="bg-secondary border-border" />
+                    <Input placeholder="Your full name" value={name} onChange={(e) => setName(e.target.value)} className={`bg-secondary border-border ${fieldErrors.name ? "border-destructive" : ""}`} />
+                    {fieldErrors.name && <p className="text-xs text-destructive mt-1">{fieldErrors.name}</p>}
                   </div>
                   <div>
                     <label className="text-sm font-medium text-foreground mb-2 block">Email</label>
-                    <Input required type="email" placeholder="you@company.com" value={email} onChange={(e) => setEmail(e.target.value)} className="bg-secondary border-border" />
+                    <Input type="email" placeholder="you@company.com" value={email} onChange={(e) => setEmail(e.target.value)} className={`bg-secondary border-border ${fieldErrors.email ? "border-destructive" : ""}`} />
+                    {fieldErrors.email && <p className="text-xs text-destructive mt-1">{fieldErrors.email}</p>}
                   </div>
                 </div>
                 <div>
@@ -107,7 +121,8 @@ const Contact = () => {
                 </div>
                 <div>
                   <label className="text-sm font-medium text-foreground mb-2 block">Message</label>
-                  <Textarea required placeholder="Tell us about your project..." rows={5} value={message} onChange={(e) => setMessage(e.target.value)} className="bg-secondary border-border" />
+                  <Textarea placeholder="Tell us about your project..." rows={5} value={message} onChange={(e) => setMessage(e.target.value)} className={`bg-secondary border-border ${fieldErrors.message ? "border-destructive" : ""}`} />
+                  {fieldErrors.message && <p className="text-xs text-destructive mt-1">{fieldErrors.message}</p>}
                 </div>
                 <button
                   type="submit"

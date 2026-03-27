@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import useDocumentHead from "@/hooks/use-document-head";
 import { sendDealPhaseEmail } from "@/lib/deal-phase-emails";
+import { intakeSchema } from "@/lib/validation";
 import DealPhaseLayout from "@/components/deal/DealPhaseLayout";
 import IntakeInputCard from "@/components/intake/IntakeInputCard";
 import IntakeAIPanel from "@/components/intake/IntakeAIPanel";
@@ -69,7 +70,12 @@ export default function Intake() {
   }
 
   async function submit() {
-    if (!message.trim() || loading) return;
+    const validation = intakeSchema.safeParse({ message, category });
+    if (!validation.success) {
+      toast.error(validation.error.errors[0]?.message || "Invalid input");
+      return;
+    }
+    if (loading) return;
     setLoading(true);
     setCurrentDeal(null);
 
