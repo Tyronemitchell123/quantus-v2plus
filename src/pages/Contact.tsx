@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import useDocumentHead from "@/hooks/use-document-head";
 import { motion, AnimatePresence } from "framer-motion";
 import { Send, CheckCircle, Brain, Sparkles, ArrowRight, Zap } from "lucide-react";
 import { Input } from "@/components/ui/input";
