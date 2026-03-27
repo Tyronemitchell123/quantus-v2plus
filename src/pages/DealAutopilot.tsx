@@ -1,12 +1,17 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Bot, Zap, Play, Pause, RotateCcw, CheckCircle2, AlertTriangle, Clock, TrendingUp, ArrowRight, Shield, Settings2, Activity } from "lucide-react";
+import { Bot, Zap, Play, Pause, RotateCcw, CheckCircle2, AlertTriangle, Clock, TrendingUp, ArrowRight, Shield, Settings2, Activity, Plus, Send } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import DashboardTopBar from "@/components/dashboard/DashboardTopBar";
 import useDocumentHead from "@/hooks/use-document-head";
@@ -29,6 +34,11 @@ const autopilotStats = [
 const DealAutopilot = () => {
   const [autopilotEnabled, setAutopilotEnabled] = useState(true);
   const [selectedDeal, setSelectedDeal] = useState<string | null>(null);
+  const [createOpen, setCreateOpen] = useState(false);
+  const [dealDescription, setDealDescription] = useState("");
+  const [dealCategory, setDealCategory] = useState("");
+  const [dealBudget, setDealBudget] = useState("");
+  const navigate = useNavigate();
 
   useDocumentHead({
     title: "AI Deal Autopilot — Autonomous Deal Execution | QUANTUS AI",
@@ -59,7 +69,67 @@ const DealAutopilot = () => {
               </h1>
               <p className="text-sm text-muted-foreground mt-1">Fully autonomous deal execution — intake to completion with zero human input.</p>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
+              <Dialog open={createOpen} onOpenChange={setCreateOpen}>
+                <DialogTrigger asChild>
+                  <Button className="gap-2">
+                    <Plus size={14} /> New Deal
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-lg">
+                  <DialogHeader>
+                    <DialogTitle className="flex items-center gap-2">
+                      <Bot size={18} className="text-primary" /> Create Autopilot Deal
+                    </DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4 mt-2">
+                    <div>
+                      <label className="text-sm font-medium text-foreground mb-1.5 block">What do you need?</label>
+                      <Textarea
+                        placeholder="E.g., I need a private jet charter from London to Dubai for 8 passengers next month…"
+                        rows={3}
+                        value={dealDescription}
+                        onChange={e => setDealDescription(e.target.value)}
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="text-sm font-medium text-foreground mb-1.5 block">Category</label>
+                        <Select value={dealCategory} onValueChange={setDealCategory}>
+                          <SelectTrigger><SelectValue placeholder="Select…" /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="aviation">Aviation</SelectItem>
+                            <SelectItem value="medical">Medical</SelectItem>
+                            <SelectItem value="staffing">Staffing</SelectItem>
+                            <SelectItem value="lifestyle">Lifestyle</SelectItem>
+                            <SelectItem value="logistics">Logistics</SelectItem>
+                            <SelectItem value="partnerships">Partnerships</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-foreground mb-1.5 block">Budget (approx.)</label>
+                        <Input placeholder="$50,000" value={dealBudget} onChange={e => setDealBudget(e.target.value)} />
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        className="flex-1 gap-2"
+                        disabled={!dealDescription.trim()}
+                        onClick={() => { setCreateOpen(false); navigate("/intake"); }}
+                      >
+                        <Send size={14} /> Launch on Autopilot
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => { setCreateOpen(false); navigate("/intake"); }}
+                      >
+                        Manual Intake
+                      </Button>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
               <div className="flex items-center gap-3 glass-card px-4 py-2.5 rounded-xl">
                 <span className="text-sm font-medium text-foreground">Autopilot</span>
                 <Switch checked={autopilotEnabled} onCheckedChange={setAutopilotEnabled} />
