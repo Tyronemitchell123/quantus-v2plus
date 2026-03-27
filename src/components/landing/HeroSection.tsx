@@ -2,6 +2,7 @@ import { useRef } from "react";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
 import ParticleGrid from "@/components/ParticleGrid";
+import HomepageHeroVideo from "@/components/HomepageHeroVideo";
 
 const HeroSection = () => {
   const heroRef = useRef<HTMLDivElement>(null);
