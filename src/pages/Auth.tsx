@@ -171,8 +171,9 @@ const Auth = () => {
                     <input
                       type="text" placeholder="Full name" value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
-                      className={inputClass}
+                      className={`${inputClass} ${fieldErrors.fullName ? "border-destructive" : ""}`}
                     />
+                    {fieldErrors.fullName && <p className="text-xs text-destructive mt-1">{fieldErrors.fullName}</p>}
                   </div>
                 )}
 
