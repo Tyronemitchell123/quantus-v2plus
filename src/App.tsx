@@ -53,6 +53,7 @@ const MarketingHub = lazy(() => import("./pages/MarketingHub"));
 const NLPTools = lazy(() => import("./pages/NLPTools"));
 const QuantumComputing = lazy(() => import("./pages/QuantumComputing"));
 const RecommendationEngine = lazy(() => import("./pages/RecommendationEngine"));
+const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -84,6 +85,7 @@ const AnimatedRoutes = () => {
             <Route path="/guide" element={<PageTransition><UserGuide /><Footer /></PageTransition>} />
             <Route path="/auth" element={<PageTransition><Auth /></PageTransition>} />
             <Route path="/reset-password" element={<PageTransition><ResetPassword /></PageTransition>} />
+            <Route path="/unsubscribe" element={<PageTransition><Unsubscribe /></PageTransition>} />
             <Route path="/onboarding" element={<ProtectedRoute><PageTransition><Onboarding /></PageTransition></ProtectedRoute>} />
 
             {/* Dashboard shell routes */}
