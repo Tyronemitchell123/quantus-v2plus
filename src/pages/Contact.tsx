@@ -8,8 +8,7 @@ import AIFallbackBanner from "@/components/AIFallbackBanner";
 import HeroVideoBackground from "@/components/HeroVideoBackground";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-
-
+import { contactSchema } from "@/lib/validation";
 type ContactAnalysis = {
   classification: string;
   priority: number;
