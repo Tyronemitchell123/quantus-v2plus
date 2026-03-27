@@ -9,6 +9,7 @@ import { resetPasswordSchema } from "@/lib/validation";
 const ResetPassword = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [fieldError, setFieldError] = useState("");
   const { updatePassword } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
