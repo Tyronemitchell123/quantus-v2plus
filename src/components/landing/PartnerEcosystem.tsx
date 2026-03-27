@@ -9,6 +9,7 @@ const categories = ["Aviation", "Medical", "Staffing", "Hospitality", "Logistics
 const PartnerEcosystem = () => {
   const [form, setForm] = useState({ name: "", company: "", category: "", region: "" });
   const [submitting, setSubmitting] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
