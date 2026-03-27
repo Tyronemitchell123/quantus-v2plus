@@ -2,17 +2,25 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { partnerSchema } from "@/lib/validation";
 
 const categories = ["Aviation", "Medical", "Staffing", "Hospitality", "Logistics"];
 
 const PartnerEcosystem = () => {
   const [form, setForm] = useState({ name: "", company: "", category: "", region: "" });
   const [submitting, setSubmitting] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.name || !form.company || !form.category) {
-      toast.error("Please complete all required fields.");
+    setFieldErrors({});
+    const validation = partnerSchema.safeParse(form);
+    if (!validation.success) {
+      const errs: Record<string, string> = {};
+      validation.error.errors.forEach((err) => {
+        if (err.path[0]) errs[String(err.path[0])] = err.message;
+      });
+      setFieldErrors(errs);
       return;
     }
     setSubmitting(true);
@@ -72,23 +80,26 @@ const PartnerEcosystem = () => {
               <h3 className="font-display text-lg font-medium text-foreground mb-2">Become a Quantus Partner</h3>
 
               <input
-                type="text" placeholder="Name" value={form.name}
+                type="text" placeholder="Name *" value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
-                className="w-full bg-background border border-border px-4 py-3 font-body text-sm text-foreground placeholder:text-muted-foreground focus:border-primary/40 focus:outline-none transition-colors"
+                className={`w-full bg-background border px-4 py-3 font-body text-sm text-foreground placeholder:text-muted-foreground focus:border-primary/40 focus:outline-none transition-colors ${fieldErrors.name ? "border-destructive" : "border-border"}`}
               />
+              {fieldErrors.name && <p className="text-xs text-destructive mt-1">{fieldErrors.name}</p>}
               <input
-                type="text" placeholder="Company" value={form.company}
+                type="text" placeholder="Company *" value={form.company}
                 onChange={(e) => setForm({ ...form, company: e.target.value })}
-                className="w-full bg-background border border-border px-4 py-3 font-body text-sm text-foreground placeholder:text-muted-foreground focus:border-primary/40 focus:outline-none transition-colors"
+                className={`w-full bg-background border px-4 py-3 font-body text-sm text-foreground placeholder:text-muted-foreground focus:border-primary/40 focus:outline-none transition-colors ${fieldErrors.company ? "border-destructive" : "border-border"}`}
               />
+              {fieldErrors.company && <p className="text-xs text-destructive mt-1">{fieldErrors.company}</p>}
               <select
                 value={form.category}
                 onChange={(e) => setForm({ ...form, category: e.target.value })}
-                className="w-full bg-background border border-border px-4 py-3 font-body text-sm text-foreground focus:border-primary/40 focus:outline-none transition-colors"
+                className={`w-full bg-background border px-4 py-3 font-body text-sm text-foreground focus:border-primary/40 focus:outline-none transition-colors ${fieldErrors.category ? "border-destructive" : "border-border"}`}
               >
-                <option value="">Category</option>
+                <option value="">Category *</option>
                 {categories.map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
+              {fieldErrors.category && <p className="text-xs text-destructive mt-1">{fieldErrors.category}</p>}
               <input
                 type="text" placeholder="Region" value={form.region}
                 onChange={(e) => setForm({ ...form, region: e.target.value })}

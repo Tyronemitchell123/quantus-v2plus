@@ -4,10 +4,12 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
 import { Lock, ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { resetPasswordSchema } from "@/lib/validation";
 
 const ResetPassword = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [fieldError, setFieldError] = useState("");
   const { updatePassword } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -21,6 +23,12 @@ const ResetPassword = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFieldError("");
+    const validation = resetPasswordSchema.safeParse({ password });
+    if (!validation.success) {
+      setFieldError(validation.error.errors[0]?.message || "Invalid password");
+      return;
+    }
     setLoading(true);
     try {
       const { error } = await updatePassword(password);
@@ -54,6 +62,7 @@ const ResetPassword = () => {
               minLength={6}
               className="w-full pl-11 pr-4 py-3 rounded-xl bg-secondary border border-border text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
             />
+            {fieldError && <p className="text-xs text-destructive mt-1">{fieldError}</p>}
           </div>
           <button
             type="submit"

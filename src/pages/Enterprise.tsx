@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import useDocumentHead from "@/hooks/use-document-head";
 import HeroVideoBackground from "@/components/HeroVideoBackground";
+import { enterpriseDemoSchema } from "@/lib/validation";
 
 /* ── ROI Calculator ── */
 
@@ -120,6 +121,7 @@ const ROICalculator = () => {
 const DemoBookingForm = () => {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const { toast } = useToast();
   const [form, setForm] = useState({
     name: "", email: "", company: "", phone: "", teamSize: "", message: "",
@@ -130,6 +132,16 @@ const DemoBookingForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFieldErrors({});
+    const validation = enterpriseDemoSchema.safeParse(form);
+    if (!validation.success) {
+      const errs: Record<string, string> = {};
+      validation.error.errors.forEach((err) => {
+        if (err.path[0]) errs[String(err.path[0])] = err.message;
+      });
+      setFieldErrors(errs);
+      return;
+    }
     setSubmitting(true);
     try {
       const { error } = await supabase.from("contact_submissions").insert({
@@ -141,7 +153,6 @@ const DemoBookingForm = () => {
       if (error) throw error;
       setSubmitted(true);
       toast({ title: "Demo requested!", description: "Our enterprise team will reach out within 24 hours." });
-    } catch {
       toast({ title: "Error", description: "Something went wrong. Please try again.", variant: "destructive" });
     } finally {
       setSubmitting(false);
@@ -170,17 +181,20 @@ const DemoBookingForm = () => {
       <div className="grid md:grid-cols-2 gap-4">
         <div>
           <label className="text-sm font-medium text-foreground mb-1.5 block">Full Name *</label>
-          <Input required value={form.name} onChange={set("name")} placeholder="Jane Doe" className="bg-secondary border-border" />
+          <Input required value={form.name} onChange={set("name")} placeholder="Jane Doe" className={`bg-secondary border-border ${fieldErrors.name ? "border-destructive" : ""}`} />
+          {fieldErrors.name && <p className="text-xs text-destructive mt-1">{fieldErrors.name}</p>}
         </div>
         <div>
           <label className="text-sm font-medium text-foreground mb-1.5 block">Work Email *</label>
-          <Input required type="email" value={form.email} onChange={set("email")} placeholder="jane@acme.com" className="bg-secondary border-border" />
+          <Input required type="email" value={form.email} onChange={set("email")} placeholder="jane@acme.com" className={`bg-secondary border-border ${fieldErrors.email ? "border-destructive" : ""}`} />
+          {fieldErrors.email && <p className="text-xs text-destructive mt-1">{fieldErrors.email}</p>}
         </div>
       </div>
       <div className="grid md:grid-cols-2 gap-4">
         <div>
           <label className="text-sm font-medium text-foreground mb-1.5 block">Company *</label>
-          <Input required value={form.company} onChange={set("company")} placeholder="Acme Corp" className="bg-secondary border-border" />
+          <Input required value={form.company} onChange={set("company")} placeholder="Acme Corp" className={`bg-secondary border-border ${fieldErrors.company ? "border-destructive" : ""}`} />
+          {fieldErrors.company && <p className="text-xs text-destructive mt-1">{fieldErrors.company}</p>}
         </div>
         <div>
           <label className="text-sm font-medium text-foreground mb-1.5 block">Team Size</label>

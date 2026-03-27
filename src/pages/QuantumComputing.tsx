@@ -1,6 +1,7 @@
 import { useState, Suspense, lazy, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Atom, Zap, Lock, Brain, Layers, ArrowRight, FlaskConical, BookOpen, Send } from "lucide-react";
+import { quantumJobSchema } from "@/lib/validation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -60,6 +61,10 @@ export default function QuantumComputing() {
   const isQpu = !deviceArn.includes("quantum-simulator");
 
   const handleSubmit = async () => {
+    const validation = quantumJobSchema.safeParse({ circuit, shots, deviceArn });
+    if (!validation.success) {
+      return;
+    }
     if (isQpu) {
       setShowQpuWarning(true);
       return;

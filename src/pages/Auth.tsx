@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Mail, Lock, User, ArrowRight, Gift } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import ParticleGrid from "@/components/ParticleGrid";
+import { loginSchema, signupSchema, forgotPasswordSchema } from "@/lib/validation";
 
 const Auth = () => {
   const [mode, setMode] = useState<"login" | "signup" | "forgot">("login");
@@ -14,6 +15,7 @@ const Auth = () => {
   const [fullName, setFullName] = useState("");
   const [referralCode, setReferralCode] = useState("");
   const [loading, setLoading] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const { signIn, signUp, signInWithGoogle, resetPassword } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -40,6 +42,27 @@ const Auth = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setFieldErrors({});
+
+    // Validate based on mode
+    let validation;
+    if (mode === "forgot") {
+      validation = forgotPasswordSchema.safeParse({ email });
+    } else if (mode === "signup") {
+      validation = signupSchema.safeParse({ fullName, email, password, referralCode });
+    } else {
+      validation = loginSchema.safeParse({ email, password });
+    }
+    if (!validation.success) {
+      const errs: Record<string, string> = {};
+      validation.error.errors.forEach((err) => {
+        if (err.path[0]) errs[String(err.path[0])] = err.message;
+      });
+      setFieldErrors(errs);
+      setLoading(false);
+      return;
+    }
+
     try {
       if (mode === "forgot") {
         const { error } = await resetPassword(email);
@@ -146,8 +169,9 @@ const Auth = () => {
                     <input
                       type="text" placeholder="Full name" value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
-                      className={inputClass}
+                      className={`${inputClass} ${fieldErrors.fullName ? "border-destructive" : ""}`}
                     />
+                    {fieldErrors.fullName && <p className="text-xs text-destructive mt-1">{fieldErrors.fullName}</p>}
                   </div>
                 )}
 
@@ -156,8 +180,9 @@ const Auth = () => {
                   <input
                     type="email" placeholder="Email address" value={email}
                     onChange={(e) => setEmail(e.target.value)} required
-                    className={inputClass}
+                    className={`${inputClass} ${fieldErrors.email ? "border-destructive" : ""}`}
                   />
+                  {fieldErrors.email && <p className="text-xs text-destructive mt-1">{fieldErrors.email}</p>}
                 </div>
 
                 {mode !== "forgot" && (
@@ -166,8 +191,9 @@ const Auth = () => {
                     <input
                       type="password" placeholder="Password" value={password}
                       onChange={(e) => setPassword(e.target.value)} required minLength={6}
-                      className={inputClass}
+                      className={`${inputClass} ${fieldErrors.password ? "border-destructive" : ""}`}
                     />
+                    {fieldErrors.password && <p className="text-xs text-destructive mt-1">{fieldErrors.password}</p>}
                   </div>
                 )}
 
