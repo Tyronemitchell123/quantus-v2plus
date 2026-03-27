@@ -59,6 +59,7 @@ const RecommendationEngine = lazy(() => import("./pages/RecommendationEngine"));
 const DealAutopilot = lazy(() => import("./pages/DealAutopilot"));
 const MarketIntelligence = lazy(() => import("./pages/MarketIntelligence"));
 const DocumentVault = lazy(() => import("./pages/DocumentVault"));
+const Documentation = lazy(() => import("./pages/Documentation"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
