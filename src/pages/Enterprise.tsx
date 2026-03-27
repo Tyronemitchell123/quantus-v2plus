@@ -11,7 +11,8 @@ import { Slider } from "@/components/ui/slider";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import useDocumentHead from "@/hooks/use-document-head";
-import HeroVideoBackground from "@/components/HeroVideoBackground";
+import HeroImageBackground from "@/components/HeroImageBackground";
+import heroEnterprise from "@/assets/hero-enterprise.jpg";
 import { enterpriseDemoSchema } from "@/lib/validation";
 
 /* ── ROI Calculator ── */
