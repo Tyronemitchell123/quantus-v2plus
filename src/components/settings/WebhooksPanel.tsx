@@ -59,6 +59,7 @@ const WebhooksPanel = () => {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
       toast({ title: "Webhook added" });
+      logAudit("webhook.create", "webhook", null, { url: newUrl.trim() });
       setNewUrl("");
       setSelectedEvents(["anomaly.detected"]);
       fetchWebhooks();
