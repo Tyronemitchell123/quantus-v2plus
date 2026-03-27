@@ -53,6 +53,8 @@ const MarketingHub = lazy(() => import("./pages/MarketingHub"));
 const NLPTools = lazy(() => import("./pages/NLPTools"));
 const QuantumComputing = lazy(() => import("./pages/QuantumComputing"));
 const RecommendationEngine = lazy(() => import("./pages/RecommendationEngine"));
+const Privacy = lazy(() => import("./pages/Privacy"));
+const Terms = lazy(() => import("./pages/Terms"));
 const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
