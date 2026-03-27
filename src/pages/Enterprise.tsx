@@ -121,6 +121,7 @@ const ROICalculator = () => {
 const DemoBookingForm = () => {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const { toast } = useToast();
   const [form, setForm] = useState({
     name: "", email: "", company: "", phone: "", teamSize: "", message: "",
