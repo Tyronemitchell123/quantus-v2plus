@@ -104,6 +104,13 @@ const Benefits = () => {
     title: "Benefits — Why QUANTUS AI | Quantum-Enhanced Autonomous Intelligence",
     description: "Discover the five core advantages of QUANTUS AI: 100% autonomous ops, quantum computing, real-time intelligence, enterprise security, and transparent pricing.",
     canonical: "https://quantus-loom.lovable.app/benefits",
+    jsonLd: {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      name: "QUANTUS AI Benefits",
+      description: "Five core advantages: autonomous operations, quantum computing, real-time intelligence, enterprise security, and transparent pricing.",
+      url: "https://quantus-loom.lovable.app/benefits",
+    },
   });
 
   return (
