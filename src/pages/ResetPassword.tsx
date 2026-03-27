@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
 import { Lock, ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { resetPasswordSchema } from "@/lib/validation";
 
 const ResetPassword = () => {
   const [password, setPassword] = useState("");
