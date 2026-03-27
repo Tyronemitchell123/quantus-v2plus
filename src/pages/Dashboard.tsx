@@ -16,6 +16,7 @@ import MobileMessaging from "@/components/mobile/MobileMessaging";
 import MobileNotificationBanner from "@/components/mobile/MobileNotificationBanner";
 import MobileProfile from "@/components/mobile/MobileProfile";
 import ParticleGrid from "@/components/ParticleGrid";
+import useDocumentHead from "@/hooks/use-document-head";
 
 const mobileNavItems = [
   { icon: LayoutDashboard, label: "Dashboard", to: "/dashboard" },
@@ -41,6 +42,7 @@ const quickActions = [
 ];
 
 const Dashboard = () => {
+  useDocumentHead({ title: "Dashboard — Quantus A.I", description: "Your private intelligence command centre." });
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileAIOpen, setMobileAIOpen] = useState(false);
   const [mobileMessagingOpen, setMobileMessagingOpen] = useState(false);
