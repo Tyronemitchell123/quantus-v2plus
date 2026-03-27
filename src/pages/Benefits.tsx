@@ -6,7 +6,8 @@ import {
   ArrowRight, Sparkles,
 } from "lucide-react";
 import useDocumentHead from "@/hooks/use-document-head";
-import HeroVideoBackground from "@/components/HeroVideoBackground";
+import HeroImageBackground from "@/components/HeroImageBackground";
+import heroBenefits from "@/assets/hero-benefits.jpg";
 import QuantumOrbit from "@/components/QuantumOrbit";
 
 /* ── benefit data ─────────────────────────────────────────── */
