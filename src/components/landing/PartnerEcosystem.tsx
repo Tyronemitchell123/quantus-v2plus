@@ -100,18 +100,6 @@ const PartnerEcosystem = () => {
                 {categories.map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
               {fieldErrors.category && <p className="text-xs text-destructive mt-1">{fieldErrors.category}</p>}
-                type="text" placeholder="Company" value={form.company}
-                onChange={(e) => setForm({ ...form, company: e.target.value })}
-                className="w-full bg-background border border-border px-4 py-3 font-body text-sm text-foreground placeholder:text-muted-foreground focus:border-primary/40 focus:outline-none transition-colors"
-              />
-              <select
-                value={form.category}
-                onChange={(e) => setForm({ ...form, category: e.target.value })}
-                className="w-full bg-background border border-border px-4 py-3 font-body text-sm text-foreground focus:border-primary/40 focus:outline-none transition-colors"
-              >
-                <option value="">Category</option>
-                {categories.map((c) => <option key={c} value={c}>{c}</option>)}
-              </select>
               <input
                 type="text" placeholder="Region" value={form.region}
                 onChange={(e) => setForm({ ...form, region: e.target.value })}
