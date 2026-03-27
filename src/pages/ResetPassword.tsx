@@ -61,7 +61,7 @@ const ResetPassword = () => {
               minLength={6}
               className="w-full pl-11 pr-4 py-3 rounded-xl bg-secondary border border-border text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
             />
-          </div>
+            {fieldError && <p className="text-xs text-destructive mt-1">{fieldError}</p>}
           <button
             type="submit"
             disabled={loading}

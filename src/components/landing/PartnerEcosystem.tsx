@@ -80,11 +80,26 @@ const PartnerEcosystem = () => {
               <h3 className="font-display text-lg font-medium text-foreground mb-2">Become a Quantus Partner</h3>
 
               <input
-                type="text" placeholder="Name" value={form.name}
+                type="text" placeholder="Name *" value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
-                className="w-full bg-background border border-border px-4 py-3 font-body text-sm text-foreground placeholder:text-muted-foreground focus:border-primary/40 focus:outline-none transition-colors"
+                className={`w-full bg-background border px-4 py-3 font-body text-sm text-foreground placeholder:text-muted-foreground focus:border-primary/40 focus:outline-none transition-colors ${fieldErrors.name ? "border-destructive" : "border-border"}`}
               />
+              {fieldErrors.name && <p className="text-xs text-destructive mt-1">{fieldErrors.name}</p>}
               <input
+                type="text" placeholder="Company *" value={form.company}
+                onChange={(e) => setForm({ ...form, company: e.target.value })}
+                className={`w-full bg-background border px-4 py-3 font-body text-sm text-foreground placeholder:text-muted-foreground focus:border-primary/40 focus:outline-none transition-colors ${fieldErrors.company ? "border-destructive" : "border-border"}`}
+              />
+              {fieldErrors.company && <p className="text-xs text-destructive mt-1">{fieldErrors.company}</p>}
+              <select
+                value={form.category}
+                onChange={(e) => setForm({ ...form, category: e.target.value })}
+                className={`w-full bg-background border px-4 py-3 font-body text-sm text-foreground focus:border-primary/40 focus:outline-none transition-colors ${fieldErrors.category ? "border-destructive" : "border-border"}`}
+              >
+                <option value="">Category *</option>
+                {categories.map((c) => <option key={c} value={c}>{c}</option>)}
+              </select>
+              {fieldErrors.category && <p className="text-xs text-destructive mt-1">{fieldErrors.category}</p>}
                 type="text" placeholder="Company" value={form.company}
                 onChange={(e) => setForm({ ...form, company: e.target.value })}
                 className="w-full bg-background border border-border px-4 py-3 font-body text-sm text-foreground placeholder:text-muted-foreground focus:border-primary/40 focus:outline-none transition-colors"

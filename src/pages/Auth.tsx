@@ -193,8 +193,9 @@ const Auth = () => {
                     <input
                       type="password" placeholder="Password" value={password}
                       onChange={(e) => setPassword(e.target.value)} required minLength={6}
-                      className={inputClass}
+                      className={`${inputClass} ${fieldErrors.password ? "border-destructive" : ""}`}
                     />
+                    {fieldErrors.password && <p className="text-xs text-destructive mt-1">{fieldErrors.password}</p>}
                   </div>
                 )}
 

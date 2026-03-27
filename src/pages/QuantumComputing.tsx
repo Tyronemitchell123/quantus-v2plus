@@ -61,6 +61,10 @@ export default function QuantumComputing() {
   const isQpu = !deviceArn.includes("quantum-simulator");
 
   const handleSubmit = async () => {
+    const validation = quantumJobSchema.safeParse({ circuit, shots, deviceArn });
+    if (!validation.success) {
+      return;
+    }
     if (isQpu) {
       setShowQpuWarning(true);
       return;
