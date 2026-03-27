@@ -10,6 +10,7 @@ const mainLinks = [
   { to: "/about", label: "About" },
   { to: "/modules", label: "Modules" },
   { to: "/pricing", label: "Membership" },
+  { to: "/docs", label: "Docs" },
   { to: "/contact", label: "Contact" },
 ];
 

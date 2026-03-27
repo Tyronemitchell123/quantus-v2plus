@@ -59,6 +59,7 @@ const RecommendationEngine = lazy(() => import("./pages/RecommendationEngine"));
 const DealAutopilot = lazy(() => import("./pages/DealAutopilot"));
 const MarketIntelligence = lazy(() => import("./pages/MarketIntelligence"));
 const DocumentVault = lazy(() => import("./pages/DocumentVault"));
+const Documentation = lazy(() => import("./pages/Documentation"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
@@ -96,6 +97,7 @@ const AnimatedRoutes = () => {
             <Route path="/enterprise" element={<R name="Enterprise"><PageTransition><Enterprise /><Footer /></PageTransition></R>} />
             <Route path="/case-studies" element={<R name="Case Studies"><PageTransition><CaseStudies /><Footer /></PageTransition></R>} />
             <Route path="/guide" element={<R name="User Guide"><PageTransition><UserGuide /><Footer /></PageTransition></R>} />
+            <Route path="/docs" element={<R name="Documentation"><PageTransition><Documentation /><Footer /></PageTransition></R>} />
             <Route path="/auth" element={<R name="Auth"><PageTransition><Auth /></PageTransition></R>} />
             <Route path="/reset-password" element={<R name="Reset Password"><PageTransition><ResetPassword /></PageTransition></R>} />
             <Route path="/unsubscribe" element={<R name="Unsubscribe"><PageTransition><Unsubscribe /></PageTransition></R>} />
