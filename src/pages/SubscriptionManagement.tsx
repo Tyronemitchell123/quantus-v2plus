@@ -1,10 +1,14 @@
+import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
+import { useSearchParams } from "react-router-dom";
 import { useSubscription } from "@/hooks/use-subscription";
 import useDocumentHead from "@/hooks/use-document-head";
 import CurrentPlanCard from "@/components/subscription/CurrentPlanCard";
 import PlanSwitcher from "@/components/subscription/PlanSwitcher";
 import BillingHistory from "@/components/subscription/BillingHistory";
+import { useToast } from "@/hooks/use-toast";
+import { logAudit } from "@/lib/audit";
 
 const SubscriptionManagement = () => {
   useDocumentHead({
@@ -14,7 +18,25 @@ const SubscriptionManagement = () => {
     canonical: "https://quantus-loom.lovable.app/account/subscription",
   });
 
-  const { subscription, loading, isActive, tier, refresh } = useSubscription();
+  const { subscription, loading, isActive, tier, refresh, user } = useSubscription();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { toast } = useToast();
+
+  // Track successful checkout conversion
+  useEffect(() => {
+    if (searchParams.get("checkout") === "success") {
+      toast({ title: "Welcome aboard!", description: "Your subscription is now active." });
+      // Log the conversion
+      if (user?.id) {
+        logAudit("subscription.checkout_completed", "subscription", undefined, { tier });
+      }
+      // Clean up URL
+      searchParams.delete("checkout");
+      setSearchParams(searchParams, { replace: true });
+      // Refresh to pick up new subscription
+      refresh();
+    }
+  }, [searchParams]);
 
   if (loading) {
     return (
