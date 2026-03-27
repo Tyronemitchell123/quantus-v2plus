@@ -12,7 +12,8 @@
   "dependencies": {
     "@remotion/bundler": "^4.0.440",
     "@remotion/cli": "^4.0.440",
-    "@remotion/compositor-linux-x64-musl": "^4.0.440",
+    "@remotion/compositor-linux-x64-gnu": "^4.0.441",
+    "@remotion/compositor-linux-x64-musl": "^4.0.441",
     "@remotion/google-fonts": "^4.0.440",
     "@remotion/player": "^4.0.440",
     "@remotion/renderer": "^4.0.440",
