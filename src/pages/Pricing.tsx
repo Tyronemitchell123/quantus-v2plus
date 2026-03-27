@@ -12,7 +12,8 @@ import CostCalculator from "@/components/CostCalculator";
 import UsagePricing from "@/components/UsagePricing";
 import CurrencyConverter, { useCurrency } from "@/components/CurrencyConverter";
 import useDocumentHead from "@/hooks/use-document-head";
-import HeroVideoBackground from "@/components/HeroVideoBackground";
+import HeroImageBackground from "@/components/HeroImageBackground";
+import heroPricing from "@/assets/hero-pricing.jpg";
 import AddonMarketplace from "@/components/AddonMarketplace";
 import ReferralProgram from "@/components/ReferralProgram";
 import OveragePricing from "@/components/OveragePricing";
@@ -186,7 +187,7 @@ const Pricing = () => {
     <div className="pt-16 min-h-screen">
       {/* Header */}
       <section className="py-24 relative overflow-hidden">
-        <HeroVideoBackground />
+        <HeroImageBackground src={heroPricing} alt="Abstract luxury geometric shapes" opacity="opacity-20" />
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-primary/[0.04] rounded-full blur-[120px]" />
         </div>

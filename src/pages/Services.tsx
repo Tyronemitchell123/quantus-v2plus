@@ -6,7 +6,8 @@ import useDocumentHead from "@/hooks/use-document-head";
 import quantumProcessor from "@/assets/quantum-processor.jpg";
 import quantumAnalytics from "@/assets/quantum-analytics.jpg";
 import QuantumOrbit from "@/components/QuantumOrbit";
-import HeroVideoBackground from "@/components/HeroVideoBackground";
+import HeroImageBackground from "@/components/HeroImageBackground";
+import heroServices from "@/assets/hero-services.jpg";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -85,7 +86,7 @@ const Services = () => {
     <div className="pt-24">
     {/* Hero with image */}
     <section className="py-24 relative overflow-hidden">
-      <HeroVideoBackground />
+      <HeroImageBackground src={heroServices} alt="Luxury private jet cabin" opacity="opacity-25" />
       <div className="container mx-auto px-6">
         <div className="grid md:grid-cols-2 gap-16 items-center mb-24">
           <motion.div

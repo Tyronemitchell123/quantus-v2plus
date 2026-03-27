@@ -11,7 +11,8 @@ import { Slider } from "@/components/ui/slider";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import useDocumentHead from "@/hooks/use-document-head";
-import HeroVideoBackground from "@/components/HeroVideoBackground";
+import HeroImageBackground from "@/components/HeroImageBackground";
+import heroEnterprise from "@/assets/hero-enterprise.jpg";
 import { enterpriseDemoSchema } from "@/lib/validation";
 
 /* ── ROI Calculator ── */
@@ -262,7 +263,7 @@ const Enterprise = () => {
     <div className="pt-16 min-h-screen">
       {/* Hero */}
       <section className="py-28 relative overflow-hidden">
-        <HeroVideoBackground />
+        <HeroImageBackground src={heroEnterprise} alt="Premium enterprise office" opacity="opacity-25" />
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[700px] h-[700px] bg-primary/[0.03] rounded-full blur-[140px]" />
         </div>
