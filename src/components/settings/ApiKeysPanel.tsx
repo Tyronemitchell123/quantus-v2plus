@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Key, Plus, Trash2, Loader2, Copy, Clock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { logAudit } from "@/lib/audit";
 
 interface ApiKeyItem {
   id: string;
