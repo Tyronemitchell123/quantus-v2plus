@@ -102,6 +102,7 @@ const ApiKeysPanel = () => {
       setNewKeyName("");
       setExpiryDays("");
       fetchKeys();
+      logAudit("api_key.create", "api_key", null, { name: newKeyName.trim() });
       toast({ title: "API key created", description: "Copy your key now — it won't be shown again." });
     }
     setCreating(false);
