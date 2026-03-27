@@ -23,6 +23,7 @@ const Contact = () => {
   const [email, setEmail] = useState("");
   const [company, setCompany] = useState("");
   const [message, setMessage] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const { data: analysis, loading: analyzing, error: analyzeError, status: analyzeStatus, analyze } = useAIAnalytics<ContactAnalysis>();
 
   const fallbackAnalysis: ContactAnalysis = {
