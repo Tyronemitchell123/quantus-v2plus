@@ -16,6 +16,7 @@ const HeroSection = () => {
       style={{ opacity: heroOpacity }}
       className="relative min-h-screen flex items-center justify-center overflow-hidden bg-background"
     >
+      <HomepageHeroVideo />
       <ParticleGrid />
 
       {/* Jet-window glass reflection at top */}
