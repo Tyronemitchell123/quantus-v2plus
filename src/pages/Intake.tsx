@@ -70,7 +70,12 @@ export default function Intake() {
   }
 
   async function submit() {
-    if (!message.trim() || loading) return;
+    const validation = intakeSchema.safeParse({ message, category });
+    if (!validation.success) {
+      toast.error(validation.error.errors[0]?.message || "Invalid input");
+      return;
+    }
+    if (loading) return;
     setLoading(true);
     setCurrentDeal(null);
 
