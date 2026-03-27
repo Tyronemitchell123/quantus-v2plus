@@ -121,7 +121,8 @@ const Contact = () => {
                 </div>
                 <div>
                   <label className="text-sm font-medium text-foreground mb-2 block">Message</label>
-                  <Textarea required placeholder="Tell us about your project..." rows={5} value={message} onChange={(e) => setMessage(e.target.value)} className="bg-secondary border-border" />
+                  <Textarea placeholder="Tell us about your project..." rows={5} value={message} onChange={(e) => setMessage(e.target.value)} className={`bg-secondary border-border ${fieldErrors.message ? "border-destructive" : ""}`} />
+                  {fieldErrors.message && <p className="text-xs text-destructive mt-1">{fieldErrors.message}</p>}
                 </div>
                 <button
                   type="submit"
