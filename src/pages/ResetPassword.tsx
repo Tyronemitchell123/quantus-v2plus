@@ -30,6 +30,7 @@ const ResetPassword = () => {
       return;
     }
     setLoading(true);
+    try {
       const { error } = await updatePassword(password);
       if (error) throw error;
       toast({ title: "Password updated", description: "You can now sign in with your new password." });
