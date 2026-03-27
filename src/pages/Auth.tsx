@@ -182,8 +182,9 @@ const Auth = () => {
                   <input
                     type="email" placeholder="Email address" value={email}
                     onChange={(e) => setEmail(e.target.value)} required
-                    className={inputClass}
+                    className={`${inputClass} ${fieldErrors.email ? "border-destructive" : ""}`}
                   />
+                  {fieldErrors.email && <p className="text-xs text-destructive mt-1">{fieldErrors.email}</p>}
                 </div>
 
                 {mode !== "forgot" && (
