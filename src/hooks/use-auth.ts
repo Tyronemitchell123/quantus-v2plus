@@ -10,10 +10,15 @@ export function useAuth() {
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
+      (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
+        if (event === "SIGNED_IN" && session?.user) {
+          logAudit("login", "auth", session.user.id);
+        } else if (event === "SIGNED_OUT") {
+          logAudit("logout", "auth");
+        }
       }
     );
 
