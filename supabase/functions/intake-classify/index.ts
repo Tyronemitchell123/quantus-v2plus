@@ -16,6 +16,10 @@ serve(async (req) => {
   }
 
   try {
+    // Rate limiting
+    const rateLimited = rateLimit(req, corsHeaders);
+    if (rateLimited) return rateLimited;
+
     // Auth
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
