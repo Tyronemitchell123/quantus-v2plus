@@ -123,8 +123,8 @@ const AnimatedRoutes = () => {
             <Route path="/quantum" element={<ProtectedRoute><PageTransition><QuantumComputing /></PageTransition></ProtectedRoute>} />
             <Route path="/recommendations" element={<ProtectedRoute><RecommendationEngine /></ProtectedRoute>} />
 
-            <Route path="/privacy" element={<PageTransition><div className="min-h-screen bg-background pt-24 px-6"><div className="max-w-3xl mx-auto"><h1 className="font-display text-3xl mb-6">Privacy Policy</h1><p className="font-body text-muted-foreground">Privacy policy content coming soon.</p></div></div><Footer /></PageTransition>} />
-            <Route path="/terms" element={<PageTransition><div className="min-h-screen bg-background pt-24 px-6"><div className="max-w-3xl mx-auto"><h1 className="font-display text-3xl mb-6">Terms of Service</h1><p className="font-body text-muted-foreground">Terms of service content coming soon.</p></div></div><Footer /></PageTransition>} />
+            <Route path="/privacy" element={<PageTransition><Privacy /><Footer /></PageTransition>} />
+            <Route path="/terms" element={<PageTransition><Terms /><Footer /></PageTransition>} />
             <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
           </Routes>
         </Suspense>
