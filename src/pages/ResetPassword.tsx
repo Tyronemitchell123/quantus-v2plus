@@ -23,8 +23,13 @@ const ResetPassword = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFieldError("");
+    const validation = resetPasswordSchema.safeParse({ password });
+    if (!validation.success) {
+      setFieldError(validation.error.errors[0]?.message || "Invalid password");
+      return;
+    }
     setLoading(true);
-    try {
       const { error } = await updatePassword(password);
       if (error) throw error;
       toast({ title: "Password updated", description: "You can now sign in with your new password." });
