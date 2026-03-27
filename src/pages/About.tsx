@@ -12,6 +12,14 @@ const About = () => {
   useDocumentHead({
     title: "About — Quantus A.I",
     description: "The story behind the most discreet intelligence platform ever built for ultra-high-net-worth individuals.",
+    canonical: "https://quantus-loom.lovable.app/about",
+    jsonLd: {
+      "@context": "https://schema.org",
+      "@type": "AboutPage",
+      name: "About Quantus A.I",
+      description: "The story behind the most discreet intelligence platform ever built for ultra-high-net-worth individuals.",
+      url: "https://quantus-loom.lovable.app/about",
+    },
   });
 
   return (

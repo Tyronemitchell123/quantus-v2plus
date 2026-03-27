@@ -108,9 +108,15 @@ const accentText: Record<string, string> = {
 const CaseStudies = () => {
   useDocumentHead({
     title: "Case Studies — Quantum AI ROI & Results | QUANTUS AI",
-    description:
-      "Real-world quantum AI case studies: 340% ROI, 12,000x simulation speedup, $1.2B alpha generated. See how enterprises achieve quantum advantage.",
+    description: "Real-world quantum AI case studies: 340% ROI, 12,000x simulation speedup, $1.2B alpha generated. See how enterprises achieve quantum advantage.",
     canonical: "https://quantus-loom.lovable.app/case-studies",
+    jsonLd: {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      name: "QUANTUS AI Case Studies",
+      description: "Real-world quantum AI results across aerospace, finance, marketing, and enterprise operations.",
+      url: "https://quantus-loom.lovable.app/case-studies",
+    },
   });
 
   return (

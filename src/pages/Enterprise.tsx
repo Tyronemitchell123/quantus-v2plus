@@ -248,6 +248,13 @@ const Enterprise = () => {
     title: "Enterprise AI Solutions — QUANTUS",
     description: "Custom AI + quantum computing solutions for global-scale operations. Calculate your ROI and book a personalized demo.",
     canonical: "https://quantus-loom.lovable.app/enterprise",
+    jsonLd: {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      name: "QUANTUS Enterprise Solutions",
+      description: "Custom quantum AI solutions for global-scale enterprise operations with ROI calculator.",
+      url: "https://quantus-loom.lovable.app/enterprise",
+    },
   });
 
   return (

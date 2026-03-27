@@ -71,6 +71,14 @@ const Services = () => {
     title: "Quantum AI Services — Strategy, Analytics & Finance | QUANTUS AI",
     description: "Enterprise quantum AI services: quantum strategy consulting, quantum predictive analytics, quantum marketing engine & quantum finance solutions.",
     canonical: "https://quantus-loom.lovable.app/services",
+    jsonLd: {
+      "@context": "https://schema.org",
+      "@type": "Service",
+      name: "QUANTUS AI Services",
+      provider: { "@type": "Organization", name: "Quantus A.I" },
+      description: "Enterprise quantum AI services spanning strategy, predictive analytics, marketing, and finance.",
+      url: "https://quantus-loom.lovable.app/services",
+    },
   });
 
   return (

@@ -138,6 +138,13 @@ const Pricing = () => {
     title: "Pricing — Free to Enterprise | QUANTUS AI",
     description: "Start free with 100 AI queries/mo. Scale to Starter ($29/mo), Professional ($149/mo), Teams ($49/user/mo), or Enterprise custom.",
     canonical: "https://quantus-loom.lovable.app/pricing",
+    jsonLd: {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      name: "QUANTUS AI Pricing",
+      description: "Transparent pricing from free to enterprise. Start with 100 AI queries/month at no cost.",
+      url: "https://quantus-loom.lovable.app/pricing",
+    },
   });
 
   const { toast } = useToast();

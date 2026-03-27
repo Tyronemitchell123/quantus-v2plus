@@ -1,35 +1,71 @@
 import { useEffect } from "react";
 
+const SITE_URL = "https://quantus-loom.lovable.app";
+const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.png`;
+
 interface SEOProps {
   title: string;
   description: string;
   canonical?: string;
+  ogImage?: string;
+  ogType?: string;
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
 }
 
-const useDocumentHead = ({ title, description, canonical }: SEOProps) => {
+const upsertMeta = (attr: string, key: string, content: string) => {
+  let el = document.querySelector(`meta[${attr}="${key}"]`) as HTMLMetaElement | null;
+  if (!el) {
+    el = document.createElement("meta");
+    el.setAttribute(attr, key);
+    document.head.appendChild(el);
+  }
+  el.setAttribute("content", content);
+};
+
+const useDocumentHead = ({ title, description, canonical, ogImage, ogType = "website", jsonLd }: SEOProps) => {
   useEffect(() => {
     document.title = title;
 
-    const metaDesc = document.querySelector('meta[name="description"]');
-    if (metaDesc) metaDesc.setAttribute("content", description);
+    upsertMeta("name", "description", description);
 
-    const ogTitle = document.querySelector('meta[property="og:title"]');
-    if (ogTitle) ogTitle.setAttribute("content", title);
+    // Open Graph
+    upsertMeta("property", "og:title", title);
+    upsertMeta("property", "og:description", description);
+    upsertMeta("property", "og:image", ogImage || DEFAULT_OG_IMAGE);
+    upsertMeta("property", "og:type", ogType);
+    upsertMeta("property", "og:url", canonical || window.location.href);
 
-    const ogDesc = document.querySelector('meta[property="og:description"]');
-    if (ogDesc) ogDesc.setAttribute("content", description);
+    // Twitter
+    upsertMeta("name", "twitter:card", "summary_large_image");
+    upsertMeta("name", "twitter:title", title);
+    upsertMeta("name", "twitter:description", description);
+    upsertMeta("name", "twitter:image", ogImage || DEFAULT_OG_IMAGE);
 
-    const twTitle = document.querySelector('meta[name="twitter:title"]');
-    if (twTitle) twTitle.setAttribute("content", title);
-
-    const twDesc = document.querySelector('meta[name="twitter:description"]');
-    if (twDesc) twDesc.setAttribute("content", description);
-
-    if (canonical) {
-      let link = document.querySelector('link[rel="canonical"]') as HTMLLinkElement;
-      if (link) link.href = canonical;
+    // Canonical
+    let link = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
+    if (!link) {
+      link = document.createElement("link");
+      link.setAttribute("rel", "canonical");
+      document.head.appendChild(link);
     }
-  }, [title, description, canonical]);
+    link.href = canonical || `${SITE_URL}${window.location.pathname}`;
+
+    // JSON-LD
+    const existingLd = document.querySelector('script[data-seo-jsonld]');
+    if (existingLd) existingLd.remove();
+    if (jsonLd) {
+      const script = document.createElement("script");
+      script.type = "application/ld+json";
+      script.setAttribute("data-seo-jsonld", "true");
+      script.textContent = JSON.stringify(jsonLd);
+      document.head.appendChild(script);
+    }
+
+    return () => {
+      const ld = document.querySelector('script[data-seo-jsonld]');
+      if (ld) ld.remove();
+    };
+  }, [title, description, canonical, ogImage, ogType, jsonLd]);
 };
 
 export default useDocumentHead;

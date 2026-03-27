@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import useDocumentHead from "@/hooks/use-document-head";
 import { motion, AnimatePresence } from "framer-motion";
 import { Send, CheckCircle, Brain, Sparkles, ArrowRight, Zap } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -18,6 +19,17 @@ type ContactAnalysis = {
 };
 
 const Contact = () => {
+  useDocumentHead({
+    title: "Contact — Quantus A.I",
+    description: "Get in touch with Quantus A.I. Speak to our team about enterprise AI, quantum computing, or custom integrations.",
+    canonical: "https://quantus-loom.lovable.app/contact",
+    jsonLd: {
+      "@context": "https://schema.org",
+      "@type": "ContactPage",
+      name: "Contact Quantus A.I",
+      url: "https://quantus-loom.lovable.app/contact",
+    },
+  });
   const [submitted, setSubmitted] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
