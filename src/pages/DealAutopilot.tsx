@@ -34,6 +34,11 @@ const autopilotStats = [
 const DealAutopilot = () => {
   const [autopilotEnabled, setAutopilotEnabled] = useState(true);
   const [selectedDeal, setSelectedDeal] = useState<string | null>(null);
+  const [createOpen, setCreateOpen] = useState(false);
+  const [dealDescription, setDealDescription] = useState("");
+  const [dealCategory, setDealCategory] = useState("");
+  const [dealBudget, setDealBudget] = useState("");
+  const navigate = useNavigate();
 
   useDocumentHead({
     title: "AI Deal Autopilot — Autonomous Deal Execution | QUANTUS AI",
