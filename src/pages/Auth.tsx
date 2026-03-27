@@ -7,8 +7,6 @@ import { Mail, Lock, User, ArrowRight, Gift } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import ParticleGrid from "@/components/ParticleGrid";
 import { loginSchema, signupSchema, forgotPasswordSchema } from "@/lib/validation";
-import { useToast } from "@/hooks/use-toast";
-import ParticleGrid from "@/components/ParticleGrid";
 
 const Auth = () => {
   const [mode, setMode] = useState<"login" | "signup" | "forgot">("login");
