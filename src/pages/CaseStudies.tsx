@@ -124,7 +124,7 @@ const CaseStudies = () => {
     <div className="pt-24">
       {/* Hero */}
       <section className="py-24 relative overflow-hidden">
-        <HeroVideoBackground />
+        <HeroImageBackground src={heroCaseStudies} alt="Golden neural network visualization" opacity="opacity-25" />
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-quantum-cyan/[0.03] rounded-full blur-[120px]" />
         </div>

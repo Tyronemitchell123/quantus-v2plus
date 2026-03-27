@@ -86,7 +86,7 @@ const Services = () => {
     <div className="pt-24">
     {/* Hero with image */}
     <section className="py-24 relative overflow-hidden">
-      <HeroVideoBackground />
+      <HeroImageBackground src={heroServices} alt="Luxury private jet cabin" opacity="opacity-25" />
       <div className="container mx-auto px-6">
         <div className="grid md:grid-cols-2 gap-16 items-center mb-24">
           <motion.div

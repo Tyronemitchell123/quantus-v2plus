@@ -118,7 +118,7 @@ const Benefits = () => {
     <div className="pt-24">
       {/* ── Hero ──────────────────────────────── */}
       <header className="py-24 relative overflow-hidden">
-        <HeroVideoBackground />
+        <HeroImageBackground src={heroBenefits} alt="Luxury yacht at sunset" opacity="opacity-20" />
         <div className="container mx-auto px-6 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
