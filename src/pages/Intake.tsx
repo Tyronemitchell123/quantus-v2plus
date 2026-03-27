@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import useDocumentHead from "@/hooks/use-document-head";
 import { sendDealPhaseEmail } from "@/lib/deal-phase-emails";
 import { intakeSchema } from "@/lib/validation";
+import DealPhaseLayout from "@/components/deal/DealPhaseLayout";
 import IntakeInputCard from "@/components/intake/IntakeInputCard";
 import IntakeAIPanel from "@/components/intake/IntakeAIPanel";
 import IntakeResultCard from "@/components/intake/IntakeResultCard";
