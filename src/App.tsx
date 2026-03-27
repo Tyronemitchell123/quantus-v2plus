@@ -85,6 +85,7 @@ const AnimatedRoutes = () => {
             <Route path="/guide" element={<PageTransition><UserGuide /><Footer /></PageTransition>} />
             <Route path="/auth" element={<PageTransition><Auth /></PageTransition>} />
             <Route path="/reset-password" element={<PageTransition><ResetPassword /></PageTransition>} />
+            <Route path="/unsubscribe" element={<PageTransition><Unsubscribe /></PageTransition>} />
             <Route path="/onboarding" element={<ProtectedRoute><PageTransition><Onboarding /></PageTransition></ProtectedRoute>} />
 
             {/* Dashboard shell routes */}
