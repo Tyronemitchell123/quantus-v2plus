@@ -63,6 +63,7 @@ const ResetPassword = () => {
               className="w-full pl-11 pr-4 py-3 rounded-xl bg-secondary border border-border text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
             />
             {fieldError && <p className="text-xs text-destructive mt-1">{fieldError}</p>}
+          </div>
           <button
             type="submit"
             disabled={loading}

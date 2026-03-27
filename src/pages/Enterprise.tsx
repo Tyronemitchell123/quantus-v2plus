@@ -143,6 +143,7 @@ const DemoBookingForm = () => {
       return;
     }
     setSubmitting(true);
+    try {
       const { error } = await supabase.from("contact_submissions").insert({
         name: form.name,
         email: form.email,
@@ -152,7 +153,6 @@ const DemoBookingForm = () => {
       if (error) throw error;
       setSubmitted(true);
       toast({ title: "Demo requested!", description: "Our enterprise team will reach out within 24 hours." });
-    } catch {
       toast({ title: "Error", description: "Something went wrong. Please try again.", variant: "destructive" });
     } finally {
       setSubmitting(false);
