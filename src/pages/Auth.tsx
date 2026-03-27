@@ -44,6 +44,27 @@ const Auth = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setFieldErrors({});
+
+    // Validate based on mode
+    let validation;
+    if (mode === "forgot") {
+      validation = forgotPasswordSchema.safeParse({ email });
+    } else if (mode === "signup") {
+      validation = signupSchema.safeParse({ fullName, email, password, referralCode });
+    } else {
+      validation = loginSchema.safeParse({ email, password });
+    }
+    if (!validation.success) {
+      const errs: Record<string, string> = {};
+      validation.error.errors.forEach((err) => {
+        if (err.path[0]) errs[String(err.path[0])] = err.message;
+      });
+      setFieldErrors(errs);
+      setLoading(false);
+      return;
+    }
+
     try {
       if (mode === "forgot") {
         const { error } = await resetPassword(email);
