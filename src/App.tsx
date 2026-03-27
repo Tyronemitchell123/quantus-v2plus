@@ -133,6 +133,9 @@ const AnimatedRoutes = () => {
             <Route path="/nlp" element={<ProtectedRoute><R name="NLP Tools"><PageTransition><NLPTools /></PageTransition></R></ProtectedRoute>} />
             <Route path="/quantum" element={<ProtectedRoute><R name="Quantum"><PageTransition><QuantumComputing /></PageTransition></R></ProtectedRoute>} />
             <Route path="/recommendations" element={<ProtectedRoute><R name="Recommendations"><RecommendationEngine /></R></ProtectedRoute>} />
+            <Route path="/autopilot" element={<ProtectedRoute><R name="Autopilot"><DealAutopilot /></R></ProtectedRoute>} />
+            <Route path="/intelligence" element={<ProtectedRoute><R name="Intelligence"><MarketIntelligence /></R></ProtectedRoute>} />
+            <Route path="/vault" element={<ProtectedRoute><R name="Vault"><DocumentVault /></R></ProtectedRoute>} />
 
             <Route path="/privacy" element={<R name="Privacy"><PageTransition><Privacy /><Footer /></PageTransition></R>} />
             <Route path="/terms" element={<R name="Terms"><PageTransition><Terms /><Footer /></PageTransition></R>} />
