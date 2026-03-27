@@ -195,6 +195,7 @@ const DemoBookingForm = () => {
           <label className="text-sm font-medium text-foreground mb-1.5 block">Company *</label>
           <Input required value={form.company} onChange={set("company")} placeholder="Acme Corp" className={`bg-secondary border-border ${fieldErrors.company ? "border-destructive" : ""}`} />
           {fieldErrors.company && <p className="text-xs text-destructive mt-1">{fieldErrors.company}</p>}
+        </div>
         <div>
           <label className="text-sm font-medium text-foreground mb-1.5 block">Team Size</label>
           <Input value={form.teamSize} onChange={set("teamSize")} placeholder="e.g. 50–200" className="bg-secondary border-border" />
