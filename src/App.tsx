@@ -10,13 +10,15 @@ import Footer from "@/components/Footer";
 import PageTransition from "@/components/PageTransition";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import RouteErrorBoundary from "@/components/RouteErrorBoundary";
+import PageLoader from "@/components/PageLoader";
 import CookieConsent from "@/components/CookieConsent";
 import Index from "./pages/Index";
 import { useAuth } from "@/hooks/use-auth";
 
 const ModulesRedirect = () => {
   const { user, loading } = useAuth();
-  if (loading) return <div className="min-h-screen bg-background" />;
+  if (loading) return <PageLoader message="Checking session…" />;
   if (user) return <Navigate to="/dashboard/modules" replace />;
   return <PageTransition><Index /><Footer /></PageTransition>;
 };
@@ -61,6 +63,11 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
 
+// Helper: wraps a lazy page in its own error boundary
+const R = ({ name, children }: { name: string; children: React.ReactNode }) => (
+  <RouteErrorBoundary routeName={name}>{children}</RouteErrorBoundary>
+);
+
 // Routes that use the dashboard shell (no global navbar/footer)
 const dashboardRoutes = ["/dashboard", "/deals", "/chat", "/intake", "/sourcing", "/outreach", "/shortlist", "/negotiation", "/workflow", "/documents", "/deal-completion", "/settings", "/account/subscription", "/partner", "/admin", "/marketing", "/nlp", "/quantum", "/recommendations"];
 
@@ -72,61 +79,61 @@ const AnimatedRoutes = () => {
     <>
       {!isDashboardRoute && <Navbar />}
       <AnimatePresence mode="wait">
-        <Suspense fallback={<div className="min-h-screen bg-background" />}>
+        <Suspense fallback={<PageLoader />}>
           <Routes location={location} key={location.pathname}>
             {/* Public */}
-            <Route path="/" element={<PageTransition><Index /><Footer /></PageTransition>} />
-            <Route path="/about" element={<PageTransition><About /><Footer /></PageTransition>} />
+            <Route path="/" element={<R name="Home"><PageTransition><Index /><Footer /></PageTransition></R>} />
+            <Route path="/about" element={<R name="About"><PageTransition><About /><Footer /></PageTransition></R>} />
             <Route path="/modules" element={<ModulesRedirect />} />
-            <Route path="/pricing" element={<PageTransition><Pricing /><Footer /></PageTransition>} />
-            <Route path="/contact" element={<PageTransition><Contact /><Footer /></PageTransition>} />
-            <Route path="/services" element={<PageTransition><Services /><Footer /></PageTransition>} />
-            <Route path="/blog" element={<PageTransition><Blog /><Footer /></PageTransition>} />
-            <Route path="/benefits" element={<PageTransition><Benefits /><Footer /></PageTransition>} />
-            <Route path="/enterprise" element={<PageTransition><Enterprise /><Footer /></PageTransition>} />
-            <Route path="/case-studies" element={<PageTransition><CaseStudies /><Footer /></PageTransition>} />
-            <Route path="/guide" element={<PageTransition><UserGuide /><Footer /></PageTransition>} />
-            <Route path="/auth" element={<PageTransition><Auth /></PageTransition>} />
-            <Route path="/reset-password" element={<PageTransition><ResetPassword /></PageTransition>} />
-            <Route path="/unsubscribe" element={<PageTransition><Unsubscribe /></PageTransition>} />
-            <Route path="/onboarding" element={<ProtectedRoute><PageTransition><Onboarding /></PageTransition></ProtectedRoute>} />
+            <Route path="/pricing" element={<R name="Pricing"><PageTransition><Pricing /><Footer /></PageTransition></R>} />
+            <Route path="/contact" element={<R name="Contact"><PageTransition><Contact /><Footer /></PageTransition></R>} />
+            <Route path="/services" element={<R name="Services"><PageTransition><Services /><Footer /></PageTransition></R>} />
+            <Route path="/blog" element={<R name="Blog"><PageTransition><Blog /><Footer /></PageTransition></R>} />
+            <Route path="/benefits" element={<R name="Benefits"><PageTransition><Benefits /><Footer /></PageTransition></R>} />
+            <Route path="/enterprise" element={<R name="Enterprise"><PageTransition><Enterprise /><Footer /></PageTransition></R>} />
+            <Route path="/case-studies" element={<R name="Case Studies"><PageTransition><CaseStudies /><Footer /></PageTransition></R>} />
+            <Route path="/guide" element={<R name="User Guide"><PageTransition><UserGuide /><Footer /></PageTransition></R>} />
+            <Route path="/auth" element={<R name="Auth"><PageTransition><Auth /></PageTransition></R>} />
+            <Route path="/reset-password" element={<R name="Reset Password"><PageTransition><ResetPassword /></PageTransition></R>} />
+            <Route path="/unsubscribe" element={<R name="Unsubscribe"><PageTransition><Unsubscribe /></PageTransition></R>} />
+            <Route path="/onboarding" element={<ProtectedRoute><R name="Onboarding"><PageTransition><Onboarding /></PageTransition></R></ProtectedRoute>} />
 
             {/* Dashboard shell routes */}
-            <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-            <Route path="/dashboard/modules" element={<ProtectedRoute><ModulesDashboard /></ProtectedRoute>} />
+            <Route path="/dashboard" element={<ProtectedRoute><R name="Dashboard"><Dashboard /></R></ProtectedRoute>} />
+            <Route path="/dashboard/modules" element={<ProtectedRoute><R name="Modules"><ModulesDashboard /></R></ProtectedRoute>} />
             <Route path="/dashboard/intake" element={<Navigate to="/intake" replace />} />
             <Route path="/dashboard/deals" element={<Navigate to="/deals" replace />} />
             <Route path="/dashboard/chat" element={<Navigate to="/chat" replace />} />
             <Route path="/dashboard/sourcing" element={<Navigate to="/sourcing" replace />} />
             <Route path="/dashboard/outreach" element={<Navigate to="/outreach" replace />} />
             <Route path="/dashboard/settings" element={<Navigate to="/settings" replace />} />
-            <Route path="/deals" element={<ProtectedRoute><DealEngine /></ProtectedRoute>} />
+            <Route path="/deals" element={<ProtectedRoute><R name="Deal Engine"><DealEngine /></R></ProtectedRoute>} />
             <Route path="/deals/:id" element={<Navigate to="/deals" replace />} />
-            <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
-            <Route path="/intake" element={<ProtectedRoute><PageTransition><Intake /></PageTransition></ProtectedRoute>} />
-            <Route path="/sourcing" element={<ProtectedRoute><PageTransition><Sourcing /></PageTransition></ProtectedRoute>} />
-            <Route path="/outreach" element={<ProtectedRoute><PageTransition><VendorOutreach /></PageTransition></ProtectedRoute>} />
-            <Route path="/shortlist" element={<ProtectedRoute><PageTransition><Shortlisting /></PageTransition></ProtectedRoute>} />
-            <Route path="/negotiation" element={<ProtectedRoute><PageTransition><Negotiation /></PageTransition></ProtectedRoute>} />
-            <Route path="/workflow" element={<ProtectedRoute><PageTransition><Workflow /></PageTransition></ProtectedRoute>} />
-            <Route path="/documents" element={<ProtectedRoute><PageTransition><DocumentsBilling /></PageTransition></ProtectedRoute>} />
-            <Route path="/deal-completion" element={<ProtectedRoute><PageTransition><DealCompletion /></PageTransition></ProtectedRoute>} />
+            <Route path="/chat" element={<ProtectedRoute><R name="Chat"><Chat /></R></ProtectedRoute>} />
+            <Route path="/intake" element={<ProtectedRoute><R name="Intake"><PageTransition><Intake /></PageTransition></R></ProtectedRoute>} />
+            <Route path="/sourcing" element={<ProtectedRoute><R name="Sourcing"><PageTransition><Sourcing /></PageTransition></R></ProtectedRoute>} />
+            <Route path="/outreach" element={<ProtectedRoute><R name="Outreach"><PageTransition><VendorOutreach /></PageTransition></R></ProtectedRoute>} />
+            <Route path="/shortlist" element={<ProtectedRoute><R name="Shortlist"><PageTransition><Shortlisting /></PageTransition></R></ProtectedRoute>} />
+            <Route path="/negotiation" element={<ProtectedRoute><R name="Negotiation"><PageTransition><Negotiation /></PageTransition></R></ProtectedRoute>} />
+            <Route path="/workflow" element={<ProtectedRoute><R name="Workflow"><PageTransition><Workflow /></PageTransition></R></ProtectedRoute>} />
+            <Route path="/documents" element={<ProtectedRoute><R name="Documents"><PageTransition><DocumentsBilling /></PageTransition></R></ProtectedRoute>} />
+            <Route path="/deal-completion" element={<ProtectedRoute><R name="Deal Completion"><PageTransition><DealCompletion /></PageTransition></R></ProtectedRoute>} />
             <Route path="/deal-engine" element={<Navigate to="/deals" replace />} />
-            <Route path="/settings" element={<ProtectedRoute><PageTransition><Settings /></PageTransition></ProtectedRoute>} />
-            <Route path="/account/subscription" element={<ProtectedRoute><PageTransition><SubscriptionManagement /></PageTransition></ProtectedRoute>} />
+            <Route path="/settings" element={<ProtectedRoute><R name="Settings"><PageTransition><Settings /></PageTransition></R></ProtectedRoute>} />
+            <Route path="/account/subscription" element={<ProtectedRoute><R name="Subscription"><PageTransition><SubscriptionManagement /></PageTransition></R></ProtectedRoute>} />
 
-            <Route path="/partner" element={<ProtectedRoute><PartnerPortal /></ProtectedRoute>} />
-            <Route path="/partner/onboarding" element={<ProtectedRoute><PageTransition><PartnerOnboarding /></PageTransition></ProtectedRoute>} />
+            <Route path="/partner" element={<ProtectedRoute><R name="Partner Portal"><PartnerPortal /></R></ProtectedRoute>} />
+            <Route path="/partner/onboarding" element={<ProtectedRoute><R name="Partner Onboarding"><PageTransition><PartnerOnboarding /></PageTransition></R></ProtectedRoute>} />
 
-            <Route path="/admin" element={<ProtectedRoute><PageTransition><AdminDashboard /></PageTransition></ProtectedRoute>} />
-            <Route path="/marketing" element={<ProtectedRoute><PageTransition><MarketingHub /></PageTransition></ProtectedRoute>} />
-            <Route path="/nlp" element={<ProtectedRoute><PageTransition><NLPTools /></PageTransition></ProtectedRoute>} />
-            <Route path="/quantum" element={<ProtectedRoute><PageTransition><QuantumComputing /></PageTransition></ProtectedRoute>} />
-            <Route path="/recommendations" element={<ProtectedRoute><RecommendationEngine /></ProtectedRoute>} />
+            <Route path="/admin" element={<ProtectedRoute><R name="Admin"><PageTransition><AdminDashboard /></PageTransition></R></ProtectedRoute>} />
+            <Route path="/marketing" element={<ProtectedRoute><R name="Marketing"><PageTransition><MarketingHub /></PageTransition></R></ProtectedRoute>} />
+            <Route path="/nlp" element={<ProtectedRoute><R name="NLP Tools"><PageTransition><NLPTools /></PageTransition></R></ProtectedRoute>} />
+            <Route path="/quantum" element={<ProtectedRoute><R name="Quantum"><PageTransition><QuantumComputing /></PageTransition></R></ProtectedRoute>} />
+            <Route path="/recommendations" element={<ProtectedRoute><R name="Recommendations"><RecommendationEngine /></R></ProtectedRoute>} />
 
-            <Route path="/privacy" element={<PageTransition><Privacy /><Footer /></PageTransition>} />
-            <Route path="/terms" element={<PageTransition><Terms /><Footer /></PageTransition>} />
-            <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
+            <Route path="/privacy" element={<R name="Privacy"><PageTransition><Privacy /><Footer /></PageTransition></R>} />
+            <Route path="/terms" element={<R name="Terms"><PageTransition><Terms /><Footer /></PageTransition></R>} />
+            <Route path="*" element={<R name="Not Found"><PageTransition><NotFound /></PageTransition></R>} />
           </Routes>
         </Suspense>
       </AnimatePresence>
