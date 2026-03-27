@@ -106,11 +106,13 @@ const Contact = () => {
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm font-medium text-foreground mb-2 block">Name</label>
-                    <Input required placeholder="Your full name" value={name} onChange={(e) => setName(e.target.value)} className="bg-secondary border-border" />
+                    <Input placeholder="Your full name" value={name} onChange={(e) => setName(e.target.value)} className={`bg-secondary border-border ${fieldErrors.name ? "border-destructive" : ""}`} />
+                    {fieldErrors.name && <p className="text-xs text-destructive mt-1">{fieldErrors.name}</p>}
                   </div>
                   <div>
                     <label className="text-sm font-medium text-foreground mb-2 block">Email</label>
-                    <Input required type="email" placeholder="you@company.com" value={email} onChange={(e) => setEmail(e.target.value)} className="bg-secondary border-border" />
+                    <Input type="email" placeholder="you@company.com" value={email} onChange={(e) => setEmail(e.target.value)} className={`bg-secondary border-border ${fieldErrors.email ? "border-destructive" : ""}`} />
+                    {fieldErrors.email && <p className="text-xs text-destructive mt-1">{fieldErrors.email}</p>}
                   </div>
                 </div>
                 <div>
