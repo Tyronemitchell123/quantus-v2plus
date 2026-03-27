@@ -2,7 +2,8 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { ArrowRight, TrendingUp, Atom, Megaphone, Coins, ArrowUpRight } from "lucide-react";
 import useDocumentHead from "@/hooks/use-document-head";
-import HeroVideoBackground from "@/components/HeroVideoBackground";
+import HeroImageBackground from "@/components/HeroImageBackground";
+import heroCaseStudies from "@/assets/hero-case-studies.jpg";
 
 const caseStudies = [
   {
