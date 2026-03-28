@@ -137,7 +137,7 @@ const Auth = () => {
           {/* Logo */}
           <div className="text-center mb-10">
             <h1 className="font-display text-[34px] font-semibold tracking-wide">
-              <span className="text-gold-gradient">Quantus</span>
+              <span className="text-gold-gradient">Quantus V2+</span>
               <span className="text-foreground/60 ml-1.5 font-light italic text-2xl">A.I</span>
             </h1>
             <motion.div

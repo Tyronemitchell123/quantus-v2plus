@@ -142,7 +142,7 @@ const recommendations: Recommendation[] = [
     module: "Partnerships",
     moduleIcon: Handshake,
     title: "New verified vendor: Aman Residences",
-    description: "Aman Residences has joined the Quantus partner network with Obsidian-tier privacy clearance. Matches your hospitality preferences.",
+    description: "Aman Residences has joined the Quantus V2+ partner network with Obsidian-tier privacy clearance. Matches your hospitality preferences.",
     confidence: 95,
     urgency: "low",
     impact: "Expanded access to ultra-private properties",

@@ -67,7 +67,7 @@ const IntakeInputCard = ({ message, setMessage, category, setCategory, loading, 
 
         {/* Description Box */}
         <div>
-          <p className="font-body text-[9px] tracking-[0.25em] uppercase text-muted-foreground mb-3">Tell Quantus what you need</p>
+          <p className="font-body text-[9px] tracking-[0.25em] uppercase text-muted-foreground mb-3">Tell Quantus V2+ what you need</p>
           <div className="relative">
             <textarea
               ref={textareaRef}
@@ -142,7 +142,7 @@ const IntakeInputCard = ({ message, setMessage, category, setCategory, loading, 
                     { icon: DollarSign, label: "Budget Range", placeholder: "e.g. $500K – $2M" },
                     { icon: Clock, label: "Deadline", placeholder: "e.g. Within 2 weeks" },
                     { icon: Shield, label: "Sensitivities", placeholder: "Privacy, urgency, risk..." },
-                    { icon: MessageSquare, label: "Notes for Quantus", placeholder: "Any special instructions..." },
+                    { icon: MessageSquare, label: "Notes for Quantus V2+", placeholder: "Any special instructions..." },
                   ].map((field) => (
                     <div key={field.label}>
                       <label className="font-body text-[9px] tracking-[0.15em] uppercase text-muted-foreground/60 mb-1.5 block flex items-center gap-1">

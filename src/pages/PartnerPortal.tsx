@@ -30,9 +30,9 @@ const mockRequests = [
 ];
 
 const mockMessages = [
-  { id: 1, from: "Quantus Operations", preview: "Regarding REQ-2741 — can you confirm availability for the Falcon 8X?", time: "12 min ago", unread: true },
-  { id: 2, from: "Quantus Operations", preview: "Updated requirements for REQ-2738 attached.", time: "2 hours ago", unread: true },
-  { id: 3, from: "Quantus Operations", preview: "REQ-2735 successfully closed. Commission processed.", time: "1 day ago", unread: false },
+  { id: 1, from: "Quantus V2+ Operations", preview: "Regarding REQ-2741 — can you confirm availability for the Falcon 8X?", time: "12 min ago", unread: true },
+  { id: 2, from: "Quantus V2+ Operations", preview: "Updated requirements for REQ-2738 attached.", time: "2 hours ago", unread: true },
+  { id: 3, from: "Quantus V2+ Operations", preview: "REQ-2735 successfully closed. Commission processed.", time: "1 day ago", unread: false },
 ];
 
 const complianceDocs = [
@@ -457,7 +457,7 @@ const PartnerPortal = () => {
                 <motion.div variants={stagger} initial="hidden" animate="show" className="space-y-6">
                   <motion.div variants={fadeUp}>
                     <h2 className="font-display text-lg text-[#F5F5F7] mb-1">Compliance & Documents</h2>
-                    <p className="font-body text-[10px] text-[#F5F5F7]/30">Maintain trust and alignment with the Quantus network.</p>
+                    <p className="font-body text-[10px] text-[#F5F5F7]/30">Maintain trust and alignment with the Quantus V2+ network.</p>
                   </motion.div>
 
                   {/* Upload zone */}
@@ -493,7 +493,7 @@ const PartnerPortal = () => {
                 <motion.div variants={stagger} initial="hidden" animate="show" className="space-y-6">
                   <motion.div variants={fadeUp}>
                     <h2 className="font-display text-lg text-[#F5F5F7] mb-1">Performance Scorecard</h2>
-                    <p className="font-body text-[10px] text-[#F5F5F7]/30">Your reputation within the Quantus partner network.</p>
+                    <p className="font-body text-[10px] text-[#F5F5F7]/30">Your reputation within the Quantus V2+ partner network.</p>
                   </motion.div>
 
                   {/* Dial gauges */}
@@ -590,7 +590,7 @@ const PartnerPortal = () => {
                       { title: "Privacy Tier", desc: "Data handling and NDA levels", icon: Shield },
                       { title: "Team Members", desc: "Manage team access and roles", icon: Users },
                       { title: "Notification Preferences", desc: "Email, SMS, and in-app alerts", icon: Bell },
-                      { title: "Contact Support", desc: "Direct line to Quantus operations", icon: Phone },
+                      { title: "Contact Support", desc: "Direct line to Quantus V2+ operations", icon: Phone },
                     ].map(setting => (
                       <motion.div key={setting.title} variants={fadeUp}
                         className="bg-[#111114]/80 border border-[hsl(var(--gold))]/[0.08] rounded-xl p-5 flex items-center justify-between hover:border-[hsl(var(--gold))]/20 transition-all duration-300 cursor-pointer group">

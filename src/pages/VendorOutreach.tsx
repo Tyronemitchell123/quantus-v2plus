@@ -302,7 +302,7 @@ export default function VendorOutreachPage() {
                 </div>
                 <h2 className="font-display text-xl font-medium text-foreground mb-2">Ready to Engage Vendors</h2>
                 <p className="font-body text-sm text-muted-foreground mb-6 max-w-md mx-auto">
-                  Quantus will craft personalized outreach with strategic negotiation angles for each vendor.
+                  Quantus V2+ will craft personalized outreach with strategic negotiation angles for each vendor.
                 </p>
                 <button
                   onClick={generateOutreach}

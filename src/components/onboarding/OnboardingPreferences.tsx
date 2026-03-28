@@ -201,7 +201,7 @@ const OnboardingPreferences = ({ selectedPrefs, onSelectPref }: Props) => {
             )}
           </div>
           <p className="font-body text-[10px] text-gold-soft/30 mt-4 leading-relaxed">
-            Quantus adjusts vendor expectations and internal workflows accordingly.
+            Quantus V2+ adjusts vendor expectations and internal workflows accordingly.
           </p>
         </motion.div>
 

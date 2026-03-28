@@ -56,7 +56,7 @@ const opData: Record<string, OpData[]> = {
     { title: "Climate-Controlled Vehicle Storage — 6 Vehicles", tags: ["Vehicle", "Long-Term", "Climate"], eta: "Available now", operatorRating: "9.7", distance: "Berkshire", risk: "Low", details: ["Individual bays — CCTV monitored", "Battery conditioning included", "Monthly detailing available"], price: "From £800/month per vehicle", score: 93 },
   ],
   "off-market": [
-    { title: "Confidential — Specialist Operator Network", tags: ["Off-Market", "Vetted", "By Referral"], eta: "By arrangement", operatorRating: "N/A", distance: "Global", risk: "Variable", details: ["Operators not listed on public registries", "Quantus-vetted and NDA-bound", "Specialist capabilities on request"], price: "By arrangement", score: 99 },
+    { title: "Confidential — Specialist Operator Network", tags: ["Off-Market", "Vetted", "By Referral"], eta: "By arrangement", operatorRating: "N/A", distance: "Global", risk: "Variable", details: ["Operators not listed on public registries", "Quantus V2+-vetted and NDA-bound", "Specialist capabilities on request"], price: "By arrangement", score: 99 },
   ],
 };
 
@@ -104,7 +104,7 @@ const insightsData: Record<string, { conditions: string[]; performance: string[]
     route: { fastest: 0, safest: 0, aiRec: 0 },
   },
   "off-market": {
-    conditions: ["Specialist operators available by referral.", "NDA required before introduction.", "Global reach — no public listing.", "Quantus-vetted only."],
+    conditions: ["Specialist operators available by referral.", "NDA required before introduction.", "Global reach — no public listing.", "Quantus V2+-vetted only."],
     performance: ["Network operators: exceptional capabilities.", "Discretion rating: maximum."],
     risks: { level: "Variable", notes: ["Assessment required per operation.", "Enhanced vetting available."] },
     route: { fastest: 0, safest: 0, aiRec: 0 },

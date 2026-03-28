@@ -344,7 +344,7 @@ export default function Negotiation() {
                 </div>
                 <h2 className="font-display text-xl font-medium text-foreground mb-2">Ready to Negotiate</h2>
                 <p className="font-body text-sm text-muted-foreground mb-6 max-w-md mx-auto">
-                  Quantus will analyze vendor positions, market dynamics, and craft strategic counter-offers.
+                  Quantus V2+ will analyze vendor positions, market dynamics, and craft strategic counter-offers.
                 </p>
                 <button
                   onClick={runAnalysis}

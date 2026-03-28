@@ -101,7 +101,7 @@ const MobileAIAssistant = ({ open, onClose }: MobileAIAssistantProps) => {
               <input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask Quantus..."
+                placeholder="Ask Quantus V2+..."
                 className="flex-1 bg-secondary/50 border border-primary/20 px-4 py-3 font-body text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/30 transition-colors rounded-none"
               />
               <button

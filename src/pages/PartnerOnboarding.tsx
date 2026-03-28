@@ -19,7 +19,7 @@ const categories = ["Aviation Broker", "Medical Clinic", "Staffing Agency", "Hot
 const regions = ["United Kingdom", "Europe", "Middle East", "Asia Pacific", "North America", "Africa", "Global"];
 
 const PartnerOnboarding = () => {
-  useDocumentHead({ title: "Partner Onboarding — Quantus V2+", description: "Join the Quantus partner ecosystem." });
+  useDocumentHead({ title: "Partner Onboarding — Quantus V2+", description: "Join the Quantus V2+ partner ecosystem." });
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);

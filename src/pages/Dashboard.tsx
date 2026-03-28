@@ -87,7 +87,7 @@ const Dashboard = () => {
             >
               <div className="h-16 flex items-center justify-between px-4 border-b border-border">
                 <span className="font-display text-sm">
-                  <span className="text-gold-gradient font-semibold">Quantus</span>
+                  <span className="text-gold-gradient font-semibold">Quantus V2+</span>
                   <span className="text-foreground/50 ml-1 font-light italic text-xs">A.I</span>
                 </span>
                 <button onClick={() => setMobileMenuOpen(false)} className="text-muted-foreground">

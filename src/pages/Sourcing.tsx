@@ -202,7 +202,7 @@ export default function Sourcing() {
                 </div>
                 <h2 className="font-display text-xl font-medium text-foreground mb-2">Ready to Source</h2>
                 <p className="font-body text-sm text-muted-foreground mb-6 max-w-md mx-auto">
-                  Quantus will scan global networks, evaluate options, and curate an intelligence-ranked shortlist.
+                  Quantus V2+ will scan global networks, evaluate options, and curate an intelligence-ranked shortlist.
                 </p>
                 <button
                   onClick={runSourcing}

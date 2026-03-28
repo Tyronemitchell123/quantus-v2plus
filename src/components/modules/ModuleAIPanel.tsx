@@ -140,7 +140,7 @@ const ModuleAIPanel = ({ prompts }: ModuleAIPanelProps) => {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && send()}
-          placeholder="Ask Quantus..."
+          placeholder="Ask Quantus V2+..."
           className="flex-1 bg-secondary/50 border border-border rounded-lg px-3 py-2 font-body text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/30 transition-colors"
         />
         <button
