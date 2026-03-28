@@ -11,13 +11,13 @@ import FinalCTA from "@/components/landing/FinalCTA";
 
 const Index = () => {
   useDocumentHead({
-    title: "Quantus A.I — Ultra-Premium Intelligence Platform",
+    title: "Quantus V2+ — Ultra-Premium Intelligence Platform",
     description: "A multi-vertical orchestration engine for UHNW clients. Aviation, medical travel, staffing, luxury lifestyle — unified in one private interface.",
     canonical: "https://quantus-loom.lovable.app/",
     jsonLd: {
       "@context": "https://schema.org",
       "@type": "Organization",
-      name: "Quantus A.I",
+      name: "Quantus V2+",
       url: "https://quantus-loom.lovable.app",
       logo: "https://quantus-loom.lovable.app/favicon.png",
       description: "Ultra-premium AI orchestration platform for UHNW clients across aviation, medical, staffing, and lifestyle verticals.",

@@ -50,7 +50,7 @@ const OnboardingRoles = ({ selectedRole, onSelectRole }: Props) => (
         transition={{ delay: 0.5 }}
         className="font-body text-base text-gold-soft/70"
       >
-        This helps Quantus A.I calibrate your experience.
+        This helps Quantus V2+ calibrate your experience.
       </motion.p>
     </div>
 

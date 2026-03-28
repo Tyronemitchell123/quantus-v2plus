@@ -55,7 +55,7 @@ const OnboardingPreferences = ({ selectedPrefs, onSelectPref }: Props) => {
         transition={{ delay: 0.4 }}
         className="font-body text-base text-gold-soft/70 mb-10"
       >
-        Quantus A.I adapts to your preferences in real time.
+        Quantus V2+ adapts to your preferences in real time.
       </motion.p>
 
       <div className="grid sm:grid-cols-2 gap-5">

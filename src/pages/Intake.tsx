@@ -45,8 +45,8 @@ type Deal = {
 
 export default function Intake() {
   useDocumentHead({
-    title: "Deal Intake — Quantus A.I",
-    description: "Submit a request and let Quantus A.I classify, score, and route it automatically.",
+    title: "Deal Intake — Quantus V2+",
+    description: "Submit a request and let Quantus V2+ classify, score, and route it automatically.",
   });
 
   const navigate = useNavigate();
@@ -130,7 +130,7 @@ export default function Intake() {
               className="w-20 h-px bg-primary/40 mx-auto mb-3"
             />
             <p className="font-body text-sm text-gold-soft/70 max-w-lg mx-auto">
-              Quantus A.I will orchestrate the entire operation from here.
+              Quantus V2+ will orchestrate the entire operation from here.
             </p>
           </motion.div>
 
@@ -146,7 +146,7 @@ export default function Intake() {
                 <div className="inline-flex items-center gap-3 px-6 py-3 glass-card rounded-xl">
                   <Loader2 size={16} className="animate-spin text-primary" />
                   <span className="font-body text-sm text-muted-foreground">
-                    Quantus A.I is analyzing your request...
+                    Quantus V2+ is analyzing your request...
                   </span>
                 </div>
               </motion.div>

@@ -12,7 +12,7 @@ import { logAudit } from "@/lib/audit";
 
 const SubscriptionManagement = () => {
   useDocumentHead({
-    title: "Manage Subscription — QUANTUS AI",
+    title: "Manage Subscription — QUANTUS V2+",
     description:
       "View your current plan, upgrade or downgrade, cancel, and review billing history.",
     canonical: "https://quantus-loom.lovable.app/account/subscription",

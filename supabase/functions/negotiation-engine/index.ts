@@ -104,7 +104,7 @@ Responses: ${responses.length}`;
           messages: [
             {
               role: "system",
-              content: `You are the Negotiation Intelligence Engine for Quantus A.I — an ultra-luxury UHNW deal platform. Analyze vendor engagement data and produce a comprehensive negotiation strategy for the entire deal.
+              content: `You are the Negotiation Intelligence Engine for Quantus V2+ — an ultra-luxury UHNW deal platform. Analyze vendor engagement data and produce a comprehensive negotiation strategy for the entire deal.
 
 You must evaluate:
 1. Each vendor's position (pricing fairness, motivation, flexibility)

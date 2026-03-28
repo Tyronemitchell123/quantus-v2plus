@@ -83,7 +83,7 @@ serve(async (req) => {
         messages: [
           {
             role: "system",
-            content: `You are a data analyst for QUANTUS AI platform. Analyze anomaly alerts and explain WHY they happened, what likely caused them, and what the user should do. Be concise but insightful. Use markdown formatting.`,
+            content: `You are a data analyst for QUANTUS V2+ platform. Analyze anomaly alerts and explain WHY they happened, what likely caused them, and what the user should do. Be concise but insightful. Use markdown formatting.`,
           },
           {
             role: "user",

@@ -19,10 +19,10 @@ export const DealNegotiationProgressEmail = ({
 }: DealNegotiationProgressProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Negotiation update for {dealNumber} — QUANTUS AI</Preview>
+    <Preview>Negotiation update for {dealNumber} — QUANTUS V2+</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Text style={brand}>QUANTUS AI</Text>
+        <Text style={brand}>QUANTUS V2+</Text>
         <Hr style={divider} />
         <Heading style={h1}>Negotiation Update</Heading>
         <Text style={text}>
@@ -38,8 +38,8 @@ export const DealNegotiationProgressEmail = ({
           💼 Our AI has prepared negotiation leverage points and market comparisons to ensure the best possible terms for your deal.
         </Text>
         <Button style={button} href={`${siteUrl}/dashboard`}>View Negotiation Details</Button>
-        <Text style={footer}>This is an automated notification from QUANTUS AI.</Text>
-        <Text style={copyright}>© 2026 QUANTUS AI. All rights reserved.</Text>
+        <Text style={footer}>This is an automated notification from QUANTUS V2+.</Text>
+        <Text style={copyright}>© 2026 QUANTUS V2+. All rights reserved.</Text>
       </Container>
     </Body>
   </Html>

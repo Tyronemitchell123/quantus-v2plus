@@ -42,7 +42,7 @@ const StatusBadge = ({ status }: { status: string }) => {
 };
 
 const AdminDashboard = () => {
-  useDocumentHead({ title: "Admin Dashboard — QUANTUS AI", description: "Admin metrics overview" });
+  useDocumentHead({ title: "Admin Dashboard — QUANTUS V2+", description: "Admin metrics overview" });
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

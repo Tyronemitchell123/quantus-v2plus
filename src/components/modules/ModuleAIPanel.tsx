@@ -64,7 +64,7 @@ const ModuleAIPanel = ({ prompts }: ModuleAIPanelProps) => {
     <div className="glass-card p-5 h-full flex flex-col rounded-xl">
       <div className="flex items-center gap-2 mb-4">
         <Sparkles size={12} className="text-primary" />
-        <span className="font-body text-[10px] tracking-[0.25em] uppercase text-primary/70">Quantus Core</span>
+        <span className="font-body text-[10px] tracking-[0.25em] uppercase text-primary/70">Quantus V2+ Core</span>
       </div>
 
       <div className="flex-1 overflow-y-auto space-y-3 min-h-0">

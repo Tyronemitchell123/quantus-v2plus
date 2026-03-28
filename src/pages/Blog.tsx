@@ -26,12 +26,12 @@ type Post = {
 const blogListingJsonLd = (posts: Post[]) => ({
   "@context": "https://schema.org",
   "@type": "Blog",
-  name: "QUANTUS AI Blog",
-  description: "Insights on quantum computing, enterprise AI, and intelligent analytics from QUANTUS AI.",
+  name: "QUANTUS V2+ Blog",
+  description: "Insights on quantum computing, enterprise AI, and intelligent analytics from QUANTUS V2+.",
   url: "https://quantus-loom.lovable.app/blog",
   publisher: {
     "@type": "Organization",
-    name: "QUANTUS AI",
+    name: "QUANTUS V2+",
     url: "https://quantus-loom.lovable.app",
   },
   blogPost: posts.slice(0, 10).map((p) => ({
@@ -40,7 +40,7 @@ const blogListingJsonLd = (posts: Post[]) => ({
     description: p.excerpt || "",
     url: `https://quantus-loom.lovable.app/blog/${p.slug}`,
     datePublished: p.published_at || p.created_at,
-    author: { "@type": "Organization", name: "QUANTUS AI" },
+    author: { "@type": "Organization", name: "QUANTUS V2+" },
   })),
 });
 
@@ -52,10 +52,10 @@ const blogPostJsonLd = (post: Post) => ({
   url: `https://quantus-loom.lovable.app/blog/${post.slug}`,
   datePublished: post.published_at || post.created_at,
   dateModified: post.created_at,
-  author: { "@type": "Organization", name: "QUANTUS AI" },
+  author: { "@type": "Organization", name: "QUANTUS V2+" },
   publisher: {
     "@type": "Organization",
-    name: "QUANTUS AI",
+    name: "QUANTUS V2+",
     url: "https://quantus-loom.lovable.app",
   },
   mainEntityOfPage: {
@@ -90,8 +90,8 @@ const BlogListing = () => {
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
 
   useDocumentHead({
-    title: "Blog — QUANTUS AI",
-    description: "Explore insights on quantum computing, enterprise AI, and data-driven intelligence from the QUANTUS AI team.",
+    title: "Blog — QUANTUS V2+",
+    description: "Explore insights on quantum computing, enterprise AI, and data-driven intelligence from the QUANTUS V2+ team.",
     canonical: "https://quantus-loom.lovable.app/blog",
   });
 
@@ -261,8 +261,8 @@ const BlogPost = ({ slug }: { slug: string }) => {
   }, [slug]);
 
   useDocumentHead({
-    title: post ? `${post.meta_title || post.title} — QUANTUS AI` : "Blog — QUANTUS AI",
-    description: post?.meta_description || post?.excerpt || "Read this article on the QUANTUS AI blog.",
+    title: post ? `${post.meta_title || post.title} — QUANTUS V2+` : "Blog — QUANTUS V2+",
+    description: post?.meta_description || post?.excerpt || "Read this article on the QUANTUS V2+ blog.",
     canonical: post ? `https://quantus-loom.lovable.app/blog/${post.slug}` : undefined,
   });
 

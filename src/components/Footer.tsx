@@ -32,7 +32,7 @@ const Footer = () => (
       </div>
       <div className="luxury-divider mt-14 mb-6" />
       <p className="text-center font-body text-[10px] tracking-[0.2em] uppercase text-muted-foreground/40">
-        © 2026 Quantus A.I — All rights reserved.
+        © 2026 Quantus V2+ — All rights reserved.
       </p>
     </div>
   </footer>

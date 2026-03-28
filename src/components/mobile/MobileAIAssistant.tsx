@@ -33,7 +33,7 @@ const MobileAIAssistant = ({ open, onClose }: MobileAIAssistantProps) => {
             <div className="flex items-center gap-2">
               <Sparkles size={14} className="text-primary" />
               <span className="font-body text-xs tracking-[0.2em] uppercase text-foreground">
-                Quantus Core
+                Quantus V2+ Core
               </span>
             </div>
             <button

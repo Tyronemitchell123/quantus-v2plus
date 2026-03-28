@@ -102,13 +102,13 @@ const audiences = [
 /* ── page ──────────────────────────────────────────────────── */
 const Benefits = () => {
   useDocumentHead({
-    title: "Benefits — Why QUANTUS AI | Quantum-Enhanced Autonomous Intelligence",
-    description: "Discover the five core advantages of QUANTUS AI: 100% autonomous ops, quantum computing, real-time intelligence, enterprise security, and transparent pricing.",
+    title: "Benefits — Why QUANTUS V2+ | Quantum-Enhanced Autonomous Intelligence",
+    description: "Discover the five core advantages of QUANTUS V2+: 100% autonomous ops, quantum computing, real-time intelligence, enterprise security, and transparent pricing.",
     canonical: "https://quantus-loom.lovable.app/benefits",
     jsonLd: {
       "@context": "https://schema.org",
       "@type": "WebPage",
-      name: "QUANTUS AI Benefits",
+      name: "QUANTUS V2+ Benefits",
       description: "Five core advantages: autonomous operations, quantum computing, real-time intelligence, enterprise security, and transparent pricing.",
       url: "https://quantus-loom.lovable.app/benefits",
     },
@@ -131,7 +131,7 @@ const Benefits = () => {
             </p>
             <h1 className="font-display text-4xl md:text-6xl font-bold text-foreground leading-tight mb-6">
               Five Reasons to Choose{" "}
-              <span className="text-gold-gradient gold-glow-text">QUANTUS AI</span>
+              <span className="text-gold-gradient gold-glow-text">QUANTUS V2+</span>
             </h1>
             <p className="text-muted-foreground text-lg leading-relaxed max-w-2xl">
               The only platform fusing quantum computing with 100 % autonomous intelligence — engineered for enterprises that define the future.
@@ -211,7 +211,7 @@ const Benefits = () => {
       </section>
 
       {/* ── Who It's For ──────────────────────── */}
-      <section className="py-24 border-t border-border relative overflow-hidden" aria-label="Who QUANTUS AI is built for">
+      <section className="py-24 border-t border-border relative overflow-hidden" aria-label="Who QUANTUS V2+ is built for">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/[0.02] rounded-full blur-[180px] pointer-events-none" />
 
         <div className="container mx-auto px-6 relative z-10">
@@ -228,7 +228,7 @@ const Benefits = () => {
               Built for <span className="text-gold-gradient gold-glow-text">Visionary Leaders</span>
             </h2>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto mt-4 leading-relaxed">
-              QUANTUS AI is purpose-built for C-suite executives at high-revenue organisations who refuse to settle for incremental improvement.
+              QUANTUS V2+ is purpose-built for C-suite executives at high-revenue organisations who refuse to settle for incremental improvement.
             </p>
           </motion.div>
 

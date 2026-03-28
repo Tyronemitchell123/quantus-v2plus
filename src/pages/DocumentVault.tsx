@@ -36,7 +36,7 @@ const DocumentVault = () => {
   const [generateOpen, setGenerateOpen] = useState(false);
 
   useDocumentHead({
-    title: "AI Document Vault — Smart Contracts & E-Sign | QUANTUS AI",
+    title: "AI Document Vault — Smart Contracts & E-Sign | QUANTUS V2+",
     description: "AI-powered document generation, encrypted storage, and digital e-signature workflow.",
     canonical: "https://quantus-loom.lovable.app/vault",
   });

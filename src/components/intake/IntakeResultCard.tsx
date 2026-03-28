@@ -91,7 +91,7 @@ const IntakeResultCard = ({ deal }: Props) => {
             <CheckCircle2 size={18} className="text-primary" />
           </div>
           <div>
-            <p className="font-body text-[10px] tracking-[0.2em] uppercase text-primary/60 mb-2">Quantus A.I Response</p>
+            <p className="font-body text-[10px] tracking-[0.2em] uppercase text-primary/60 mb-2">Quantus V2+ Response</p>
             <p className="font-body text-sm text-foreground/90 leading-relaxed italic">
               "{deal.ai_confirmation}"
             </p>

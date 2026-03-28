@@ -102,7 +102,7 @@ serve(async (req) => {
           messages: [
             {
               role: "system",
-              content: `You are the Vendor Outreach Engine for Quantus A.I, an ultra-luxury UHNW orchestration platform. Generate personalized outreach messages for each vendor/option.
+              content: `You are the Vendor Outreach Engine for Quantus V2+, an ultra-luxury UHNW orchestration platform. Generate personalized outreach messages for each vendor/option.
 
 Category: ${category}
 Required tone: ${tone}

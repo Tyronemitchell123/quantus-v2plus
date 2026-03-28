@@ -46,7 +46,7 @@ const quickActions = [
 ];
 
 const Dashboard = () => {
-  useDocumentHead({ title: "Dashboard — Quantus A.I", description: "Your private intelligence command centre." });
+  useDocumentHead({ title: "Dashboard — Quantus V2+", description: "Your private intelligence command centre." });
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileAIOpen, setMobileAIOpen] = useState(false);
   const [mobileMessagingOpen, setMobileMessagingOpen] = useState(false);
@@ -161,7 +161,7 @@ const Dashboard = () => {
         {/* Footer */}
         <footer className="hidden lg:flex px-6 py-3 border-t border-border/50 items-center justify-between">
           <p className="font-body text-[9px] tracking-[0.2em] uppercase text-muted-foreground/40">
-            Quantus A.I — The Obsidian Standard
+            Quantus V2+ — The Obsidian Standard
           </p>
           <p className="font-body text-[9px] text-muted-foreground/30">v1.0.0</p>
         </footer>

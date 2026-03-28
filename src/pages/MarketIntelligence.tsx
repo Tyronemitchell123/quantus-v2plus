@@ -32,7 +32,7 @@ const MarketIntelligence = () => {
   const [verticalFilter, setVerticalFilter] = useState("all");
 
   useDocumentHead({
-    title: "Market Intelligence Feed — Real-Time Signals | QUANTUS AI",
+    title: "Market Intelligence Feed — Real-Time Signals | QUANTUS V2+",
     description: "Live market intelligence with pricing trends, competitor analysis, and AI-scored opportunity alerts.",
     canonical: "https://quantus-loom.lovable.app/intelligence",
   });

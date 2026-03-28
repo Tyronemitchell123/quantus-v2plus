@@ -30,7 +30,7 @@ const moduleComponents: Record<ModuleKey, React.FC> = {
 };
 
 const ModulesDashboard = () => {
-  useDocumentHead({ title: "Modules — Quantus A.I", description: "Multi-module intelligence dashboard." });
+  useDocumentHead({ title: "Modules — Quantus V2+", description: "Multi-module intelligence dashboard." });
   const [activeModule, setActiveModule] = useState<ModuleKey>("aviation");
   const ActiveComponent = moduleComponents[activeModule];
 
@@ -39,7 +39,7 @@ const ModulesDashboard = () => {
       <div className="container mx-auto px-4 sm:px-6">
         <div className="mb-8">
           <p className="font-body text-xs tracking-[0.35em] uppercase text-primary/70 mb-2">Intelligence Dashboard</p>
-          <h1 className="font-display text-2xl sm:text-3xl font-medium">Quantus Modules</h1>
+          <h1 className="font-display text-2xl sm:text-3xl font-medium">Quantus V2+ Modules</h1>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-6">

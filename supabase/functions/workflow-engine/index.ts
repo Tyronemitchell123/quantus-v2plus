@@ -103,7 +103,7 @@ serve(async (req) => {
           messages: [
             {
               role: "system",
-              content: `You are the Workflow Orchestration Engine for Quantus A.I — an ultra-luxury UHNW platform. Generate a comprehensive workflow blueprint with specific, actionable tasks organized into phases.
+              content: `You are the Workflow Orchestration Engine for Quantus V2+ — an ultra-luxury UHNW platform. Generate a comprehensive workflow blueprint with specific, actionable tasks organized into phases.
 
 Category: ${category}
 Workflow template phases: ${template.phases.join(", ")}

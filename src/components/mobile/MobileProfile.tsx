@@ -123,7 +123,7 @@ const MobileProfile = () => {
 
       {/* Footer */}
       <p className="font-body text-[8px] tracking-[0.2em] uppercase text-muted-foreground/30 text-center pt-4">
-        Quantus A.I — The Obsidian Standard
+        Quantus V2+ — The Obsidian Standard
       </p>
     </div>
   );

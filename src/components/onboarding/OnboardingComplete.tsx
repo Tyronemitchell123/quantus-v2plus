@@ -8,7 +8,7 @@ const initSteps = [
   "Activating Modules",
   "Configuring Privacy Mode",
   "Preparing Vendor Network",
-  "Initializing Quantus Core",
+  "Initializing Quantus V2+ Core",
 ];
 
 interface Props {
@@ -52,7 +52,7 @@ const OnboardingComplete = ({ onFinish }: Props) => {
               transition={{ delay: 0.4, duration: 0.8 }}
               className="font-display text-3xl sm:text-4xl md:text-5xl font-medium text-foreground mb-3"
             >
-              Welcome to <span className="text-gold-gradient">Quantus A.I</span>
+              Welcome to <span className="text-gold-gradient">Quantus V2+</span>
             </motion.h1>
             <motion.p
               initial={{ opacity: 0 }}

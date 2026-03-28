@@ -475,7 +475,7 @@ const MarketingHub = () => {
   const { generate, loading } = useMarketing();
 
   useDocumentHead({
-    title: "Marketing Hub — QUANTUS AI",
+    title: "Marketing Hub — QUANTUS V2+",
     description: "AI-powered marketing automation: blog posts, social media, ad copy, and SEO optimization.",
   });
 

@@ -4,15 +4,15 @@ import Footer from "@/components/Footer";
 
 const Privacy = () => {
   useDocumentHead({
-    title: "Privacy Policy — QUANTUS AI",
-    description: "Learn how Quantus AI collects, uses, and protects your personal data in compliance with GDPR.",
+    title: "Privacy Policy — QUANTUS V2+",
+    description: "Learn how Quantus V2+ collects, uses, and protects your personal data in compliance with GDPR.",
     canonical: "https://quantus-loom.lovable.app/privacy",
   });
 
   const sections = [
     {
       title: "1. Data Controller",
-      content: `Quantus A.I. ("we", "us", "our") is the data controller responsible for your personal data. If you have questions about how we process your data, contact us at privacy@quantus.ai.`,
+      content: `Quantus V2+. ("we", "us", "our") is the data controller responsible for your personal data. If you have questions about how we process your data, contact us at privacy@quantus.ai.`,
     },
     {
       title: "2. Data We Collect",

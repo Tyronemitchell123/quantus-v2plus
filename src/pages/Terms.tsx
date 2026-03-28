@@ -4,19 +4,19 @@ import Footer from "@/components/Footer";
 
 const Terms = () => {
   useDocumentHead({
-    title: "Terms of Service — QUANTUS AI",
-    description: "Terms and conditions governing your use of the Quantus AI platform.",
+    title: "Terms of Service — QUANTUS V2+",
+    description: "Terms and conditions governing your use of the Quantus V2+ platform.",
     canonical: "https://quantus-loom.lovable.app/terms",
   });
 
   const sections = [
     {
       title: "1. Acceptance of Terms",
-      content: `By accessing or using the Quantus A.I. platform ("Service"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree, do not use the Service. These Terms constitute a legally binding agreement between you and Quantus A.I. Ltd.`,
+      content: `By accessing or using the Quantus V2+. platform ("Service"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree, do not use the Service. These Terms constitute a legally binding agreement between you and Quantus V2+. Ltd.`,
     },
     {
       title: "2. Description of Service",
-      content: `Quantus A.I. is an AI-powered deal management and concierge platform that provides:
+      content: `Quantus V2+. is an AI-powered deal management and concierge platform that provides:
 
 • Intelligent deal intake and classification
 • Automated vendor sourcing and matching
@@ -61,7 +61,7 @@ You are responsible for all activity under your account.`,
     },
     {
       title: "6. Intellectual Property",
-      content: `• The Service, including its design, code, AI models, and content, is owned by Quantus A.I. Ltd and protected by intellectual property laws.
+      content: `• The Service, including its design, code, AI models, and content, is owned by Quantus V2+. Ltd and protected by intellectual property laws.
 • You retain ownership of all data you input into the Service.
 • You grant us a limited licence to process your data solely to provide the Service.
 • We do not use your data to train AI models without your explicit consent.`,
@@ -88,7 +88,7 @@ You are responsible for all activity under your account.`,
     },
     {
       title: "10. Indemnification",
-      content: `You agree to indemnify and hold harmless Quantus A.I. Ltd from any claims, damages, or expenses arising from your use of the Service, violation of these Terms, or infringement of any third-party rights.`,
+      content: `You agree to indemnify and hold harmless Quantus V2+. Ltd from any claims, damages, or expenses arising from your use of the Service, violation of these Terms, or infringement of any third-party rights.`,
     },
     {
       title: "11. Service Availability",
@@ -115,7 +115,7 @@ You are responsible for all activity under your account.`,
       title: "15. Contact",
       content: `For questions about these Terms: legal@quantus.ai
 
-Quantus A.I. Ltd
+Quantus V2+. Ltd
 Registered in England & Wales`,
     },
   ];

@@ -146,7 +146,7 @@ function ScoreRing({ value, size = 48 }: { value: number; size?: number }) {
 
 export default function Negotiation() {
   useDocumentHead({
-    title: "Negotiation — Quantus A.I",
+    title: "Negotiation — Quantus V2+",
     description: "AI-powered negotiation intelligence for UHNW deals.",
   });
 
@@ -306,7 +306,7 @@ export default function Negotiation() {
                     className="w-20 h-px bg-primary/40 origin-left mb-2"
                   />
                   <p className="font-body text-xs text-gold-soft/70">
-                    Quantus A.I is preparing drafts, leverage points, and vendor-specific tactics.
+                    Quantus V2+ is preparing drafts, leverage points, and vendor-specific tactics.
                   </p>
                 </div>
               </div>
@@ -486,7 +486,7 @@ export default function Negotiation() {
                   {/* RIGHT — Strategy Panel */}
                   <div className="space-y-4 lg:sticky lg:top-40">
                     <p className="font-body text-[10px] tracking-[0.25em] uppercase text-gold-soft/50 mb-2">
-                      Quantus Core Strategy
+                      Quantus V2+ Core Strategy
                     </p>
 
                     {/* Strategy summary */}

@@ -299,7 +299,7 @@ const AviationModule = () => {
           </AnimatePresence>
         </div>
 
-        {/* Right — Quantus Core Aviation Insights */}
+        {/* Right — Quantus V2+ Core Aviation Insights */}
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}

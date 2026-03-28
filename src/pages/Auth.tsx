@@ -11,8 +11,8 @@ import useDocumentHead from "@/hooks/use-document-head";
 
 const Auth = () => {
   useDocumentHead({
-    title: "Sign In — Quantus A.I",
-    description: "Sign in or create your Quantus A.I account to access the ultra-premium intelligence platform.",
+    title: "Sign In — Quantus V2+",
+    description: "Sign in or create your Quantus V2+ account to access the ultra-premium intelligence platform.",
   });
   const [mode, setMode] = useState<"login" | "signup" | "forgot">("login");
   const [email, setEmail] = useState("");

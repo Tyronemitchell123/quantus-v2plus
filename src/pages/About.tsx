@@ -10,13 +10,13 @@ const fadeUp = {
 
 const About = () => {
   useDocumentHead({
-    title: "About — Quantus A.I",
+    title: "About — Quantus V2+",
     description: "The story behind the most discreet intelligence platform ever built for ultra-high-net-worth individuals.",
     canonical: "https://quantus-loom.lovable.app/about",
     jsonLd: {
       "@context": "https://schema.org",
       "@type": "AboutPage",
-      name: "About Quantus A.I",
+      name: "About Quantus V2+",
       description: "The story behind the most discreet intelligence platform ever built for ultra-high-net-worth individuals.",
       url: "https://quantus-loom.lovable.app/about",
     },
@@ -32,7 +32,7 @@ const About = () => {
               Intelligence, <br /><span className="italic text-primary">reimagined.</span>
             </h1>
             <p className="font-body text-muted-foreground text-base sm:text-lg leading-relaxed max-w-2xl mx-auto">
-              Quantus A.I was born from a simple observation: the most successful people in the world still rely on fragmented, manual processes to manage the complexity of their lives. We built something better.
+              Quantus V2+ was born from a simple observation: the most successful people in the world still rely on fragmented, manual processes to manage the complexity of their lives. We built something better.
             </p>
           </motion.div>
         </div>
@@ -52,7 +52,7 @@ const About = () => {
                 We believe that managing aviation acquisitions, medical travel, household staffing, and lifestyle logistics should feel effortless.
               </p>
               <p className="font-body text-muted-foreground leading-relaxed">
-                Quantus A.I is an autonomous orchestration engine that operates silently across seven verticals, ensuring every detail is handled with precision and discretion.
+                Quantus V2+ is an autonomous orchestration engine that operates silently across seven verticals, ensuring every detail is handled with precision and discretion.
               </p>
             </motion.div>
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} custom={2} className="glass-card p-10 text-center">

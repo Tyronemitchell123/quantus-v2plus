@@ -354,7 +354,7 @@ const Enterprise = () => {
               Calculate Your <span className="text-gold-gradient">ROI</span>
             </h2>
             <p className="text-muted-foreground mt-4 max-w-xl mx-auto">
-              See how much your organization could save by replacing manual analytics with QUANTUS AI.
+              See how much your organization could save by replacing manual analytics with QUANTUS V2+.
             </p>
           </motion.div>
 

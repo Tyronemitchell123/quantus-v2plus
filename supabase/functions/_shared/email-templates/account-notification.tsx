@@ -24,10 +24,10 @@ interface AccountNotificationEmailProps {
 export const AccountNotificationEmail = ({ displayName, eventTitle, eventDescription, siteUrl }: AccountNotificationEmailProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>{eventTitle} — QUANTUS AI</Preview>
+    <Preview>{eventTitle} — QUANTUS V2+</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Text style={brand}>QUANTUS AI</Text>
+        <Text style={brand}>QUANTUS V2+</Text>
         <Hr style={divider} />
         <Heading style={h1}>{eventTitle}</Heading>
         <Text style={text}>
@@ -38,7 +38,7 @@ export const AccountNotificationEmail = ({ displayName, eventTitle, eventDescrip
         <Text style={footer}>
           If this wasn't you, please secure your account immediately by resetting your password.
         </Text>
-        <Text style={copyright}>© 2026 QUANTUS AI. All rights reserved.</Text>
+        <Text style={copyright}>© 2026 QUANTUS V2+. All rights reserved.</Text>
       </Container>
     </Body>
   </Html>

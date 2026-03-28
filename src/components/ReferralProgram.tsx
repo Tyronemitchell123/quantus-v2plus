@@ -86,9 +86,9 @@ const ReferralProgram = () => {
 
   const shareCode = () => {
     if (!referralCode) return;
-    const text = `Join QUANTUS AI with my referral code ${referralCode.code} and get 500 bonus credits! https://quantus-loom.lovable.app/auth?ref=${referralCode.code}`;
+    const text = `Join QUANTUS V2+ with my referral code ${referralCode.code} and get 500 bonus credits! https://quantus-loom.lovable.app/auth?ref=${referralCode.code}`;
     if (navigator.share) {
-      navigator.share({ title: "QUANTUS AI Referral", text });
+      navigator.share({ title: "QUANTUS V2+ Referral", text });
     } else {
       navigator.clipboard.writeText(text);
       toast({ title: "Link copied!", description: "Share link copied to clipboard." });
@@ -112,7 +112,7 @@ const ReferralProgram = () => {
               Earn While You <span className="text-gold-gradient">Share</span>
             </h2>
             <p className="text-muted-foreground text-lg mb-6">
-              Sign in to get your unique referral code. Earn 500 credits for every friend who joins QUANTUS AI.
+              Sign in to get your unique referral code. Earn 500 credits for every friend who joins QUANTUS V2+.
             </p>
             <a href="/auth" className="inline-flex items-center gap-2 px-8 py-3 rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity">
               Sign In to Start Referring
@@ -137,7 +137,7 @@ const ReferralProgram = () => {
             Earn While You <span className="text-gold-gradient">Share</span>
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Invite friends to QUANTUS AI. You both earn 500 credits — that's like a free month of AI queries.
+            Invite friends to QUANTUS V2+. You both earn 500 credits — that's like a free month of AI queries.
           </p>
         </motion.div>
 
@@ -237,7 +237,7 @@ const ReferralProgram = () => {
         <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto mt-16">
           {[
             { step: "1", title: "Share Your Code", desc: "Send your unique referral code to friends and colleagues." },
-            { step: "2", title: "They Sign Up", desc: "Your friend creates a QUANTUS AI account using your code." },
+            { step: "2", title: "They Sign Up", desc: "Your friend creates a QUANTUS V2+ account using your code." },
             { step: "3", title: "Both Earn Credits", desc: "You both get 500 credits instantly — that's free AI queries!" },
           ].map((item, i) => (
             <motion.div

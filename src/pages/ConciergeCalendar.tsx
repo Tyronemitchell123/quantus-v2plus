@@ -44,7 +44,7 @@ const categoryConfig: Record<string, { icon: typeof Plane; color: string }> = {
 };
 
 const ConciergeCalendar = () => {
-  useDocumentHead({ title: "Concierge Calendar — Quantus A.I", description: "AI-powered scheduling across all modules with conflict resolution." });
+  useDocumentHead({ title: "Concierge Calendar — Quantus V2+", description: "AI-powered scheduling across all modules with conflict resolution." });
   const [currentMonth] = useState(2); // March
   const [currentYear] = useState(2026);
   const [selectedDay, setSelectedDay] = useState<number | null>(null);

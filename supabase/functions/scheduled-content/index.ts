@@ -12,7 +12,7 @@ const BLOG_TOPICS = [
   "The future of drug discovery with quantum-powered molecular simulation",
   "Why enterprises are adopting quantum AI for supply chain optimization",
   "Quantum machine learning vs classical ML: a practical comparison",
-  "How QUANTUS AI achieves 10^18 operations per second for real-time analytics",
+  "How QUANTUS V2+ achieves 10^18 operations per second for real-time analytics",
   "Building resilient AI systems with quantum error correction",
   "The role of quantum computing in cybersecurity and post-quantum cryptography",
   "Enterprise AI adoption: lessons from Fortune 500 quantum deployments",
@@ -105,7 +105,7 @@ serve(async (req) => {
 
     const blogData = await callAI(
       `Write a blog post about: ${topic}. Target keywords: quantum AI, enterprise intelligence, QUANTUS. Avoid these recent titles: ${recentTitles.slice(0, 5).join("; ")}. Make the angle unique and fresh.`,
-      "You are a senior SaaS content strategist for QUANTUS AI, a quantum-powered enterprise intelligence platform. Write SEO-optimized, original blog posts. Use markdown. The tone should be authoritative yet accessible. Each post must have a unique angle.",
+      "You are a senior SaaS content strategist for QUANTUS V2+, a quantum-powered enterprise intelligence platform. Write SEO-optimized, original blog posts. Use markdown. The tone should be authoritative yet accessible. Each post must have a unique angle.",
       {
         type: "function",
         function: {
@@ -152,8 +152,8 @@ serve(async (req) => {
     const socialTopic = SOCIAL_TOPICS[Math.floor(Math.random() * SOCIAL_TOPICS.length)];
 
     const socialData = await callAI(
-      `Create 4 social media posts (one per platform: twitter, linkedin, facebook, instagram) about: ${socialTopic}. Reference QUANTUS AI naturally. Make each platform-appropriate.`,
-      "You are a social media strategist for QUANTUS AI. Create engaging, platform-optimized posts. Twitter: concise, punchy. LinkedIn: professional, thought-leadership. Facebook: conversational. Instagram: visual-descriptive with emojis.",
+      `Create 4 social media posts (one per platform: twitter, linkedin, facebook, instagram) about: ${socialTopic}. Reference QUANTUS V2+ naturally. Make each platform-appropriate.`,
+      "You are a social media strategist for QUANTUS V2+. Create engaging, platform-optimized posts. Twitter: concise, punchy. LinkedIn: professional, thought-leadership. Facebook: conversational. Instagram: visual-descriptive with emojis.",
       {
         type: "function",
         function: {

@@ -193,13 +193,13 @@ const Documentation = () => {
   const [search, setSearch] = useState("");
 
   useDocumentHead({
-    title: "Documentation — Platform Guide, Security & API | QUANTUS AI",
-    description: "Comprehensive documentation covering platform usage, security architecture, and developer API reference for QUANTUS AI.",
+    title: "Documentation — Platform Guide, Security & API | QUANTUS V2+",
+    description: "Comprehensive documentation covering platform usage, security architecture, and developer API reference for QUANTUS V2+.",
     canonical: "https://quantus-loom.lovable.app/docs",
     jsonLd: {
       "@context": "https://schema.org",
       "@type": "WebPage",
-      name: "QUANTUS AI Documentation",
+      name: "QUANTUS V2+ Documentation",
       description: "Complete platform documentation including user guide, security policies, and API reference.",
       url: "https://quantus-loom.lovable.app/docs",
     },
@@ -219,7 +219,7 @@ const Documentation = () => {
               Complete <span className="text-gold-gradient gold-glow-text">Platform Guide</span>
             </h1>
             <p className="text-muted-foreground text-lg leading-relaxed mb-8">
-              Everything you need to master QUANTUS AI — from deal creation to API integration and security best practices.
+              Everything you need to master QUANTUS V2+ — from deal creation to API integration and security best practices.
             </p>
             <div className="relative max-w-md mx-auto">
               <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
@@ -352,7 +352,7 @@ const Documentation = () => {
                     <CardContent className="p-6">
                       <h3 className="font-display text-lg font-semibold text-foreground mb-2">Security Architecture Overview</h3>
                       <p className="text-sm text-muted-foreground leading-relaxed">
-                        QUANTUS AI implements defense-in-depth security with JWT authentication, role-based access control,
+                        QUANTUS V2+ implements defense-in-depth security with JWT authentication, role-based access control,
                         row-level security on every database table, input validation via Zod schemas, rate limiting on all
                         public endpoints, and encrypted document storage. All payment processing is handled by Stripe with
                         no sensitive financial data stored on our infrastructure.

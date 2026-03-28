@@ -23,7 +23,7 @@ const rows: CompetitorRow[] = [
 ];
 
 const competitors = [
-  { key: "quantus" as const, label: "QUANTUS", highlight: true },
+  { key: "quantus" as const, label: "QUANTUS V2+", highlight: true },
   { key: "palantir" as const, label: "Palantir" },
   { key: "c3ai" as const, label: "C3.ai" },
   { key: "darktrace" as const, label: "Darktrace" },

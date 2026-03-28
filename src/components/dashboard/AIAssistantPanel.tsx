@@ -101,7 +101,7 @@ const AIAssistantPanel = ({ open, onToggle }: Props) => {
                   <Sparkles size={10} className="text-primary" />
                 </div>
                 <div>
-                  <span className="font-display text-sm text-foreground">Quantus Core</span>
+                  <span className="font-display text-sm text-foreground">Quantus V2+ Core</span>
                   <motion.div
                     initial={{ scaleX: 0 }}
                     animate={{ scaleX: 1 }}

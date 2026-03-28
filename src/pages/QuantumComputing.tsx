@@ -41,7 +41,7 @@ const concepts = [
 
 export default function QuantumComputing() {
   useDocumentHead({
-    title: "Quantum Computing Lab — QUANTUS AI",
+    title: "Quantum Computing Lab — QUANTUS V2+",
     description: "Submit real quantum circuits to AWS Braket, track jobs, and view measurement results. Explore Bloch sphere visualizations and algorithm explainers.",
     canonical: "https://quantus-loom.lovable.app/quantum",
   });

@@ -35,7 +35,7 @@ const recentActivity = [
 const fmt = (n: number) => "£" + n.toLocaleString("en-GB");
 
 const WealthDashboard = () => {
-  useDocumentHead({ title: "Wealth Dashboard — Quantus A.I", description: "Real-time portfolio tracking, asset allocation, and net worth analytics powered by AI." });
+  useDocumentHead({ title: "Wealth Dashboard — Quantus V2+", description: "Real-time portfolio tracking, asset allocation, and net worth analytics powered by AI." });
   const [privacyMode, setPrivacyMode] = useState(false);
   const mask = (v: string) => privacyMode ? "••••••••" : v;
 

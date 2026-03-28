@@ -436,7 +436,7 @@ function OperationalPanel({
 /* ── Main Page ── */
 export default function Workflow() {
   useDocumentHead({
-    title: "Workflow & Execution — Quantus A.I",
+    title: "Workflow & Execution — Quantus V2+",
     description: "Phase 6: Precision workflow execution for UHNW deal orchestration.",
   });
 
@@ -546,7 +546,7 @@ export default function Workflow() {
                 />
               </h1>
               <p className="font-body text-sm text-[hsl(var(--primary)/0.7)]">
-                Quantus A.I is coordinating all vendors, documents, and timelines.
+                Quantus V2+ is coordinating all vendors, documents, and timelines.
               </p>
             </motion.div>
 

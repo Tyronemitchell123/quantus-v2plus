@@ -92,7 +92,7 @@ const IntakeAIPanel = ({ message, category }: Props) => {
           <Sparkles size={14} className="text-primary" />
         </div>
         <div>
-          <p className="font-display text-sm text-foreground">Quantus Core</p>
+          <p className="font-display text-sm text-foreground">Quantus V2+ Core</p>
           <p className="font-body text-[9px] tracking-wider text-gold-soft/50 uppercase">AI Anticipation</p>
         </div>
         <motion.div

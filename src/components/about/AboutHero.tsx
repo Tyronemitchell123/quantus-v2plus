@@ -32,7 +32,7 @@ const AboutHero = () => (
           <span className="text-gold-gradient italic">Anticipates</span>
         </h1>
         <p className="text-muted-foreground text-lg md:text-xl leading-relaxed mb-10 max-w-2xl font-body">
-          Quantus A.I was founded to orchestrate every dimension of ultra-high-net-worth life. Our autonomous systems don't assist — they anticipate, strategize, and execute across every vertical.
+          Quantus V2+ was founded to orchestrate every dimension of ultra-high-net-worth life. Our autonomous systems don't assist — they anticipate, strategize, and execute across every vertical.
         </p>
         <div className="flex flex-wrap gap-4">
           <Link
