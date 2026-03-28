@@ -41,3 +41,11 @@ project_id = "eqxgnxgbvvrjaxjiznjo"
     verify_jwt = false
   [functions.deal-completion]
     verify_jwt = false
+  [functions.stripe-connect-accounts]
+    verify_jwt = false
+  [functions.stripe-connect-products]
+    verify_jwt = false
+  [functions.stripe-connect-checkout]
+    verify_jwt = false
+  [functions.stripe-connect-webhook]
+    verify_jwt = false
