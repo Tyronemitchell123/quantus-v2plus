@@ -38,7 +38,7 @@ const DealEngineStrip = () => (
           </div>
           <p className="font-body text-[11px] text-muted-foreground mb-3">{deal.nextAction}</p>
           <Link
-            to="/intake"
+            to="/deals"
             className="inline-flex items-center gap-1 font-body text-[10px] tracking-[0.1em] uppercase text-primary/60 group-hover:text-primary transition-colors"
           >
             Open <ArrowRight size={9} />
