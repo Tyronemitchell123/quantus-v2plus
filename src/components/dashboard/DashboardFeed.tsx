@@ -76,9 +76,9 @@ const DashboardFeed = () => (
               </div>
             </div>
             <p className="font-body text-xs text-foreground/80 mb-3">{deal.action}</p>
-            <span className="font-body text-[10px] tracking-[0.15em] uppercase text-primary/60 group-hover:text-primary transition-colors flex items-center gap-1">
+            <Link to="/deals" className="font-body text-[10px] tracking-[0.15em] uppercase text-primary/60 group-hover:text-primary transition-colors flex items-center gap-1">
               Open Deal <ArrowRight size={10} />
-            </span>
+            </Link>
           </motion.div>
         ))}
       </div>

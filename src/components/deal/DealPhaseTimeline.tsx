@@ -1,8 +1,8 @@
 import { motion } from "framer-motion";
 
-const phaseLabels = ["Intake", "Sourcing", "Outreach", "Negotiation", "Workflow", "Documents", "Completion"];
+const phaseLabels = ["Intake", "Sourcing", "Outreach", "Shortlist", "Negotiation", "Workflow", "Documents", "Completion"];
 const statusToPhase: Record<string, number> = {
-  classified: 1, sourcing: 2, outreach: 3, negotiation: 4, execution: 5, documentation: 6, completed: 7,
+  classified: 1, intake: 1, sourcing: 2, outreach: 3, matching: 3, shortlisting: 4, negotiation: 5, execution: 6, documentation: 7, completed: 8,
 };
 
 interface Deal {
