@@ -147,11 +147,11 @@ const ConnectStorefront = () => {
                 <div key={seller} className="space-y-4">
                   <div className="flex items-center gap-2">
                     <h2 className="text-lg font-semibold text-foreground">{seller}</h2>
-                    <Badge variant="secondary">{sellerProducts.length} products</Badge>
+                    <Badge variant="secondary">{(sellerProducts as any[]).length} products</Badge>
                   </div>
 
                   <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                    {sellerProducts.map((product: any) => (
+                    {(sellerProducts as any[]).map((product: any) => (
                       <Card key={product.id} className="flex flex-col">
                         <CardHeader className="pb-3">
                           <CardTitle className="text-base">{product.name}</CardTitle>
