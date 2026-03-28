@@ -15,11 +15,11 @@ const Footer = () => (
         <div>
           <h4 className="font-body text-[10px] tracking-[0.3em] uppercase text-gold-soft mb-5">Modules</h4>
           <div className="flex flex-col gap-3">
-            <Link to="/dashboard/modules" className="font-body text-xs text-muted-foreground hover:text-primary transition-colors">Aviation</Link>
-            <Link to="/dashboard/modules" className="font-body text-xs text-muted-foreground hover:text-primary transition-colors">Medical</Link>
-            <Link to="/dashboard/modules" className="font-body text-xs text-muted-foreground hover:text-primary transition-colors">Staffing</Link>
-            <Link to="/dashboard/modules" className="font-body text-xs text-muted-foreground hover:text-primary transition-colors">Travel</Link>
-            <Link to="/dashboard/modules" className="font-body text-xs text-muted-foreground hover:text-primary transition-colors">Logistics</Link>
+            <Link to="/modules" className="font-body text-xs text-muted-foreground hover:text-primary transition-colors">Aviation</Link>
+            <Link to="/modules" className="font-body text-xs text-muted-foreground hover:text-primary transition-colors">Medical</Link>
+            <Link to="/modules" className="font-body text-xs text-muted-foreground hover:text-primary transition-colors">Staffing</Link>
+            <Link to="/modules" className="font-body text-xs text-muted-foreground hover:text-primary transition-colors">Travel</Link>
+            <Link to="/modules" className="font-body text-xs text-muted-foreground hover:text-primary transition-colors">Logistics</Link>
           </div>
         </div>
         <div>

@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Plane, Heart, Users, Globe, Truck, Handshake, ArrowRight } from "lucide-react";
+import { Plane, Heart, Users, Globe, Truck, Handshake, Wallet, CalendarDays, ShieldCheck, UserCheck, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const modules = [
@@ -9,6 +9,10 @@ const modules = [
   { icon: Globe, title: "Lifestyle", desc: "Ultra-luxury travel and experiences.", to: "/intake" },
   { icon: Truck, title: "Logistics", desc: "Dispatch and fleet management.", to: "/intake" },
   { icon: Handshake, title: "Partnerships", desc: "Revenue-share and licensing.", to: "/intake" },
+  { icon: Wallet, title: "Wealth", desc: "Portfolio tracking and net worth analytics.", to: "/wealth" },
+  { icon: CalendarDays, title: "Concierge Calendar", desc: "AI-orchestrated scheduling.", to: "/calendar" },
+  { icon: ShieldCheck, title: "Risk & Compliance", desc: "KYC/AML and sanctions screening.", to: "/compliance" },
+  { icon: UserCheck, title: "Private Network", desc: "Vetted partner directory.", to: "/network" },
 ];
 
 const ModuleShortcuts = () => (

@@ -115,7 +115,8 @@ const Navbar = () => {
               {mainLinks.map((link, i) => (
                 <motion.div key={link.to} initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }}>
                   <Link to={link.to} onClick={() => setOpen(false)}
-                    className={`block px-4 py-3 text-base font-body transition-colors ${location.pathname === link.to ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}>
+                    className={`block px-4 py-3 text-base font-body transition-colors ${location.pathname === link.to ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}
+                  >
                     {link.label}
                   </Link>
                 </motion.div>
