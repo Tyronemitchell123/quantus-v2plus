@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard, Briefcase, Grid3X3, Bot, FileText, CreditCard, Settings, X,
-  Search, Plus, Upload, MessageSquare, Headphones,
+  Search, Plus, Upload, MessageSquare, Headphones, Wallet, CalendarDays, ShieldCheck, Users,
 } from "lucide-react";
 import DashboardTopBar from "@/components/dashboard/DashboardTopBar";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
