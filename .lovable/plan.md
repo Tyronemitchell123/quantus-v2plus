@@ -1,34 +1,52 @@
 
 
-## Fix /chat Route (WebGL Crash) and Broken Links/Buttons
+## E2E Audit Results and Fix Plan
 
-### Problem
-The `/chat` page crashes because the `HolographicAvatar` component uses Three.js (`<Canvas>`), which requires WebGL. When WebGL is unavailable (common in sandboxed iframes, some mobile browsers, or restricted environments), the component throws an unrecoverable error that breaks the entire page.
+### Findings
 
-### Plan
+**Working correctly:**
+- Homepage (`/`) loads with hero video, CTA links to `/auth`
+- All navbar links resolve to valid routes (Home, About, Modules, Membership, Docs, Contact)
+- Dashboard sidebar links all point to valid routes
+- Footer links all resolve to valid routes
+- Auth flow (`/auth`, `/reset-password`) registered
+- All 8 deal phases have valid routes
+- Asset files (images, videos) all exist in `src/assets/`
+- `/chat` route is stable with WebGL fallback in place
+- Mobile AI Assistant and Messaging now have send handlers (fixed previously)
 
-#### 1. Make HolographicAvatar gracefully handle WebGL failure
-- Wrap the `<Canvas>` in an error boundary or detect WebGL support before rendering
-- Add a **CSS-only fallback avatar** (animated gradient orb with gold glow) when WebGL is unavailable
-- This fixes the crash on `/chat` and also protects the `ConciergeWidget` which lazy-loads the same component
+**Issues found:**
 
-**File**: `src/components/HolographicAvatar.tsx`
-- Add a `supportsWebGL()` check function
-- If WebGL unavailable, render a pure CSS animated avatar (radial gradient sphere with pulse animation)
-- Wrap Canvas in a local error boundary as a safety net
+1. **New premium modules have no navigation links** — Wealth (`/wealth`), Calendar (`/calendar`), Compliance (`/compliance`), Network (`/network`) are registered as routes but not linked from the Dashboard sidebar, mobile nav, or any other navigation surface. Users cannot discover them.
 
-#### 2. Audit and fix broken links/buttons across pages
-- Review navigation links in Navbar, Sidebar, Footer, and mobile nav for dead routes
-- Ensure all buttons with navigation intent actually call `navigate()` or use `<Link>`
-- Check mobile components (`MobileAIAssistant`, `MobileMessaging`) where send buttons have no handler
+2. **Console warnings: "Function components cannot be given refs"** — React dev-mode warnings from `AnimatePresence` wrapping function components in Navbar and App. Non-breaking but indicates improper ref forwarding.
 
-**Files to check/fix**:
-- `src/components/mobile/MobileAIAssistant.tsx` — Send button has no `onClick` handler, prompts only set input but don't send
-- `src/components/mobile/MobileMessaging.tsx` — Send button has no handler
-- `src/components/Footer.tsx` — verify all links resolve to valid routes
+3. **Footer module links are generic** — All 5 module links (Aviation, Medical, Staffing, Travel, Logistics) point to `/dashboard/modules`, which requires auth. Unauthenticated users clicking these get redirected to auth with no context.
+
+### Fix Plan
+
+#### 1. Add premium module links to Dashboard Sidebar
+**File**: `src/components/dashboard/DashboardSidebar.tsx`
+- Add 4 new entries to `navItems`: Wealth (Wallet icon), Calendar (CalendarDays icon), Compliance (ShieldCheck icon), Network (Users icon)
+
+#### 2. Add premium modules to mobile navigation
+**File**: `src/pages/Dashboard.tsx`
+- Add the 4 new modules to `mobileNavItems` array
+
+#### 3. Add premium modules to Dashboard quick actions or module shortcuts
+**File**: `src/components/dashboard/ModuleShortcuts.tsx` (if exists) or `DashboardFeed.tsx`
+- Add card links for the new modules
+
+#### 4. Fix Footer module links for unauthenticated users
+**File**: `src/components/Footer.tsx`
+- Change module links to `/modules` (the public route that redirects authenticated users to `/dashboard/modules` and shows the landing page to others)
+
+#### 5. Fix AnimatePresence ref warnings
+**File**: `src/components/Navbar.tsx`
+- Wrap the mobile menu's `motion.div` children properly so AnimatePresence doesn't try to pass refs to function components
 
 ### Technical Details
-- WebGL detection: `document.createElement('canvas').getContext('webgl')` returns null when unsupported
-- CSS fallback avatar uses `radial-gradient` + `@keyframes` pulse for a convincing holographic effect without any GPU dependency
-- The fix is non-breaking — when WebGL works, the full 3D avatar still renders
+- Sidebar icons: `Wallet` (wealth), `CalendarDays` (calendar), `ShieldCheck` (compliance), `Users` (network) from `lucide-react`
+- All 4 new routes already exist in `dashboardRoutes` array and are protected, so they'll render inside the dashboard shell correctly
+- Footer fix uses the existing `/modules` route which handles the auth check via `ModulesRedirect`
 
