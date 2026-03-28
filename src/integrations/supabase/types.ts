@@ -1183,6 +1183,75 @@ export type Database = {
           },
         ]
       }
+      stripe_connect_products: {
+        Row: {
+          connected_account_id: string
+          created_at: string
+          currency: string
+          description: string | null
+          id: string
+          name: string
+          price_cents: number
+          stripe_price_id: string | null
+          stripe_product_id: string
+        }
+        Insert: {
+          connected_account_id: string
+          created_at?: string
+          currency?: string
+          description?: string | null
+          id?: string
+          name: string
+          price_cents: number
+          stripe_price_id?: string | null
+          stripe_product_id: string
+        }
+        Update: {
+          connected_account_id?: string
+          created_at?: string
+          currency?: string
+          description?: string | null
+          id?: string
+          name?: string
+          price_cents?: number
+          stripe_price_id?: string | null
+          stripe_product_id?: string
+        }
+        Relationships: []
+      }
+      stripe_connected_accounts: {
+        Row: {
+          contact_email: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          onboarding_complete: boolean
+          stripe_account_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          contact_email?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          onboarding_complete?: boolean
+          stripe_account_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          contact_email?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          onboarding_complete?: boolean
+          stripe_account_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       subscriptions: {
         Row: {
           billing_cycle: string
