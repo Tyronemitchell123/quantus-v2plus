@@ -557,7 +557,7 @@ export default function Negotiation() {
                       >
                         <div className="text-left">
                           <p className="font-body text-[11px] text-foreground">Auto-Negotiation</p>
-                          <p className="font-body text-[9px] text-muted-foreground">Allow Quantus to negotiate automatically</p>
+                          <p className="font-body text-[9px] text-muted-foreground">Allow Quantus V2+ to negotiate automatically</p>
                         </div>
                         {autoNegotiation ? (
                           <ToggleRight size={20} className="text-primary shrink-0" />
