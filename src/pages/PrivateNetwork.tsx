@@ -53,7 +53,7 @@ const tierColors: Record<string, string> = {
 };
 
 const PrivateNetwork = () => {
-  useDocumentHead("Private Network — Quantus A.I", "Exclusive vetted vendor directory with reputation scores and direct booking.");
+  useDocumentHead({ title: "Private Network — Quantus A.I", description: "Exclusive vetted vendor directory with reputation scores and direct booking." });
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
