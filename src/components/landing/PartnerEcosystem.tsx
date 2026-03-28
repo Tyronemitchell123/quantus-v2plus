@@ -77,7 +77,7 @@ const PartnerEcosystem = () => {
             transition={{ delay: 0.2, duration: 0.7 }}
           >
             <form onSubmit={handleSubmit} className="glass-card p-8 space-y-5">
-              <h3 className="font-display text-lg font-medium text-foreground mb-2">Become a Quantus Partner</h3>
+              <h3 className="font-display text-lg font-medium text-foreground mb-2">Become a Quantus V2+ Partner</h3>
 
               <input
                 type="text" placeholder="Name *" value={form.name}

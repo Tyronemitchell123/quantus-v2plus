@@ -14,7 +14,7 @@ const caseStudies = [
     challenge:
       "Legacy supply chain models couldn't predict component failures or optimize procurement across 140+ suppliers spanning 23 countries.",
     solution:
-      "Deployed QUANTUS AI's quantum-enhanced supply chain optimization engine with real-time anomaly detection across every supplier node.",
+      "Deployed QUANTUS V2+'s quantum-enhanced supply chain optimization engine with real-time anomaly detection across every supplier node.",
     results: [
       { metric: "340%", label: "ROI in 12 months" },
       { metric: "$42M", label: "Annual savings" },
@@ -22,7 +22,7 @@ const caseStudies = [
       { metric: "68%", label: "Procurement cycle reduction" },
     ],
     quote:
-      "QUANTUS AI transformed our supply chain from reactive to predictive. We now see disruptions 3 weeks before they happen.",
+      "QUANTUS V2+ transformed our supply chain from reactive to predictive. We now see disruptions 3 weeks before they happen.",
     quoteAuthor: "VP of Operations",
     accent: "quantum-cyan",
   },
@@ -62,7 +62,7 @@ const caseStudies = [
       { metric: "89%", label: "Brand consistency score" },
     ],
     quote:
-      "QUANTUS AI doesn't just optimize campaigns — it orchestrates our entire brand presence with a precision that feels almost prescient.",
+      "QUANTUS V2+ doesn't just optimize campaigns — it orchestrates our entire brand presence with a precision that feels almost prescient.",
     quoteAuthor: "Global CMO",
     accent: "primary",
   },
@@ -108,13 +108,13 @@ const accentText: Record<string, string> = {
 
 const CaseStudies = () => {
   useDocumentHead({
-    title: "Case Studies — Quantum AI ROI & Results | QUANTUS AI",
+    title: "Case Studies — Quantum AI ROI & Results | QUANTUS V2+",
     description: "Real-world quantum AI case studies: 340% ROI, 12,000x simulation speedup, $1.2B alpha generated. See how enterprises achieve quantum advantage.",
     canonical: "https://quantus-loom.lovable.app/case-studies",
     jsonLd: {
       "@context": "https://schema.org",
       "@type": "CollectionPage",
-      name: "QUANTUS AI Case Studies",
+      name: "QUANTUS V2+ Case Studies",
       description: "Real-world quantum AI results across aerospace, finance, marketing, and enterprise operations.",
       url: "https://quantus-loom.lovable.app/case-studies",
     },
@@ -143,7 +143,7 @@ const CaseStudies = () => {
               <span className="text-quantum-gradient quantum-glow-text">Proven</span>
             </h1>
             <p className="text-muted-foreground text-lg leading-relaxed">
-              Real outcomes from real enterprises. See how QUANTUS AI delivers measurable quantum advantage across every service vertical.
+              Real outcomes from real enterprises. See how QUANTUS V2+ delivers measurable quantum advantage across every service vertical.
             </p>
           </motion.div>
         </div>
@@ -288,7 +288,7 @@ const CaseStudies = () => {
                 <span className="text-quantum-gradient">Success Story</span>?
               </h2>
               <p className="text-muted-foreground text-lg max-w-xl mx-auto mb-8">
-                Join the enterprises already achieving quantum advantage. Request a demo to see QUANTUS AI in action.
+                Join the enterprises already achieving quantum advantage. Request a demo to see QUANTUS V2+ in action.
               </p>
               <Link
                 to="/contact"

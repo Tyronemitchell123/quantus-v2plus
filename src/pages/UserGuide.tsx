@@ -93,7 +93,7 @@ const featureHighlights = [
 ];
 
 export default function UserGuide() {
-  useDocumentHead({ title: "User Guide | QUANTUS AI Lab", description: "Learn how to use the AI Text Lab — summarization, sentiment analysis, content generation, and entity extraction." });
+  useDocumentHead({ title: "User Guide | QUANTUS V2+ Lab", description: "Learn how to use the AI Text Lab — summarization, sentiment analysis, content generation, and entity extraction." });
 
   return (
     <div className="min-h-screen bg-background pt-24 pb-20 px-4">
@@ -113,7 +113,7 @@ export default function UserGuide() {
             AI Text Lab Guide
           </h1>
           <p className="text-muted-foreground max-w-2xl mx-auto text-balance text-lg">
-            Everything you need to know to get the most out of QUANTUS AI's text intelligence tools.
+            Everything you need to know to get the most out of QUANTUS V2+'s text intelligence tools.
           </p>
           <div className="mt-6">
             <Link to="/nlp">

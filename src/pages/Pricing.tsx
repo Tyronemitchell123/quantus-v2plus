@@ -136,13 +136,13 @@ const Pricing = () => {
   const { getPrice, isStoreBilling } = useMobilePricing(tiers, annual);
   const navigate = useNavigate();
   useDocumentHead({
-    title: "Pricing — Free to Enterprise | QUANTUS AI",
+    title: "Pricing — Free to Enterprise | QUANTUS V2+",
     description: "Start free with 100 AI queries/mo. Scale to Starter ($29/mo), Professional ($149/mo), Teams ($49/user/mo), or Enterprise custom.",
     canonical: "https://quantus-loom.lovable.app/pricing",
     jsonLd: {
       "@context": "https://schema.org",
       "@type": "WebPage",
-      name: "QUANTUS AI Pricing",
+      name: "QUANTUS V2+ Pricing",
       description: "Transparent pricing from free to enterprise. Start with 100 AI queries/month at no cost.",
       url: "https://quantus-loom.lovable.app/pricing",
     },
@@ -162,7 +162,7 @@ const Pricing = () => {
     }
 
     if (tierKey === "free") {
-      toast({ title: "Welcome to QUANTUS AI!", description: "Your free plan is active with 100 AI queries/month." });
+      toast({ title: "Welcome to QUANTUS V2+!", description: "Your free plan is active with 100 AI queries/month." });
       return;
     }
 

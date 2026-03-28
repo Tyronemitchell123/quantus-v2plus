@@ -249,7 +249,7 @@ export default function QuantumProgressLCD({ jobStatus, submitting }: QuantumPro
                 ))}
               </div>
               <span className="font-mono text-[9px] tracking-[0.2em] uppercase text-quantum-purple/70">
-                QUANTUS QPU MONITOR
+                QUANTUS V2+ QPU MONITOR
               </span>
             </div>
             <span className="font-mono text-[9px] text-muted-foreground/40">

@@ -49,7 +49,7 @@ const OutreachAIPanel = ({ outreachList, messagesMap, category }: Props) => {
     responded.length > 0 && `${responded[0]?.vendor_name} has the fastest response time.`,
     outreachList.some((o) => o.negotiation_ready) && "One or more vendors are ready for negotiation.",
     outreachList.length > 2 && "Multiple vendors allow for competitive positioning.",
-    "Quantus recommends a formal tone for initial outreach.",
+    "Quantus V2+ recommends a formal tone for initial outreach.",
   ].filter(Boolean) as string[];
 
   return (

@@ -143,7 +143,7 @@ serve(async (req) => {
         messages: [
           {
             role: "system",
-            content: `You are the Sourcing Engine for Quantus A.I, an ultra-luxury UHNW orchestration platform. Given a classified deal profile, generate realistic, detailed sourcing options.
+            content: `You are the Sourcing Engine for Quantus V2+, an ultra-luxury UHNW orchestration platform. Given a classified deal profile, generate realistic, detailed sourcing options.
 
 Category: ${category}
 Scoring factors: ${factorNames}

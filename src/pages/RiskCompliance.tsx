@@ -43,7 +43,7 @@ const statusIcon = (s: string) => {
 const riskColor = (score: number) => score < 30 ? "text-emerald-500" : score < 60 ? "text-amber-500" : "text-rose-500";
 
 const RiskCompliance = () => {
-  useDocumentHead({ title: "Risk & Compliance — Quantus A.I", description: "KYC/AML checks, sanctions screening, and regulatory compliance monitoring." });
+  useDocumentHead({ title: "Risk & Compliance — Quantus V2+", description: "KYC/AML checks, sanctions screening, and regulatory compliance monitoring." });
   const [search, setSearch] = useState("");
   const filtered = complianceChecks.filter(c => c.entity.toLowerCase().includes(search.toLowerCase()));
 

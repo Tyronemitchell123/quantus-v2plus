@@ -47,7 +47,7 @@ const MobileNotificationBanner = () => {
 
             <div className="flex-1 min-w-0">
               <p className="font-body text-[9px] tracking-[0.15em] uppercase text-primary/60 mb-0.5">
-                Quantus Update
+                Quantus V2+ Update
               </p>
               <p className="font-body text-[12px] text-foreground/90 truncate">
                 {notification.text}

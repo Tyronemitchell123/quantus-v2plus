@@ -89,7 +89,7 @@ const aiPromptsBySection: Record<NavSection, string[]> = {
 
 const DocumentsBilling = () => {
   useDocumentHead({
-    title: "Documents & Billing — Quantus A.I",
+    title: "Documents & Billing — Quantus V2+",
     description: "Automated contracts, invoices, commission tracking, and closing packages.",
   });
 

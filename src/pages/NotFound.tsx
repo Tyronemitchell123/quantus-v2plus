@@ -7,8 +7,8 @@ const NotFound = () => {
   const location = useLocation();
 
   useDocumentHead({
-    title: "Page Not Found — Quantus A.I",
-    description: "The page you're looking for doesn't exist. Return to the Quantus A.I platform.",
+    title: "Page Not Found — Quantus V2+",
+    description: "The page you're looking for doesn't exist. Return to the Quantus V2+ platform.",
   });
 
   useEffect(() => {

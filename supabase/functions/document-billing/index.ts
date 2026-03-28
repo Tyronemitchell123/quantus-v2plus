@@ -71,7 +71,7 @@ serve(async (req) => {
               model: "google/gemini-2.5-flash",
               messages: [{
                 role: "system",
-                content: "You are a luxury document generator for Quantus A.I, a UHNW private intelligence platform. Generate professional, cinematic, luxury-grade documents. Return JSON array."
+                content: "You are a luxury document generator for Quantus V2+, a UHNW private intelligence platform. Generate professional, cinematic, luxury-grade documents. Return JSON array."
               }, {
                 role: "user",
                 content: `Generate ${templates.length} documents for a ${deal.category} deal.

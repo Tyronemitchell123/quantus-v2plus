@@ -19,10 +19,10 @@ export const DealIntakeConfirmationEmail = ({
 }: DealIntakeConfirmationProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Your request {dealNumber} has been received — QUANTUS AI</Preview>
+    <Preview>Your request {dealNumber} has been received — QUANTUS V2+</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Text style={brand}>QUANTUS AI</Text>
+        <Text style={brand}>QUANTUS V2+</Text>
         <Hr style={divider} />
         <Heading style={h1}>Request Received</Heading>
         <Text style={text}>
@@ -35,8 +35,8 @@ export const DealIntakeConfirmationEmail = ({
           Our AI engine is now analysing your requirements and will begin sourcing options immediately. You'll receive an update once matching vendors are identified.
         </Text>
         <Button style={button} href={`${siteUrl}/dashboard`}>Track Your Request</Button>
-        <Text style={footer}>This is an automated notification from QUANTUS AI.</Text>
-        <Text style={copyright}>© 2026 QUANTUS AI. All rights reserved.</Text>
+        <Text style={footer}>This is an automated notification from QUANTUS V2+.</Text>
+        <Text style={copyright}>© 2026 QUANTUS V2+. All rights reserved.</Text>
       </Container>
     </Body>
   </Html>

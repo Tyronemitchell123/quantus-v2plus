@@ -21,10 +21,10 @@ interface ContactConfirmationEmailProps {
 export const ContactConfirmationEmail = ({ name, message }: ContactConfirmationEmailProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>We received your message — QUANTUS AI</Preview>
+    <Preview>We received your message — QUANTUS V2+</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Text style={brand}>QUANTUS AI</Text>
+        <Text style={brand}>QUANTUS V2+</Text>
         <Hr style={divider} />
         <Heading style={h1}>Message received</Heading>
         <Text style={text}>
@@ -35,7 +35,7 @@ export const ContactConfirmationEmail = ({ name, message }: ContactConfirmationE
         <Text style={footer}>
           If you have additional questions, simply reply to this email.
         </Text>
-        <Text style={copyright}>© 2026 QUANTUS AI. All rights reserved.</Text>
+        <Text style={copyright}>© 2026 QUANTUS V2+. All rights reserved.</Text>
       </Container>
     </Body>
   </Html>

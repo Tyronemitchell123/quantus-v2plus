@@ -6,7 +6,7 @@ const milestones = [
     year: "2024 Q1",
     icon: Rocket,
     title: "Founded",
-    desc: "QUANTUS AI launches with a singular vision: autonomous quantum intelligence for the enterprise.",
+    desc: "QUANTUS V2+ launches with a singular vision: autonomous quantum intelligence for the enterprise.",
   },
   {
     year: "2024 Q3",

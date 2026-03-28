@@ -56,7 +56,7 @@ const providerData: Record<string, Provider[]> = {
     { name: "The Kusnacht Practice", location: "Zurich, Switzerland", specialties: ["Psychiatry", "Addiction", "Burnout Recovery"], availability: "Immediate", privacy: "Ultra", successRate: "93%", accreditation: "Swiss Medic", programs: ["Burnout recovery — 4 weeks", "Executive stress management", "Trauma therapy intensive"], price: "From CHF 75,000/month", notes: ["One client at a time", "Lake-side villa setting"] },
   ],
   "off-market": [
-    { name: "Private Clinic — Geneva", location: "Geneva, Switzerland", specialties: ["Undisclosed Specialty", "Concierge Medicine"], availability: "By referral only", privacy: "Ultra — NDA Required", successRate: "—", accreditation: "Swiss Medic", programs: ["Bespoke treatment protocol", "Direct physician access 24/7"], price: "Upon inquiry", notes: ["Not publicly listed", "Introduction via Quantus only"] },
+    { name: "Private Clinic — Geneva", location: "Geneva, Switzerland", specialties: ["Undisclosed Specialty", "Concierge Medicine"], availability: "By referral only", privacy: "Ultra — NDA Required", successRate: "—", accreditation: "Swiss Medic", programs: ["Bespoke treatment protocol", "Direct physician access 24/7"], price: "Upon inquiry", notes: ["Not publicly listed", "Introduction via Quantus V2+ only"] },
   ],
 };
 
@@ -64,7 +64,7 @@ const marketInsights = [
   { text: "Executive diagnostic demand up 23% this quarter across Swiss clinics.", icon: Activity },
   { text: "Two new regenerative medicine programs added in Munich.", icon: Dna },
   { text: "Longevity clinic wait times shortened — early Q2 availability.", icon: Clock },
-  { text: "Off-market clinic in Geneva accepting Quantus referrals.", icon: Lock },
+  { text: "Off-market clinic in Geneva accepting Quantus V2+ referrals.", icon: Lock },
 ];
 
 const providerPerformance = [

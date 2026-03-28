@@ -75,7 +75,7 @@ serve(async (req) => {
         messages: [
           {
             role: "system",
-            content: `You are the intake classification engine for Quantus A.I, an ultra-luxury UHNW orchestration platform. Analyze the client's request and extract structured deal intelligence. Be precise and thorough. For budget, extract numeric values in the currency mentioned (default USD). For timeline, estimate days. For priority scoring: consider deal value, urgency signals, complexity. Score each 0-100.`,
+            content: `You are the intake classification engine for Quantus V2+, an ultra-luxury UHNW orchestration platform. Analyze the client's request and extract structured deal intelligence. Be precise and thorough. For budget, extract numeric values in the currency mentioned (default USD). For timeline, estimate days. For priority scoring: consider deal value, urgency signals, complexity. Score each 0-100.`,
           },
           { role: "user", content: message },
         ],
@@ -109,7 +109,7 @@ serve(async (req) => {
                 complexity_score: { type: "integer", description: "0-100 complexity rating" },
                 probability_score: { type: "integer", description: "0-100 likelihood of closing" },
                 deal_value_estimate: { type: "number", description: "Estimated deal value in USD" },
-                confirmation_message: { type: "string", description: "A luxury-grade confirmation message in Quantus A.I's elegant tone, 2-3 sentences acknowledging the request with specifics" },
+                confirmation_message: { type: "string", description: "A luxury-grade confirmation message in Quantus V2+'s elegant tone, 2-3 sentences acknowledging the request with specifics" },
               },
               required: ["category", "sub_category", "intent", "urgency_score", "complexity_score", "probability_score", "confirmation_message"],
             },

@@ -72,7 +72,7 @@ const categoryIcons: Record<string, typeof Plane> = {
 
 export default function VendorOutreachPage() {
   useDocumentHead({
-    title: "Vendor Outreach — Quantus A.I",
+    title: "Vendor Outreach — Quantus V2+",
     description: "Automated vendor engagement and negotiation preparation.",
   });
 
@@ -261,7 +261,7 @@ export default function VendorOutreachPage() {
                     className="w-20 h-px bg-primary/40 origin-left mb-2"
                   />
                   <p className="font-body text-xs text-gold-soft/70">
-                    Quantus A.I is contacting verified vendors and securing availability.
+                    Quantus V2+ is contacting verified vendors and securing availability.
                   </p>
                 </div>
               </div>
@@ -302,7 +302,7 @@ export default function VendorOutreachPage() {
                 </div>
                 <h2 className="font-display text-xl font-medium text-foreground mb-2">Ready to Engage Vendors</h2>
                 <p className="font-body text-sm text-muted-foreground mb-6 max-w-md mx-auto">
-                  Quantus will craft personalized outreach with strategic negotiation angles for each vendor.
+                  Quantus V2+ will craft personalized outreach with strategic negotiation angles for each vendor.
                 </p>
                 <button
                   onClick={generateOutreach}

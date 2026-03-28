@@ -65,14 +65,14 @@ const WhyQuantus = () => {
           className="text-center mb-16"
         >
           <p className="text-primary font-display text-sm tracking-[0.3em] uppercase mb-4">
-            Why QUANTUS AI
+            Why QUANTUS V2+
           </p>
           <h2 className="font-display text-3xl md:text-5xl font-bold text-foreground">
             Built for Those Who{" "}
             <span className="text-gold-gradient gold-glow-text">Define the Future</span>
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto mt-4 leading-relaxed">
-            Five core differentiators that set QUANTUS AI apart from every other platform on the market.
+            Five core differentiators that set QUANTUS V2+ apart from every other platform on the market.
           </p>
         </motion.div>
 

@@ -21,7 +21,7 @@ function buildPayload(mode: Mode, context: Record<string, unknown>) {
 
   if (mode === "blog") {
     base.messages = [
-      { role: "system", content: `You are a senior SaaS content strategist for QUANTUS AI, a quantum-powered enterprise intelligence platform. Write SEO-optimized blog posts that establish thought leadership in quantum computing and AI. Use markdown formatting. Include natural keyword placement. The tone should be authoritative yet accessible.` },
+      { role: "system", content: `You are a senior SaaS content strategist for QUANTUS V2+, a quantum-powered enterprise intelligence platform. Write SEO-optimized blog posts that establish thought leadership in quantum computing and AI. Use markdown formatting. Include natural keyword placement. The tone should be authoritative yet accessible.` },
       { role: "user", content: `Write a blog post about: ${context.topic}. Target keywords: ${(context.keywords as string[])?.join(", ") || "quantum AI, enterprise intelligence"}. Target length: ${context.length || "1200"} words.` },
     ];
     base.tools = [{
@@ -50,7 +50,7 @@ function buildPayload(mode: Mode, context: Record<string, unknown>) {
 
   if (mode === "social") {
     base.messages = [
-      { role: "system", content: `You are a social media strategist for QUANTUS AI. Create engaging, platform-optimized posts that drive engagement and awareness. Adapt tone and format per platform.` },
+      { role: "system", content: `You are a social media strategist for QUANTUS V2+. Create engaging, platform-optimized posts that drive engagement and awareness. Adapt tone and format per platform.` },
       { role: "user", content: `Create ${context.count || 3} social media posts for ${context.platform || "all platforms"} about: ${context.topic}. Tone: ${context.tone || "professional yet engaging"}.` },
     ];
     base.tools = [{
@@ -84,7 +84,7 @@ function buildPayload(mode: Mode, context: Record<string, unknown>) {
 
   if (mode === "ad-copy") {
     base.messages = [
-      { role: "system", content: `You are an expert digital advertising copywriter for QUANTUS AI. Create high-converting ad copy with compelling headlines, benefit-driven body text, and strong CTAs. Follow platform character limits.` },
+      { role: "system", content: `You are an expert digital advertising copywriter for QUANTUS V2+. Create high-converting ad copy with compelling headlines, benefit-driven body text, and strong CTAs. Follow platform character limits.` },
       { role: "user", content: `Create ad copy for ${context.platform || "google"} targeting: ${context.audience || "enterprise CTOs and data scientists"}. Campaign focus: ${context.topic}. Generate ${context.count || 3} variations.` },
     ];
     base.tools = [{
@@ -120,7 +120,7 @@ function buildPayload(mode: Mode, context: Record<string, unknown>) {
   if (mode === "seo-audit" || mode === "bulk-seo") {
     const pages = (context.pages as string[]) || ["/", "/services", "/pricing", "/about", "/quantum", "/benefits", "/case-studies"];
     base.messages = [
-      { role: "system", content: `You are a senior SEO strategist for QUANTUS AI, a quantum-powered enterprise AI SaaS. Audit pages and generate optimized meta tags, JSON-LD structured data, and keyword strategies. Be specific and actionable.` },
+      { role: "system", content: `You are a senior SEO strategist for QUANTUS V2+, a quantum-powered enterprise AI SaaS. Audit pages and generate optimized meta tags, JSON-LD structured data, and keyword strategies. Be specific and actionable.` },
       { role: "user", content: `Audit these pages and generate SEO metadata: ${pages.join(", ")}. The site sells quantum-powered AI analytics for enterprises. Generate optimized meta titles (<60 chars), descriptions (<160 chars), keywords, JSON-LD, and an SEO score (0-100) with improvement suggestions.` },
     ];
     base.tools = [{

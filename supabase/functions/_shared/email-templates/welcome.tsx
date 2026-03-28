@@ -23,14 +23,14 @@ interface WelcomeEmailProps {
 export const WelcomeEmail = ({ displayName, siteUrl }: WelcomeEmailProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Welcome to QUANTUS AI — let's get started</Preview>
+    <Preview>Welcome to QUANTUS V2+ — let's get started</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Text style={brand}>QUANTUS AI</Text>
+        <Text style={brand}>QUANTUS V2+</Text>
         <Hr style={divider} />
         <Heading style={h1}>Welcome aboard, {displayName}</Heading>
         <Text style={text}>
-          Your QUANTUS AI account is ready. You now have access to quantum-enhanced intelligence, NLP tools, and advanced analytics.
+          Your QUANTUS V2+ account is ready. You now have access to quantum-enhanced intelligence, NLP tools, and advanced analytics.
         </Text>
         <Text style={text}>Here's what you can do next:</Text>
         <Text style={listItem}>⚛️ Run your first quantum circuit</Text>
@@ -40,7 +40,7 @@ export const WelcomeEmail = ({ displayName, siteUrl }: WelcomeEmailProps) => (
         <Text style={footer}>
           Need help? Reply to this email or visit our documentation.
         </Text>
-        <Text style={copyright}>© 2026 QUANTUS AI. All rights reserved.</Text>
+        <Text style={copyright}>© 2026 QUANTUS V2+. All rights reserved.</Text>
       </Container>
     </Body>
   </Html>

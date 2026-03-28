@@ -35,7 +35,7 @@ const ShortlistInsights = ({ options, selectedId, category }: Props) => {
     insights.push(`${options[2].name} is a strong alternative worth considering.`);
   }
   if (insights.length === 0) {
-    insights.push("All options have been scored and ranked by Quantus A.I.");
+    insights.push("All options have been scored and ranked by Quantus V2+.");
   }
 
   return (
@@ -46,7 +46,7 @@ const ShortlistInsights = ({ options, selectedId, category }: Props) => {
       className="space-y-4 lg:sticky lg:top-40"
     >
       <p className="font-body text-[10px] tracking-[0.25em] uppercase text-gold-soft/50 mb-2">
-        Quantus Core Recommendations
+        Quantus V2+ Core Recommendations
       </p>
 
       {/* Intelligence */}

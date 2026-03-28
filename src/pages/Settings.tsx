@@ -22,7 +22,7 @@ const Settings = () => {
   const [activeTab, setActiveTab] = useState("commission");
 
   useDocumentHead({
-    title: "Settings — QUANTUS AI",
+    title: "Settings — QUANTUS V2+",
     description: "Manage your data exports, anomaly alerts, webhooks, and API keys.",
   });
 

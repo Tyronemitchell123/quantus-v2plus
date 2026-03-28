@@ -107,7 +107,7 @@ Deno.serve(async (req) => {
         to: email,
         from: `${SITE_NAME} <noreply@${SENDER_DOMAIN}>`,
         sender_domain: SENDER_DOMAIN,
-        subject: 'We received your message — QUANTUS AI',
+        subject: 'We received your message — QUANTUS V2+',
         html,
         text,
         purpose: 'transactional',

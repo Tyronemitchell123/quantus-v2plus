@@ -61,7 +61,7 @@ const categoryIcons: Record<string, typeof Plane> = {
 
 export default function Sourcing() {
   useDocumentHead({
-    title: "Sourcing Engine — Quantus A.I",
+    title: "Sourcing Engine — Quantus V2+",
     description: "AI-curated shortlists scored and ranked for your deal.",
   });
 
@@ -168,7 +168,7 @@ export default function Sourcing() {
                     className="w-20 h-px bg-primary/40 origin-left mb-2"
                   />
                   <p className="font-body text-xs text-gold-soft/70">
-                    Quantus A.I is gathering intelligence from your private network.
+                    Quantus V2+ is gathering intelligence from your private network.
                   </p>
                 </div>
               </div>
@@ -202,7 +202,7 @@ export default function Sourcing() {
                 </div>
                 <h2 className="font-display text-xl font-medium text-foreground mb-2">Ready to Source</h2>
                 <p className="font-body text-sm text-muted-foreground mb-6 max-w-md mx-auto">
-                  Quantus will scan global networks, evaluate options, and curate an intelligence-ranked shortlist.
+                  Quantus V2+ will scan global networks, evaluate options, and curate an intelligence-ranked shortlist.
                 </p>
                 <button
                   onClick={runSourcing}
@@ -286,7 +286,7 @@ export default function Sourcing() {
                         <Star size={18} className="text-primary" />
                       </div>
                       <div>
-                        <p className="font-body text-[10px] tracking-[0.2em] uppercase text-primary/60 mb-2">Quantus A.I</p>
+                        <p className="font-body text-[10px] tracking-[0.2em] uppercase text-primary/60 mb-2">Quantus V2+</p>
                         <p className="font-body text-sm text-foreground/90 leading-relaxed italic">"{presentationMessage}"</p>
                       </div>
                     </div>

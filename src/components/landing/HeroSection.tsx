@@ -33,7 +33,7 @@ const HeroSection = () => {
           transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
         >
           <h1 className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-[96px] font-semibold leading-[0.95] tracking-wide mb-6">
-            <span className="text-gold-gradient">Quantus</span>
+            <span className="text-gold-gradient">Quantus V2+</span>
             <br />
             <span className="text-foreground font-light italic text-4xl sm:text-5xl md:text-6xl lg:text-7xl">A.I</span>
           </h1>

@@ -19,10 +19,10 @@ export const DealVendorMatchEmail = ({
 }: DealVendorMatchProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Vendors matched for {dealNumber} — QUANTUS AI</Preview>
+    <Preview>Vendors matched for {dealNumber} — QUANTUS V2+</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Text style={brand}>QUANTUS AI</Text>
+        <Text style={brand}>QUANTUS V2+</Text>
         <Hr style={divider} />
         <Heading style={h1}>Vendor Match Complete</Heading>
         <Text style={text}>
@@ -38,8 +38,8 @@ export const DealVendorMatchEmail = ({
           ✅ Outreach has been initiated. You'll be notified when vendor responses are received and negotiations can begin.
         </Text>
         <Button style={button} href={`${siteUrl}/dashboard`}>Review Matched Vendors</Button>
-        <Text style={footer}>This is an automated notification from QUANTUS AI.</Text>
-        <Text style={copyright}>© 2026 QUANTUS AI. All rights reserved.</Text>
+        <Text style={footer}>This is an automated notification from QUANTUS V2+.</Text>
+        <Text style={copyright}>© 2026 QUANTUS V2+. All rights reserved.</Text>
       </Container>
     </Body>
   </Html>

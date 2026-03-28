@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const testimonials = [
-  { quote: "Quantus A.I feels like having a private office that never sleeps.", source: "UHNW Family Office, London" },
+  { quote: "Quantus V2+ feels like having a private office that never sleeps.", source: "UHNW Family Office, London" },
   { quote: "The orchestration across aviation and staffing was seamless. Nothing else comes close.", source: "Private Client, Dubai" },
   { quote: "We reduced deal cycle time by 60%. The AI anticipates what we need before we ask.", source: "Executive Advisor, Geneva" },
 ];

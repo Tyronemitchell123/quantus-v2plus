@@ -19,10 +19,10 @@ export const DealSourcingUpdateEmail = ({
 }: DealSourcingUpdateProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Sourcing underway for {dealNumber} — QUANTUS AI</Preview>
+    <Preview>Sourcing underway for {dealNumber} — QUANTUS V2+</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Text style={brand}>QUANTUS AI</Text>
+        <Text style={brand}>QUANTUS V2+</Text>
         <Hr style={divider} />
         <Heading style={h1}>Sourcing In Progress</Heading>
         <Text style={text}>
@@ -36,8 +36,8 @@ export const DealSourcingUpdateEmail = ({
           🔍 What happens next: Options are scored on quality, cost, availability, and risk before being shortlisted for your review.
         </Text>
         <Button style={button} href={`${siteUrl}/dashboard`}>View Sourcing Results</Button>
-        <Text style={footer}>This is an automated notification from QUANTUS AI.</Text>
-        <Text style={copyright}>© 2026 QUANTUS AI. All rights reserved.</Text>
+        <Text style={footer}>This is an automated notification from QUANTUS V2+.</Text>
+        <Text style={copyright}>© 2026 QUANTUS V2+. All rights reserved.</Text>
       </Container>
     </Body>
   </Html>

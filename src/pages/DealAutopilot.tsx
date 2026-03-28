@@ -41,7 +41,7 @@ const DealAutopilot = () => {
   const navigate = useNavigate();
 
   useDocumentHead({
-    title: "AI Deal Autopilot — Autonomous Deal Execution | QUANTUS AI",
+    title: "AI Deal Autopilot — Autonomous Deal Execution | QUANTUS V2+",
     description: "Fully autonomous deal execution from intake to completion. Zero human input required.",
     canonical: "https://quantus-loom.lovable.app/autopilot",
   });

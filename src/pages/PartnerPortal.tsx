@@ -30,9 +30,9 @@ const mockRequests = [
 ];
 
 const mockMessages = [
-  { id: 1, from: "Quantus Operations", preview: "Regarding REQ-2741 — can you confirm availability for the Falcon 8X?", time: "12 min ago", unread: true },
-  { id: 2, from: "Quantus Operations", preview: "Updated requirements for REQ-2738 attached.", time: "2 hours ago", unread: true },
-  { id: 3, from: "Quantus Operations", preview: "REQ-2735 successfully closed. Commission processed.", time: "1 day ago", unread: false },
+  { id: 1, from: "Quantus V2+ Operations", preview: "Regarding REQ-2741 — can you confirm availability for the Falcon 8X?", time: "12 min ago", unread: true },
+  { id: 2, from: "Quantus V2+ Operations", preview: "Updated requirements for REQ-2738 attached.", time: "2 hours ago", unread: true },
+  { id: 3, from: "Quantus V2+ Operations", preview: "REQ-2735 successfully closed. Commission processed.", time: "1 day ago", unread: false },
 ];
 
 const complianceDocs = [
@@ -73,7 +73,7 @@ const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.06 } } };
 const fadeUp = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0, transition: { duration: 0.35 } } };
 
 const PartnerPortal = () => {
-  useDocumentHead({ title: "Partner Portal — Quantus A.I", description: "Elite vendor operations suite." });
+  useDocumentHead({ title: "Partner Portal — Quantus V2+", description: "Elite vendor operations suite." });
   const [section, setSection] = useState<PortalSection>("dashboard");
   const [selectedRequest, setSelectedRequest] = useState<string | null>(null);
   const [liveDeals, setLiveDeals] = useState<typeof mockRequests>([]);
@@ -304,7 +304,7 @@ const PartnerPortal = () => {
                   <button onClick={() => setSelectedRequest(null)} className="font-body text-[10px] tracking-[0.2em] uppercase text-[hsl(var(--gold))]/50 hover:text-[hsl(var(--gold))] transition-colors mb-2">← Back to {section === "dashboard" ? "Dashboard" : "Requests"}</button>
 
                   <motion.div variants={fadeUp} className="bg-[#111114]/80 border border-[hsl(var(--gold))]/[0.08] rounded-xl p-6">
-                    <p className="font-body text-[9px] tracking-[0.3em] uppercase text-[hsl(var(--gold))]/40 mb-2">Request from Quantus A.I</p>
+                    <p className="font-body text-[9px] tracking-[0.3em] uppercase text-[hsl(var(--gold))]/40 mb-2">Request from Quantus V2+</p>
                     <h2 className="font-display text-lg text-[#F5F5F7] mb-1">{openRequest.title}</h2>
                     <p className="font-body text-[10px] text-[#F5F5F7]/30">{openRequest.id} · {openRequest.category} · Due {openRequest.deadline} · Response within {openRequest.responseTime}</p>
                   </motion.div>
@@ -348,7 +348,7 @@ const PartnerPortal = () => {
 
                   {/* AI Suggestions */}
                   <motion.div variants={fadeUp} className="bg-[#111114]/80 border border-[hsl(var(--gold))]/[0.12] rounded-xl p-6">
-                    <p className="font-body text-[9px] tracking-[0.3em] uppercase text-[hsl(var(--gold))]/40 mb-3">Quantus Core Suggestions</p>
+                    <p className="font-body text-[9px] tracking-[0.3em] uppercase text-[hsl(var(--gold))]/40 mb-3">Quantus V2+ Core Suggestions</p>
                     <div className="space-y-2">
                       {["Your typical rate for super-mid charters on this route is £38,000–£44,000.", "Similar past requests were accepted at £41,500 average.", "Adding ground transport increases acceptance probability by 22%."].map((s, i) => (
                         <div key={i} className="flex items-start gap-2">
@@ -457,7 +457,7 @@ const PartnerPortal = () => {
                 <motion.div variants={stagger} initial="hidden" animate="show" className="space-y-6">
                   <motion.div variants={fadeUp}>
                     <h2 className="font-display text-lg text-[#F5F5F7] mb-1">Compliance & Documents</h2>
-                    <p className="font-body text-[10px] text-[#F5F5F7]/30">Maintain trust and alignment with the Quantus network.</p>
+                    <p className="font-body text-[10px] text-[#F5F5F7]/30">Maintain trust and alignment with the Quantus V2+ network.</p>
                   </motion.div>
 
                   {/* Upload zone */}
@@ -493,7 +493,7 @@ const PartnerPortal = () => {
                 <motion.div variants={stagger} initial="hidden" animate="show" className="space-y-6">
                   <motion.div variants={fadeUp}>
                     <h2 className="font-display text-lg text-[#F5F5F7] mb-1">Performance Scorecard</h2>
-                    <p className="font-body text-[10px] text-[#F5F5F7]/30">Your reputation within the Quantus partner network.</p>
+                    <p className="font-body text-[10px] text-[#F5F5F7]/30">Your reputation within the Quantus V2+ partner network.</p>
                   </motion.div>
 
                   {/* Dial gauges */}
@@ -590,7 +590,7 @@ const PartnerPortal = () => {
                       { title: "Privacy Tier", desc: "Data handling and NDA levels", icon: Shield },
                       { title: "Team Members", desc: "Manage team access and roles", icon: Users },
                       { title: "Notification Preferences", desc: "Email, SMS, and in-app alerts", icon: Bell },
-                      { title: "Contact Support", desc: "Direct line to Quantus operations", icon: Phone },
+                      { title: "Contact Support", desc: "Direct line to Quantus V2+ operations", icon: Phone },
                     ].map(setting => (
                       <motion.div key={setting.title} variants={fadeUp}
                         className="bg-[#111114]/80 border border-[hsl(var(--gold))]/[0.08] rounded-xl p-5 flex items-center justify-between hover:border-[hsl(var(--gold))]/20 transition-all duration-300 cursor-pointer group">
@@ -616,7 +616,7 @@ const PartnerPortal = () => {
 
         {/* Footer */}
         <footer className="hidden lg:flex px-6 py-3 border-t border-[hsl(var(--gold))]/[0.05] items-center justify-between">
-          <p className="font-body text-[8px] tracking-[0.25em] uppercase text-[#F5F5F7]/15">Quantus A.I — Partner Network</p>
+          <p className="font-body text-[8px] tracking-[0.25em] uppercase text-[#F5F5F7]/15">Quantus V2+ — Partner Network</p>
           <p className="font-body text-[8px] text-[#F5F5F7]/10">v1.0.0</p>
         </footer>
       </div>

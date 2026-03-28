@@ -19,7 +19,7 @@ const categories = ["Aviation Broker", "Medical Clinic", "Staffing Agency", "Hot
 const regions = ["United Kingdom", "Europe", "Middle East", "Asia Pacific", "North America", "Africa", "Global"];
 
 const PartnerOnboarding = () => {
-  useDocumentHead({ title: "Partner Onboarding — Quantus A.I", description: "Join the Quantus partner ecosystem." });
+  useDocumentHead({ title: "Partner Onboarding — Quantus V2+", description: "Join the Quantus V2+ partner ecosystem." });
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -124,7 +124,7 @@ const PartnerOnboarding = () => {
 
               <div className="glass-card p-5 space-y-3">
                 <p className="font-body text-xs text-foreground leading-relaxed">
-                  By accepting this agreement, you agree to the Quantus A.I Partner Commission Structure, including standard rates for your category, payment terms (Net 30), and performance-based incentives.
+                  By accepting this agreement, you agree to the Quantus V2+ Partner Commission Structure, including standard rates for your category, payment terms (Net 30), and performance-based incentives.
                 </p>
                 <div className="space-y-2">
                   {["Standard commission rates apply per category", "Payment processed within 30 days of deal completion", "Performance bonuses for top-tier partners", "Quarterly review and rate adjustment"].map(term => (
@@ -176,7 +176,7 @@ const PartnerOnboarding = () => {
               </div>
 
               <div>
-                <h2 className="font-display text-xl font-medium mb-2">You are now an active Quantus Partner.</h2>
+                <h2 className="font-display text-xl font-medium mb-2">You are now an active Quantus V2+ Partner.</h2>
                 <p className="font-body text-sm text-muted-foreground">Your profile has been created and your credentials verified.</p>
               </div>
 

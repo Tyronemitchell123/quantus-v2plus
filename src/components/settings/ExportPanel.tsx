@@ -94,7 +94,7 @@ const ExportPanel = () => {
         <!DOCTYPE html>
         <html>
         <head>
-          <title>QUANTUS AI Report</title>
+          <title>QUANTUS V2+ Report</title>
           <style>
             body { font-family: 'Segoe UI', sans-serif; padding: 40px; color: #1a1a1a; max-width: 800px; margin: 0 auto; }
             h1 { color: #b8972f; border-bottom: 2px solid #b8972f; padding-bottom: 8px; }
@@ -110,7 +110,7 @@ const ExportPanel = () => {
           </style>
         </head>
         <body>
-          <h1>QUANTUS AI — Analytics Report</h1>
+          <h1>QUANTUS V2+ — Analytics Report</h1>
           <p class="meta">Generated: ${new Date().toLocaleString()}</p>
           
           <h2>Subscription</h2>

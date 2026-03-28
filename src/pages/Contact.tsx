@@ -21,13 +21,13 @@ type ContactAnalysis = {
 
 const Contact = () => {
   useDocumentHead({
-    title: "Contact — Quantus A.I",
-    description: "Get in touch with Quantus A.I. Speak to our team about enterprise AI, quantum computing, or custom integrations.",
+    title: "Contact — Quantus V2+",
+    description: "Get in touch with Quantus V2+. Speak to our team about enterprise AI, quantum computing, or custom integrations.",
     canonical: "https://quantus-loom.lovable.app/contact",
     jsonLd: {
       "@context": "https://schema.org",
       "@type": "ContactPage",
-      name: "Contact Quantus A.I",
+      name: "Contact Quantus V2+",
       url: "https://quantus-loom.lovable.app/contact",
     },
   });
@@ -156,7 +156,7 @@ const Contact = () => {
                 <div className="glass-card rounded-2xl p-8 text-center gold-glow mb-8">
                   <CheckCircle className="text-primary mx-auto mb-4" size={48} />
                   <h3 className="font-display text-2xl font-bold text-foreground mb-2">Message Received & Analyzed</h3>
-                  <p className="text-muted-foreground text-sm">QUANTUS AI has instantly processed your inquiry.</p>
+                  <p className="text-muted-foreground text-sm">QUANTUS V2+ has instantly processed your inquiry.</p>
                 </div>
                 <AIFallbackBanner status={analyzeStatus} onRetry={() => analyze("analyze-contact")} loading={analyzing} className="mb-6" />
 

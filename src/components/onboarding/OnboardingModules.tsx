@@ -48,7 +48,7 @@ const OnboardingModules = ({ selectedModules, onToggleModule }: Props) => {
         transition={{ delay: 0.4 }}
         className="font-body text-base text-gold-soft/70 mb-8"
       >
-        Quantus A.I adapts its intelligence based on the modules you select.
+        Quantus V2+ adapts its intelligence based on the modules you select.
       </motion.p>
 
       {/* Select All / Skip */}

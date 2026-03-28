@@ -92,7 +92,7 @@ const IntakeAIPanel = ({ message, category }: Props) => {
           <Sparkles size={14} className="text-primary" />
         </div>
         <div>
-          <p className="font-display text-sm text-foreground">Quantus Core</p>
+          <p className="font-display text-sm text-foreground">Quantus V2+ Core</p>
           <p className="font-body text-[9px] tracking-wider text-gold-soft/50 uppercase">AI Anticipation</p>
         </div>
         <motion.div
@@ -107,7 +107,7 @@ const IntakeAIPanel = ({ message, category }: Props) => {
       <div className="flex items-center gap-2 mb-5">
         <div className={`w-2 h-2 rounded-full ${isActive ? "bg-primary animate-pulse" : "bg-muted-foreground/30"}`} />
         <span className="font-body text-[10px] text-muted-foreground">
-          {isActive ? "Quantus anticipates you may need:" : "Begin typing to activate anticipation..."}
+          {isActive ? "Quantus V2+ anticipates you may need:" : "Begin typing to activate anticipation..."}
         </span>
       </div>
 
@@ -142,7 +142,7 @@ const IntakeAIPanel = ({ message, category }: Props) => {
           className="mt-5 pt-4 border-t border-border/50"
         >
           <p className="font-body text-[10px] text-gold-soft/50 leading-relaxed">
-            Quantus will classify, score, and route your request through the 7-phase engine automatically.
+            Quantus V2+ will classify, score, and route your request through the 7-phase engine automatically.
           </p>
         </motion.div>
       )}

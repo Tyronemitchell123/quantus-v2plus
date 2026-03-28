@@ -110,7 +110,7 @@ function ArchivalPanel({ dealId }: { dealId: string | null }) {
   );
 }
 
-/* ── Right Column: Quantus Core Reflections ── */
+/* ── Right Column: Quantus V2+ Core Reflections ── */
 function ReflectionsPanel({ summary, tierRec, upsells }: {
   summary: DealSummary | null;
   tierRec: TierRec | null;
@@ -131,7 +131,7 @@ function ReflectionsPanel({ summary, tierRec, upsells }: {
       {/* Core Notes */}
       <div className="border border-[hsl(var(--primary)/0.2)] bg-[hsl(var(--card))] rounded-xl p-4" style={{ boxShadow: "inset 0 1px 20px hsl(var(--primary) / 0.03)" }}>
         <h3 className="font-display text-sm text-[hsl(var(--foreground))] mb-3">
-          Quantus Core Notes
+          Quantus V2+ Core Notes
           <div className="w-10 h-px bg-[hsl(var(--primary))] mt-1" />
         </h3>
         <div className="space-y-2.5">
@@ -217,7 +217,7 @@ function ReflectionsPanel({ summary, tierRec, upsells }: {
 
 /* ── Main Page ── */
 const DealCompletion = () => {
-  useDocumentHead({ title: "Finalization & Closeout — Quantus A.I", description: "Phase 7: Ceremonial deal completion for UHNW operations." });
+  useDocumentHead({ title: "Finalization & Closeout — Quantus V2+", description: "Phase 7: Ceremonial deal completion for UHNW operations." });
   const [params] = useSearchParams();
   const dealId = params.get("deal");
 
@@ -289,7 +289,7 @@ const DealCompletion = () => {
             />
           </h1>
           <p className="font-body text-sm text-[hsl(var(--primary)/0.7)]">
-            Quantus A.I has finalized all tasks, documents, and confirmations.
+            Quantus V2+ has finalized all tasks, documents, and confirmations.
           </p>
         </motion.div>
 

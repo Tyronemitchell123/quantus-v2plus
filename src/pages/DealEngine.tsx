@@ -36,7 +36,7 @@ type Deal = {
 };
 
 const DealEngine = () => {
-  useDocumentHead({ title: "Deal Engine — Quantus A.I", description: "The 7-phase orchestration engine." });
+  useDocumentHead({ title: "Deal Engine — Quantus V2+", description: "The 7-phase orchestration engine." });
   const [deals, setDeals] = useState<Deal[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string>("all");
@@ -189,7 +189,7 @@ const DealEngine = () => {
         {/* Footer */}
         <footer className="px-6 py-3 border-t border-border/50 flex items-center justify-between">
           <p className="font-body text-[9px] tracking-[0.2em] uppercase text-muted-foreground/40">
-            Quantus A.I — The Obsidian Standard
+            Quantus V2+ — The Obsidian Standard
           </p>
           <p className="font-body text-[9px] text-muted-foreground/30">v1.0.0</p>
         </footer>

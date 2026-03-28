@@ -33,7 +33,7 @@ const MobileAIAssistant = ({ open, onClose }: MobileAIAssistantProps) => {
             <div className="flex items-center gap-2">
               <Sparkles size={14} className="text-primary" />
               <span className="font-body text-xs tracking-[0.2em] uppercase text-foreground">
-                Quantus Core
+                Quantus V2+ Core
               </span>
             </div>
             <button
@@ -101,7 +101,7 @@ const MobileAIAssistant = ({ open, onClose }: MobileAIAssistantProps) => {
               <input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask Quantus..."
+                placeholder="Ask Quantus V2+..."
                 className="flex-1 bg-secondary/50 border border-primary/20 px-4 py-3 font-body text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/30 transition-colors rounded-none"
               />
               <button

@@ -18,7 +18,7 @@ const OnboardingWelcome = ({ onContinue }: Props) => (
       transition={{ delay: 0.5, duration: 0.8 }}
       className="font-display text-4xl sm:text-5xl md:text-6xl font-medium text-foreground mb-4"
     >
-      Welcome to <span className="text-gold-gradient">Quantus A.I</span>
+      Welcome to <span className="text-gold-gradient">Quantus V2+</span>
     </motion.h1>
     <motion.p
       initial={{ opacity: 0 }}

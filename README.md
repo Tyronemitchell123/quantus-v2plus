@@ -48,7 +48,7 @@ This project is built with:
 
 ## Quantum Computing Integration (AWS Braket)
 
-QUANTUS AI integrates with **AWS Braket** for real quantum circuit execution.
+QUANTUS V2+ integrates with **AWS Braket** for real quantum circuit execution.
 
 ### Setup
 

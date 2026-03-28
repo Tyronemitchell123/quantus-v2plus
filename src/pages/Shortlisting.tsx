@@ -54,7 +54,7 @@ const categoryIcons: Record<string, typeof Plane> = {
 
 export default function Shortlisting() {
   useDocumentHead({
-    title: "Shortlisting — Quantus A.I",
+    title: "Shortlisting — Quantus V2+",
     description: "Your curated shortlist of top options.",
   });
 
@@ -144,7 +144,7 @@ export default function Shortlisting() {
                     className="w-20 h-px bg-primary/40 origin-left mb-2"
                   />
                   <p className="font-body text-xs text-gold-soft/70">
-                    Quantus A.I has filtered, ranked, and optimized the best options for you.
+                    Quantus V2+ has filtered, ranked, and optimized the best options for you.
                   </p>
                 </div>
               </div>

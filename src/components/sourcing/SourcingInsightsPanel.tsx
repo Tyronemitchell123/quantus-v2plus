@@ -52,7 +52,7 @@ const SourcingInsightsPanel = ({ category, loading, results }: Props) => {
   return (
     <div className="space-y-3">
       <p className="font-body text-[10px] tracking-[0.25em] uppercase text-gold-soft/50 mb-2">
-        Quantus Core Observations
+        Quantus V2+ Core Observations
       </p>
 
       <div className="glass-card rounded-xl p-5 border-primary/10">

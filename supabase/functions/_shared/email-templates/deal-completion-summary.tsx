@@ -23,10 +23,10 @@ export const DealCompletionSummaryEmail = ({
 }: DealCompletionSummaryProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Deal {dealNumber} completed — QUANTUS AI</Preview>
+    <Preview>Deal {dealNumber} completed — QUANTUS V2+</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Text style={brand}>QUANTUS AI</Text>
+        <Text style={brand}>QUANTUS V2+</Text>
         <Hr style={divider} />
         <Heading style={h1}>Deal Completed 🎉</Heading>
         <Text style={text}>
@@ -58,8 +58,8 @@ export const DealCompletionSummaryEmail = ({
           All documents have been archived and the commission has been logged. You can view the full deal history in your dashboard.
         </Text>
         <Button style={button} href={`${siteUrl}/dashboard`}>View Deal Summary</Button>
-        <Text style={footer}>This is an automated notification from QUANTUS AI.</Text>
-        <Text style={copyright}>© 2026 QUANTUS AI. All rights reserved.</Text>
+        <Text style={footer}>This is an automated notification from QUANTUS V2+.</Text>
+        <Text style={copyright}>© 2026 QUANTUS V2+. All rights reserved.</Text>
       </Container>
     </Body>
   </Html>

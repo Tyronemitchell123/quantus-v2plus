@@ -59,7 +59,7 @@ const vendorData: Record<string, VendorData[]> = {
     { name: "Lanserhof Group", tags: ["Wellness", "Longevity", "Alpine"], responseSpeed: "< 6 hours", privacy: "Obsidian", rating: "9.8", dealVolume: "9 deals", notes: ["World-leading health resort group", "LANS Medicum partnership"], compliance: { nda: "Active", insurance: "€15M", accreditation: "TÜV / ISO 9001" }, score: 98 },
   ],
   "off-market": [
-    { name: "Confidential — Ref #QV-1192", tags: ["Off-Market", "Multi-Domain", "By Referral"], responseSpeed: "By arrangement", privacy: "Obsidian", rating: "N/A", dealVolume: "Confidential", notes: ["Specialist operator — NDA required", "Quantus-vetted and approved"], compliance: { nda: "Required", insurance: "Verified", accreditation: "Private" }, score: 99 },
+    { name: "Confidential — Ref #QV-1192", tags: ["Off-Market", "Multi-Domain", "By Referral"], responseSpeed: "By arrangement", privacy: "Obsidian", rating: "N/A", dealVolume: "Confidential", notes: ["Specialist operator — NDA required", "Quantus V2+-vetted and approved"], compliance: { nda: "Required", insurance: "Verified", accreditation: "Private" }, score: 99 },
   ],
   pending: [
     { name: "Atlas Concierge Services", tags: ["Pending", "Travel", "Multi-Domain"], responseSpeed: "Under review", privacy: "TBC", rating: "Pending", dealVolume: "0 deals", notes: ["Application received 12 Mar", "Background check in progress"], compliance: { nda: "Pending", insurance: "Under review", accreditation: "Under review" }, score: 0 },
@@ -113,7 +113,7 @@ const insightsData: Record<string, { market: string[]; reliability: { name: stri
   "off-market": {
     market: ["Off-market vendors: available by referral.", "NDA required before introduction."],
     reliability: [{ name: "Ref #QV-1192", score: 10 }],
-    compliance: ["Enhanced vetting completed.", "All operators Quantus-approved.", "Confidentiality guaranteed."],
+    compliance: ["Enhanced vetting completed.", "All operators Quantus V2+-approved.", "Confidentiality guaranteed."],
     history: ["Operations data: confidential."],
   },
   pending: {

@@ -24,10 +24,10 @@ interface BookingConfirmationEmailProps {
 export const BookingConfirmationEmail = ({ displayName, bookingDetails, bookingDate, siteUrl }: BookingConfirmationEmailProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Your booking is confirmed — QUANTUS AI</Preview>
+    <Preview>Your booking is confirmed — QUANTUS V2+</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Text style={brand}>QUANTUS AI</Text>
+        <Text style={brand}>QUANTUS V2+</Text>
         <Hr style={divider} />
         <Heading style={h1}>Booking confirmed</Heading>
         <Text style={text}>
@@ -41,7 +41,7 @@ export const BookingConfirmationEmail = ({ displayName, bookingDetails, bookingD
         <Text style={footer}>
           Need to make changes? Contact us by replying to this email.
         </Text>
-        <Text style={copyright}>© 2026 QUANTUS AI. All rights reserved.</Text>
+        <Text style={copyright}>© 2026 QUANTUS V2+. All rights reserved.</Text>
       </Container>
     </Body>
   </Html>
