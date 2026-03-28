@@ -134,7 +134,10 @@ const MobileMessaging = ({ open, onClose }: MobileMessagingProps) => {
               >
                 <Mic size={15} />
               </button>
-              <button className="w-9 h-9 bg-primary text-primary-foreground flex items-center justify-center">
+              <button
+                onClick={() => { if (input.trim()) { setInput(""); } }}
+                className="w-9 h-9 bg-primary text-primary-foreground flex items-center justify-center"
+              >
                 <Send size={14} />
               </button>
             </div>

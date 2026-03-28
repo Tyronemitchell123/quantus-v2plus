@@ -104,7 +104,10 @@ const MobileAIAssistant = ({ open, onClose }: MobileAIAssistantProps) => {
                 placeholder="Ask Quantus..."
                 className="flex-1 bg-secondary/50 border border-primary/20 px-4 py-3 font-body text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/30 transition-colors rounded-none"
               />
-              <button className="w-10 h-10 bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 transition-colors">
+              <button
+                onClick={() => { if (input.trim()) { setInput(""); } }}
+                className="w-10 h-10 bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 transition-colors"
+              >
                 <Send size={16} />
               </button>
             </div>
