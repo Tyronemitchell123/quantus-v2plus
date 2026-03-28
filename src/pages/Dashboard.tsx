@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard, Briefcase, Grid3X3, Bot, FileText, CreditCard, Settings, X,
-  Search, Plus, Upload, MessageSquare, Headphones,
+  Search, Plus, Upload, MessageSquare, Headphones, Wallet, CalendarDays, ShieldCheck, Users,
 } from "lucide-react";
 import DashboardTopBar from "@/components/dashboard/DashboardTopBar";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
@@ -23,6 +23,10 @@ const mobileNavItems = [
   { icon: Briefcase, label: "Deals", to: "/intake" },
   { icon: Grid3X3, label: "Modules", to: "/dashboard/modules" },
   { icon: Bot, label: "AI Assistant", to: "/chat" },
+  { icon: Wallet, label: "Wealth", to: "/wealth" },
+  { icon: CalendarDays, label: "Calendar", to: "/calendar" },
+  { icon: ShieldCheck, label: "Compliance", to: "/compliance" },
+  { icon: Users, label: "Network", to: "/network" },
   { icon: FileText, label: "Documents", to: "/documents" },
   { icon: CreditCard, label: "Billing", to: "/account/subscription" },
   { icon: Settings, label: "Settings", to: "/settings" },
