@@ -64,6 +64,9 @@ const WealthDashboard = lazy(() => import("./pages/WealthDashboard"));
 const ConciergeCalendar = lazy(() => import("./pages/ConciergeCalendar"));
 const RiskCompliance = lazy(() => import("./pages/RiskCompliance"));
 const PrivateNetwork = lazy(() => import("./pages/PrivateNetwork"));
+const ConnectOnboarding = lazy(() => import("./pages/ConnectOnboarding"));
+const ConnectProducts = lazy(() => import("./pages/ConnectProducts"));
+const ConnectStorefront = lazy(() => import("./pages/ConnectStorefront"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
@@ -77,7 +80,7 @@ const R = ({ name, children }: { name: string; children: React.ReactNode }) => (
 );
 
 // Routes that use the dashboard shell (no global navbar/footer)
-const dashboardRoutes = ["/dashboard", "/deals", "/chat", "/intake", "/sourcing", "/outreach", "/shortlist", "/negotiation", "/workflow", "/documents", "/deal-completion", "/settings", "/account/subscription", "/partner", "/admin", "/marketing", "/nlp", "/quantum", "/recommendations", "/autopilot", "/intelligence", "/vault", "/wealth", "/calendar", "/compliance", "/network"];
+const dashboardRoutes = ["/dashboard", "/deals", "/chat", "/intake", "/sourcing", "/outreach", "/shortlist", "/negotiation", "/workflow", "/documents", "/deal-completion", "/settings", "/account/subscription", "/partner", "/admin", "/marketing", "/nlp", "/quantum", "/recommendations", "/autopilot", "/intelligence", "/vault", "/wealth", "/calendar", "/compliance", "/network", "/connect"];
 
 const AnimatedRoutes = () => {
   const location = useLocation();
@@ -146,6 +149,10 @@ const AnimatedRoutes = () => {
             <Route path="/calendar" element={<ProtectedRoute><R name="Calendar"><ConciergeCalendar /></R></ProtectedRoute>} />
             <Route path="/compliance" element={<ProtectedRoute><R name="Compliance"><RiskCompliance /></R></ProtectedRoute>} />
             <Route path="/network" element={<ProtectedRoute><R name="Network"><PrivateNetwork /></R></ProtectedRoute>} />
+
+            <Route path="/connect/onboarding" element={<ProtectedRoute><R name="Connect Onboarding"><ConnectOnboarding /></R></ProtectedRoute>} />
+            <Route path="/connect/products" element={<ProtectedRoute><R name="Connect Products"><ConnectProducts /></R></ProtectedRoute>} />
+            <Route path="/connect/storefront" element={<ProtectedRoute><R name="Connect Storefront"><ConnectStorefront /></R></ProtectedRoute>} />
 
             <Route path="/privacy" element={<R name="Privacy"><PageTransition><Privacy /><Footer /></PageTransition></R>} />
             <Route path="/terms" element={<R name="Terms"><PageTransition><Terms /><Footer /></PageTransition></R>} />
