@@ -142,6 +142,10 @@ const AnimatedRoutes = () => {
             <Route path="/autopilot" element={<ProtectedRoute><R name="Autopilot"><DealAutopilot /></R></ProtectedRoute>} />
             <Route path="/intelligence" element={<ProtectedRoute><R name="Intelligence"><MarketIntelligence /></R></ProtectedRoute>} />
             <Route path="/vault" element={<ProtectedRoute><R name="Vault"><DocumentVault /></R></ProtectedRoute>} />
+            <Route path="/wealth" element={<ProtectedRoute><R name="Wealth"><WealthDashboard /></R></ProtectedRoute>} />
+            <Route path="/calendar" element={<ProtectedRoute><R name="Calendar"><ConciergeCalendar /></R></ProtectedRoute>} />
+            <Route path="/compliance" element={<ProtectedRoute><R name="Compliance"><RiskCompliance /></R></ProtectedRoute>} />
+            <Route path="/network" element={<ProtectedRoute><R name="Network"><PrivateNetwork /></R></ProtectedRoute>} />
 
             <Route path="/privacy" element={<R name="Privacy"><PageTransition><Privacy /><Footer /></PageTransition></R>} />
             <Route path="/terms" element={<R name="Terms"><PageTransition><Terms /><Footer /></PageTransition></R>} />
