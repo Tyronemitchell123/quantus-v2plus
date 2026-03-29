@@ -21,6 +21,7 @@ type VendorOutreach = {
   negotiation_ready: boolean;
   negotiation_prep: Record<string, any>;
   documents_requested: string[];
+  created_at: string;
 };
 
 type VendorMessage = {
