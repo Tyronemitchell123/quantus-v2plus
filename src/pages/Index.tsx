@@ -1,6 +1,7 @@
 import useDocumentHead from "@/hooks/use-document-head";
 import HeroSection from "@/components/landing/HeroSection";
 import ValueProposition from "@/components/landing/ValueProposition";
+import SocialProof from "@/components/landing/SocialProof";
 import ModuleShowcase from "@/components/landing/ModuleShowcase";
 import CinematicStrip from "@/components/landing/CinematicStrip";
 import MembershipTiers from "@/components/landing/MembershipTiers";
