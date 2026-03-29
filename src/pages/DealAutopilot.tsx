@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Bot, Zap, Play, Pause, RotateCcw, CheckCircle2, AlertTriangle, Clock, TrendingUp, ArrowRight, Shield, Settings2, Activity, Plus, Send } from "lucide-react";
@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import DashboardTopBar from "@/components/dashboard/DashboardTopBar";
 import useDocumentHead from "@/hooks/use-document-head";
+import { supabase } from "@/integrations/supabase/client";
 
 const mockPipeline = [
   { id: "1", dealNumber: "QAI-7A3F2B1C", category: "Aviation", stage: "Sourcing", progress: 72, status: "active", eta: "2h 14m", value: "$1.2M" },
@@ -24,12 +25,75 @@ const mockPipeline = [
   { id: "5", dealNumber: "QAI-5D2B1C8G", category: "Logistics", stage: "Intake", progress: 15, status: "active", eta: "6h 20m", value: "$560K" },
 ];
 
-const autopilotStats = [
-  { label: "Deals Processed", value: "1,247", change: "+18%", icon: Zap },
-  { label: "Avg. Completion Time", value: "4.2h", change: "-32%", icon: Clock },
-  { label: "Revenue Generated", value: "$14.8M", change: "+24%", icon: TrendingUp },
-  { label: "Success Rate", value: "97.3%", change: "+2.1%", icon: CheckCircle2 },
-];
+const formatCurrency = (cents: number) => {
+  if (cents >= 100_000_00) return `$${(cents / 100_00).toFixed(1)}M`;
+  if (cents >= 1_000_00) return `$${(cents / 100).toLocaleString("en-US", { maximumFractionDigits: 0 })}`;
+  return `$${(cents / 100).toFixed(2)}`;
+};
+
+const useAutopilotStats = () => {
+  const [stats, setStats] = useState([
+    { label: "Deals Processed", value: "—", change: "—", icon: Zap },
+    { label: "Avg. Completion Time", value: "—", change: "—", icon: Clock },
+    { label: "Revenue Generated", value: "—", change: "—", icon: TrendingUp },
+    { label: "Success Rate", value: "—", change: "—", icon: CheckCircle2 },
+  ]);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      const now = new Date();
+      const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+      const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString();
+      const lastMonthEnd = thisMonthStart;
+
+      // Fetch all data in parallel
+      const [dealsRes, commissionsRes, lastMonthCommRes, completedDealsRes] = await Promise.all([
+        supabase.from("deals").select("id, status, completed_at, created_at", { count: "exact" }),
+        supabase.from("commission_logs").select("commission_cents").gte("created_at", thisMonthStart),
+        supabase.from("commission_logs").select("commission_cents").gte("created_at", lastMonthStart).lt("created_at", lastMonthEnd),
+        supabase.from("deals").select("created_at, completed_at").eq("status", "completed").not("completed_at", "is", null),
+      ]);
+
+      // Deals processed (total)
+      const totalDeals = dealsRes.count || 0;
+
+      // Revenue this month from commissions
+      const revenueThisMonth = (commissionsRes.data || []).reduce((sum, r) => sum + (r.commission_cents || 0), 0);
+      const revenueLastMonth = (lastMonthCommRes.data || []).reduce((sum, r) => sum + (r.commission_cents || 0), 0);
+      const revenueChange = revenueLastMonth > 0
+        ? `${revenueThisMonth >= revenueLastMonth ? "+" : ""}${Math.round(((revenueThisMonth - revenueLastMonth) / revenueLastMonth) * 100)}%`
+        : revenueThisMonth > 0 ? "+100%" : "—";
+
+      // Avg completion time (hours) for completed deals
+      const completedDeals = (completedDealsRes.data || []).filter(d => d.completed_at && d.created_at);
+      let avgHours = 0;
+      if (completedDeals.length > 0) {
+        const totalHours = completedDeals.reduce((sum, d) => {
+          const diff = new Date(d.completed_at!).getTime() - new Date(d.created_at).getTime();
+          return sum + diff / (1000 * 60 * 60);
+        }, 0);
+        avgHours = totalHours / completedDeals.length;
+      }
+
+      // Success rate
+      const completedCount = (dealsRes.data || []).filter(d => d.status === "completed").length;
+      const cancelledCount = (dealsRes.data || []).filter(d => d.status === "cancelled").length;
+      const resolvedTotal = completedCount + cancelledCount;
+      const successRate = resolvedTotal > 0 ? ((completedCount / resolvedTotal) * 100).toFixed(1) : "—";
+
+      setStats([
+        { label: "Deals Processed", value: totalDeals.toLocaleString(), change: `${totalDeals} total`, icon: Zap },
+        { label: "Avg. Completion Time", value: avgHours > 0 ? `${avgHours.toFixed(1)}h` : "—", change: `${completedDeals.length} completed`, icon: Clock },
+        { label: "Revenue Generated", value: revenueThisMonth > 0 ? formatCurrency(revenueThisMonth) : "$0", change: revenueChange, icon: TrendingUp },
+        { label: "Success Rate", value: successRate !== "—" ? `${successRate}%` : "—", change: `${completedCount}/${resolvedTotal}`, icon: CheckCircle2 },
+      ]);
+    };
+
+    fetchStats();
+  }, []);
+
+  return stats;
+};
 
 const DealAutopilot = () => {
   const [autopilotEnabled, setAutopilotEnabled] = useState(true);
