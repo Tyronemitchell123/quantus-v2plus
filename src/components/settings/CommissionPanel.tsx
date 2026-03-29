@@ -132,6 +132,37 @@ export default function CommissionPanel() {
     }
   };
 
+  const previewPayout = async () => {
+    setPayoutLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("process-commission-payouts", {
+        body: { action: "preview" },
+      });
+      if (error) throw new Error(error.message);
+      setPayoutPreview(data);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to load payout preview");
+    }
+    setPayoutLoading(false);
+  };
+
+  const executePayout = async () => {
+    setPayoutLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("process-commission-payouts", {
+        body: { action: "execute" },
+      });
+      if (error) throw new Error(error.message);
+      if (data?.error) throw new Error(data.error);
+      setPayoutResult(data);
+      setPayoutPreview(null);
+      toast.success(`Commission payout of ${data.total} processed via Stripe`);
+    } catch (err: any) {
+      toast.error(err.message || "Payout failed");
+    }
+    setPayoutLoading(false);
+  };
+
   const getEffectiveRate = (category: string, customRate: number | null) =>
     customRate !== null && customRate !== undefined ? customRate : DEFAULT_RATES[category] || 0;
 
