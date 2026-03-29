@@ -52,12 +52,20 @@ const HeroSection = () => {
             A cinematic, modular, anticipatory ecosystem for UHNW clients, private offices, and elite operators.
           </p>
 
-          <Link
-            to="/auth"
-            className="inline-block px-10 py-4 font-body text-xs font-medium tracking-[0.3em] uppercase border-2 border-primary text-primary rounded-xl hover:bg-primary hover:text-primary-foreground transition-all duration-500 gold-glow"
-          >
-            Enter the Ecosystem
-          </Link>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link
+              to="/auth"
+              className="inline-block px-10 py-4 font-body text-xs font-medium tracking-[0.3em] uppercase bg-primary text-primary-foreground rounded-xl hover:opacity-90 transition-all duration-500 gold-glow"
+            >
+              Start Free Trial
+            </Link>
+            <Link
+              to="/pricing"
+              className="inline-block px-10 py-4 font-body text-xs font-medium tracking-[0.3em] uppercase border-2 border-primary/50 text-primary rounded-xl hover:border-primary hover:bg-primary/5 transition-all duration-500"
+            >
+              View Pricing
+            </Link>
+          </div>
         </motion.div>
       </motion.div>
 

@@ -36,13 +36,22 @@ const FinalCTA = () => (
         <p className="font-body text-muted-foreground mb-10 text-base leading-relaxed">
           Experience the future of ultra-premium service orchestration.
         </p>
-        <Link
-          to="/auth"
-          className="inline-flex items-center gap-2 px-10 py-4 font-body text-xs font-medium tracking-[0.3em] uppercase border-2 border-primary text-primary rounded-xl hover:bg-primary hover:text-primary-foreground transition-all duration-500 gold-glow"
-        >
-          Enter the Ecosystem
-          <ArrowRight size={14} />
-        </Link>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <Link
+            to="/auth"
+            className="inline-flex items-center gap-2 px-10 py-4 font-body text-xs font-medium tracking-[0.3em] uppercase bg-primary text-primary-foreground rounded-xl hover:opacity-90 transition-all duration-500 gold-glow"
+          >
+            Start Free — No Card Required
+            <ArrowRight size={14} />
+          </Link>
+          <Link
+            to="/pricing"
+            className="inline-flex items-center gap-2 px-8 py-4 font-body text-xs font-medium tracking-[0.3em] uppercase text-primary hover:text-primary/80 transition-all"
+          >
+            Compare Plans
+            <ArrowRight size={14} />
+          </Link>
+        </div>
       </motion.div>
     </div>
   </section>

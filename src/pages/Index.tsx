@@ -46,6 +46,7 @@ const Index = () => {
       <Testimonials />
       <div className="luxury-divider" />
       <FinalCTA />
+      <LeadCapture />
     </main>
   );
 };
