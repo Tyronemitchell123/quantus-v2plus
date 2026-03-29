@@ -203,7 +203,7 @@ const Services = () => {
               <h2 className="font-display text-3xl md:text-5xl font-bold text-foreground">
                 Supercharge Your <span className="text-quantum-gradient">Capabilities</span>
               </h2>
-              <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
+              <p className="text-foreground/70 mt-4 max-w-2xl mx-auto">
                 Bolt on enterprise-grade services to any plan — from dedicated quantum pipelines to AI model training labs.
               </p>
             </motion.div>
