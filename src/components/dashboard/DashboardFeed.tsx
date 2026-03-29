@@ -118,9 +118,9 @@ const DashboardFeed = () => (
               </div>
             </div>
             {!task.done && (
-              <span className="font-body text-[10px] tracking-wider uppercase text-gold-soft/40 group-hover:text-primary/60 transition-colors shrink-0">
+              <Link to="/deals" className="font-body text-[10px] tracking-wider uppercase text-gold-soft/40 group-hover:text-primary/60 transition-colors shrink-0">
                 View
-              </span>
+              </Link>
             )}
           </motion.div>
         ))}
