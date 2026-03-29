@@ -42,6 +42,9 @@ export default function CommissionPanel() {
   const [saving, setSaving] = useState(false);
   const [search, setSearch] = useState("");
   const [tab, setTab] = useState<"deals" | "vendors">("deals");
+  const [payoutLoading, setPayoutLoading] = useState(false);
+  const [payoutPreview, setPayoutPreview] = useState<any>(null);
+  const [payoutResult, setPayoutResult] = useState<any>(null);
 
   useEffect(() => {
     fetchData();
