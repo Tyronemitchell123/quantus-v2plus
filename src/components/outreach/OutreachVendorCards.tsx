@@ -4,6 +4,7 @@ import {
   ChevronDown, ChevronUp, Mail, Phone, Building2, FileText,
   RefreshCw, Shield, Target, User, MailOpen, Reply, Loader2,
 } from "lucide-react";
+import OutreachResponseTimer from "./OutreachResponseTimer";
 
 type VendorOutreach = {
   id: string;
