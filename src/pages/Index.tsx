@@ -8,6 +8,7 @@ import HowItWorks from "@/components/landing/HowItWorks";
 import PartnerEcosystem from "@/components/landing/PartnerEcosystem";
 import Testimonials from "@/components/landing/Testimonials";
 import FinalCTA from "@/components/landing/FinalCTA";
+import LeadCapture from "@/components/landing/LeadCapture";
 
 const Index = () => {
   useDocumentHead({
@@ -45,6 +46,7 @@ const Index = () => {
       <Testimonials />
       <div className="luxury-divider" />
       <FinalCTA />
+      <LeadCapture />
     </main>
   );
 };
