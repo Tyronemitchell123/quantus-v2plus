@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Percent, Save, RotateCcw, TrendingUp, Loader2, Search, Edit3, Check, X } from "lucide-react";
+import { Percent, Save, RotateCcw, TrendingUp, Loader2, Search, Edit3, Check, X, DollarSign, ExternalLink } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -42,6 +42,9 @@ export default function CommissionPanel() {
   const [saving, setSaving] = useState(false);
   const [search, setSearch] = useState("");
   const [tab, setTab] = useState<"deals" | "vendors">("deals");
+  const [payoutLoading, setPayoutLoading] = useState(false);
+  const [payoutPreview, setPayoutPreview] = useState<any>(null);
+  const [payoutResult, setPayoutResult] = useState<any>(null);
 
   useEffect(() => {
     fetchData();
@@ -129,6 +132,37 @@ export default function CommissionPanel() {
     }
   };
 
+  const previewPayout = async () => {
+    setPayoutLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("process-commission-payouts", {
+        body: { action: "preview" },
+      });
+      if (error) throw new Error(error.message);
+      setPayoutPreview(data);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to load payout preview");
+    }
+    setPayoutLoading(false);
+  };
+
+  const executePayout = async () => {
+    setPayoutLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("process-commission-payouts", {
+        body: { action: "execute" },
+      });
+      if (error) throw new Error(error.message);
+      if (data?.error) throw new Error(data.error);
+      setPayoutResult(data);
+      setPayoutPreview(null);
+      toast.success(`Commission payout of ${data.total} processed via Stripe`);
+    } catch (err: any) {
+      toast.error(err.message || "Payout failed");
+    }
+    setPayoutLoading(false);
+  };
+
   const getEffectiveRate = (category: string, customRate: number | null) =>
     customRate !== null && customRate !== undefined ? customRate : DEFAULT_RATES[category] || 0;
 
@@ -173,6 +207,102 @@ export default function CommissionPanel() {
         <p className="text-xs text-muted-foreground mt-3">
           These are the platform defaults. Override per deal or per vendor below.
         </p>
+      </div>
+
+      {/* Stripe Payout Section */}
+      <div className="border border-primary/30 rounded-xl bg-card p-5">
+        <h3 className="font-display text-sm text-foreground mb-4 flex items-center gap-2">
+          <DollarSign size={16} className="text-primary" />
+          Commission Payouts
+        </h3>
+
+        {!payoutPreview && !payoutResult && (
+          <button
+            onClick={previewPayout}
+            disabled={payoutLoading}
+            className="flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:brightness-110 disabled:opacity-50 transition-all"
+          >
+            {payoutLoading ? <Loader2 size={14} className="animate-spin" /> : <DollarSign size={14} />}
+            Preview Stripe Payout
+          </button>
+        )}
+
+        {payoutPreview && (
+          <div className="space-y-3">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-left text-muted-foreground text-xs border-b border-border">
+                    <th className="py-2 pr-4">Category</th>
+                    <th className="py-2 pr-4">Deal Value</th>
+                    <th className="py-2 pr-4">Rate</th>
+                    <th className="py-2">Commission</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {payoutPreview.payouts.map((p: any) => (
+                    <tr key={p.id} className="border-b border-border/50">
+                      <td className="py-2 pr-4 capitalize text-foreground">{p.category}</td>
+                      <td className="py-2 pr-4 text-muted-foreground">{p.deal_value}</td>
+                      <td className="py-2 pr-4 text-muted-foreground">{p.commission_rate}</td>
+                      <td className="py-2 font-medium text-primary">{p.commission}</td>
+                    </tr>
+                  ))}
+                </tbody>
+                <tfoot>
+                  <tr className="border-t border-primary/30">
+                    <td colSpan={3} className="py-3 font-display text-foreground">Total Payout</td>
+                    <td className="py-3 font-display text-lg text-primary">{payoutPreview.total}</td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+            <div className="flex gap-2 pt-2">
+              <button
+                onClick={executePayout}
+                disabled={payoutLoading}
+                className="flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:brightness-110 disabled:opacity-50 transition-all"
+              >
+                {payoutLoading ? <Loader2 size={14} className="animate-spin" /> : <DollarSign size={14} />}
+                Send to Stripe
+              </button>
+              <button
+                onClick={() => setPayoutPreview(null)}
+                className="px-4 py-2.5 border border-border text-muted-foreground rounded-lg text-sm hover:text-foreground transition-all"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
+
+        {payoutResult && (
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 text-sm text-primary">
+              <Check size={16} />
+              <span className="font-medium">Payout of {payoutResult.total} sent to Stripe</span>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Invoice: {payoutResult.stripe_invoice_id} · {payoutResult.count} commissions processed
+            </p>
+            {payoutResult.stripe_invoice_url && (
+              <a
+                href={payoutResult.stripe_invoice_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-xs text-primary hover:underline"
+              >
+                <ExternalLink size={12} /> View Stripe Invoice
+              </a>
+            )}
+            <button
+              onClick={() => setPayoutResult(null)}
+              className="block text-xs text-muted-foreground hover:text-foreground mt-2"
+            >
+              Dismiss
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Search + Tabs */}
