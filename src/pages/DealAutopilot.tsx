@@ -313,7 +313,14 @@ const DealAutopilot = () => {
                               <Button size="sm" variant="outline" className="text-xs gap-1.5">
                                 <RotateCcw size={12} /> Retry Stage
                               </Button>
-                              <Button size="sm" className="text-xs gap-1.5 ml-auto">
+                              <Button
+                                size="sm"
+                                className="text-xs gap-1.5 ml-auto"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  navigate(`/deals`);
+                                }}
+                              >
                                 <ArrowRight size={12} /> View Deal
                               </Button>
                             </div>
