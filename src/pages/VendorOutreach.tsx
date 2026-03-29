@@ -5,7 +5,7 @@ import {
   Plane, Heart, Users, Globe, Truck, Handshake, Sparkles, Loader2,
   Send, MessageSquare, Clock, CheckCircle2, AlertTriangle,
   ChevronDown, ChevronUp, Mail, Phone, Building2, FileText, Zap,
-  RefreshCw, Shield, Target, ArrowRight, User, MailOpen, Reply,
+  RefreshCw, Shield, Target, ArrowRight, User, MailOpen, Reply, Scale,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -15,6 +15,10 @@ import DealPhaseLayout from "@/components/deal/DealPhaseLayout";
 import OutreachTimeline from "@/components/outreach/OutreachTimeline";
 import OutreachVendorCards from "@/components/outreach/OutreachVendorCards";
 import OutreachAIPanel from "@/components/outreach/OutreachAIPanel";
+import OutreachAnalyticsStrip from "@/components/outreach/OutreachAnalyticsStrip";
+import OutreachBulkActions from "@/components/outreach/OutreachBulkActions";
+import OutreachDraftModal from "@/components/outreach/OutreachDraftModal";
+import OutreachVendorComparison from "@/components/outreach/OutreachVendorComparison";
 
 type VendorOutreach = {
   id: string;
@@ -89,6 +93,11 @@ export default function VendorOutreachPage() {
   const [responseModal, setResponseModal] = useState<string | null>(null);
   const [responseText, setResponseText] = useState("");
 
+  // New state
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [draftPreview, setDraftPreview] = useState<{ title: string; preview: string; body: string } | null>(null);
+  const [comparisonOpen, setComparisonOpen] = useState(false);
+
   useEffect(() => {
     if (dealId) loadData(dealId);
   }, [dealId]);
@@ -137,7 +146,6 @@ export default function VendorOutreachPage() {
       toast.success(`Outreach prepared for ${data.total} vendors`);
       await loadData(dealId);
 
-      // Send vendor match email (non-blocking)
       if (deal) {
         sendDealPhaseEmail({
           template: "deal_vendor_match",
@@ -214,6 +222,33 @@ export default function VendorOutreachPage() {
     }
   }
 
+  // Bulk actions
+  async function handleBulkMarkSent(ids: string[]) {
+    for (const id of ids) {
+      await supabase.from("vendor_outreach").update({ status: "sent" }).eq("id", id);
+    }
+    setOutreachList((prev) =>
+      prev.map((o) => ids.includes(o.id) ? { ...o, status: "sent" } : o)
+    );
+    setSelectedIds(new Set());
+    toast.success(`${ids.length} vendors marked as sent`);
+  }
+
+  async function handleBulkFollowUp(ids: string[]) {
+    let count = 0;
+    for (const id of ids) {
+      try {
+        await supabase.functions.invoke("vendor-outreach", {
+          body: { action: "follow_up", outreach_id: id },
+        });
+        count++;
+      } catch { /* skip failed */ }
+    }
+    setSelectedIds(new Set());
+    toast.success(`${count} follow-ups sent`);
+    if (dealId) await loadData(dealId);
+  }
+
   const CatIcon = deal ? categoryIcons[deal.category] || Sparkles : Sparkles;
   const stats = {
     total: outreachList.length,
@@ -221,6 +256,10 @@ export default function VendorOutreachPage() {
     responded: outreachList.filter((o) => ["responded", "negotiation_ready"].includes(o.status)).length,
     ready: outreachList.filter((o) => o.negotiation_ready).length,
   };
+
+  const respondedCount = outreachList.filter(
+    (o) => o.status === "responded" || o.status === "negotiation_ready" || o.negotiation_ready
+  ).length;
 
   return (
     <DealPhaseLayout
@@ -269,7 +308,7 @@ export default function VendorOutreachPage() {
 
               {/* Stats strip */}
               {outreachList.length > 0 && (
-                <div className="grid grid-cols-4 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   {[
                     { label: "Total Vendors", value: stats.total, icon: Users },
                     { label: "Contacted", value: stats.sent, icon: Send },
@@ -290,6 +329,23 @@ export default function VendorOutreachPage() {
                 </div>
               )}
             </motion.div>
+
+            {/* Analytics Strip */}
+            {outreachList.length > 0 && (
+              <OutreachAnalyticsStrip outreachList={outreachList} />
+            )}
+
+            {/* Compare Button */}
+            {respondedCount >= 2 && (
+              <div className="flex justify-end mb-4">
+                <button
+                  onClick={() => setComparisonOpen(true)}
+                  className="flex items-center gap-1.5 px-4 py-2 border border-primary/20 bg-primary/5 text-primary font-body text-[9px] tracking-widest uppercase rounded-lg hover:bg-primary/10 transition-all"
+                >
+                  <Scale size={10} /> Compare Vendors ({respondedCount})
+                </button>
+              </div>
+            )}
 
             {/* Generate CTA */}
             {outreachList.length === 0 && !generating && (
@@ -342,23 +398,41 @@ export default function VendorOutreachPage() {
                   <OutreachTimeline outreachList={outreachList} messagesMap={messagesMap} />
 
                   {/* Center — Vendor Cards */}
-                  <OutreachVendorCards
-                    outreachList={outreachList}
-                    messagesMap={messagesMap}
-                    expandedId={expandedId}
-                    setExpandedId={setExpandedId}
-                    onSendOutreach={handleSendOutreach}
-                    onFollowUp={handleFollowUp}
-                    onLogResponse={handleLogResponse}
-                    onPrepNegotiation={handlePrepNegotiation}
-                    sending={sending}
-                  />
+                  <div>
+                    <OutreachBulkActions
+                      outreachList={outreachList}
+                      selectedIds={selectedIds}
+                      onToggleSelect={(id) => {
+                        setSelectedIds((prev) => {
+                          const next = new Set(prev);
+                          if (next.has(id)) next.delete(id); else next.add(id);
+                          return next;
+                        });
+                      }}
+                      onSelectAll={() => setSelectedIds(new Set(outreachList.map((o) => o.id)))}
+                      onDeselectAll={() => setSelectedIds(new Set())}
+                      onBulkMarkSent={handleBulkMarkSent}
+                      onBulkFollowUp={handleBulkFollowUp}
+                    />
+                    <OutreachVendorCards
+                      outreachList={outreachList}
+                      messagesMap={messagesMap}
+                      expandedId={expandedId}
+                      setExpandedId={setExpandedId}
+                      onSendOutreach={handleSendOutreach}
+                      onFollowUp={handleFollowUp}
+                      onLogResponse={handleLogResponse}
+                      onPrepNegotiation={handlePrepNegotiation}
+                      sending={sending}
+                    />
+                  </div>
 
                   {/* Right — AI Actions Panel */}
                   <OutreachAIPanel
                     outreachList={outreachList}
                     messagesMap={messagesMap}
                     category={deal.category}
+                    onOpenDraftPreview={setDraftPreview}
                   />
                 </div>
 
@@ -433,6 +507,16 @@ export default function VendorOutreachPage() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Draft Preview Modal */}
+      <OutreachDraftModal draft={draftPreview} onClose={() => setDraftPreview(null)} />
+
+      {/* Vendor Comparison Modal */}
+      <OutreachVendorComparison
+        vendors={outreachList}
+        open={comparisonOpen}
+        onClose={() => setComparisonOpen(false)}
+      />
     </DealPhaseLayout>
   );
 }

@@ -2,9 +2,11 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import {
   Sparkles, Lightbulb, ToggleLeft, ToggleRight,
-  Send, FileText, CheckCircle2, Copy,
+  Send, FileText, CheckCircle2, Copy, Loader2,
+  Wand2, Brain, ArrowRight,
 } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 const categoryDrafts: Record<string, { title: string; preview: string; body: string }[]> = {
   aviation: [
@@ -33,17 +35,36 @@ const categoryDrafts: Record<string, { title: string; preview: string; body: str
   ],
 };
 
-interface Props {
-  outreachList: { status: string; vendor_name: string; negotiation_ready: boolean }[];
-  messagesMap: Record<string, { direction: string }[]>;
-  category: string;
+const sentimentConfig: Record<string, { label: string; color: string; emoji: string }> = {
+  positive: { label: "Positive", color: "text-success border-success/30 bg-success/10", emoji: "🟢" },
+  neutral: { label: "Neutral", color: "text-muted-foreground border-border bg-secondary/30", emoji: "⚪" },
+  cautious: { label: "Cautious", color: "text-accent border-accent/30 bg-accent/10", emoji: "🟡" },
+  negative: { label: "Negative", color: "text-destructive border-destructive/30 bg-destructive/10", emoji: "🔴" },
+};
+
+interface VendorInfo {
+  id: string;
+  vendor_name: string;
+  vendor_company: string | null;
+  status: string;
+  negotiation_ready: boolean;
 }
 
-const OutreachAIPanel = ({ outreachList, messagesMap, category }: Props) => {
+interface Props {
+  outreachList: VendorInfo[];
+  messagesMap: Record<string, { direction: string; body?: string }[]>;
+  category: string;
+  onOpenDraftPreview: (draft: { title: string; preview: string; body: string }) => void;
+}
+
+const OutreachAIPanel = ({ outreachList, messagesMap, category, onOpenDraftPreview }: Props) => {
   const [autoFollowUp, setAutoFollowUp] = useState(true);
   const [autoNegotiation, setAutoNegotiation] = useState(false);
   const [copiedDraft, setCopiedDraft] = useState<number | null>(null);
   const [appliedInsight, setAppliedInsight] = useState<number | null>(null);
+  const [generatingDraft, setGeneratingDraft] = useState<string | null>(null);
+  const [analyzingTone, setAnalyzingTone] = useState<string | null>(null);
+  const [toneResults, setToneResults] = useState<Record<string, any>>({});
 
   const drafts = categoryDrafts[category] || categoryDrafts.aviation;
   const responded = outreachList.filter((o) => o.status === "responded" || o.negotiation_ready);
@@ -55,15 +76,8 @@ const OutreachAIPanel = ({ outreachList, messagesMap, category }: Props) => {
     "Quantus V2+ recommends a formal tone for initial outreach.",
   ].filter(Boolean) as string[];
 
-  const handleCopyDraft = async (index: number, draft: typeof drafts[0]) => {
-    try {
-      await navigator.clipboard.writeText(draft.body);
-      setCopiedDraft(index);
-      toast.success(`"${draft.title}" copied to clipboard`);
-      setTimeout(() => setCopiedDraft(null), 2000);
-    } catch {
-      toast.info(draft.body.slice(0, 100) + "…", { description: "Draft message ready" });
-    }
+  const handleOpenDraft = (index: number, draft: typeof drafts[0]) => {
+    onOpenDraftPreview(draft);
   };
 
   const handleApplyInsight = (index: number, insight: string) => {
@@ -72,17 +86,129 @@ const OutreachAIPanel = ({ outreachList, messagesMap, category }: Props) => {
     setTimeout(() => setAppliedInsight(null), 2000);
   };
 
+  const handleGenerateDraft = async (vendor: VendorInfo) => {
+    setGeneratingDraft(vendor.id);
+    try {
+      const { data, error } = await supabase.functions.invoke("outreach-ai", {
+        body: {
+          action: "generate_draft",
+          vendor_name: vendor.vendor_name,
+          vendor_company: vendor.vendor_company,
+          category,
+          deal_context: `${category} procurement, vendor status: ${vendor.status}`,
+        },
+      });
+      if (error) throw new Error(error.message);
+      if (data?.error) throw new Error(data.error);
+      if (data?.draft) {
+        onOpenDraftPreview({
+          title: `AI Draft: ${data.draft.subject}`,
+          preview: data.draft.body.slice(0, 60) + "...",
+          body: data.draft.body,
+        });
+        toast.success("AI draft generated", { description: data.draft.personalization_notes });
+      }
+    } catch (e: any) {
+      toast.error(e.message || "Failed to generate draft");
+    } finally {
+      setGeneratingDraft(null);
+    }
+  };
+
+  const handleAnalyzeTone = async (vendor: VendorInfo) => {
+    const msgs = messagesMap[vendor.id] || [];
+    const lastResponse = msgs.filter((m) => m.direction === "inbound").pop();
+    if (!lastResponse?.body) {
+      toast.info("No vendor response to analyze");
+      return;
+    }
+    setAnalyzingTone(vendor.id);
+    try {
+      const { data, error } = await supabase.functions.invoke("outreach-ai", {
+        body: {
+          action: "analyze_tone",
+          vendor_name: vendor.vendor_name,
+          vendor_company: vendor.vendor_company,
+          response_text: lastResponse.body,
+        },
+      });
+      if (error) throw new Error(error.message);
+      if (data?.error) throw new Error(data.error);
+      if (data?.analysis) {
+        setToneResults((prev) => ({ ...prev, [vendor.id]: data.analysis }));
+        toast.success(`Tone: ${data.analysis.sentiment}`, { description: data.analysis.recommended_action });
+      }
+    } catch (e: any) {
+      toast.error(e.message || "Tone analysis failed");
+    } finally {
+      setAnalyzingTone(null);
+    }
+  };
+
   return (
     <div className="space-y-4">
       <p className="font-body text-[10px] tracking-[0.25em] uppercase text-gold-soft/50 mb-2">
         Negotiation & AI Actions
       </p>
 
+      {/* AI-Powered Actions per Vendor */}
+      {outreachList.length > 0 && (
+        <div className="glass-card rounded-xl p-5 border-primary/10">
+          <div className="flex items-center gap-2 mb-4">
+            <Brain size={12} className="text-primary" />
+            <span className="font-display text-xs text-foreground">AI Vendor Intelligence</span>
+          </div>
+          <div className="space-y-2">
+            {outreachList.slice(0, 4).map((vendor) => {
+              const tone = toneResults[vendor.id];
+              const sentCfg = tone ? sentimentConfig[tone.sentiment] || sentimentConfig.neutral : null;
+              return (
+                <div key={vendor.id} className="border border-border/50 rounded-lg p-2.5">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <p className="font-body text-[11px] text-foreground truncate">{vendor.vendor_name}</p>
+                    {sentCfg && (
+                      <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 text-[8px] font-body tracking-wider uppercase border rounded ${sentCfg.color}`}>
+                        {sentCfg.emoji} {sentCfg.label}
+                      </span>
+                    )}
+                  </div>
+                  {tone && (
+                    <p className="font-body text-[9px] text-muted-foreground mb-1.5 line-clamp-2">
+                      {tone.recommended_action}
+                    </p>
+                  )}
+                  <div className="flex gap-1.5">
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleGenerateDraft(vendor); }}
+                      disabled={generatingDraft === vendor.id}
+                      className="flex items-center gap-1 px-2 py-1 bg-primary/10 text-primary font-body text-[8px] tracking-wider uppercase rounded hover:bg-primary/20 disabled:opacity-40 transition-all"
+                    >
+                      {generatingDraft === vendor.id ? <Loader2 size={8} className="animate-spin" /> : <Wand2 size={8} />}
+                      AI Draft
+                    </button>
+                    {vendor.status === "responded" && (
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handleAnalyzeTone(vendor); }}
+                        disabled={analyzingTone === vendor.id}
+                        className="flex items-center gap-1 px-2 py-1 border border-border text-muted-foreground font-body text-[8px] tracking-wider uppercase rounded hover:text-foreground disabled:opacity-40 transition-all"
+                      >
+                        {analyzingTone === vendor.id ? <Loader2 size={8} className="animate-spin" /> : <Brain size={8} />}
+                        Analyze Tone
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {/* Drafted Messages */}
       <div className="glass-card rounded-xl p-5 border-primary/10">
         <div className="flex items-center gap-2 mb-4">
           <FileText size={12} className="text-primary" />
-          <span className="font-display text-xs text-foreground">Drafted Messages</span>
+          <span className="font-display text-xs text-foreground">Template Drafts</span>
           <motion.div
             initial={{ scaleX: 0 }}
             animate={{ scaleX: 1 }}
@@ -98,16 +224,12 @@ const OutreachAIPanel = ({ outreachList, messagesMap, category }: Props) => {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.15 }}
-              onClick={(e) => { e.stopPropagation(); handleCopyDraft(i, draft); }}
+              onClick={(e) => { e.stopPropagation(); handleOpenDraft(i, draft); }}
               className="w-full text-left border border-border/50 rounded-lg p-3 hover:border-primary/20 transition-all group"
             >
               <div className="flex items-center justify-between mb-1">
                 <p className="font-body text-[11px] text-foreground group-hover:text-primary transition-colors">{draft.title}</p>
-                {copiedDraft === i ? (
-                  <CheckCircle2 size={9} className="text-success shrink-0" />
-                ) : (
-                  <Copy size={9} className="text-muted-foreground/40 group-hover:text-primary transition-colors shrink-0" />
-                )}
+                <ArrowRight size={9} className="text-muted-foreground/40 group-hover:text-primary transition-colors shrink-0" />
               </div>
               <p className="font-body text-[10px] text-muted-foreground line-clamp-1">{draft.preview}</p>
             </motion.button>
