@@ -75,7 +75,6 @@ const OutreachVendorCards = ({
           return (
             <motion.div
               key={o.id}
-              layout
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.06 }}
@@ -117,7 +116,7 @@ const OutreachVendorCards = ({
               </button>
 
               {/* Expanded content */}
-              <AnimatePresence>
+              <AnimatePresence initial={false}>
                 {expanded && (
                   <motion.div
                     initial={{ height: 0, opacity: 0 }}
@@ -125,6 +124,7 @@ const OutreachVendorCards = ({
                     exit={{ height: 0, opacity: 0 }}
                     transition={{ duration: 0.3 }}
                     className="overflow-hidden"
+                    style={{ pointerEvents: "auto" }}
                   >
                     <div className="px-4 pb-4 space-y-4 border-t border-border/50 pt-4">
                       {/* Contact */}
