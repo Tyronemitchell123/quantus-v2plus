@@ -7,6 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import useDocumentHead from "@/hooks/use-document-head";
+import ConversionFunnel from "@/components/admin/ConversionFunnel";
 
 interface DashboardData {
   addonSales: {
@@ -121,12 +122,18 @@ const AdminDashboard = () => {
         </div>
 
         {/* Tabs */}
-        <Tabs defaultValue="addons" className="space-y-4">
+        <Tabs defaultValue="funnel" className="space-y-4">
           <TabsList>
+            <TabsTrigger value="funnel">Conversion Funnel</TabsTrigger>
             <TabsTrigger value="addons">Add-on Sales</TabsTrigger>
             <TabsTrigger value="referrals">Referral Metrics</TabsTrigger>
             <TabsTrigger value="overages">Overage Revenue</TabsTrigger>
           </TabsList>
+
+          {/* Conversion Funnel */}
+          <TabsContent value="funnel">
+            <ConversionFunnel />
+          </TabsContent>
 
           {/* Add-on Sales */}
           <TabsContent value="addons">
