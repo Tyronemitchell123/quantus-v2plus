@@ -122,7 +122,7 @@ const AdminDashboard = () => {
         </div>
 
         {/* Tabs */}
-        <Tabs defaultValue="addons" className="space-y-4">
+        <Tabs defaultValue="funnel" className="space-y-4">
           <TabsList>
             <TabsTrigger value="funnel">Conversion Funnel</TabsTrigger>
             <TabsTrigger value="addons">Add-on Sales</TabsTrigger>
