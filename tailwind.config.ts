@@ -62,6 +62,8 @@ export default {
           foreground: "hsl(var(--success-foreground))",
         },
         graphite: "hsl(var(--graphite))",
+        "quantum-cyan": "hsl(185 100% 55%)",
+        "quantum-purple": "hsl(270 80% 60%)",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
