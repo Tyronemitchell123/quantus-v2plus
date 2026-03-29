@@ -124,10 +124,16 @@ const AdminDashboard = () => {
         {/* Tabs */}
         <Tabs defaultValue="addons" className="space-y-4">
           <TabsList>
+            <TabsTrigger value="funnel">Conversion Funnel</TabsTrigger>
             <TabsTrigger value="addons">Add-on Sales</TabsTrigger>
             <TabsTrigger value="referrals">Referral Metrics</TabsTrigger>
             <TabsTrigger value="overages">Overage Revenue</TabsTrigger>
           </TabsList>
+
+          {/* Conversion Funnel */}
+          <TabsContent value="funnel">
+            <ConversionFunnel />
+          </TabsContent>
 
           {/* Add-on Sales */}
           <TabsContent value="addons">

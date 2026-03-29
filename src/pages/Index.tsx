@@ -46,6 +46,8 @@ const Index = () => {
       <div className="luxury-divider" />
       <Testimonials />
       <div className="luxury-divider" />
+      <SocialProof />
+      <div className="luxury-divider" />
       <FinalCTA />
       <LeadCapture />
     </main>
