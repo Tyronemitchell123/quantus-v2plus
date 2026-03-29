@@ -71,6 +71,7 @@ const categoryIcons: Record<string, typeof Plane> = {
 };
 
 export default function VendorOutreachPage() {
+  const navigate = useNavigate();
   useDocumentHead({
     title: "Vendor Outreach — Quantus V2+",
     description: "Automated vendor engagement and negotiation preparation.",
