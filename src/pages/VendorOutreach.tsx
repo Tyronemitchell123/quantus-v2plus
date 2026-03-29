@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useSearchParams, Link } from "react-router-dom";
+import { useSearchParams, Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Plane, Heart, Users, Globe, Truck, Handshake, Sparkles, Loader2,
@@ -71,6 +71,7 @@ const categoryIcons: Record<string, typeof Plane> = {
 };
 
 export default function VendorOutreachPage() {
+  const navigate = useNavigate();
   useDocumentHead({
     title: "Vendor Outreach — Quantus V2+",
     description: "Automated vendor engagement and negotiation preparation.",
@@ -227,7 +228,7 @@ export default function VendorOutreachPage() {
       currentPhase={3}
       phaseTitle="Vendor Outreach & Engagement"
       showBottomBar={stats.ready > 0}
-      onApprove={stats.ready > 0 ? () => window.location.href = `/negotiation?deal=${dealId}` : undefined}
+      onApprove={stats.ready > 0 ? () => navigate(`/negotiation?deal=${dealId}`) : undefined}
       approveLabel="Proceed to Negotiation"
     >
       <div className="flex-1 min-h-0">
