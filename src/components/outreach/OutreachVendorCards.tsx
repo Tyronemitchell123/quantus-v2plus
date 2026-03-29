@@ -107,10 +107,12 @@ const OutreachVendorCards = ({
                   )}
                 </div>
                 <div className="text-right shrink-0 hidden sm:block">
-                  {o.response_time_hours && (
+                  {o.response_time_hours ? (
                     <p className="font-body text-[9px] text-success flex items-center gap-1 justify-end">
                       <Clock size={8} /> {o.response_time_hours}h
                     </p>
+                  ) : (
+                    <OutreachResponseTimer createdAt={o.created_at} status={o.status} />
                   )}
                 </div>
                 {expanded ? <ChevronUp size={14} className="text-muted-foreground shrink-0" /> : <ChevronDown size={14} className="text-muted-foreground shrink-0" />}
