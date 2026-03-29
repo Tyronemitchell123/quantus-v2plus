@@ -228,7 +228,7 @@ export default function VendorOutreachPage() {
       currentPhase={3}
       phaseTitle="Vendor Outreach & Engagement"
       showBottomBar={stats.ready > 0}
-      onApprove={stats.ready > 0 ? () => window.location.href = `/negotiation?deal=${dealId}` : undefined}
+      onApprove={stats.ready > 0 ? () => navigate(`/negotiation?deal=${dealId}`) : undefined}
       approveLabel="Proceed to Negotiation"
     >
       <div className="flex-1 min-h-0">
