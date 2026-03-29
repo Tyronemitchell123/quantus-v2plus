@@ -102,6 +102,7 @@ const DealAutopilot = () => {
   const [dealDescription, setDealDescription] = useState("");
   const [dealCategory, setDealCategory] = useState("");
   const [dealBudget, setDealBudget] = useState("");
+  const autopilotStats = useAutopilotStats();
   const navigate = useNavigate();
 
   useDocumentHead({
