@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Percent, Save, RotateCcw, TrendingUp, Loader2, Search, Edit3, Check, X } from "lucide-react";
+import { Percent, Save, RotateCcw, TrendingUp, Loader2, Search, Edit3, Check, X, DollarSign, ExternalLink } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
