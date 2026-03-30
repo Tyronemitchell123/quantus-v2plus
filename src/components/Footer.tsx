@@ -31,6 +31,9 @@ const Footer = () => (
         </div>
       </div>
       <div className="luxury-divider mt-14 mb-6" />
+      <p className="text-center font-body text-[10px] leading-relaxed text-muted-foreground/40 max-w-2xl mx-auto mb-4">
+        AI-powered features are advisory only and do not constitute professional, legal, or financial advice. All prices exclude applicable taxes. Past performance does not guarantee future results.
+      </p>
       <p className="text-center font-body text-[10px] tracking-[0.2em] uppercase text-muted-foreground/40">
         © 2026 Quantus V2+ — All rights reserved.
       </p>
