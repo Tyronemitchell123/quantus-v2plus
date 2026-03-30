@@ -23,6 +23,7 @@ const fadeVariants = {
 };
 
 const Onboarding = () => {
+  useDocumentHead({ title: "Welcome to QUANTUS V2+ — Onboarding", description: "Complete your sovereign profile to unlock the full QUANTUS V2+ orchestration ecosystem." });
   const [step, setStep] = useState(0);
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
   const [selectedPrefs, setSelectedPrefs] = useState<Record<string, string>>({});

@@ -210,6 +210,7 @@ const typeLabel: Record<string, string> = {
 
 /* ── Page ── */
 const RecommendationEngine = () => {
+  useDocumentHead({ title: "AI Recommendation Engine | QUANTUS V2+", description: "Proactive AI recommendations, playbooks, and risk alerts across your entire deal portfolio." });
   const [filter, setFilter] = useState<string>("all");
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [activeView, setActiveView] = useState<"recommendations" | "playbooks">("recommendations");
