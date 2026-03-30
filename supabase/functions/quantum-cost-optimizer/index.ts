@@ -1,12 +1,12 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { rateLimit } from "../_shared/rate-limit.ts";
+import { authenticateRequest } from "../_shared/api-key-auth.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
-
 // Device pricing (approximate per-task + per-shot)
 const DEVICES = [
   { arn: "arn:aws:braket:::device/quantum-simulator/amazon/sv1", name: "SV1 (Simulator)", perTask: 0, perShot: 0.00075, maxQubits: 34, type: "simulator" },
