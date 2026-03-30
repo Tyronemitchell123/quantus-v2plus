@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import useDocumentHead from "@/hooks/use-document-head";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
@@ -7,7 +7,7 @@ import {
   TrendingUp, TrendingDown, DollarSign, PieChart, BarChart3,
   ArrowUpRight, ArrowDownRight, Shield, Globe, Building2, Gem,
   Plane, Home, Car, Wallet, Activity, Eye, EyeOff, Zap, Lock,
-  ChevronRight, Sparkles
+  ChevronRight, Sparkles, Database
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -16,27 +16,14 @@ import ParticleGrid from "@/components/ParticleGrid";
 import PortfolioAINarrative from "@/components/wealth/PortfolioAINarrative";
 import PortfolioDonutChart from "@/components/wealth/PortfolioDonutChart";
 import PortfolioTreemap from "@/components/wealth/PortfolioTreemap";
+import { usePortfolioAssets, centsToValue, fmtGBP } from "@/hooks/use-portfolio-assets";
+import { toast } from "sonner";
 
-const assetClasses = [
-  { name: "Real Estate", value: 42_500_000, change: 3.2, icon: Home, allocation: 34 },
-  { name: "Equities", value: 28_750_000, change: -1.8, icon: BarChart3, allocation: 23 },
-  { name: "Private Equity", value: 18_200_000, change: 7.4, icon: Building2, allocation: 15 },
-  { name: "Fixed Income", value: 12_500_000, change: 0.5, icon: Shield, allocation: 10 },
-  { name: "Aviation Assets", value: 9_800_000, change: -2.1, icon: Plane, allocation: 8 },
-  { name: "Luxury Collectibles", value: 6_250_000, change: 12.3, icon: Gem, allocation: 5 },
-  { name: "Vehicles", value: 3_100_000, change: -5.4, icon: Car, allocation: 3 },
-  { name: "Liquid Cash", value: 2_900_000, change: 0.0, icon: Wallet, allocation: 2 },
-];
-
-const totalNetWorth = assetClasses.reduce((s, a) => s + a.value, 0);
-const monthlyChange = 3_340_000;
-
-const compoundingProjections = [
-  { year: "Year 1", value: totalNetWorth * 1.08, label: "Conservative" },
-  { year: "Year 3", value: totalNetWorth * 1.26, label: "Moderate" },
-  { year: "Year 5", value: totalNetWorth * 1.47, label: "Growth" },
-  { year: "Year 10", value: totalNetWorth * 2.16, label: "Aggressive" },
-];
+const ICON_MAP: Record<string, any> = {
+  real_estate: Home, equities: BarChart3, private_equity: Building2,
+  fixed_income: Shield, aviation: Plane, collectibles: Gem,
+  vehicles: Car, cash: Wallet, other: Activity,
+};
 
 const recentActivity = [
   { action: "Portfolio rebalanced", detail: "Shifted 2% from Equities to Private Equity", time: "2h ago", type: "rebalance" },
@@ -59,6 +46,34 @@ const WealthDashboard = () => {
   const [privacyMode, setPrivacyMode] = useState(false);
   const mask = (v: string) => privacyMode ? "••••••••" : v;
 
+  const { assets, loading, usingDefaults, seedDefaults } = usePortfolioAssets();
+
+  // Transform DB assets to display format
+  const assetClasses = useMemo(() => assets.map((a) => ({
+    name: a.name,
+    value: centsToValue(a.value_cents),
+    change: a.change_pct,
+    icon: ICON_MAP[a.asset_class] || Activity,
+    allocation: a.allocation_pct,
+  })), [assets]);
+
+  // For AI narrative component
+  const portfolioForAI = useMemo(() => assetClasses.map((a) => ({
+    name: a.name,
+    value: a.value,
+    change: a.change,
+    allocation: a.allocation,
+  })), [assetClasses]);
+
+  const totalNetWorth = assetClasses.reduce((s, a) => s + a.value, 0);
+  const monthlyChange = Math.round(totalNetWorth * 0.027);
+  const compoundingProjections = [
+    { year: "Year 1", value: totalNetWorth * 1.08, label: "Conservative" },
+    { year: "Year 3", value: totalNetWorth * 1.26, label: "Moderate" },
+    { year: "Year 5", value: totalNetWorth * 1.47, label: "Growth" },
+    { year: "Year 10", value: totalNetWorth * 2.16, label: "Aggressive" },
+  ];
+
   return (
     <div className="flex min-h-screen bg-background">
       <DashboardSidebar />
@@ -75,8 +90,8 @@ const WealthDashboard = () => {
 
         <main className="flex-1 overflow-y-auto relative z-10">
           {/* Sovereign Header */}
-          <div className="px-6 lg:px-9 pt-9 pb-6">
-            <div className="flex items-center justify-between mb-9">
+          <div className="px-4 sm:px-6 lg:px-9 pt-6 sm:pt-9 pb-4 sm:pb-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-9">
               <div>
                 <motion.p
                   initial={{ opacity: 0 }}
@@ -89,7 +104,7 @@ const WealthDashboard = () => {
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 }}
-                  className="text-3xl md:text-4xl font-display tracking-tight text-foreground"
+                  className="text-2xl sm:text-3xl md:text-4xl font-display tracking-tight text-foreground"
                 >
                   Wealth Command
                 </motion.h1>
@@ -104,8 +119,18 @@ const WealthDashboard = () => {
                 {privacyMode ? <EyeOff size={13} /> : <Lock size={13} />}
                 {privacyMode ? "Reveal" : "Privacy"}
               </motion.button>
+              {usingDefaults && (
+                <button
+                  onClick={async () => {
+                    await seedDefaults();
+                    toast.success("Portfolio seeded with sample assets");
+                  }}
+                  className="flex items-center gap-2 px-4 py-2.5 glass-card text-[10px] tracking-[0.25em] uppercase font-body text-primary/60 hover:text-primary hover:border-primary/20 transition-all duration-500"
+                >
+                  <Database size={13} /> Seed Data
+                </button>
+              )}
             </div>
-
             {/* Net Worth Hero — Full Width */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -165,7 +190,7 @@ const WealthDashboard = () => {
           </div>
 
           {/* Stats Row */}
-          <div className="px-6 lg:px-9 pb-6">
+          <div className="px-4 sm:px-6 lg:px-9 pb-6">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {[
                 { label: "Monthly Income", value: mask("£185K"), change: "+12%", up: true, icon: TrendingUp },
@@ -195,7 +220,7 @@ const WealthDashboard = () => {
           </div>
 
           {/* Visual Charts Row */}
-          <div className="px-6 lg:px-9 pb-6">
+          <div className="px-4 sm:px-6 lg:px-9 pb-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <PortfolioDonutChart portfolio={assetClasses} privacyMode={privacyMode} />
               <PortfolioTreemap portfolio={assetClasses} privacyMode={privacyMode} />
@@ -203,12 +228,12 @@ const WealthDashboard = () => {
           </div>
 
           {/* AI Narrative */}
-          <div className="px-6 lg:px-9 pb-6">
-            <PortfolioAINarrative portfolio={assetClasses} />
+          <div className="px-4 sm:px-6 lg:px-9 pb-6">
+            <PortfolioAINarrative portfolio={portfolioForAI} />
           </div>
 
           {/* Main Content Grid */}
-          <div className="px-6 lg:px-9 pb-9">
+          <div className="px-4 sm:px-6 lg:px-9 pb-9">
             <Tabs defaultValue="allocation" className="w-full">
               <TabsList className="bg-card border border-border mb-6">
                 <TabsTrigger value="allocation" className="text-[10px] tracking-[0.2em] uppercase font-body">Allocation</TabsTrigger>
@@ -358,7 +383,7 @@ const WealthDashboard = () => {
           </div>
 
           {/* Footer */}
-          <footer className="px-6 lg:px-9 py-4 border-t border-border/50">
+          <footer className="px-4 sm:px-6 lg:px-9 py-4 border-t border-border/50">
             <p className="font-body text-[8px] tracking-[0.3em] uppercase text-muted-foreground/30 text-center">
               Quantus V2+ — Sovereign Wealth Intelligence — The Obsidian Standard
             </p>

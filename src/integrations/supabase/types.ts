@@ -854,6 +854,45 @@ export type Database = {
         }
         Relationships: []
       }
+      notifications: {
+        Row: {
+          action_url: string | null
+          body: string | null
+          category: string
+          created_at: string
+          id: string
+          is_read: boolean
+          metadata: Json | null
+          severity: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          action_url?: string | null
+          body?: string | null
+          category?: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          metadata?: Json | null
+          severity?: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          action_url?: string | null
+          body?: string | null
+          category?: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          metadata?: Json | null
+          severity?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       payments: {
         Row: {
           amount_cents: number
@@ -900,6 +939,48 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      portfolio_assets: {
+        Row: {
+          allocation_pct: number
+          asset_class: string
+          change_pct: number
+          created_at: string
+          currency: string
+          id: string
+          metadata: Json | null
+          name: string
+          updated_at: string
+          user_id: string
+          value_cents: number
+        }
+        Insert: {
+          allocation_pct?: number
+          asset_class?: string
+          change_pct?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          metadata?: Json | null
+          name: string
+          updated_at?: string
+          user_id: string
+          value_cents?: number
+        }
+        Update: {
+          allocation_pct?: number
+          asset_class?: string
+          change_pct?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          metadata?: Json | null
+          name?: string
+          updated_at?: string
+          user_id?: string
+          value_cents?: number
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
