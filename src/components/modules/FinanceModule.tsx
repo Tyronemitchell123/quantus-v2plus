@@ -39,7 +39,7 @@ const providerData: Record<string, Array<{
 
 const FinanceModule = forwardRef<HTMLDivElement>((_, ref) => {
   const [activeCat, setActiveCat] = useState("wealth");
-  const { deals } = useModuleData("finance");
+  const { deals, sourcingResults, vendorOutreach, loading: liveLoading } = useModuleData("finance");
   const items = providerData[activeCat] || [];
 
   return (
