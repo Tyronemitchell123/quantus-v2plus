@@ -67,6 +67,7 @@ const PrivateNetwork = lazy(() => import("./pages/PrivateNetwork"));
 const ConnectOnboarding = lazy(() => import("./pages/ConnectOnboarding"));
 const ConnectProducts = lazy(() => import("./pages/ConnectProducts"));
 const ConnectStorefront = lazy(() => import("./pages/ConnectStorefront"));
+const CommissionPayouts = lazy(() => import("./pages/CommissionPayouts"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
