@@ -1,18 +1,16 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Bell, User, Menu, Shield } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { User, Menu, Shield } from "lucide-react";
+import { motion } from "framer-motion";
 import { useAuth } from "@/hooks/use-auth";
+import NotificationCenter from "@/components/NotificationCenter";
 
 interface Props {
   onMobileMenuToggle?: () => void;
   notifications?: { id: string; text: string; time: string }[];
 }
 
-const DashboardTopBar = ({ onMobileMenuToggle, notifications = [] }: Props) => {
-  const [notifOpen, setNotifOpen] = useState(false);
+const DashboardTopBar = ({ onMobileMenuToggle }: Props) => {
   const { user } = useAuth();
-  const hasUnread = notifications.length > 0;
   const firstName = user?.user_metadata?.full_name?.split(" ")[0] || "there";
 
   const getGreeting = () => {
@@ -60,47 +58,8 @@ const DashboardTopBar = ({ onMobileMenuToggle, notifications = [] }: Props) => {
           <span className="font-body text-[9px] tracking-[0.2em] uppercase text-primary/80">Obsidian</span>
         </div>
 
-        {/* Notifications */}
-        <div className="relative">
-          <button
-            onClick={() => setNotifOpen(!notifOpen)}
-            className="relative p-2.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/30 transition-all duration-300"
-          >
-            <Bell size={16} strokeWidth={1.5} />
-            {hasUnread && (
-              <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-primary rounded-full" />
-            )}
-          </button>
-
-          <AnimatePresence>
-            {notifOpen && (
-              <motion.div
-                initial={{ opacity: 0, y: 8, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 8, scale: 0.95 }}
-                className="absolute right-0 top-full mt-2 w-80 rounded-xl border border-border/50 bg-card/95 backdrop-blur-xl shadow-2xl z-50 overflow-hidden"
-              >
-                <div className="p-4 border-b border-border/50">
-                  <p className="font-body text-[10px] tracking-[0.25em] uppercase text-gold-soft/50">Notifications</p>
-                </div>
-                {notifications.length > 0 ? (
-                  <div className="max-h-64 overflow-y-auto">
-                    {notifications.map((n) => (
-                      <div key={n.id} className="p-4 border-b border-border/30 last:border-0 hover:bg-secondary/20 transition-colors">
-                        <p className="font-body text-xs text-foreground leading-relaxed">{n.text}</p>
-                        <p className="font-body text-[10px] text-primary/50 mt-1.5">{n.time}</p>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="p-8 text-center">
-                    <p className="font-body text-xs text-muted-foreground">No new notifications</p>
-                  </div>
-                )}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+        {/* Real-time Notification Center */}
+        <NotificationCenter />
 
         {/* Profile */}
         <Link to="/settings" className="w-9 h-9 rounded-full bg-card border border-gold-soft/15 flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-gold-soft/30 transition-all duration-300">
