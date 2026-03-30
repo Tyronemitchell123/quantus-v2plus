@@ -50,11 +50,11 @@ export default function QuantumComputing() {
   });
 
   const { user } = useAuth();
-  const { tier } = useSubscription();
+  const { tier: subTier } = useSubscription();
   const usage = useUsageTracking();
   const QuantumUpsell = () => {
     if (usage.loading || usage.percentage < 75) return null;
-    return <UpsellBanner tier={tier} usagePercent={usage.percentage} feature="AI queries" variant="compact" className="container mx-auto px-6 mb-4" />;
+    return <UpsellBanner tier={subTier} usagePercent={usage.percentage} feature="AI queries" variant="compact" className="container mx-auto px-6 mb-4" />;
   };
   const { jobs, loading, limits, selectedJob, setSelectedJob, results, submitJob, fetchJobs, fetchResults, refreshJob } = useQuantumJobs();
 
