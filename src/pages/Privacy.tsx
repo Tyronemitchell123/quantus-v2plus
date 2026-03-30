@@ -12,7 +12,7 @@ const Privacy = () => {
   const sections = [
     {
       title: "1. Data Controller",
-      content: `Quantus V2+. ("we", "us", "our") is the data controller responsible for your personal data. If you have questions about how we process your data, contact us at privacy@quantus.ai.`,
+      content: `Quantus V2+ ("we", "us", "our") is the data controller responsible for your personal data. If you have questions about how we process your data, contact us at privacy@crownprompts.com.`,
     },
     {
       title: "2. Data We Collect",
@@ -82,7 +82,7 @@ You can request earlier deletion — see Your Rights below.`,
 • **Object**: Object to processing based on legitimate interest.
 • **Withdraw Consent**: Withdraw consent at any time for consent-based processing.
 
-To exercise any right, email privacy@quantus.ai or use the Data Export feature in Settings.`,
+To exercise any right, email privacy@crownprompts.com or use the Data Export feature in Settings.`,
     },
     {
       title: "9. Cookies",
@@ -102,9 +102,12 @@ To exercise any right, email privacy@quantus.ai or use the Data Export feature i
     },
     {
       title: "12. Contact & Complaints",
-      content: `For privacy inquiries: privacy@quantus.ai
+      content: `For privacy inquiries: privacy@crownprompts.com
 
-If you believe your data protection rights have been violated, you have the right to lodge a complaint with your local Data Protection Authority (DPA).`,
+If you believe your data protection rights have been violated, you have the right to lodge a complaint with your local Data Protection Authority (DPA).
+
+Quantus V2+
+Operated by Crown Prompts`,
     },
   ];
 
