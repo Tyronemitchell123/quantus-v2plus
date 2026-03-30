@@ -136,9 +136,9 @@ export function useSubscription() {
     return tierOrder.indexOf(tier) >= tierOrder.indexOf(requiredTier);
   };
 
-  const createCheckout = async (selectedTier: SubscriptionTier, seats?: number) => {
+  const createCheckout = async (selectedTier: SubscriptionTier, seats?: number, billingCycle?: "monthly" | "annual") => {
     const { data, error } = await supabase.functions.invoke("create-checkout", {
-      body: { tier: selectedTier, seats },
+      body: { tier: selectedTier, seats, billing_cycle: billingCycle || "monthly" },
     });
 
     if (error) throw new Error(error.message || "Checkout failed");
