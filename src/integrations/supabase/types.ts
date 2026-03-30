@@ -1975,6 +1975,9 @@ export type Database = {
         | "lifestyle"
         | "logistics"
         | "partnerships"
+        | "marine"
+        | "legal"
+        | "finance"
       deal_status:
         | "intake"
         | "sourcing"
@@ -2137,6 +2140,9 @@ export const Constants = {
         "lifestyle",
         "logistics",
         "partnerships",
+        "marine",
+        "legal",
+        "finance",
       ],
       deal_status: [
         "intake",
