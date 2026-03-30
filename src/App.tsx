@@ -13,6 +13,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import RouteErrorBoundary from "@/components/RouteErrorBoundary";
 import PageLoader from "@/components/PageLoader";
 import CookieConsent from "@/components/CookieConsent";
+import { OfflineIndicator } from "@/components/mobile/MobileEnhancements";
 import Index from "./pages/Index";
 import { useAuth } from "@/hooks/use-auth";
 
