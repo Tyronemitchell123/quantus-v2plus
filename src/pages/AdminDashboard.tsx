@@ -137,6 +137,11 @@ const AdminDashboard = () => {
             <ConversionFunnel />
           </TabsContent>
 
+          {/* Email Monitoring */}
+          <TabsContent value="emails">
+            <EmailMonitoringTab />
+          </TabsContent>
+
           {/* Add-on Sales */}
           <TabsContent value="addons">
             <Card>
