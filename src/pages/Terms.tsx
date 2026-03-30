@@ -40,12 +40,15 @@ You are responsible for all activity under your account.`,
     },
     {
       title: "4. Subscriptions & Payments",
-      content: `• Subscription fees are billed in advance on a monthly or annual basis.
-• Prices are listed in GBP/USD and exclude applicable taxes.
+      content: `• Subscription tiers: Starter ($29/mo or $276/yr), Professional ($149/mo or $1,428/yr), and Teams ($49/seat/mo or $468/seat/yr). Annual plans include a 20% discount.
+• Subscription fees are billed in advance on a monthly or annual basis via Stripe.
+• Prices are listed in USD and exclude applicable taxes.
 • You may upgrade, downgrade, or cancel your subscription at any time.
 • Cancellation takes effect at the end of the current billing period.
-• Refunds are provided in accordance with applicable consumer protection laws. For EU/UK consumers, you have a 14-day cooling-off period for new subscriptions.
-• We reserve the right to change pricing with 30 days' advance notice.`,
+• A 14-day money-back guarantee applies to all new paid subscriptions. Refund requests after 14 days are handled in accordance with applicable consumer protection laws.
+• One-time fees may apply for premium services, including Priority Deal Processing ($49 surcharge).
+• We reserve the right to change pricing with 30 days' advance notice.
+• Platform commission rates apply to completed deals: Aviation 2.5%, Staffing 20%, Marine 5%, Legal 7.5%, Finance 5%. A 10% platform fee applies to vendor marketplace products.`,
     },
     {
       title: "5. Acceptable Use",
