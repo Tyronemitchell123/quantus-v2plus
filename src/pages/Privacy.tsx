@@ -102,9 +102,12 @@ To exercise any right, email privacy@crownprompts.com or use the Data Export fea
     },
     {
       title: "12. Contact & Complaints",
-      content: `For privacy inquiries: privacy@quantus.ai
+      content: `For privacy inquiries: privacy@crownprompts.com
 
-If you believe your data protection rights have been violated, you have the right to lodge a complaint with your local Data Protection Authority (DPA).`,
+If you believe your data protection rights have been violated, you have the right to lodge a complaint with your local Data Protection Authority (DPA).
+
+Quantus V2+
+Operated by Crown Prompts`,
     },
   ];
 

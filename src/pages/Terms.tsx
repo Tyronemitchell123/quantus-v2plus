@@ -117,10 +117,10 @@ You are responsible for all activity under your account.`,
     },
     {
       title: "15. Contact",
-      content: `For questions about these Terms: legal@quantus.ai
+      content: `For questions about these Terms: legal@crownprompts.com
 
-Quantus V2+. Ltd
-Registered in England & Wales`,
+Quantus V2+
+Operated by Crown Prompts`,
     },
   ];
 
