@@ -13,6 +13,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import ParticleGrid from "@/components/ParticleGrid";
+import PortfolioAINarrative from "@/components/wealth/PortfolioAINarrative";
+import PortfolioDonutChart from "@/components/wealth/PortfolioDonutChart";
+import PortfolioTreemap from "@/components/wealth/PortfolioTreemap";
 
 const assetClasses = [
   { name: "Real Estate", value: 42_500_000, change: 3.2, icon: Home, allocation: 34 },
