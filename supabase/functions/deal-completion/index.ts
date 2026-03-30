@@ -69,6 +69,7 @@ Deno.serve(async (req) => {
       const DEFAULT_COMMISSION_RATES: Record<string, number> = {
         aviation: 0.025, medical: 0.08, staffing: 0.20,
         lifestyle: 0.10, logistics: 0.05, partnerships: 0.07,
+        marine: 0.05, legal: 0.075, finance: 0.05,
       };
 
       // Mark deal as completed

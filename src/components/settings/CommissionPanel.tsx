@@ -11,6 +11,9 @@ const DEFAULT_RATES: Record<string, number> = {
   lifestyle: 10,
   logistics: 5,
   partnerships: 7,
+  marine: 5,
+  legal: 7.5,
+  finance: 5,
 };
 
 type DealRow = {
