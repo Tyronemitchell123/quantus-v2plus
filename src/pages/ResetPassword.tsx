@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { resetPasswordSchema } from "@/lib/validation";
 
 const ResetPassword = () => {
+  useDocumentHead({ title: "Reset Password | QUANTUS V2+", description: "Set a new password for your QUANTUS V2+ account." });
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [fieldError, setFieldError] = useState("");

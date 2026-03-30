@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import useDocumentHead from "@/hooks/use-document-head";
 
 type Status = "loading" | "valid" | "already_unsubscribed" | "invalid" | "success" | "error";
 
 const Unsubscribe = () => {
+  useDocumentHead({ title: "Unsubscribe | QUANTUS V2+", description: "Manage your QUANTUS V2+ email preferences." });
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
   const [status, setStatus] = useState<Status>("loading");
