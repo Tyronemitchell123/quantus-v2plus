@@ -1897,6 +1897,39 @@ export type Database = {
         }
         Relationships: []
       }
+      webhooks_safe: {
+        Row: {
+          created_at: string | null
+          events: string[] | null
+          id: string | null
+          is_active: boolean | null
+          last_triggered_at: string | null
+          updated_at: string | null
+          url: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          events?: string[] | null
+          id?: string | null
+          is_active?: boolean | null
+          last_triggered_at?: string | null
+          updated_at?: string | null
+          url?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          events?: string[] | null
+          id?: string | null
+          is_active?: boolean | null
+          last_triggered_at?: string | null
+          updated_at?: string | null
+          url?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       deactivate_expired_api_keys: { Args: never; Returns: number }

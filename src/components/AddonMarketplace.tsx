@@ -63,13 +63,11 @@ const AddonMarketplace = () => {
 
     setPurchasing(addon.id);
     try {
-      const { error } = await supabase.from("addon_purchases").insert({
-        user_id: user.id,
-        addon_id: addon.id,
-        amount_cents: addon.price_cents,
-        status: "active",
+      const { data, error } = await supabase.functions.invoke("purchase-addon", {
+        body: { addon_id: addon.id },
       });
       if (error) throw error;
+      if (data?.error) throw new Error(data.error);
       toast({ title: "Add-on activated! 🎉", description: `${addon.name} has been added to your account.` });
     } catch (err: any) {
       toast({ title: "Purchase failed", description: err.message, variant: "destructive" });
