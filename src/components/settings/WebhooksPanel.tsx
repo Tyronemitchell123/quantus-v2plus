@@ -26,7 +26,7 @@ const WebhooksPanel = () => {
 
   const fetchWebhooks = async () => {
     const { data, error } = await supabase
-      .from("webhooks")
+      .from("webhooks_safe" as any)
       .select("*")
       .order("created_at", { ascending: false });
 
