@@ -184,6 +184,9 @@ const DealEngine = () => {
                 </Link>
               ))}
             </div>
+
+            {/* Real-time Deal Chat */}
+            <DealChatPanel channel="deal-engine" className="mt-6" />
           </div>
         </main>
 
