@@ -190,7 +190,7 @@ const WealthDashboard = () => {
           </div>
 
           {/* Stats Row */}
-          <div className="px-6 lg:px-9 pb-6">
+          <div className="px-4 sm:px-6 lg:px-9 pb-6">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {[
                 { label: "Monthly Income", value: mask("£185K"), change: "+12%", up: true, icon: TrendingUp },
@@ -220,7 +220,7 @@ const WealthDashboard = () => {
           </div>
 
           {/* Visual Charts Row */}
-          <div className="px-6 lg:px-9 pb-6">
+          <div className="px-4 sm:px-6 lg:px-9 pb-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <PortfolioDonutChart portfolio={assetClasses} privacyMode={privacyMode} />
               <PortfolioTreemap portfolio={assetClasses} privacyMode={privacyMode} />
@@ -228,12 +228,12 @@ const WealthDashboard = () => {
           </div>
 
           {/* AI Narrative */}
-          <div className="px-6 lg:px-9 pb-6">
+          <div className="px-4 sm:px-6 lg:px-9 pb-6">
             <PortfolioAINarrative portfolio={portfolioForAI} />
           </div>
 
           {/* Main Content Grid */}
-          <div className="px-6 lg:px-9 pb-9">
+          <div className="px-4 sm:px-6 lg:px-9 pb-9">
             <Tabs defaultValue="allocation" className="w-full">
               <TabsList className="bg-card border border-border mb-6">
                 <TabsTrigger value="allocation" className="text-[10px] tracking-[0.2em] uppercase font-body">Allocation</TabsTrigger>
@@ -383,7 +383,7 @@ const WealthDashboard = () => {
           </div>
 
           {/* Footer */}
-          <footer className="px-6 lg:px-9 py-4 border-t border-border/50">
+          <footer className="px-4 sm:px-6 lg:px-9 py-4 border-t border-border/50">
             <p className="font-body text-[8px] tracking-[0.3em] uppercase text-muted-foreground/30 text-center">
               Quantus V2+ — Sovereign Wealth Intelligence — The Obsidian Standard
             </p>
