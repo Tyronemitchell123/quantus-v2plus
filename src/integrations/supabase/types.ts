@@ -205,6 +205,47 @@ export type Database = {
         }
         Relationships: []
       }
+      chat_messages: {
+        Row: {
+          channel: string
+          content: string
+          created_at: string
+          deal_id: string | null
+          id: string
+          metadata: Json | null
+          sender_type: string
+          user_id: string
+        }
+        Insert: {
+          channel?: string
+          content: string
+          created_at?: string
+          deal_id?: string | null
+          id?: string
+          metadata?: Json | null
+          sender_type?: string
+          user_id: string
+        }
+        Update: {
+          channel?: string
+          content?: string
+          created_at?: string
+          deal_id?: string | null
+          id?: string
+          metadata?: Json | null
+          sender_type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "deals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       commission_logs: {
         Row: {
           category: string
