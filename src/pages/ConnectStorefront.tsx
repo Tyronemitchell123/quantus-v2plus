@@ -19,8 +19,10 @@ import { useToast } from "@/hooks/use-toast";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import DashboardTopBar from "@/components/dashboard/DashboardTopBar";
 import { Loader2, ShoppingCart, Store, CheckCircle, DollarSign } from "lucide-react";
+import useDocumentHead from "@/hooks/use-document-head";
 
 const ConnectStorefront = () => {
+  useDocumentHead({ title: "Marketplace Storefront | QUANTUS V2+", description: "Browse and purchase premium products from vetted QUANTUS V2+ vendors." });
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
 

@@ -19,8 +19,10 @@ import { useToast } from "@/hooks/use-toast";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import DashboardTopBar from "@/components/dashboard/DashboardTopBar";
 import { CheckCircle, AlertCircle, Loader2, ExternalLink, RefreshCw } from "lucide-react";
+import useDocumentHead from "@/hooks/use-document-head";
 
 const ConnectOnboarding = () => {
+  useDocumentHead({ title: "Vendor Onboarding — Stripe Connect | QUANTUS V2+", description: "Set up your Stripe connected account to receive commissions and vendor payouts." });
   const { user } = useAuth();
   const { toast } = useToast();
   const [searchParams] = useSearchParams();

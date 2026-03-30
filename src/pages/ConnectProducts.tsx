@@ -18,8 +18,10 @@ import { useToast } from "@/hooks/use-toast";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import DashboardTopBar from "@/components/dashboard/DashboardTopBar";
 import { Loader2, Package, DollarSign } from "lucide-react";
+import useDocumentHead from "@/hooks/use-document-head";
 
 const ConnectProducts = () => {
+  useDocumentHead({ title: "Product Management — Stripe Connect | QUANTUS V2+", description: "Manage your products and pricing through the QUANTUS V2+ marketplace." });
   const { user } = useAuth();
   const { toast } = useToast();
 

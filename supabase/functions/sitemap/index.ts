@@ -1,32 +1,40 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { rateLimit } from "../_shared/rate-limit.ts";
 
 const SITE_URL = "https://quantus-loom.lovable.app";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
 
 const staticPages = [
   { path: "/", priority: "1.0", changefreq: "weekly" },
   { path: "/about", priority: "0.8", changefreq: "monthly" },
   { path: "/services", priority: "0.9", changefreq: "monthly" },
   { path: "/pricing", priority: "0.9", changefreq: "weekly" },
-  { path: "/quantum", priority: "0.8", changefreq: "monthly" },
   { path: "/contact", priority: "0.7", changefreq: "monthly" },
   { path: "/case-studies", priority: "0.7", changefreq: "monthly" },
   { path: "/benefits", priority: "0.7", changefreq: "monthly" },
+  { path: "/enterprise", priority: "0.8", changefreq: "monthly" },
   { path: "/guide", priority: "0.6", changefreq: "monthly" },
+  { path: "/docs", priority: "0.6", changefreq: "monthly" },
+  { path: "/blog", priority: "0.7", changefreq: "daily" },
   { path: "/auth", priority: "0.3", changefreq: "yearly" },
+  { path: "/privacy", priority: "0.2", changefreq: "yearly" },
+  { path: "/terms", priority: "0.2", changefreq: "yearly" },
 ];
 
-serve(async () => {
-  try {
-    const rateLimited = rateLimit(req, corsHeaders);
-    if (rateLimited) return rateLimited;
+serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return new Response(null, { headers: corsHeaders });
+  }
 
+  try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const client = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Fetch published blog posts
     const { data: posts } = await client
       .from("marketing_posts")
       .select("slug, updated_at")
@@ -66,12 +74,13 @@ serve(async () => {
 
     return new Response(xml, {
       headers: {
+        ...corsHeaders,
         "Content-Type": "application/xml",
         "Cache-Control": "public, max-age=3600",
       },
     });
   } catch (e) {
     console.error("sitemap error:", e);
-    return new Response("Error generating sitemap", { status: 500 });
+    return new Response("Error generating sitemap", { status: 500, headers: corsHeaders });
   }
 });

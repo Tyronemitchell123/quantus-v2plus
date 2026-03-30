@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import useDocumentHead from "@/hooks/use-document-head";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
@@ -7,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { resetPasswordSchema } from "@/lib/validation";
 
 const ResetPassword = () => {
+  useDocumentHead({ title: "Reset Password | QUANTUS V2+", description: "Set a new password for your QUANTUS V2+ account." });
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [fieldError, setFieldError] = useState("");
