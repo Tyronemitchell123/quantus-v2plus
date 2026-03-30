@@ -43,9 +43,10 @@ serve(async (req) => {
     const user = data.user;
     if (!user?.email) throw new Error("User not authenticated");
 
-    const { tier, seats } = await req.json();
-    const priceId = PRICE_MAP[tier];
-    if (!priceId) throw new Error(`Invalid tier: ${tier}`);
+    const { tier, seats, billing_cycle } = await req.json();
+    const cycle = billing_cycle === "annual" ? "annual" : "monthly";
+    const priceId = PRICE_MAP[tier]?.[cycle];
+    if (!priceId) throw new Error(`Invalid tier or billing cycle: ${tier}/${cycle}`);
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", { apiVersion: "2025-08-27.basil" });
 
