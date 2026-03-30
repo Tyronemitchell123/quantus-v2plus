@@ -48,7 +48,7 @@ serve(async (req) => {
   );
 
   try {
-    const { action, name, description, priceInCents, currency, connectedAccountId } =
+    const { action, name, description, priceInCents, currency, connectedAccountId, filterAccountId } =
       await req.json();
 
     // ── ACTION: CREATE ──────────────────────────────────────────────────────
