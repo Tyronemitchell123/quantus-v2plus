@@ -16,16 +16,17 @@ const Terms = () => {
     },
     {
       title: "2. Description of Service",
-      content: `Quantus V2+. is an AI-powered deal management and concierge platform that provides:
+      content: `Quantus V2+ is an AI-powered deal management and concierge platform that provides:
 
-• Intelligent deal intake and classification
-• Automated vendor sourcing and matching
-• Negotiation support and workflow automation
-• Document management and billing
-• Quantum computing capabilities
-• Marketing and analytics tools
+• Intelligent deal intake and AI classification across 9 verticals (Aviation, Medical, Staffing, Lifestyle, Logistics, Partnerships, Marine, Legal, Finance)
+• Automated vendor sourcing, matching, and outreach
+• AI-assisted negotiation support and workflow automation
+• Document management, e-signatures, and billing
+• Quantum computing capabilities (AWS Braket integration)
+• Wealth dashboard, marketing hub, and analytics tools
+• Priority deal processing for expedited orchestration
 
-The Service is provided on a subscription basis with tiered access levels.`,
+The Service is provided on a subscription basis with tiered access levels (Starter, Professional, Teams, Enterprise).`,
     },
     {
       title: "3. Account Registration",
