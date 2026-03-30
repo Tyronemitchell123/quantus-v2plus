@@ -32,21 +32,25 @@ export function useVaultFiles() {
       return;
     }
 
-    const mapped: VaultFile[] = (data || [])
-      .filter((f) => f.name !== ".emptyFolderPlaceholder")
-      .map((f) => {
-        const path = `${user.id}/${f.name}`;
-        const { data: urlData } = supabase.storage.from("quantusbucket").getPublicUrl(path);
-        return {
-          id: f.id || f.name,
-          name: f.name,
-          size: (f.metadata as any)?.size || 0,
-          type: (f.metadata as any)?.mimetype || "application/octet-stream",
-          created_at: f.created_at || new Date().toISOString(),
-          path,
-          url: urlData.publicUrl,
-        };
-      });
+    const mapped: VaultFile[] = await Promise.all(
+      (data || [])
+        .filter((f) => f.name !== ".emptyFolderPlaceholder")
+        .map(async (f) => {
+          const path = `${user.id}/${f.name}`;
+          const { data: urlData } = await supabase.storage
+            .from("quantusbucket")
+            .createSignedUrl(path, 3600); // 1-hour signed URL
+          return {
+            id: f.id || f.name,
+            name: f.name,
+            size: (f.metadata as any)?.size || 0,
+            type: (f.metadata as any)?.mimetype || "application/octet-stream",
+            created_at: f.created_at || new Date().toISOString(),
+            path,
+            url: urlData?.signedUrl || "",
+          };
+        })
+    );
 
     setFiles(mapped);
     setLoading(false);
