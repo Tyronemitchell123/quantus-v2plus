@@ -142,12 +142,14 @@ serve(async (req) => {
     const classified = JSON.parse(toolCall.function.arguments);
 
     // Calculate priority score
+    const priorityBoost = is_priority ? 20 : 0;
     const rawPriority = Math.round(
       (classified.urgency_score * 0.35) +
       (classified.complexity_score * 0.15) +
       (classified.probability_score * 0.2) +
       (Math.min((classified.deal_value_estimate || 0) / 100000, 30)) +
-      userTierBoost
+      userTierBoost +
+      priorityBoost
     );
     const priorityScore = Math.min(100, Math.max(0, rawPriority));
 
