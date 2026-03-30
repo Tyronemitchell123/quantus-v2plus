@@ -16,6 +16,9 @@ import MobileMessaging from "@/components/mobile/MobileMessaging";
 import MobileNotificationBanner from "@/components/mobile/MobileNotificationBanner";
 import MobileProfile from "@/components/mobile/MobileProfile";
 import ParticleGrid from "@/components/ParticleGrid";
+import UpsellBanner from "@/components/UpsellBanner";
+import { useSubscription } from "@/hooks/use-subscription";
+import { useUsageTracking } from "@/hooks/use-usage-tracking";
 import useDocumentHead from "@/hooks/use-document-head";
 
 const mobileNavItems = [
