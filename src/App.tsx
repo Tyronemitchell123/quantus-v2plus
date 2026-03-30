@@ -173,6 +173,7 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
+        <OfflineIndicator />
         <BrowserRouter>
           <AnimatedRoutes />
           <CookieConsent />
