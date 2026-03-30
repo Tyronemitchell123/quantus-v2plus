@@ -82,7 +82,7 @@ You can request earlier deletion — see Your Rights below.`,
 • **Object**: Object to processing based on legitimate interest.
 • **Withdraw Consent**: Withdraw consent at any time for consent-based processing.
 
-To exercise any right, email privacy@quantus.ai or use the Data Export feature in Settings.`,
+To exercise any right, email privacy@crownprompts.com or use the Data Export feature in Settings.`,
     },
     {
       title: "9. Cookies",
