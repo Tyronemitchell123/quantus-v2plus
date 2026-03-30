@@ -229,7 +229,7 @@ const WealthDashboard = () => {
 
           {/* AI Narrative */}
           <div className="px-6 lg:px-9 pb-6">
-            <PortfolioAINarrative portfolio={assetClasses} />
+            <PortfolioAINarrative portfolio={portfolioForAI} />
           </div>
 
           {/* Main Content Grid */}
