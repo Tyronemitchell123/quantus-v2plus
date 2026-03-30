@@ -154,6 +154,7 @@ const AnimatedRoutes = () => {
             <Route path="/connect/onboarding" element={<ProtectedRoute><R name="Connect Onboarding"><ConnectOnboarding /></R></ProtectedRoute>} />
             <Route path="/connect/products" element={<ProtectedRoute><R name="Connect Products"><ConnectProducts /></R></ProtectedRoute>} />
             <Route path="/connect/storefront" element={<ProtectedRoute><R name="Connect Storefront"><ConnectStorefront /></R></ProtectedRoute>} />
+            <Route path="/commission-payouts" element={<ProtectedRoute><R name="Commission Payouts"><CommissionPayouts /></R></ProtectedRoute>} />
 
             <Route path="/privacy" element={<R name="Privacy"><PageTransition><Privacy /><Footer /></PageTransition></R>} />
             <Route path="/terms" element={<R name="Terms"><PageTransition><Terms /><Footer /></PageTransition></R>} />
