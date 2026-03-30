@@ -39,7 +39,7 @@ const firmData: Record<string, Array<{
 
 const LegalModule = forwardRef<HTMLDivElement>((_, ref) => {
   const [activeCat, setActiveCat] = useState("corporate");
-  const { deals } = useModuleData("legal");
+  const { deals, sourcingResults, vendorOutreach, loading: liveLoading } = useModuleData("legal");
   const items = firmData[activeCat] || [];
 
   return (
