@@ -50,7 +50,7 @@ const CommissionPayouts = () => {
   const [payoutLoading, setPayoutLoading] = useState(false);
   const [payoutPreview, setPayoutPreview] = useState<any>(null);
   const [payoutResult, setPayoutResult] = useState<any>(null);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  
 
   useDocumentHead({
     title: "Commission Payouts — QUANTUS V2+",
