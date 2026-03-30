@@ -1,10 +1,13 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import {
   Plane, Heart, Users, Globe, Truck, Handshake,
   Sparkles, CheckCircle2, AlertTriangle, DollarSign,
-  MapPin, Clock, ArrowRight,
+  MapPin, Clock, ArrowRight, Zap, Loader2,
 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const categoryIcons: Record<string, typeof Plane> = {
   aviation: Plane, medical: Heart, staffing: Users,
