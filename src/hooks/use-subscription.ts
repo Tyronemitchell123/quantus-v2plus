@@ -25,9 +25,21 @@ const TIER_LIMITS: Record<SubscriptionTier, { queries: number; integrations: num
 
 // Stripe price IDs for each tier
 export const STRIPE_TIERS = {
-  starter: { price_id: "price_1TDDnJLHlfS2sSjxih5YxUbI", product_id: "prod_UBaz9IvwQ3JGPQ" },
-  professional: { price_id: "price_1TDDnaLHlfS2sSjxeGv5mMKR", product_id: "prod_UBazsHedGjIiur" },
-  teams: { price_id: "price_1TDDoJLHlfS2sSjxqj0bGYaa", product_id: "prod_UBb0bxM7kcxShs" },
+  starter: {
+    price_id: "price_1TDDnJLHlfS2sSjxih5YxUbI",
+    annual_price_id: "price_1TGomnLwCkGlk8CPSo2YqcYb",
+    product_id: "prod_UBaz9IvwQ3JGPQ",
+  },
+  professional: {
+    price_id: "price_1TDDnaLHlfS2sSjxeGv5mMKR",
+    annual_price_id: "price_1TGonKLwCkGlk8CP7oG8wtiN",
+    product_id: "prod_UBazsHedGjIiur",
+  },
+  teams: {
+    price_id: "price_1TDDoJLHlfS2sSjxqj0bGYaa",
+    annual_price_id: "price_1TGopJLwCkGlk8CPfJ7ltvjs",
+    product_id: "prod_UBb0bxM7kcxShs",
+  },
 };
 
 export function useSubscription() {
