@@ -132,6 +132,28 @@ serve(async (req) => {
       }
     }
 
+    // ── Step 4: Handle payment_intent.succeeded → auto-close deals ──────
+    if (event.type === "payment_intent.succeeded") {
+      const paymentIntent = (event as any).data?.object;
+      const dealId = paymentIntent?.metadata?.deal_id;
+      if (dealId) {
+        console.log(`Payment succeeded for deal: ${dealId}, auto-completing.`);
+        await supabaseAdmin
+          .from("deals")
+          .update({ status: "completed", completed_at: new Date().toISOString() })
+          .eq("id", dealId);
+
+        // Update invoice status
+        const invoiceId = paymentIntent?.metadata?.invoice_id;
+        if (invoiceId) {
+          await supabaseAdmin
+            .from("invoices")
+            .update({ status: "paid", paid_at: new Date().toISOString() })
+            .eq("id", invoiceId);
+        }
+      }
+    }
+
     // Always respond 200 to acknowledge receipt — Stripe retries on non-2xx
     return new Response(JSON.stringify({ received: true }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

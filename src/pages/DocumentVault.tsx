@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { FileText, Plus, Search, Shield, PenTool, Clock, CheckCircle2, AlertTriangle, Download, Eye, Send, Sparkles, FolderOpen, Lock } from "lucide-react";
+import { motion } from "framer-motion";
+import { FileText, Search, Shield, PenTool, Clock, CheckCircle2, Sparkles, FolderOpen, Lock, Upload } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import DashboardTopBar from "@/components/dashboard/DashboardTopBar";
 import useDocumentHead from "@/hooks/use-document-head";
+import VaultUploadZone from "@/components/vault/VaultUploadZone";
 
 const mockDocuments = [
   { id: "1", title: "Aircraft Charter Agreement — G650", deal: "QAI-7A3F2B1C", type: "Contract", status: "pending_signature", created: "2h ago", pages: 12, signers: 2, signed: 1, encrypted: true },
@@ -63,11 +64,11 @@ const DocumentVault = () => {
       <DashboardSidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         <DashboardTopBar />
-        <main className="flex-1 overflow-y-auto p-6 space-y-6">
+        <main className="flex-1 overflow-y-auto px-4 sm:px-6 py-6 space-y-6">
           {/* Header */}
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div>
-              <h1 className="font-display text-2xl font-bold text-foreground flex items-center gap-3">
+              <h1 className="font-display text-xl sm:text-2xl font-bold text-foreground flex items-center gap-3">
                 <div className="p-2 rounded-xl bg-primary/10 border border-primary/20">
                   <FolderOpen size={22} className="text-primary" />
                 </div>
@@ -126,9 +127,9 @@ const DocumentVault = () => {
             ].map((stat, i) => (
               <motion.div key={stat.label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }}>
                 <Card className="glass-card border-border/50">
-                  <CardContent className="p-5">
+                  <CardContent className="p-4 sm:p-5">
                     <stat.icon size={18} className="text-primary mb-3" />
-                    <div className="font-display text-2xl font-bold text-foreground">{stat.value}</div>
+                    <div className="font-display text-xl sm:text-2xl font-bold text-foreground">{stat.value}</div>
                     <div className="text-xs text-muted-foreground">{stat.label}</div>
                   </CardContent>
                 </Card>
@@ -136,10 +137,11 @@ const DocumentVault = () => {
             ))}
           </div>
 
-          <Tabs defaultValue="documents" className="space-y-4">
+          <Tabs defaultValue="uploads" className="space-y-4">
             <div className="flex items-center justify-between flex-wrap gap-3">
               <TabsList className="bg-secondary/50">
-                <TabsTrigger value="documents">All Documents</TabsTrigger>
+                <TabsTrigger value="uploads">File Vault</TabsTrigger>
+                <TabsTrigger value="documents">Documents</TabsTrigger>
                 <TabsTrigger value="templates">Templates</TabsTrigger>
                 <TabsTrigger value="signatures">E-Signatures</TabsTrigger>
               </TabsList>
@@ -149,13 +151,27 @@ const DocumentVault = () => {
               </div>
             </div>
 
+            {/* NEW: File Upload Tab */}
+            <TabsContent value="uploads">
+              <Card className="glass-card border-border/50">
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Upload size={18} className="text-primary" /> Secure File Vault
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <VaultUploadZone />
+                </CardContent>
+              </Card>
+            </TabsContent>
+
             <TabsContent value="documents" className="space-y-3">
               {filtered.map((doc, i) => (
                 <motion.div key={doc.id} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.06 }}>
                   <Card className="glass-card border-border/50 hover:border-primary/20 transition-all">
-                    <CardContent className="p-5">
-                      <div className="flex items-center justify-between gap-4">
-                        <div className="flex items-center gap-4 flex-1 min-w-0">
+                    <CardContent className="p-4 sm:p-5">
+                      <div className="flex items-center justify-between gap-4 flex-wrap">
+                        <div className="flex items-center gap-3 flex-1 min-w-0">
                           <div className="p-2.5 rounded-lg bg-primary/10 shrink-0">
                             <FileText size={18} className="text-primary" />
                           </div>
@@ -164,21 +180,14 @@ const DocumentVault = () => {
                               <h3 className="text-sm font-medium text-foreground truncate">{doc.title}</h3>
                               {doc.encrypted && <Lock size={10} className="text-emerald-400" />}
                             </div>
-                            <div className="flex items-center gap-3 mt-1">
+                            <div className="flex items-center gap-3 mt-1 flex-wrap">
                               <span className="text-xs text-muted-foreground font-mono">{doc.deal}</span>
                               <Badge variant="outline" className="text-[10px]">{doc.type}</Badge>
                               {getStatusBadge(doc.status)}
                             </div>
                           </div>
                         </div>
-                        <div className="flex items-center gap-2 shrink-0">
-                          <span className="text-xs text-muted-foreground">{doc.pages} pages • {doc.created}</span>
-                          <Button size="sm" variant="ghost" className="h-8 w-8 p-0"><Eye size={14} /></Button>
-                          <Button size="sm" variant="ghost" className="h-8 w-8 p-0"><Download size={14} /></Button>
-                          {doc.status === "draft" && (
-                            <Button size="sm" variant="outline" className="text-xs gap-1 h-8"><Send size={12} /> Send</Button>
-                          )}
-                        </div>
+                        <span className="text-xs text-muted-foreground">{doc.pages} pages • {doc.created}</span>
                       </div>
                       {doc.status === "pending_signature" && (
                         <div className="mt-3 pt-3 border-t border-border/30">
@@ -196,7 +205,7 @@ const DocumentVault = () => {
             </TabsContent>
 
             <TabsContent value="templates">
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {templates.map((tpl, i) => (
                   <motion.div key={tpl.name} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.08 }}>
                     <Card className="glass-card border-border/50 hover:border-primary/30 transition-all cursor-pointer group h-full">
@@ -222,21 +231,17 @@ const DocumentVault = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {mockDocuments.filter(d => d.status === "pending_signature").map((doc, i) => (
-                    <div key={doc.id} className="flex items-center justify-between py-3 border-b border-border/30 last:border-0">
+                  {mockDocuments.filter(d => d.status === "pending_signature").map((doc) => (
+                    <div key={doc.id} className="flex items-center justify-between py-3 border-b border-border/30 last:border-0 flex-wrap gap-2">
                       <div>
                         <h4 className="text-sm font-medium text-foreground">{doc.title}</h4>
                         <p className="text-xs text-muted-foreground mt-0.5">Waiting on {doc.signers - doc.signed} of {doc.signers} signers</p>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Button size="sm" variant="outline" className="text-xs gap-1"><Send size={12} /> Remind</Button>
                         <Button size="sm" className="text-xs gap-1"><PenTool size={12} /> Sign Now</Button>
                       </div>
                     </div>
                   ))}
-                  {mockDocuments.filter(d => d.status === "pending_signature").length === 0 && (
-                    <p className="text-sm text-muted-foreground text-center py-8">No pending signatures</p>
-                  )}
                 </CardContent>
               </Card>
             </TabsContent>

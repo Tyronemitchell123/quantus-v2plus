@@ -12,6 +12,7 @@ import DashboardTopBar from "@/components/dashboard/DashboardTopBar";
 import useDocumentHead from "@/hooks/use-document-head";
 import DealCard from "@/components/deal/DealCard";
 import DealPhaseTimeline from "@/components/deal/DealPhaseTimeline";
+import DealChatPanel from "@/components/chat/DealChatPanel";
 
 const categoryIcons: Record<string, typeof Plane> = {
   aviation: Plane, medical: Heart, staffing: Users,
@@ -183,6 +184,9 @@ const DealEngine = () => {
                 </Link>
               ))}
             </div>
+
+            {/* Real-time Deal Chat */}
+            <DealChatPanel channel="deal-engine" className="mt-6" />
           </div>
         </main>
 
