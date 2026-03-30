@@ -226,6 +226,13 @@ export default function NLPTools() {
   const cardV = { hidden: { opacity: 0, y: 16, filter: "blur(4px)" }, show: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.5 } } };
   const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.08 } } };
 
+  const NLPUpsellEl = (() => {
+    const { tier } = useSubscription();
+    const usage = useUsageTracking();
+    if (usage.loading || usage.percentage < 75) return null;
+    return <UpsellBanner tier={tier} usagePercent={usage.percentage} feature="AI queries" variant="compact" className="mb-4" />;
+  })();
+
   return (
     <div className="min-h-screen bg-background pt-16 flex">
       {/* Sidebar */}
