@@ -8,6 +8,9 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import useDocumentHead from "@/hooks/use-document-head";
 import { useAuth } from "@/hooks/use-auth";
+import UpsellBanner from "@/components/UpsellBanner";
+import { useUsageTracking } from "@/hooks/use-usage-tracking";
+import { useSubscription } from "@/hooks/use-subscription";
 import { useQuantumJobs } from "@/hooks/use-quantum-jobs";
 import CircuitEditor from "@/components/quantum/CircuitEditor";
 import DeviceSelector from "@/components/quantum/DeviceSelector";
@@ -47,6 +50,12 @@ export default function QuantumComputing() {
   });
 
   const { user } = useAuth();
+  const { tier: subTier } = useSubscription();
+  const usage = useUsageTracking();
+  const QuantumUpsell = () => {
+    if (usage.loading || usage.percentage < 75) return null;
+    return <UpsellBanner tier={subTier} usagePercent={usage.percentage} feature="AI queries" variant="compact" className="container mx-auto px-6 mb-4" />;
+  };
   const { jobs, loading, limits, selectedJob, setSelectedJob, results, submitJob, fetchJobs, fetchResults, refreshJob } = useQuantumJobs();
 
   const [circuit, setCircuit] = useState("");
@@ -118,6 +127,9 @@ export default function QuantumComputing() {
           </motion.div>
         </div>
       </header>
+
+      {/* Upsell Banner */}
+      <QuantumUpsell />
 
       {/* Tabs: Lab + Learn */}
       <div className="container mx-auto px-6 pb-24">

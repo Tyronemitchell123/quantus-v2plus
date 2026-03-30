@@ -16,6 +16,9 @@ import { useAuth } from "@/hooks/use-auth";
 import ReactMarkdown from "react-markdown";
 import useDocumentHead from "@/hooks/use-document-head";
 import NLPHistorySidebar, { type HistoryEntry } from "@/components/nlp/NLPHistorySidebar";
+import UpsellBanner from "@/components/UpsellBanner";
+import { useUsageTracking } from "@/hooks/use-usage-tracking";
+import { useSubscription } from "@/hooks/use-subscription";
 
 type Tool = "summarize" | "sentiment" | "generate" | "extract-entities";
 
@@ -223,6 +226,13 @@ export default function NLPTools() {
   const cardV = { hidden: { opacity: 0, y: 16, filter: "blur(4px)" }, show: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.5 } } };
   const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.08 } } };
 
+  const NLPUpsellEl = (() => {
+    const { tier } = useSubscription();
+    const usage = useUsageTracking();
+    if (usage.loading || usage.percentage < 75) return null;
+    return <UpsellBanner tier={tier} usagePercent={usage.percentage} feature="AI queries" variant="compact" className="mb-4" />;
+  })();
+
   return (
     <div className="min-h-screen bg-background pt-16 flex">
       {/* Sidebar */}
@@ -237,6 +247,7 @@ export default function NLPTools() {
       {/* Main content */}
       <div className="flex-1 min-w-0 py-8 px-4 overflow-y-auto">
         <div className="max-w-5xl mx-auto">
+          {NLPUpsellEl}
           {/* Header */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }} className="text-center mb-12">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-quantum-purple/10 border border-quantum-purple/20 text-quantum-purple text-xs font-medium mb-4">
