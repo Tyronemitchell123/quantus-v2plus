@@ -57,11 +57,7 @@ const Dashboard = () => {
   const [mobileTab, setMobileTab] = useState<"feed" | "modules" | "profile">("feed");
   const { pathname } = useLocation();
   const { tier, limits } = useSubscription();
-  const { totalUsage } = useUsageTracking();
-  const usagePercent = useMemo(() => {
-    if (limits.queries === Infinity) return 0;
-    return Math.min(100, Math.round((totalUsage / limits.queries) * 100));
-  }, [totalUsage, limits.queries]);
+  const { used, percentage: usagePercent } = useUsageTracking();
 
   return (
     <div className="min-h-screen bg-background flex relative">
