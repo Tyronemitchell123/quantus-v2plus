@@ -1,0 +1,1 @@
+SELECT pgmq.delete('transactional_emails', 7); SELECT pgmq.delete('transactional_emails', 8);
