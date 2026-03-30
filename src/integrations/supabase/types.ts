@@ -1870,7 +1870,33 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      storefront_products: {
+        Row: {
+          created_at: string | null
+          currency: string | null
+          description: string | null
+          id: string | null
+          name: string | null
+          price_cents: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          currency?: string | null
+          description?: string | null
+          id?: string | null
+          name?: string | null
+          price_cents?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          currency?: string | null
+          description?: string | null
+          id?: string | null
+          name?: string | null
+          price_cents?: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       deactivate_expired_api_keys: { Args: never; Returns: number }
