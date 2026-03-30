@@ -8,10 +8,19 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const PRICE_MAP: Record<string, string> = {
-  starter: "price_1TDDnJLHlfS2sSjxih5YxUbI",
-  professional: "price_1TDDnaLHlfS2sSjxeGv5mMKR",
-  teams: "price_1TDDoJLHlfS2sSjxqj0bGYaa",
+const PRICE_MAP: Record<string, Record<string, string>> = {
+  starter: {
+    monthly: "price_1TDDnJLHlfS2sSjxih5YxUbI",
+    annual: "price_1TGomnLwCkGlk8CPSo2YqcYb",
+  },
+  professional: {
+    monthly: "price_1TDDnaLHlfS2sSjxeGv5mMKR",
+    annual: "price_1TGonKLwCkGlk8CP7oG8wtiN",
+  },
+  teams: {
+    monthly: "price_1TDDoJLHlfS2sSjxqj0bGYaa",
+    annual: "price_1TGopJLwCkGlk8CPfJ7ltvjs",
+  },
 };
 
 serve(async (req) => {
@@ -34,9 +43,10 @@ serve(async (req) => {
     const user = data.user;
     if (!user?.email) throw new Error("User not authenticated");
 
-    const { tier, seats } = await req.json();
-    const priceId = PRICE_MAP[tier];
-    if (!priceId) throw new Error(`Invalid tier: ${tier}`);
+    const { tier, seats, billing_cycle } = await req.json();
+    const cycle = billing_cycle === "annual" ? "annual" : "monthly";
+    const priceId = PRICE_MAP[tier]?.[cycle];
+    if (!priceId) throw new Error(`Invalid tier or billing cycle: ${tier}/${cycle}`);
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", { apiVersion: "2025-08-27.basil" });
 

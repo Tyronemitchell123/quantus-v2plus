@@ -3,46 +3,55 @@ import { useNavigate } from "react-router-dom";
 import { ArrowUpRight, ArrowDownRight, Gift, Zap, Sparkles, Crown, Users, Loader2, Check } from "lucide-react";
 import { SubscriptionTier, useSubscription } from "@/hooks/use-subscription";
 import { useToast } from "@/hooks/use-toast";
+import { motion } from "framer-motion";
 
 const PLANS: {
   key: SubscriptionTier;
   name: string;
-  price: number;
+  monthly: number;
+  annual: number;
   icon: React.ElementType;
   features: string[];
+  perUser?: boolean;
 }[] = [
   {
     key: "free",
     name: "Free",
-    price: 0,
+    monthly: 0,
+    annual: 0,
     icon: Gift,
     features: ["100 AI queries/mo", "10 quantum sim jobs", "1 integration"],
   },
   {
     key: "starter",
     name: "Starter",
-    price: 29,
+    monthly: 29,
+    annual: 23,
     icon: Zap,
     features: ["5,000 AI queries/mo", "50 quantum jobs", "2 integrations"],
   },
   {
     key: "professional",
     name: "Professional",
-    price: 149,
+    monthly: 149,
+    annual: 119,
     icon: Sparkles,
     features: ["Unlimited queries", "Unlimited quantum jobs", "25 integrations"],
   },
   {
     key: "teams",
     name: "Teams",
-    price: 49,
+    monthly: 49,
+    annual: 39,
+    perUser: true,
     icon: Users,
     features: ["Everything in Pro", "Per-user billing", "Shared dashboards"],
   },
   {
     key: "enterprise",
     name: "Enterprise",
-    price: 0,
+    monthly: 0,
+    annual: 0,
     icon: Crown,
     features: ["Custom limits", "Dedicated support", "SLA guarantee"],
   },
@@ -57,6 +66,7 @@ interface Props {
 
 const PlanSwitcher = ({ currentTier, isActive }: Props) => {
   const [switching, setSwitching] = useState<string | null>(null);
+  const [annual, setAnnual] = useState(false);
   const { createPayment, refresh } = useSubscription();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -71,7 +81,7 @@ const PlanSwitcher = ({ currentTier, isActive }: Props) => {
 
     setSwitching(targetTier);
     try {
-      await createPayment(targetTier, "monthly");
+      await createPayment(targetTier, annual ? "annual" : "monthly");
     } catch (err: any) {
       toast({ title: "Error", description: err.message, variant: "destructive" });
     } finally {
@@ -81,9 +91,34 @@ const PlanSwitcher = ({ currentTier, isActive }: Props) => {
 
   return (
     <div className="rounded-2xl border border-border bg-card/60 backdrop-blur-sm p-6 md:p-8">
-      <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-6">
-        Change Plan
-      </h2>
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Change Plan
+        </h2>
+
+        {/* Billing toggle */}
+        <div className="flex items-center gap-3">
+          <span className={`text-xs font-medium transition-colors ${!annual ? "text-foreground" : "text-muted-foreground"}`}>Monthly</span>
+          <button
+            onClick={() => setAnnual((v) => !v)}
+            className="relative w-11 h-6 rounded-full bg-secondary border border-border transition-colors focus:outline-none focus:ring-2 focus:ring-primary/30"
+            aria-label="Toggle annual billing"
+          >
+            <motion.div
+              layout
+              transition={{ type: "spring", stiffness: 500, damping: 30 }}
+              className="absolute top-0.5 w-5 h-5 rounded-full bg-primary shadow-lg shadow-primary/30"
+              style={{ left: annual ? "calc(100% - 1.375rem)" : "0.125rem" }}
+            />
+          </button>
+          <span className={`text-xs font-medium transition-colors ${annual ? "text-foreground" : "text-muted-foreground"}`}>Annual</span>
+          {annual && (
+            <span className="text-[10px] font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+              Save 20%
+            </span>
+          )}
+        </div>
+      </div>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
         {PLANS.map((plan) => {
@@ -92,6 +127,7 @@ const PlanSwitcher = ({ currentTier, isActive }: Props) => {
           const isUpgrade = planIdx > currentIdx;
           const isDowngrade = planIdx < currentIdx;
           const PlanIcon = plan.icon;
+          const price = annual ? plan.annual : plan.monthly;
 
           return (
             <div
@@ -116,14 +152,19 @@ const PlanSwitcher = ({ currentTier, isActive }: Props) => {
                 {plan.name}
               </h3>
               <p className="font-display text-xl font-bold text-foreground tabular-nums mb-3">
-                {plan.price === 0 && plan.key === "free"
+                {price === 0 && plan.key === "free"
                   ? "Free"
                   : plan.key === "enterprise"
                   ? "Custom"
-                  : plan.key === "teams"
-                  ? `$${plan.price}/user/mo`
-                  : `$${plan.price}/mo`}
+                  : plan.perUser
+                  ? `$${price}/user/mo`
+                  : `$${price}/mo`}
               </p>
+              {annual && price > 0 && plan.key !== "enterprise" && (
+                <p className="text-[10px] text-muted-foreground -mt-2 mb-3">
+                  Billed ${price * 12}/year
+                </p>
+              )}
 
               <ul className="space-y-1.5 mb-5 flex-1">
                 {plan.features.map((f) => (
