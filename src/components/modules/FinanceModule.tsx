@@ -118,7 +118,7 @@ const FinanceModule = forwardRef<HTMLDivElement>((_, ref) => {
               <p>• Insurance-linked securities gaining traction for portfolio diversification</p>
             </div>
           </div>
-          <ModuleLiveDeals category="finance" deals={deals} />
+          <ModuleLiveDeals deals={deals} sourcingResults={sourcingResults} vendorOutreach={vendorOutreach} loading={liveLoading} categoryLabel="Finance" />
         </div>
       </div>
     </div>

@@ -118,7 +118,7 @@ const LegalModule = forwardRef<HTMLDivElement>((_, ref) => {
               <p>• Crypto regulatory clarity boosting digital asset structuring</p>
             </div>
           </div>
-          <ModuleLiveDeals category="legal" deals={deals} />
+          <ModuleLiveDeals deals={deals} sourcingResults={sourcingResults} vendorOutreach={vendorOutreach} loading={liveLoading} categoryLabel="Legal" />
         </div>
       </div>
     </div>

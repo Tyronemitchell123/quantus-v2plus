@@ -130,7 +130,7 @@ const MarineModule = forwardRef<HTMLDivElement>((_, ref) => {
               <p>• Crew shortage in engineering roles — agency rates rising 12%</p>
             </div>
           </div>
-          <ModuleLiveDeals category="marine" deals={deals} />
+          <ModuleLiveDeals deals={deals} sourcingResults={sourcingResults} vendorOutreach={vendorOutreach} loading={liveLoading} categoryLabel="Marine" />
         </div>
       </div>
     </div>
