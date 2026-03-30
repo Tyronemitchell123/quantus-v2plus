@@ -329,6 +329,21 @@ const Pricing = () => {
 
       <PricingFAQ />
 
+      {/* Disclaimers */}
+      <section className="pb-12">
+        <div className="container mx-auto px-6 max-w-4xl">
+          <div className="glass-card rounded-2xl p-8 space-y-3 text-xs text-muted-foreground/60 leading-relaxed">
+            <p className="text-muted-foreground text-sm font-semibold mb-2">Important Disclaimers</p>
+            <p>† All prices shown exclude applicable taxes and fees. Pricing may vary by region and currency conversion rates are approximate.</p>
+            <p>† AI-generated recommendations, analytics, and deal classifications are advisory only and should not be construed as professional, legal, or financial advice. Results are not guaranteed.</p>
+            <p>† Quantum computing job results are provided on a best-effort basis using third-party simulators and QPU providers. Accuracy and availability may vary.</p>
+            <p>† Commission rates are indicative and subject to change based on deal complexity, vendor agreements, and market conditions.</p>
+            <p>† Free trial features are subject to usage limits. We reserve the right to modify plan features, pricing, and availability with 30 days' notice.</p>
+            <p>† Past performance metrics and portfolio analytics do not guarantee future results.</p>
+          </div>
+        </div>
+      </section>
+
       {/* CTA */}
       <section className="py-24 border-t border-border">
         <div className="container mx-auto px-6">
