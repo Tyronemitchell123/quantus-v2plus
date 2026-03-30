@@ -25,6 +25,9 @@ serve(async (req) => {
     const rateLimited = rateLimit(req, corsHeaders);
     if (rateLimited) return rateLimited;
 
+    const authResult = await authenticateRequest(req, corsHeaders);
+    if (authResult instanceof Response) return authResult;
+
     const { qubits, shots, prioritize } = await req.json();
     const numQubits = qubits || 2;
     const numShots = shots || 100;
