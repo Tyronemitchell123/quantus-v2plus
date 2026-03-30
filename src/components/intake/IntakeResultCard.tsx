@@ -201,21 +201,64 @@ const IntakeResultCard = ({ deal }: Props) => {
         </div>
       </div>
 
-      {/* Next Action */}
-      <Link
-        to={`/sourcing?deal=${deal.id}`}
-        className="flex items-center justify-between glass-card rounded-xl p-5 border-primary/20 hover:border-primary/40 transition-colors group"
-      >
-        <div>
-          <p className="font-body text-[10px] text-muted-foreground">Status</p>
-          <p className="font-body text-sm text-foreground capitalize">{deal.status} Complete</p>
-        </div>
-        <div className="flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground font-body text-[10px] tracking-[0.2em] uppercase rounded-lg group-hover:brightness-110 transition-all gold-glow">
-          Begin Sourcing <ArrowRight size={12} />
-        </div>
-      </Link>
+      {/* Priority & Next Action */}
+      <div className="flex flex-col sm:flex-row gap-4">
+        <PriorityBoostButton dealId={deal.id} />
+        <Link
+          to={`/sourcing?deal=${deal.id}`}
+          className="flex-1 flex items-center justify-between glass-card rounded-xl p-5 border-primary/20 hover:border-primary/40 transition-colors group"
+        >
+          <div>
+            <p className="font-body text-[10px] text-muted-foreground">Status</p>
+            <p className="font-body text-sm text-foreground capitalize">{deal.status} Complete</p>
+          </div>
+          <div className="flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground font-body text-[10px] tracking-[0.2em] uppercase rounded-lg group-hover:brightness-110 transition-all gold-glow">
+            Begin Sourcing <ArrowRight size={12} />
+          </div>
+        </Link>
+      </div>
     </motion.div>
   );
 };
+
+function PriorityBoostButton({ dealId }: { dealId: string }) {
+  const [loading, setLoading] = useState(false);
+
+  const handlePriority = async () => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("priority-checkout", {
+        body: { deal_id: dealId },
+      });
+      if (error) throw new Error(error.message);
+      if (data?.error) throw new Error(data.error);
+      if (data?.url) {
+        window.open(data.url, "_blank");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Failed to create priority checkout");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <button
+      onClick={handlePriority}
+      disabled={loading}
+      className="flex items-center gap-3 glass-card rounded-xl p-5 border-primary/30 hover:border-primary/50 transition-all group disabled:opacity-50"
+    >
+      {loading ? (
+        <Loader2 size={16} className="animate-spin text-primary" />
+      ) : (
+        <Zap size={16} className="text-primary" />
+      )}
+      <div className="text-left">
+        <p className="font-body text-sm font-semibold text-foreground">Priority Processing</p>
+        <p className="font-body text-[10px] text-muted-foreground">$49 one-time · Expedited orchestration</p>
+      </div>
+    </button>
+  );
+}
 
 export default IntakeResultCard;
