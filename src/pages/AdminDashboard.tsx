@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import useDocumentHead from "@/hooks/use-document-head";
 import ConversionFunnel from "@/components/admin/ConversionFunnel";
+import EmailMonitoringTab from "@/components/admin/EmailMonitoringTab";
 
 interface DashboardData {
   addonSales: {
