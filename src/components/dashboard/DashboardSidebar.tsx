@@ -19,6 +19,7 @@ const navItems = [
   { icon: FolderOpen, label: "Vault", to: "/vault" },
   { icon: FileText, label: "Documents", to: "/documents" },
   { icon: CreditCard, label: "Billing", to: "/account/subscription" },
+  { icon: DollarSign, label: "Payouts", to: "/commission-payouts" },
   { icon: Settings, label: "Settings", to: "/settings" },
 ];
 
