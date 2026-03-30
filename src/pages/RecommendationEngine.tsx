@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import useDocumentHead from "@/hooks/use-document-head";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
