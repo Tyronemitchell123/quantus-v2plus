@@ -194,6 +194,19 @@ const WealthDashboard = () => {
             </div>
           </div>
 
+          {/* Visual Charts Row */}
+          <div className="px-6 lg:px-9 pb-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <PortfolioDonutChart portfolio={assetClasses} privacyMode={privacyMode} />
+              <PortfolioTreemap portfolio={assetClasses} privacyMode={privacyMode} />
+            </div>
+          </div>
+
+          {/* AI Narrative */}
+          <div className="px-6 lg:px-9 pb-6">
+            <PortfolioAINarrative portfolio={assetClasses} />
+          </div>
+
           {/* Main Content Grid */}
           <div className="px-6 lg:px-9 pb-9">
             <Tabs defaultValue="allocation" className="w-full">
