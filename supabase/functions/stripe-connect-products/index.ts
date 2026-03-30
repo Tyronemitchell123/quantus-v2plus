@@ -112,10 +112,16 @@ serve(async (req) => {
     // Returns all products from our DB along with connected account info.
     // No authentication needed — this powers the public storefront.
     if (action === "list") {
-      const { data: products, error } = await supabaseAdmin
+      let query = supabaseAdmin
         .from("stripe_connect_products")
-        .select("id, name, description, price_cents, currency, created_at, connected_account_id")
-        .order("created_at", { ascending: false });
+        .select("id, name, description, price_cents, currency, created_at, connected_account_id");
+
+      // Optional server-side filter by connected account (for owner views)
+      if (filterAccountId) {
+        query = query.eq("connected_account_id", filterAccountId);
+      }
+
+      const { data: products, error } = await query.order("created_at", { ascending: false });
 
       if (error) throw new Error(error.message);
 
