@@ -160,8 +160,8 @@ export function useSubscription() {
   };
 
   // Keep backward compat
-  const createPayment = async (selectedTier: SubscriptionTier, _billingCycle: "monthly" | "annual", seats?: number) => {
-    return createCheckout(selectedTier, seats);
+  const createPayment = async (selectedTier: SubscriptionTier, billingCycle: "monthly" | "annual", seats?: number) => {
+    return createCheckout(selectedTier, seats, billingCycle);
   };
 
   return {
