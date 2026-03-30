@@ -154,6 +154,9 @@ const Dashboard = () => {
         </div>
 
         <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 pb-24 lg:pb-8">
+          {/* Upsell banner */}
+          <UpsellBanner tier={tier} usagePercent={usagePercent} feature="AI queries" className="mb-6" />
+
           {/* Desktop always shows feed */}
           <div className="hidden lg:block">
             <DashboardFeed />
