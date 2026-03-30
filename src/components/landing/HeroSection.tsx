@@ -9,6 +9,7 @@ const HeroSection = () => {
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const heroOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
   const heroY = useTransform(scrollYProgress, [0, 0.7], [0, 60]);
+  const lineScale = useTransform(scrollYProgress, [0, 0.5], [1, 0.3]);
 
   return (
     <motion.section
@@ -23,6 +24,10 @@ const HeroSection = () => {
       <div className="absolute inset-x-0 top-0 h-48 bg-gradient-to-b from-foreground/[0.02] to-transparent pointer-events-none" />
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/30 to-background pointer-events-none" />
 
+      {/* Gold vertical line motif — Quantus Ratio */}
+      <div className="absolute inset-y-0 left-[8.33%] w-px bg-gradient-to-b from-transparent via-primary/[0.06] to-transparent pointer-events-none" />
+      <div className="absolute inset-y-0 right-[8.33%] w-px bg-gradient-to-b from-transparent via-primary/[0.06] to-transparent pointer-events-none" />
+
       <motion.div
         style={{ y: heroY }}
         className="relative z-10 container mx-auto px-6 text-center max-w-4xl"
@@ -30,51 +35,94 @@ const HeroSection = () => {
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1] }}
         >
-          <h1 className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-[96px] font-semibold leading-[0.95] tracking-wide mb-6">
+          {/* Sovereign label */}
+          <motion.p
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.8 }}
+            className="font-body text-[9px] sm:text-[10px] tracking-[0.5em] uppercase text-primary/50 mb-8"
+          >
+            Autonomous Intelligence Platform
+          </motion.p>
+
+          <h1 className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-[96px] font-semibold leading-[0.95] tracking-wide mb-4">
             <span className="text-gold-gradient">Quantus V2+</span>
-            <br />
-            <span className="text-foreground font-light italic text-4xl sm:text-5xl md:text-6xl lg:text-7xl">A.I</span>
           </h1>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4, duration: 0.6 }}
+            className="mb-6"
+          >
+            <span className="text-foreground font-display font-light italic text-3xl sm:text-4xl md:text-5xl lg:text-6xl">
+              A.I
+            </span>
+          </motion.div>
 
           <motion.div
             initial={{ scaleX: 0 }}
             animate={{ scaleX: 1 }}
-            transition={{ delay: 0.6, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            className="w-16 h-px bg-primary mx-auto mb-8"
+            transition={{ delay: 0.6, duration: 1, ease: [0.22, 1, 0.36, 1] }}
+            className="w-20 h-px bg-gradient-to-r from-transparent via-primary to-transparent mx-auto mb-9"
           />
 
-          <p className="font-display text-lg sm:text-xl md:text-2xl italic text-foreground/80 mb-4 leading-relaxed">
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.8, duration: 0.8 }}
+            className="font-display text-lg sm:text-xl md:text-2xl italic text-foreground/80 mb-3 leading-relaxed"
+          >
             The Intelligence Behind the Extraordinary
-          </p>
-          <p className="font-body text-sm sm:text-base text-muted-foreground max-w-xl mx-auto leading-relaxed mb-12">
-            A cinematic, modular, anticipatory ecosystem for UHNW clients, private offices, and elite operators.
-          </p>
+          </motion.p>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.0, duration: 0.8 }}
+            className="font-body text-sm sm:text-base text-muted-foreground max-w-lg mx-auto leading-relaxed mb-14"
+          >
+            A sovereign orchestration engine for UHNW clients, private offices, and elite operators.
+          </motion.p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.2, duration: 0.6 }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-4"
+          >
             <Link
               to="/auth"
-              className="inline-block px-10 py-4 font-body text-xs font-medium tracking-[0.3em] uppercase bg-primary text-primary-foreground rounded-xl hover:opacity-90 transition-all duration-500 gold-glow"
+              className="inline-block px-10 py-4 font-body text-[10px] font-medium tracking-[0.35em] uppercase bg-primary text-primary-foreground rounded-xl hover:brightness-110 transition-all duration-500 gold-glow"
             >
-              Start Free Trial
+              Enter the Platform
             </Link>
             <Link
-              to="/pricing"
-              className="inline-block px-10 py-4 font-body text-xs font-medium tracking-[0.3em] uppercase border-2 border-primary/50 text-primary rounded-xl hover:border-primary hover:bg-primary/5 transition-all duration-500"
+              to="/about"
+              className="inline-block px-10 py-4 font-body text-[10px] font-medium tracking-[0.35em] uppercase border border-primary/30 text-primary/80 rounded-xl hover:border-primary/60 hover:text-primary hover:bg-primary/[0.03] transition-all duration-500"
             >
-              View Pricing
+              The Architecture
             </Link>
-          </div>
+          </motion.div>
         </motion.div>
       </motion.div>
 
+      {/* Animated scroll indicator */}
       <motion.div
         className="absolute bottom-10 left-1/2 -translate-x-1/2"
-        animate={{ y: [0, 8, 0] }}
-        transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.8 }}
       >
-        <div className="w-px h-14 bg-gradient-to-b from-primary/50 to-transparent" />
+        <motion.div
+          animate={{ y: [0, 10, 0] }}
+          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+          className="flex flex-col items-center gap-2"
+        >
+          <span className="text-[7px] tracking-[0.4em] uppercase text-muted-foreground/30 font-body">Scroll</span>
+          <div className="w-px h-12 bg-gradient-to-b from-primary/40 to-transparent" />
+        </motion.div>
       </motion.div>
     </motion.section>
   );
