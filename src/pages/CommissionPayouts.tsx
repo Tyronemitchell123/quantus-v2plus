@@ -180,9 +180,9 @@ const CommissionPayouts = () => {
 
   return (
     <div className="flex min-h-screen bg-background">
-      <DashboardSidebar open={sidebarOpen} onOpenChange={setSidebarOpen} />
+      <DashboardSidebar />
       <div className="flex-1 flex flex-col">
-        <DashboardTopBar onMenuClick={() => setSidebarOpen(true)} />
+        <DashboardTopBar />
         <main className="flex-1 overflow-y-auto p-4 md:p-8 pt-20 md:pt-8">
           <div className="max-w-6xl mx-auto space-y-6">
             {/* Header */}
