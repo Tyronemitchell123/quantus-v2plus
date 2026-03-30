@@ -122,6 +122,9 @@ export default function QuantumComputing() {
         </div>
       </header>
 
+      {/* Upsell Banner */}
+      <QuantumUpsell />
+
       {/* Tabs: Lab + Learn */}
       <div className="container mx-auto px-6 pb-24">
         <Tabs defaultValue={user ? "lab" : "learn"} className="space-y-8">
