@@ -114,7 +114,7 @@ serve(async (req) => {
     if (action === "list") {
       const { data: products, error } = await supabaseAdmin
         .from("stripe_connect_products")
-        .select("*")
+        .select("id, name, description, price_cents, currency, created_at, connected_account_id")
         .order("created_at", { ascending: false });
 
       if (error) throw new Error(error.message);
@@ -130,8 +130,14 @@ serve(async (req) => {
         (accounts || []).map((a) => [a.stripe_account_id, a.display_name])
       );
 
+      // Return only storefront-safe fields — strip internal Stripe IDs
       const enriched = (products || []).map((p) => ({
-        ...p,
+        id: p.id,
+        name: p.name,
+        description: p.description,
+        price_cents: p.price_cents,
+        currency: p.currency,
+        created_at: p.created_at,
         seller_name: accountMap.get(p.connected_account_id) || "Unknown Seller",
       }));
 
