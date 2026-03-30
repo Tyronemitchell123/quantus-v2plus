@@ -12,7 +12,7 @@ const Privacy = () => {
   const sections = [
     {
       title: "1. Data Controller",
-      content: `Quantus V2+. ("we", "us", "our") is the data controller responsible for your personal data. If you have questions about how we process your data, contact us at privacy@quantus.ai.`,
+      content: `Quantus V2+ ("we", "us", "our") is the data controller responsible for your personal data. If you have questions about how we process your data, contact us at privacy@crownprompts.com.`,
     },
     {
       title: "2. Data We Collect",
