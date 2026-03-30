@@ -119,8 +119,18 @@ const WealthDashboard = () => {
                 {privacyMode ? <EyeOff size={13} /> : <Lock size={13} />}
                 {privacyMode ? "Reveal" : "Privacy"}
               </motion.button>
+              {usingDefaults && (
+                <button
+                  onClick={async () => {
+                    await seedDefaults();
+                    toast.success("Portfolio seeded with sample assets");
+                  }}
+                  className="flex items-center gap-2 px-4 py-2.5 glass-card text-[10px] tracking-[0.25em] uppercase font-body text-primary/60 hover:text-primary hover:border-primary/20 transition-all duration-500"
+                >
+                  <Database size={13} /> Seed Data
+                </button>
+              )}
             </div>
-
             {/* Net Worth Hero — Full Width */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
