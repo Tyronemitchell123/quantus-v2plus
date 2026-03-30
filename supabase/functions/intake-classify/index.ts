@@ -41,7 +41,7 @@ serve(async (req) => {
       });
     }
 
-    const { message, channel = "web" } = await req.json();
+    const { message, channel = "web", is_priority = false } = await req.json();
     if (!message || typeof message !== "string" || message.trim().length < 5) {
       return new Response(JSON.stringify({ error: "Message is required (min 5 characters)" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
