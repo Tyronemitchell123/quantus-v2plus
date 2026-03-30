@@ -118,6 +118,7 @@ serve(async (req) => {
     // Create a Stripe Invoice with line items for each commission
     const invoice = await stripe.invoices.create({
       customer: customerId,
+      currency: "usd",
       collection_method: "send_invoice",
       days_until_due: 0,
       auto_advance: true,
