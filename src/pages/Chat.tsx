@@ -9,6 +9,7 @@ import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
 import UsageLimitBanner from "@/components/UsageLimitBanner";
 import { useUsageTracking } from "@/hooks/use-usage-tracking";
+import useDocumentHead from "@/hooks/use-document-head";
 
 const HolographicAvatar = lazy(() => import("@/components/HolographicAvatar"));
 
