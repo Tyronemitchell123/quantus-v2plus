@@ -90,8 +90,8 @@ const WealthDashboard = () => {
 
         <main className="flex-1 overflow-y-auto relative z-10">
           {/* Sovereign Header */}
-          <div className="px-6 lg:px-9 pt-9 pb-6">
-            <div className="flex items-center justify-between mb-9">
+          <div className="px-4 sm:px-6 lg:px-9 pt-6 sm:pt-9 pb-4 sm:pb-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-9">
               <div>
                 <motion.p
                   initial={{ opacity: 0 }}
