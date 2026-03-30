@@ -66,27 +66,27 @@ const ConnectProducts = () => {
   const loadProducts = async () => {
     setLoadingProducts(true);
     try {
-      const { data, error } = await supabase.functions.invoke("stripe-connect-products", {
-        body: { action: "list" },
-      });
-
-      if (error) throw error;
-      if (data.error) throw new Error(data.error);
-
-      // Filter to only show this user's products if they have a connected account
+      // Get the user's connected account first
       const userAccount = await supabase
         .from("stripe_connected_accounts")
         .select("stripe_account_id")
         .eq("user_id", user!.id)
         .maybeSingle();
 
-      const myProducts = userAccount.data?.stripe_account_id
-        ? (data.products || []).filter(
-            (p: any) => p.connected_account_id === userAccount.data.stripe_account_id
-          )
-        : [];
+      const accountId = userAccount.data?.stripe_account_id;
+      if (!accountId) {
+        setProducts([]);
+        return;
+      }
 
-      setProducts(myProducts);
+      const { data, error } = await supabase.functions.invoke("stripe-connect-products", {
+        body: { action: "list", filterAccountId: accountId },
+      });
+
+      if (error) throw error;
+      if (data.error) throw new Error(data.error);
+
+      setProducts(data.products || []);
     } catch (err: any) {
       console.error("Load products error:", err.message);
     } finally {

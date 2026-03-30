@@ -12,6 +12,7 @@
 
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@21.0.1";
+import { createClient } from "npm:@supabase/supabase-js@2.57.2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -35,39 +36,53 @@ serve(async (req) => {
   const stripeClient = new Stripe(stripeSecretKey);
 
   try {
-    const { productName, priceInCents, currency, connectedAccountId, quantity } =
+    const { productId, productName, priceInCents, currency, quantity } =
       await req.json();
 
-    if (!productName || !priceInCents || !connectedAccountId) {
-      throw new Error("productName, priceInCents, and connectedAccountId are required");
+    if (!productId) {
+      throw new Error("productId is required");
     }
+
+    // Look up product and connected account server-side
+    const supabaseAdmin = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
+    );
+
+    const { data: product, error: dbError } = await supabaseAdmin
+      .from("stripe_connect_products")
+      .select("connected_account_id, name, price_cents, currency")
+      .eq("id", productId)
+      .single();
+
+    if (dbError || !product) {
+      throw new Error("Product not found");
+    }
+
+    const finalName = productName || product.name;
+    const finalPrice = priceInCents || product.price_cents;
+    const finalCurrency = currency || product.currency || "usd";
 
     const origin = req.headers.get("origin") || "http://localhost:5173";
 
     // Calculate the platform's application fee (10% of the sale price).
-    // Adjust this percentage to match your business model.
-    const applicationFeeAmount = Math.round(priceInCents * 0.10);
+    const applicationFeeAmount = Math.round(finalPrice * 0.10);
 
-    // Create a Checkout Session with destination charges.
-    // The payment is collected on the platform account and funds are
-    // automatically transferred to the connected account minus the fee.
     const session = await stripeClient.checkout.sessions.create({
       line_items: [
         {
           price_data: {
-            currency: currency || "usd",
-            product_data: { name: productName },
-            unit_amount: priceInCents,
+            currency: finalCurrency,
+            product_data: { name: finalName },
+            unit_amount: finalPrice,
           },
           quantity: quantity || 1,
         },
       ],
       payment_intent_data: {
-        // Platform keeps the application fee
         application_fee_amount: applicationFeeAmount,
-        // Route the rest to the connected account
         transfer_data: {
-          destination: connectedAccountId,
+          destination: product.connected_account_id,
         },
       },
       mode: "payment",
