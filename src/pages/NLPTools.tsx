@@ -16,6 +16,9 @@ import { useAuth } from "@/hooks/use-auth";
 import ReactMarkdown from "react-markdown";
 import useDocumentHead from "@/hooks/use-document-head";
 import NLPHistorySidebar, { type HistoryEntry } from "@/components/nlp/NLPHistorySidebar";
+import UpsellBanner from "@/components/UpsellBanner";
+import { useUsageTracking } from "@/hooks/use-usage-tracking";
+import { useSubscription } from "@/hooks/use-subscription";
 
 type Tool = "summarize" | "sentiment" | "generate" | "extract-entities";
 
