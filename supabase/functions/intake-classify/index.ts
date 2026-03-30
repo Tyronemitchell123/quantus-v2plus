@@ -159,6 +159,9 @@ serve(async (req) => {
       lifestyle: "Lifestyle Engine",
       logistics: "Logistics Engine",
       partnerships: "Partnership Engine",
+      marine: "Marine Engine",
+      legal: "Legal Engine",
+      finance: "Finance Engine",
     };
 
     // Insert deal
