@@ -67,6 +67,7 @@ const PrivateNetwork = lazy(() => import("./pages/PrivateNetwork"));
 const ConnectOnboarding = lazy(() => import("./pages/ConnectOnboarding"));
 const ConnectProducts = lazy(() => import("./pages/ConnectProducts"));
 const ConnectStorefront = lazy(() => import("./pages/ConnectStorefront"));
+const CommissionPayouts = lazy(() => import("./pages/CommissionPayouts"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
@@ -80,7 +81,7 @@ const R = ({ name, children }: { name: string; children: React.ReactNode }) => (
 );
 
 // Routes that use the dashboard shell (no global navbar/footer)
-const dashboardRoutes = ["/dashboard", "/deals", "/chat", "/intake", "/sourcing", "/outreach", "/shortlist", "/negotiation", "/workflow", "/documents", "/deal-completion", "/settings", "/account/subscription", "/partner", "/admin", "/marketing", "/nlp", "/quantum", "/recommendations", "/autopilot", "/intelligence", "/vault", "/wealth", "/calendar", "/compliance", "/network", "/connect"];
+const dashboardRoutes = ["/dashboard", "/deals", "/chat", "/intake", "/sourcing", "/outreach", "/shortlist", "/negotiation", "/workflow", "/documents", "/deal-completion", "/settings", "/account/subscription", "/partner", "/admin", "/marketing", "/nlp", "/quantum", "/recommendations", "/autopilot", "/intelligence", "/vault", "/wealth", "/calendar", "/compliance", "/network", "/connect", "/commission-payouts"];
 
 const AnimatedRoutes = () => {
   const location = useLocation();
@@ -153,6 +154,7 @@ const AnimatedRoutes = () => {
             <Route path="/connect/onboarding" element={<ProtectedRoute><R name="Connect Onboarding"><ConnectOnboarding /></R></ProtectedRoute>} />
             <Route path="/connect/products" element={<ProtectedRoute><R name="Connect Products"><ConnectProducts /></R></ProtectedRoute>} />
             <Route path="/connect/storefront" element={<ProtectedRoute><R name="Connect Storefront"><ConnectStorefront /></R></ProtectedRoute>} />
+            <Route path="/commission-payouts" element={<ProtectedRoute><R name="Commission Payouts"><CommissionPayouts /></R></ProtectedRoute>} />
 
             <Route path="/privacy" element={<R name="Privacy"><PageTransition><Privacy /><Footer /></PageTransition></R>} />
             <Route path="/terms" element={<R name="Terms"><PageTransition><Terms /><Footer /></PageTransition></R>} />
