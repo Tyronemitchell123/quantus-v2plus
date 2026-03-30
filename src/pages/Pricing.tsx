@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
-import { Check, ArrowRight, Sparkles, Zap, Crown, Loader2, Gift, Users } from "lucide-react";
+import { Check, ArrowRight, Sparkles, Zap, Crown, Loader2, Gift, Users, ShieldCheck } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useSubscription } from "@/hooks/use-subscription";
 import { useToast } from "@/hooks/use-toast";
@@ -235,6 +235,21 @@ const Pricing = () => {
       <section className="pb-24">
         <div className="container mx-auto px-6">
           <PlatformBillingBanner className="max-w-7xl mx-auto mb-8" />
+
+          {/* Money-Back Guarantee */}
+          <div className="max-w-7xl mx-auto mb-10 flex justify-center">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              className="inline-flex items-center gap-3 px-6 py-3 rounded-full border border-primary/20 bg-primary/5"
+            >
+              <ShieldCheck size={22} className="text-primary shrink-0" />
+              <span className="text-sm font-semibold text-foreground">14-Day Money-Back Guarantee</span>
+              <span className="text-xs text-muted-foreground">— No questions asked. Cancel within 14 days for a full refund.</span>
+            </motion.div>
+          </div>
+
           <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-6 max-w-7xl mx-auto items-stretch">
             {tiers.map((tier, i) => (
               <motion.div
