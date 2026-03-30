@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import useDocumentHead from "@/hooks/use-document-head";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
