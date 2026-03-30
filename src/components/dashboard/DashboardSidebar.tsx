@@ -2,7 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   LayoutDashboard, Briefcase, Grid3X3, Bot, FileText, CreditCard, Settings, MessageSquare, Radar, FolderOpen,
-  Wallet, CalendarDays, ShieldCheck, Users,
+  Wallet, CalendarDays, ShieldCheck, Users, DollarSign,
 } from "lucide-react";
 
 const navItems = [
