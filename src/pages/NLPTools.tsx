@@ -240,6 +240,7 @@ export default function NLPTools() {
       {/* Main content */}
       <div className="flex-1 min-w-0 py-8 px-4 overflow-y-auto">
         <div className="max-w-5xl mx-auto">
+          <NLPUpsell />
           {/* Header */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }} className="text-center mb-12">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-quantum-purple/10 border border-quantum-purple/20 text-quantum-purple text-xs font-medium mb-4">
