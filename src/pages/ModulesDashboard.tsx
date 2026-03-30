@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Plane, Heart, Users, Globe, Truck, Handshake } from "lucide-react";
+import { Plane, Heart, Users, Globe, Truck, Handshake, Anchor, Scale, Landmark } from "lucide-react";
 import useDocumentHead from "@/hooks/use-document-head";
 import AviationModule from "@/components/modules/AviationModule";
 import MedicalModule from "@/components/modules/MedicalModule";
@@ -8,8 +8,11 @@ import StaffingModule from "@/components/modules/StaffingModule";
 import LifestyleModule from "@/components/modules/LifestyleModule";
 import LogisticsModule from "@/components/modules/LogisticsModule";
 import PartnershipsModule from "@/components/modules/PartnershipsModule";
+import MarineModule from "@/components/modules/MarineModule";
+import LegalModule from "@/components/modules/LegalModule";
+import FinanceModule from "@/components/modules/FinanceModule";
 
-type ModuleKey = "aviation" | "medical" | "staffing" | "travel" | "logistics" | "partnerships";
+type ModuleKey = "aviation" | "medical" | "staffing" | "travel" | "logistics" | "partnerships" | "marine" | "legal" | "finance";
 
 const moduleConfig: { key: ModuleKey; icon: typeof Plane; label: string }[] = [
   { key: "aviation", icon: Plane, label: "Aviation" },
@@ -18,6 +21,9 @@ const moduleConfig: { key: ModuleKey; icon: typeof Plane; label: string }[] = [
   { key: "travel", icon: Globe, label: "Lifestyle" },
   { key: "logistics", icon: Truck, label: "Logistics" },
   { key: "partnerships", icon: Handshake, label: "Partners" },
+  { key: "marine", icon: Anchor, label: "Marine" },
+  { key: "legal", icon: Scale, label: "Legal" },
+  { key: "finance", icon: Landmark, label: "Finance" },
 ];
 
 const moduleComponents: Record<ModuleKey, React.FC> = {
@@ -27,6 +33,9 @@ const moduleComponents: Record<ModuleKey, React.FC> = {
   travel: LifestyleModule,
   logistics: LogisticsModule,
   partnerships: PartnershipsModule,
+  marine: MarineModule,
+  legal: LegalModule,
+  finance: FinanceModule,
 };
 
 const ModulesDashboard = () => {

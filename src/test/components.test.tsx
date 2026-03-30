@@ -122,6 +122,9 @@ describe("Commission rate calculation", () => {
     wellness: 0.125,
     staffing: 0.20,
     logistics: 0.04,
+    marine: 0.05,
+    legal: 0.075,
+    finance: 0.05,
   };
 
   it("calculates aviation commission correctly", () => {
