@@ -72,10 +72,7 @@ const ConnectStorefront = () => {
     try {
       const { data, error } = await supabase.functions.invoke("stripe-connect-checkout", {
         body: {
-          productName: product.name,
-          priceInCents: product.price_cents,
-          currency: product.currency,
-          connectedAccountId: product.connected_account_id,
+          productId: product.id,
           quantity: 1,
         },
       });
