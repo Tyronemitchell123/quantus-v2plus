@@ -26,7 +26,7 @@ interface Props {
 const DealCard = ({ deal, index, categoryIcons, statusToPhase, phaseLabels }: Props) => {
   const Icon = categoryIcons[deal.category] || Sparkles;
   const phase = statusToPhase[deal.status] || 1;
-  const progress = Math.round(((phase - 1) / 7) * 100);
+  const progress = Math.round(((phase - 1) / (phaseLabels.length - 1)) * 100);
 
   const getPhaseLink = () => {
     const paths = ["/intake", "/sourcing", "/outreach", "/shortlist", "/negotiation", "/workflow", "/documents", "/deal-completion"];
