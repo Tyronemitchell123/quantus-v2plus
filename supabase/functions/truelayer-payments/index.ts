@@ -318,14 +318,34 @@ serve(async (req) => {
     }
 
     if (action === "webhook") {
+      // Verify TrueLayer webhook signature
+      const tlSignature = req.headers.get("tl-signature") || req.headers.get("x-tl-signature");
+      const rawBody = await req.text();
+
+      if (!tlSignature) {
+        console.error("Webhook rejected: missing Tl-Signature header");
+        return new Response(JSON.stringify({ error: "Missing signature" }), {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const isValid = await verifyTlSignature(tlSignature, rawBody);
+      if (!isValid) {
+        console.error("Webhook rejected: invalid signature");
+        return new Response(JSON.stringify({ error: "Invalid signature" }), {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
       // TrueLayer V3 webhook format:
       // { "type": "payment_executed", "event_id": "...", "event_version": 1, "payment_id": "..." }
-      // Possible types: payment_authorized, payment_executed, payment_settled, payment_failed
-      const body = await req.json();
+      const body = JSON.parse(rawBody);
       const eventType = body.type as string | undefined;
       const paymentId = body.payment_id as string | undefined;
 
-      console.log("Webhook received:", JSON.stringify({ eventType, paymentId }));
+      console.log("Webhook verified and received:", JSON.stringify({ eventType, paymentId }));
 
       if (paymentId && eventType) {
         // Map TrueLayer event type to our payment status
