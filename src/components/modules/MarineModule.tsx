@@ -43,7 +43,7 @@ const vesselData: Record<string, Array<{
 
 const MarineModule = forwardRef<HTMLDivElement>((_, ref) => {
   const [activeCat, setActiveCat] = useState("motor-yacht");
-  const { deals } = useModuleData("marine");
+  const { deals, sourcingResults, vendorOutreach, loading: liveLoading } = useModuleData("marine");
   const items = vesselData[activeCat] || [];
 
   return (
