@@ -16,6 +16,7 @@ const HolographicAvatar = lazy(() => import("@/components/HolographicAvatar"));
 type Message = { role: "user" | "assistant"; content: string };
 
 const Chat = () => {
+  useDocumentHead({ title: "AI Concierge — Holographic Chat | QUANTUS V2+", description: "Speak with QUANTUS V2+ holographic AI concierge for strategy, analytics, and real-time market intelligence.", canonical: "https://quantus-loom.lovable.app/chat" });
   const usage = useUsageTracking();
   const [messages, setMessages] = useState<Message[]>([
     {
