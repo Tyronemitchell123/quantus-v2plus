@@ -1,4 +1,5 @@
 import { useState } from "react";
+import useDocumentHead from "@/hooks/use-document-head";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, ArrowLeft, Check } from "lucide-react";
