@@ -455,9 +455,11 @@ export type Database = {
           id: string
           input_channel: string
           intent: string | null
+          is_priority: boolean
           location: string | null
           preferences: Json | null
           priority_score: number
+          priority_surcharge_cents: number | null
           probability_score: number | null
           raw_input: string
           requirements: Json | null
@@ -486,9 +488,11 @@ export type Database = {
           id?: string
           input_channel?: string
           intent?: string | null
+          is_priority?: boolean
           location?: string | null
           preferences?: Json | null
           priority_score?: number
+          priority_surcharge_cents?: number | null
           probability_score?: number | null
           raw_input: string
           requirements?: Json | null
@@ -517,9 +521,11 @@ export type Database = {
           id?: string
           input_channel?: string
           intent?: string | null
+          is_priority?: boolean
           location?: string | null
           preferences?: Json | null
           priority_score?: number
+          priority_surcharge_cents?: number | null
           probability_score?: number | null
           raw_input?: string
           requirements?: Json | null
