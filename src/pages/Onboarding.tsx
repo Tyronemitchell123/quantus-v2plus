@@ -1,10 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useDocumentHead from "@/hooks/use-document-head";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, ArrowLeft, Check } from "lucide-react";
+import { ArrowRight, ArrowLeft, Sparkles } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { persistOnboarding } from "@/hooks/use-onboarding-persist";
+import { useProgressiveProfile } from "@/hooks/use-progressive-profile";
+import { useOnboardingAI } from "@/hooks/use-onboarding-ai";
+import { useWelcomeSequence } from "@/hooks/use-welcome-sequence";
 import ParticleGrid from "@/components/ParticleGrid";
 import OnboardingWelcome from "@/components/onboarding/OnboardingWelcome";
 import OnboardingRoles from "@/components/onboarding/OnboardingRoles";
@@ -24,13 +27,40 @@ const fadeVariants = {
 
 const Onboarding = () => {
   useDocumentHead({ title: "Welcome to QUANTUS V2+ — Onboarding", description: "Complete your sovereign profile to unlock the full QUANTUS V2+ orchestration ecosystem." });
-  const [step, setStep] = useState(0);
-  const [selectedRole, setSelectedRole] = useState<string | null>(null);
-  const [selectedPrefs, setSelectedPrefs] = useState<Record<string, string>>({});
-  const [selectedModules, setSelectedModules] = useState<string[]>([]);
-  const [selectedTier, setSelectedTier] = useState<string | null>(null);
-  const navigate = useNavigate();
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const { state: progressive, saveStepProgress, getResumeStep, clearProgress } = useProgressiveProfile(user?.id);
+  const { recommendation, generateRecommendations } = useOnboardingAI();
+  const { triggerWelcomeSequence } = useWelcomeSequence(user?.id);
+
+  // Resume from last saved step
+  const [step, setStep] = useState(() => {
+    const resume = getResumeStep();
+    return resume > 0 ? resume : 0;
+  });
+
+  // State from progressive profile
+  const [selectedRole, setSelectedRole] = useState<string | null>(progressive.role);
+  const [selectedPrefs, setSelectedPrefs] = useState<Record<string, string>>(progressive.preferences);
+  const [selectedModules, setSelectedModules] = useState<string[]>(progressive.modules);
+  const [selectedTier, setSelectedTier] = useState<string | null>(progressive.tier);
+  const [aiLoading, setAiLoading] = useState(false);
+
+  // Trigger AI recommendations when role + prefs are set (transitioning to step 3)
+  useEffect(() => {
+    if (step === 3 && selectedRole && Object.keys(selectedPrefs).length >= 4 && !recommendation.suggestedModules.length && !aiLoading) {
+      setAiLoading(true);
+      generateRecommendations(selectedRole, selectedPrefs).then((rec) => {
+        if (rec?.suggestedModules?.length && selectedModules.length === 0) {
+          setSelectedModules(rec.suggestedModules);
+        }
+        if (rec?.suggestedTier && !selectedTier) {
+          setSelectedTier(rec.suggestedTier);
+        }
+        setAiLoading(false);
+      });
+    }
+  }, [step]);
 
   const canContinue = () => {
     if (step === 0) return true;
@@ -42,6 +72,16 @@ const Onboarding = () => {
     return true;
   };
 
+  const handleNext = async () => {
+    // Save progress for the current step
+    if (step === 1) await saveStepProgress(1, { role: selectedRole });
+    if (step === 2) await saveStepProgress(2, { preferences: selectedPrefs });
+    if (step === 3) await saveStepProgress(3, { modules: selectedModules });
+    if (step === 4) await saveStepProgress(4, { tier: selectedTier });
+    if (step === 5) await saveStepProgress(5, {});
+    setStep((s) => s + 1);
+  };
+
   const handleFinish = async () => {
     if (user) {
       await persistOnboarding(user.id, {
@@ -50,6 +90,11 @@ const Onboarding = () => {
         modules: selectedModules,
         tier: selectedTier,
       });
+
+      // Trigger automated welcome sequence
+      await triggerWelcomeSequence(user.email || "", user.user_metadata?.full_name);
+
+      clearProgress();
     }
     navigate("/dashboard");
   };
@@ -90,6 +135,18 @@ const Onboarding = () => {
             />
           ))}
         </div>
+      )}
+
+      {/* AI recommendation banner */}
+      {step === 3 && recommendation.narrative && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="fixed top-16 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-xl backdrop-blur-sm max-w-md"
+        >
+          <Sparkles size={14} className="text-primary shrink-0" />
+          <p className="font-body text-[10px] tracking-wide text-primary/80">{recommendation.narrative}</p>
+        </motion.div>
       )}
 
       <div className="w-full max-w-4xl mx-6 relative z-10">
@@ -152,11 +209,15 @@ const Onboarding = () => {
               <ArrowLeft size={14} strokeWidth={1.5} /> Back
             </button>
             <button
-              onClick={() => setStep(s => s + 1)}
-              disabled={!canContinue()}
+              onClick={handleNext}
+              disabled={!canContinue() || aiLoading}
               className="flex items-center gap-2 px-8 py-3.5 bg-primary text-primary-foreground font-body text-xs tracking-[0.25em] uppercase transition-all duration-500 rounded-xl disabled:opacity-20 disabled:pointer-events-none hover:brightness-110 gold-glow"
             >
-              Continue <ArrowRight size={14} strokeWidth={1.5} />
+              {aiLoading ? (
+                <>Personalising… <div className="w-3 h-3 border border-primary-foreground/50 border-t-primary-foreground rounded-full animate-spin" /></>
+              ) : (
+                <>Continue <ArrowRight size={14} strokeWidth={1.5} /></>
+              )}
             </button>
           </motion.div>
         )}

@@ -14,6 +14,7 @@ import RouteErrorBoundary from "@/components/RouteErrorBoundary";
 import PageLoader from "@/components/PageLoader";
 import CookieConsent from "@/components/CookieConsent";
 import { OfflineIndicator } from "@/components/mobile/MobileEnhancements";
+import WelcomeTooltips from "@/components/onboarding/WelcomeTooltips";
 import Index from "./pages/Index";
 import { useAuth } from "@/hooks/use-auth";
 
@@ -110,7 +111,7 @@ const AnimatedRoutes = () => {
             <Route path="/auth" element={<R name="Auth"><PageTransition><Auth /></PageTransition></R>} />
             <Route path="/reset-password" element={<R name="Reset Password"><PageTransition><ResetPassword /></PageTransition></R>} />
             <Route path="/unsubscribe" element={<R name="Unsubscribe"><PageTransition><Unsubscribe /></PageTransition></R>} />
-            <Route path="/onboarding" element={<ProtectedRoute><R name="Onboarding"><PageTransition><Onboarding /></PageTransition></R></ProtectedRoute>} />
+            <Route path="/onboarding" element={<ProtectedRoute skipOnboardingCheck><R name="Onboarding"><PageTransition><Onboarding /></PageTransition></R></ProtectedRoute>} />
 
             {/* Dashboard shell routes */}
             <Route path="/dashboard" element={<ProtectedRoute><R name="Dashboard"><Dashboard /></R></ProtectedRoute>} />
@@ -176,6 +177,8 @@ const App = () => (
         <OfflineIndicator />
         <BrowserRouter>
           <AnimatedRoutes />
+          <WelcomeTooltips />
+          <CookieConsent />
           <CookieConsent />
         </BrowserRouter>
       </TooltipProvider>
