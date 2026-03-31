@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { DollarSign, Filter, Search, ExternalLink, Loader2, Check, ArrowUpDown, Calendar, Download, RefreshCw, Bell, Mail, Send, CreditCard } from "lucide-react";
+import { DollarSign, Filter, Search, ExternalLink, Loader2, Check, ArrowUpDown, Calendar, Download, RefreshCw, Bell, Mail, Send, CreditCard, Copy, Link } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import useDocumentHead from "@/hooks/use-document-head";
@@ -437,8 +437,8 @@ const CommissionPayouts = () => {
                                   if (error) throw error;
                                   if (data?.error) throw new Error(data.error);
                                   if (data?.url) {
-                                    window.open(data.url, "_blank");
-                                    toast.success("Payment link opened in new tab");
+                                    await navigator.clipboard.writeText(data.url);
+                                    toast.success("Payment link copied! Send it to your customer to collect £" + (info.totalCents / 100).toLocaleString());
                                   }
                                 } catch (err: any) {
                                   toast.error(err.message || "Failed to create payment link");
@@ -452,9 +452,9 @@ const CommissionPayouts = () => {
                               {collectingDealId === dealId ? (
                                 <Loader2 size={12} className="animate-spin" />
                               ) : (
-                                <CreditCard size={12} />
+                                <Copy size={12} />
                               )}
-                              Collect £{(info.totalCents / 100).toLocaleString()}
+                              Copy Payment Link · £{(info.totalCents / 100).toLocaleString()}
                             </Button>
                           </div>
                         ))}
