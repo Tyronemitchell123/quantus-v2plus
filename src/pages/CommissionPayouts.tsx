@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { DollarSign, Filter, Search, ExternalLink, Loader2, Check, ArrowUpDown, Calendar, Download, RefreshCw } from "lucide-react";
+import { DollarSign, Filter, Search, ExternalLink, Loader2, Check, ArrowUpDown, Calendar, Download, RefreshCw, Bell, Mail, Send } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import useDocumentHead from "@/hooks/use-document-head";
@@ -50,7 +50,8 @@ const CommissionPayouts = () => {
   const [payoutLoading, setPayoutLoading] = useState(false);
   const [payoutPreview, setPayoutPreview] = useState<any>(null);
   const [payoutResult, setPayoutResult] = useState<any>(null);
-  
+  const [reminderLoading, setReminderLoading] = useState(false);
+  const [remindersSent, setRemindersSent] = useState<string[]>([]);
 
   useDocumentHead({
     title: "Commission Payouts — QUANTUS V2+",
@@ -119,6 +120,66 @@ const CommissionPayouts = () => {
       toast.error(err.message || "Payout failed");
     }
     setPayoutLoading(false);
+  };
+
+  const sendReminders = async () => {
+    setReminderLoading(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("Not authenticated");
+
+      // Get pending commissions that haven't been reminded yet
+      const pendingDeals = commissions.filter(
+        c => (c.status === "pending" || c.status === "expected") && !remindersSent.includes(c.id)
+      );
+
+      if (pendingDeals.length === 0) {
+        toast.info("No pending commissions to send reminders for");
+        setReminderLoading(false);
+        return;
+      }
+
+      let sentCount = 0;
+      const newRemindersSent: string[] = [];
+
+      for (const commission of pendingDeals) {
+        // Send email reminder
+        const { error: emailError } = await supabase.functions.invoke("send-transactional-email", {
+          body: {
+            templateName: "payment-reminder",
+            recipientEmail: session.user.email,
+            idempotencyKey: `payment-reminder-${commission.id}-${new Date().toISOString().slice(0, 10)}`,
+            templateData: {
+              customerName: commission.vendor_name || "Customer",
+              dealCategory: commission.category,
+              dealNumber: commission.deal_id.slice(0, 8).toUpperCase(),
+              amountDue: `$${(commission.commission_cents / 100).toLocaleString("en-US", { minimumFractionDigits: 0 })}`,
+            },
+          },
+        });
+
+        // Create in-app notification
+        await supabase.from("notifications").insert({
+          user_id: session.user.id,
+          title: "Payment Reminder Sent",
+          body: `Reminder sent for ${commission.category} deal — ${commission.vendor_name || "vendor"} — $${(commission.commission_cents / 100).toLocaleString()}`,
+          category: "billing",
+          severity: "info",
+          action_url: "/commission-payouts",
+        });
+
+        if (!emailError) {
+          sentCount++;
+          newRemindersSent.push(commission.id);
+        }
+      }
+
+      setRemindersSent(prev => [...prev, ...newRemindersSent]);
+      toast.success(`Sent ${sentCount} payment reminder${sentCount !== 1 ? "s" : ""} (email + notification)`);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to send reminders");
+    }
+    setReminderLoading(false);
   };
 
   const categories = useMemo(() => {
@@ -283,6 +344,36 @@ const CommissionPayouts = () => {
                     </motion.div>
                   )}
                 </AnimatePresence>
+              </CardContent>
+            </Card>
+
+            {/* Payment Reminders */}
+            <Card className="border-border">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-display flex items-center gap-2">
+                  <Bell size={16} className="text-primary" />
+                  Customer Payment Reminders
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-xs text-muted-foreground mb-3">
+                  Send email and in-app reminders to follow up on outstanding payments for pending commissions.
+                </p>
+                <div className="flex items-center gap-3">
+                  <Button
+                    onClick={sendReminders}
+                    disabled={reminderLoading || commissions.filter(c => (c.status === "pending" || c.status === "expected") && !remindersSent.includes(c.id)).length === 0}
+                    variant="outline"
+                    className="gap-2"
+                  >
+                    {reminderLoading ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
+                    Send Reminders
+                  </Button>
+                  <span className="text-xs text-muted-foreground">
+                    {commissions.filter(c => (c.status === "pending" || c.status === "expected") && !remindersSent.includes(c.id)).length} pending
+                    {remindersSent.length > 0 && ` · ${remindersSent.length} sent this session`}
+                  </span>
+                </div>
               </CardContent>
             </Card>
 
