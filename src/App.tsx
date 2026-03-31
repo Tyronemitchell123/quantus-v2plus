@@ -177,6 +177,8 @@ const App = () => (
         <OfflineIndicator />
         <BrowserRouter>
           <AnimatedRoutes />
+          <WelcomeTooltips />
+          <CookieConsent />
           <CookieConsent />
         </BrowserRouter>
       </TooltipProvider>
