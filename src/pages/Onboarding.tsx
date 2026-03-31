@@ -84,19 +84,34 @@ const Onboarding = () => {
 
   const handleFinish = async () => {
     if (user) {
-      await persistOnboarding(user.id, {
+      const { error } = await persistOnboarding(user.id, {
         role: selectedRole,
         preferences: selectedPrefs,
         modules: selectedModules,
         tier: selectedTier,
       });
 
-      // Trigger automated welcome sequence
-      await triggerWelcomeSequence(user.email || "", user.user_metadata?.full_name);
+      if (error) {
+        console.error("Onboarding persist failed, retrying...", error);
+        // Retry once
+        const retry = await persistOnboarding(user.id, {
+          role: selectedRole,
+          preferences: selectedPrefs,
+          modules: selectedModules,
+          tier: selectedTier,
+        });
+        if (retry.error) {
+          console.error("Onboarding persist retry failed:", retry.error);
+          // Still navigate — don't leave user stuck
+        }
+      }
+
+      // Trigger automated welcome sequence (fire and forget)
+      triggerWelcomeSequence(user.email || "", user.user_metadata?.full_name).catch(() => {});
 
       clearProgress();
     }
-    navigate("/dashboard");
+    navigate("/dashboard", { replace: true });
   };
 
   const toggleModule = (id: string) => {

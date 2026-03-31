@@ -70,7 +70,9 @@ const ProtectedRoute = ({ children, requiredTier, requiredRole, skipOnboardingCh
 
   // Auto-redirect to onboarding if not completed (skip if already on /onboarding)
   const isOnboardingRoute = location.pathname === "/onboarding";
-  if (!skipOnboardingCheck && !isOnboardingRoute && !onboardingStatus.completed) {
+  // Check localStorage as fallback in case DB write hasn't propagated yet
+  const localOnboardingDone = typeof window !== "undefined" && localStorage.getItem("quantus_onboarding_done") === "true";
+  if (!skipOnboardingCheck && !isOnboardingRoute && !onboardingStatus.completed && !localOnboardingDone) {
     return <Navigate to="/onboarding" replace />;
   }
 
