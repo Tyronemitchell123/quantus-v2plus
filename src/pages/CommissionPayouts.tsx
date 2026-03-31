@@ -640,6 +640,34 @@ const CommissionPayouts = () => {
                                   {sendingDealId === dealId ? <Loader2 size={12} className="animate-spin" /> : <Send size={12} />}
                                   Email Link {info.recipientEmail ? "" : "(no email)"}
                                 </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={async () => {
+                                    setQrLoading(dealId);
+                                    try {
+                                      const { data, error } = await supabase.functions.invoke("invoice-checkout", {
+                                        body: { dealId },
+                                      });
+                                      if (error) throw error;
+                                      if (data?.error) throw new Error(data.error);
+                                      const url = data?.split ? data.urls[0] : data?.url;
+                                      if (url) {
+                                        setQrUrl(url);
+                                        setQrDealId(dealId);
+                                      }
+                                    } catch (err: any) {
+                                      toast.error(err.message || "Failed to generate QR code");
+                                    } finally {
+                                      setQrLoading(null);
+                                    }
+                                  }}
+                                  disabled={qrLoading === dealId}
+                                  className="gap-1.5 text-xs"
+                                >
+                                  {qrLoading === dealId ? <Loader2 size={12} className="animate-spin" /> : <QrCode size={12} />}
+                                  QR Code
+                                </Button>
                               </div>
                             </div>
                           );
