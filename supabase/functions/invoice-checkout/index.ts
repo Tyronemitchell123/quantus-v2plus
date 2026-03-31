@@ -40,18 +40,42 @@ serve(async (req) => {
 
     // Public invoice lookup by invoice number (no auth required)
     if (invoiceNumber && !invoiceId && !dealId) {
-      const { data: inv, error: lookupErr } = await supabaseAdmin
+      console.log("[invoice-checkout] Looking up invoice:", invoiceNumber);
+
+      // Try exact match first, then partial match
+      let inv: any = null;
+      let lookupErr: any = null;
+
+      const { data: exactMatch, error: exactErr } = await supabaseAdmin
         .from("invoices")
         .select("id, invoice_number, amount_cents, currency, status, recipient_name")
-        .eq("invoice_number", invoiceNumber)
+        .eq("invoice_number", invoiceNumber.trim().toUpperCase())
         .maybeSingle();
 
-      if (lookupErr || !inv) {
+      if (exactMatch) {
+        inv = exactMatch;
+      } else {
+        // Try partial match (user may omit prefix)
+        const { data: partialMatch, error: partialErr } = await supabaseAdmin
+          .from("invoices")
+          .select("id, invoice_number, amount_cents, currency, status, recipient_name")
+          .ilike("invoice_number", `%${invoiceNumber.trim().toUpperCase()}%`)
+          .limit(1)
+          .maybeSingle();
+
+        inv = partialMatch;
+        lookupErr = partialErr;
+      }
+
+      if (!inv) {
+        console.log("[invoice-checkout] No invoice found for:", invoiceNumber);
         return new Response(
           JSON.stringify({ error: "Invoice not found. Please check the number and try again." }),
           { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
+
+      console.log("[invoice-checkout] Found invoice:", inv.invoice_number);
 
       // If action=checkout, create a Stripe session for this invoice
       if (action === "checkout" && inv.status !== "paid") {
