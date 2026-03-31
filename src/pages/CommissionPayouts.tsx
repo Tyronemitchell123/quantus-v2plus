@@ -34,6 +34,9 @@ type InvoiceRecord = {
   status: string;
   metadata: any;
   created_at: string;
+  recipient_email: string | null;
+  recipient_name: string | null;
+  deal_id: string;
 };
 
 type SortKey = "created_at" | "commission_cents" | "category" | "status";
@@ -53,6 +56,7 @@ const CommissionPayouts = () => {
   const [reminderLoading, setReminderLoading] = useState(false);
   const [remindersSent, setRemindersSent] = useState<string[]>([]);
   const [collectingDealId, setCollectingDealId] = useState<string | null>(null);
+  const [sendingDealId, setSendingDealId] = useState<string | null>(null);
 
   useDocumentHead({
     title: "Commission Payouts — QUANTUS V2+",
@@ -74,7 +78,7 @@ const CommissionPayouts = () => {
         .order("created_at", { ascending: false }),
       supabase
         .from("invoices")
-        .select("id, invoice_number, amount_cents, status, metadata, created_at")
+        .select("id, invoice_number, amount_cents, status, metadata, created_at, recipient_email, recipient_name, deal_id")
         .eq("user_id", session.user.id)
         .eq("invoice_type", "commission")
         .order("created_at", { ascending: false }),
@@ -409,58 +413,122 @@ const CommissionPayouts = () => {
                     Generate a Stripe Checkout link for pending deals. Share with the customer or open to complete payment.
                   </p>
                   {(() => {
-                    // Group pending commissions by deal_id
+                    // Group pending commissions by deal_id, and find matching invoice email
                     const pendingByDeal = commissions
                       .filter(c => c.status === "pending" || c.status === "expected")
                       .reduce((acc, c) => {
-                        if (!acc[c.deal_id]) acc[c.deal_id] = { totalCents: 0, category: c.category, vendor: c.vendor_name };
+                        if (!acc[c.deal_id]) {
+                          const inv = invoices.find(i => i.deal_id === c.deal_id);
+                          acc[c.deal_id] = {
+                            totalCents: 0,
+                            category: c.category,
+                            vendor: c.vendor_name,
+                            recipientEmail: inv?.recipient_email || null,
+                            recipientName: inv?.recipient_name || null,
+                          };
+                        }
                         acc[c.deal_id].totalCents += c.commission_cents;
                         return acc;
-                      }, {} as Record<string, { totalCents: number; category: string; vendor: string | null }>);
+                      }, {} as Record<string, { totalCents: number; category: string; vendor: string | null; recipientEmail: string | null; recipientName: string | null }>);
 
                     return (
                       <div className="space-y-2">
                         {Object.entries(pendingByDeal).map(([dealId, info]) => (
-                          <div key={dealId} className="flex items-center justify-between p-3 rounded-lg border border-border bg-card">
-                            <div>
-                              <p className="text-xs font-medium text-foreground capitalize">{info.category} — {info.vendor || "Vendor"}</p>
-                              <p className="text-[10px] text-muted-foreground">Deal {dealId.slice(0, 8).toUpperCase()}</p>
+                          <div key={dealId} className="flex flex-col gap-2 p-3 rounded-lg border border-border bg-card">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <p className="text-xs font-medium text-foreground capitalize">{info.category} — {info.vendor || "Vendor"}</p>
+                                <p className="text-[10px] text-muted-foreground">Deal {dealId.slice(0, 8).toUpperCase()}</p>
+                                {info.recipientEmail && (
+                                  <p className="text-[10px] text-muted-foreground flex items-center gap-1 mt-0.5">
+                                    <Mail size={10} /> {info.recipientName || ""} &lt;{info.recipientEmail}&gt;
+                                  </p>
+                                )}
+                              </div>
+                              <p className="text-sm font-bold text-foreground">£{(info.totalCents / 100).toLocaleString()}</p>
                             </div>
-                            <Button
-                              size="sm"
-                              onClick={async () => {
-                                setCollectingDealId(dealId);
-                                try {
-                                  const { data, error } = await supabase.functions.invoke("invoice-checkout", {
-                                    body: { dealId },
-                                  });
-                                  if (error) throw error;
-                                  if (data?.error) throw new Error(data.error);
-                                  if (data?.url) {
-                                    await navigator.clipboard.writeText(data.url);
-                                    toast.success("Payment link copied! Send it to your customer to collect £" + (info.totalCents / 100).toLocaleString());
+                            <div className="flex items-center gap-2">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={async () => {
+                                  setCollectingDealId(dealId);
+                                  try {
+                                    const { data, error } = await supabase.functions.invoke("invoice-checkout", {
+                                      body: { dealId },
+                                    });
+                                    if (error) throw error;
+                                    if (data?.error) throw new Error(data.error);
+                                    if (data?.url) {
+                                      await navigator.clipboard.writeText(data.url);
+                                      toast.success("Payment link copied to clipboard!");
+                                    }
+                                  } catch (err: any) {
+                                    const msg = err.message || "Failed to create payment link";
+                                    if (msg.includes("exceeds") || msg.includes("Checkout limit")) {
+                                      toast.error("This invoice exceeds Stripe's $999,999.99 limit. Contact support for wire transfer arrangements.");
+                                    } else {
+                                      toast.error(msg);
+                                    }
+                                  } finally {
+                                    setCollectingDealId(null);
                                   }
-                                } catch (err: any) {
-                                  const msg = err.message || "Failed to create payment link";
-                                  if (msg.includes("exceeds") || msg.includes("Checkout limit")) {
-                                    toast.error("This invoice exceeds Stripe's $999,999.99 limit. Contact support for wire transfer arrangements.");
-                                  } else {
-                                    toast.error(msg);
+                                }}
+                                disabled={collectingDealId === dealId}
+                                className="gap-1.5 text-xs"
+                              >
+                                {collectingDealId === dealId ? <Loader2 size={12} className="animate-spin" /> : <Copy size={12} />}
+                                Copy Link
+                              </Button>
+                              <Button
+                                size="sm"
+                                onClick={async () => {
+                                  setSendingDealId(dealId);
+                                  try {
+                                    const { data, error } = await supabase.functions.invoke("invoice-checkout", {
+                                      body: { dealId },
+                                    });
+                                    if (error) throw error;
+                                    if (data?.error) throw new Error(data.error);
+                                    if (data?.url) {
+                                      const email = info.recipientEmail;
+                                      if (!email) {
+                                        toast.error("No customer email on file for this deal. Use 'Copy Link' instead.");
+                                        return;
+                                      }
+                                      await supabase.functions.invoke("send-transactional-email", {
+                                        body: {
+                                          templateName: "payment-reminder",
+                                          recipientEmail: email,
+                                          idempotencyKey: `payment-link-${dealId}-${Date.now()}`,
+                                          templateData: {
+                                            name: info.recipientName || "Customer",
+                                            amount: `£${(info.totalCents / 100).toLocaleString()}`,
+                                            category: info.category,
+                                            paymentUrl: data.url,
+                                          },
+                                        },
+                                      });
+                                      toast.success(`Payment link emailed to ${email}`);
+                                    }
+                                  } catch (err: any) {
+                                    const msg = err.message || "Failed to send payment email";
+                                    if (msg.includes("exceeds") || msg.includes("Checkout limit")) {
+                                      toast.error("This invoice exceeds Stripe's $999,999.99 limit.");
+                                    } else {
+                                      toast.error(msg);
+                                    }
+                                  } finally {
+                                    setSendingDealId(null);
                                   }
-                                } finally {
-                                  setCollectingDealId(null);
-                                }
-                              }}
-                              disabled={collectingDealId === dealId}
-                              className="gap-2 bg-emerald-600 hover:bg-emerald-700 text-white"
-                            >
-                              {collectingDealId === dealId ? (
-                                <Loader2 size={12} className="animate-spin" />
-                              ) : (
-                                <Copy size={12} />
-                              )}
-                              Copy Payment Link · £{(info.totalCents / 100).toLocaleString()}
-                            </Button>
+                                }}
+                                disabled={sendingDealId === dealId || !info.recipientEmail}
+                                className="gap-1.5 text-xs bg-emerald-600 hover:bg-emerald-700 text-white"
+                              >
+                                {sendingDealId === dealId ? <Loader2 size={12} className="animate-spin" /> : <Send size={12} />}
+                                Email Link {info.recipientEmail ? "" : "(no email)"}
+                              </Button>
+                            </div>
                           </div>
                         ))}
                       </div>
