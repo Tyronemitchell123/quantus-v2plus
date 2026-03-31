@@ -166,7 +166,7 @@ const LiveDemoWidget = () => {
                       className={`max-w-[85%] rounded-xl px-4 py-3 text-sm leading-relaxed ${
                         m.role === "user"
                           ? "bg-primary text-primary-foreground rounded-br-sm"
-                          : "bg-secondary/60 border border-border/30 rounded-bl-sm text-foreground"
+                          : "bg-card border border-border/40 rounded-bl-sm text-foreground"
                       }`}
                     >
                       {m.role === "assistant" ? (
