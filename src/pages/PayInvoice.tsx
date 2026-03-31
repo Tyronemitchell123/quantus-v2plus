@@ -93,7 +93,7 @@ const PayInvoice = () => {
           </div>
           <h1 className="font-display text-2xl font-bold text-foreground mb-2">Pay Invoice</h1>
           <p className="text-sm text-muted-foreground">
-            Enter your invoice number (e.g. QAI-INV-E26E11F2) to view and pay securely via Stripe.
+            Enter your invoice number (e.g. QAI-INV-XXXXXXXX) or deal number to view and pay securely via Stripe.
           </p>
         </div>
 
