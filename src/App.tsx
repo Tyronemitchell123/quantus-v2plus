@@ -14,6 +14,7 @@ import RouteErrorBoundary from "@/components/RouteErrorBoundary";
 import PageLoader from "@/components/PageLoader";
 import CookieConsent from "@/components/CookieConsent";
 import { OfflineIndicator } from "@/components/mobile/MobileEnhancements";
+import WelcomeTooltips from "@/components/onboarding/WelcomeTooltips";
 import Index from "./pages/Index";
 import { useAuth } from "@/hooks/use-auth";
 
