@@ -641,6 +641,7 @@ export type Database = {
           metadata: Json | null
           notes: string | null
           paid_at: string | null
+          recipient_address: string | null
           recipient_email: string | null
           recipient_name: string | null
           reminder_count: number | null
@@ -662,6 +663,7 @@ export type Database = {
           metadata?: Json | null
           notes?: string | null
           paid_at?: string | null
+          recipient_address?: string | null
           recipient_email?: string | null
           recipient_name?: string | null
           reminder_count?: number | null
@@ -683,6 +685,7 @@ export type Database = {
           metadata?: Json | null
           notes?: string | null
           paid_at?: string | null
+          recipient_address?: string | null
           recipient_email?: string | null
           recipient_name?: string | null
           reminder_count?: number | null
