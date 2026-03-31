@@ -201,7 +201,8 @@ serve(async (req) => {
         content: p.content,
         hashtags: p.hashtags,
         tone: p.tone,
-        status: "draft",
+        status: "published",
+        scheduled_at: new Date().toISOString(),
       }));
       const { error: socialErr } = await db.from("marketing_social").insert(rows);
       if (socialErr) console.error("Social insert error:", socialErr);
