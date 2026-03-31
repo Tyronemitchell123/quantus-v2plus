@@ -215,6 +215,47 @@ function ReflectionsPanel({ summary, tierRec, upsells }: {
   );
 }
 
+/* ── Collect Payment Button ── */
+function CollectPaymentButton({ dealId, outstandingCents, currency = "GBP" }: { dealId: string; outstandingCents: number; currency?: string }) {
+  const [collecting, setCollecting] = useState(false);
+
+  const handleCollect = async () => {
+    setCollecting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("invoice-checkout", {
+        body: { dealId },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      if (data?.url) {
+        window.open(data.url, "_blank");
+        toast.success("Payment link opened — share with customer or complete payment");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Failed to create payment link");
+    } finally {
+      setCollecting(false);
+    }
+  };
+
+  const symbol = currency === "USD" ? "$" : currency === "EUR" ? "€" : "£";
+
+  return (
+    <button
+      onClick={handleCollect}
+      disabled={collecting}
+      className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-body text-[10px] tracking-widest uppercase transition-all shadow-[0_0_20px_hsl(142_71%_45%/0.2)] disabled:opacity-60"
+    >
+      {collecting ? (
+        <Loader2 size={12} className="animate-spin" />
+      ) : (
+        <CreditCard size={12} />
+      )}
+      Collect {symbol}{(outstandingCents / 100).toLocaleString()}
+    </button>
+  );
+}
+
 /* ── Main Page ── */
 const DealCompletion = () => {
   useDocumentHead({ title: "Finalization & Closeout — Quantus V2+", description: "Phase 7: Ceremonial deal completion for UHNW operations." });
