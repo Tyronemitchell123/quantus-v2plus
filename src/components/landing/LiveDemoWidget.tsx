@@ -136,7 +136,7 @@ const LiveDemoWidget = () => {
                   <h3 className="font-display text-sm font-semibold text-foreground tracking-wide">
                     QUANTUS V2+ — Live Demo
                   </h3>
-                  <p className="text-[10px] text-muted-foreground tracking-wider uppercase">
+                  <p className="text-[10px] text-foreground/60 tracking-wider uppercase">
                     No signup required
                   </p>
                 </div>
