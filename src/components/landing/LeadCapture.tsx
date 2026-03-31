@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useState, forwardRef } from "react";
 import { motion } from "framer-motion";
 import { Mail, ArrowRight, Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
-const LeadCapture = () => {
+const LeadCapture = forwardRef<HTMLElement>((_, ref) => {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -34,7 +34,7 @@ const LeadCapture = () => {
   };
 
   return (
-    <section className="py-20 sm:py-28 border-t border-border/30">
+    <section ref={ref} className="py-20 sm:py-28 border-t border-border/30">
       <div className="container mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
@@ -88,6 +88,8 @@ const LeadCapture = () => {
       </div>
     </section>
   );
-};
+});
+
+LeadCapture.displayName = "LeadCapture";
 
 export default LeadCapture;

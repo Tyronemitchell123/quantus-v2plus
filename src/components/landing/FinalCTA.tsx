@@ -1,9 +1,10 @@
+import { forwardRef } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 
-const FinalCTA = () => (
-  <section className="relative py-32 sm:py-40 overflow-hidden bg-background">
+const FinalCTA = forwardRef<HTMLElement>((_, ref) => (
+  <section ref={ref} className="relative py-32 sm:py-40 overflow-hidden bg-background">
     {/* Animated gold line sweep */}
     <motion.div
       initial={{ scaleX: 0 }}
@@ -55,6 +56,8 @@ const FinalCTA = () => (
       </motion.div>
     </div>
   </section>
-);
+));
+
+FinalCTA.displayName = "FinalCTA";
 
 export default FinalCTA;
