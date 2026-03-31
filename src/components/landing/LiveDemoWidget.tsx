@@ -73,10 +73,22 @@ const LiveDemoWidget = () => {
             speak(plain);
           }
         },
-        onError: (msg) => {
+        onError: () => {
           sendingRef.current = false;
           setLoading(false);
-          toast.error(msg);
+          // Graceful fallback for unauthenticated demo users
+          const fallback =
+            "Thank you for trying the live demo! To unlock the full AI concierge experience — including real-time sourcing, vendor outreach, and deal orchestration — **[create your account](/auth)** in seconds. No credit card required.";
+          assistantRef.current = fallback;
+          setMessages((prev) => {
+            const last = prev[prev.length - 1];
+            if (last?.role === "assistant" && prev.length > allMessages.length) {
+              return prev.map((m, i) =>
+                i === prev.length - 1 ? { ...m, content: fallback } : m
+              );
+            }
+            return [...prev, { role: "assistant", content: fallback }];
+          });
         },
       });
     },
