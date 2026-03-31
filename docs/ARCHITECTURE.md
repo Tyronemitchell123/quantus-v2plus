@@ -108,3 +108,21 @@ remotion/                # Programmatic video generation
 ├── src/                 # Video compositions
 └── scripts/             # Render scripts
 ```
+
+## Autonomous Orchestration
+
+The platform runs a fully autonomous AI orchestration loop via the `autonomous-orchestrator` Edge Function, triggered every 15 minutes by a pg_cron job. It performs four autonomous operations:
+
+1. **Deal Pipeline Auto-Advancement** — Scans all active deals and automatically advances them through the 8-phase pipeline (intake → sourcing → matching → shortlisted → negotiation → execution → documentation → completed), calling the sourcing engine, vendor outreach, workflow engine, and deal completion functions as needed.
+
+2. **Vendor Auto-Selection & Outreach** — AI selects top vendors from sourcing results, generates personalised outreach messages, sends automated follow-ups (up to 3 escalating attempts), and prepares negotiation briefs — all without human intervention.
+
+3. **Content Auto-Publishing** — All AI-generated blog posts and social media content are automatically published immediately. When the draft pool falls below 3, the `scheduled-content` function is triggered to replenish content.
+
+4. **Client Communications Auto-Response** — Contact form submissions receive AI-generated personalised responses. The system uses luxury-grade language and never reveals its automated nature.
+
+### Cron Schedule
+| Job | Schedule | Function |
+|-----|----------|----------|
+| `autonomous-orchestrator-every-15min` | `*/15 * * * *` | `autonomous-orchestrator` |
+| `scheduled-content-weekly` | `0 9 * * 1` | `scheduled-content` |

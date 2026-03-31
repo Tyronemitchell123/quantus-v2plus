@@ -17,13 +17,15 @@ import DashboardTopBar from "@/components/dashboard/DashboardTopBar";
 import useDocumentHead from "@/hooks/use-document-head";
 import { supabase } from "@/integrations/supabase/client";
 
-const mockPipeline = [
-  { id: "1", dealNumber: "QAI-7A3F2B1C", category: "Aviation", stage: "Sourcing", progress: 72, status: "active", eta: "2h 14m", value: "$1.2M" },
-  { id: "2", dealNumber: "QAI-9E4D8C2A", category: "Medical", stage: "Vendor Match", progress: 45, status: "active", eta: "4h 30m", value: "$340K" },
-  { id: "3", dealNumber: "QAI-1B5F6D3E", category: "Lifestyle", stage: "Negotiation", progress: 88, status: "attention", eta: "45m", value: "$2.8M" },
-  { id: "4", dealNumber: "QAI-3C7A9E4F", category: "Staffing", stage: "Completion", progress: 96, status: "active", eta: "12m", value: "$180K" },
-  { id: "5", dealNumber: "QAI-5D2B1C8G", category: "Logistics", stage: "Intake", progress: 15, status: "active", eta: "6h 20m", value: "$560K" },
-];
+const statusToStage: Record<string, string> = {
+  intake: "Intake", sourcing: "Sourcing", matching: "Vendor Match",
+  shortlisted: "Shortlisted", negotiation: "Negotiation", execution: "Execution",
+  documentation: "Documentation", completed: "Completed", cancelled: "Cancelled",
+};
+const statusToProgress: Record<string, number> = {
+  intake: 10, sourcing: 25, matching: 40, shortlisted: 55,
+  negotiation: 70, execution: 85, documentation: 93, completed: 100, cancelled: 0,
+};
 
 const formatCurrency = (cents: number) => {
   if (cents >= 100_000_00) return `$${(cents / 100_00).toFixed(1)}M`;
@@ -102,8 +104,32 @@ const DealAutopilot = () => {
   const [dealDescription, setDealDescription] = useState("");
   const [dealCategory, setDealCategory] = useState("");
   const [dealBudget, setDealBudget] = useState("");
+  const [livePipeline, setLivePipeline] = useState<any[]>([]);
   const autopilotStats = useAutopilotStats();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchDeals = async () => {
+      const { data } = await supabase
+        .from("deals")
+        .select("id, deal_number, category, status, deal_value_estimate, budget_currency, updated_at, priority_score")
+        .not("status", "eq", "cancelled")
+        .order("updated_at", { ascending: false })
+        .limit(20);
+
+      setLivePipeline((data || []).map((d: any) => ({
+        id: d.id,
+        dealNumber: d.deal_number,
+        category: d.category?.charAt(0).toUpperCase() + d.category?.slice(1),
+        stage: statusToStage[d.status] || d.status,
+        progress: statusToProgress[d.status] || 0,
+        status: d.status === "completed" ? "completed" : d.priority_score > 80 ? "attention" : "active",
+        eta: d.status === "completed" ? "Done" : "Auto",
+        value: d.deal_value_estimate ? `$${(d.deal_value_estimate / 1000).toFixed(0)}K` : "—",
+      })));
+    };
+    fetchDeals();
+  }, []);
 
   useDocumentHead({
     title: "AI Deal Autopilot — Autonomous Deal Execution | QUANTUS V2+",
@@ -238,7 +264,7 @@ const DealAutopilot = () => {
             </TabsList>
 
             <TabsContent value="pipeline" className="space-y-3">
-              {mockPipeline.map((deal, i) => (
+              {livePipeline.map((deal, i) => (
                 <motion.div
                   key={deal.id}
                   initial={{ opacity: 0, x: -20 }}

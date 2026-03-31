@@ -152,7 +152,8 @@ serve(async (req) => {
       meta_description: blogData.metaDescription,
       tags: blogData.tags,
       og_image_prompt: blogData.ogImagePrompt,
-      status: "draft", // Auto-generated posts start as drafts for review
+      status: "published",
+      published_at: new Date().toISOString(),
     });
 
     if (blogErr) console.error("Blog insert error:", blogErr);
@@ -200,7 +201,8 @@ serve(async (req) => {
         content: p.content,
         hashtags: p.hashtags,
         tone: p.tone,
-        status: "draft",
+        status: "published",
+        scheduled_at: new Date().toISOString(),
       }));
       const { error: socialErr } = await db.from("marketing_social").insert(rows);
       if (socialErr) console.error("Social insert error:", socialErr);
