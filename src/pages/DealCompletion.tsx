@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useSearchParams, Link } from "react-router-dom";
+import { useSearchParams, Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   CheckCircle2, Loader2, ArrowRight, Sparkles, TrendingUp,
@@ -219,6 +219,7 @@ function ReflectionsPanel({ summary, tierRec, upsells }: {
 const DealCompletion = () => {
   useDocumentHead({ title: "Finalization & Closeout — Quantus V2+", description: "Phase 7: Ceremonial deal completion for UHNW operations." });
   const [params] = useSearchParams();
+  const navigate = useNavigate();
   const dealId = params.get("deal");
 
   const [loading, setLoading] = useState(false);
@@ -418,7 +419,7 @@ const DealCompletion = () => {
                       <Download size={12} /> Download Package
                     </button>
                     <button
-                      onClick={() => toast.info("Timeline view — coming soon")}
+                      onClick={() => navigate(`/deals${dealId ? `?deal=${dealId}` : ''}`)}
                       className="flex-1 flex items-center justify-center gap-2 px-6 py-3 border border-[hsl(var(--border))] rounded-xl font-body text-[10px] tracking-widest uppercase text-[hsl(var(--foreground)/0.7)] hover:bg-[hsl(var(--muted))] transition-all"
                     >
                       <Clock size={12} /> View Full Timeline
