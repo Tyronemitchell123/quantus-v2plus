@@ -69,6 +69,7 @@ const Settings = () => {
           transition={{ duration: 0.2 }}
         >
           {activeTab === "commission" && <CommissionPanel />}
+          {activeTab === "residency" && <DataResidencyPanel />}
           {activeTab === "export" && <ExportPanel />}
           {activeTab === "alerts" && <AlertsPanel />}
           {activeTab === "webhooks" && <WebhooksPanel />}
