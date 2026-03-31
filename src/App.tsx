@@ -71,6 +71,7 @@ const ConnectProducts = lazy(() => import("./pages/ConnectProducts"));
 const ConnectStorefront = lazy(() => import("./pages/ConnectStorefront"));
 const CommissionPayouts = lazy(() => import("./pages/CommissionPayouts"));
 const PayInvoice = lazy(() => import("./pages/PayInvoice"));
+const VendorRegister = lazy(() => import("./pages/VendorRegister"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
