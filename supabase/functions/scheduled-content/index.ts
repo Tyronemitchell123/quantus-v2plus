@@ -152,7 +152,8 @@ serve(async (req) => {
       meta_description: blogData.metaDescription,
       tags: blogData.tags,
       og_image_prompt: blogData.ogImagePrompt,
-      status: "draft", // Auto-generated posts start as drafts for review
+      status: "published",
+      published_at: new Date().toISOString(),
     });
 
     if (blogErr) console.error("Blog insert error:", blogErr);
