@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
 import ParticleGrid from "@/components/ParticleGrid";
 import HomepageHeroVideo from "@/components/HomepageHeroVideo";
+import LiveDemoWidget from "@/components/landing/LiveDemoWidget";
+import MagneticButton from "@/components/landing/MagneticButton";
 
 const HeroSection = () => {
   const heroRef = useRef<HTMLDivElement>(null);
