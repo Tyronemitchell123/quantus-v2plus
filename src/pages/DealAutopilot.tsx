@@ -104,8 +104,32 @@ const DealAutopilot = () => {
   const [dealDescription, setDealDescription] = useState("");
   const [dealCategory, setDealCategory] = useState("");
   const [dealBudget, setDealBudget] = useState("");
+  const [livePipeline, setLivePipeline] = useState<any[]>([]);
   const autopilotStats = useAutopilotStats();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchDeals = async () => {
+      const { data } = await supabase
+        .from("deals")
+        .select("id, deal_number, category, status, deal_value_estimate, budget_currency, updated_at, priority_score")
+        .not("status", "eq", "cancelled")
+        .order("updated_at", { ascending: false })
+        .limit(20);
+
+      setLivePipeline((data || []).map((d: any) => ({
+        id: d.id,
+        dealNumber: d.deal_number,
+        category: d.category?.charAt(0).toUpperCase() + d.category?.slice(1),
+        stage: statusToStage[d.status] || d.status,
+        progress: statusToProgress[d.status] || 0,
+        status: d.status === "completed" ? "completed" : d.priority_score > 80 ? "attention" : "active",
+        eta: d.status === "completed" ? "Done" : "Auto",
+        value: d.deal_value_estimate ? `$${(d.deal_value_estimate / 1000).toFixed(0)}K` : "—",
+      })));
+    };
+    fetchDeals();
+  }, []);
 
   useDocumentHead({
     title: "AI Deal Autopilot — Autonomous Deal Execution | QUANTUS V2+",
