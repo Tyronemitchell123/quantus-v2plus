@@ -424,7 +424,6 @@ const CommissionPayouts = () => {
                     Generate a Stripe Checkout link for pending deals. Share with the customer or open to complete payment.
                   </p>
                   {(() => {
-                    // Group pending commissions by deal_id, and find matching invoice email
                     const pendingByDeal = commissions
                       .filter(c => c.status === "pending" || c.status === "expected")
                       .reduce((acc, c) => {
@@ -436,109 +435,211 @@ const CommissionPayouts = () => {
                             vendor: c.vendor_name,
                             recipientEmail: inv?.recipient_email || null,
                             recipientName: inv?.recipient_name || null,
+                            recipientAddress: (inv as any)?.recipient_address || null,
+                            invoiceId: inv?.id || null,
                           };
                         }
                         acc[c.deal_id].totalCents += c.commission_cents;
                         return acc;
-                      }, {} as Record<string, { totalCents: number; category: string; vendor: string | null; recipientEmail: string | null; recipientName: string | null }>);
+                      }, {} as Record<string, { totalCents: number; category: string; vendor: string | null; recipientEmail: string | null; recipientName: string | null; recipientAddress: string | null; invoiceId: string | null }>);
+
+                    const saveContact = async (dealId: string, invoiceId: string | null) => {
+                      const edit = editingContact[dealId];
+                      if (!edit) return;
+                      setSavingContact(dealId);
+                      try {
+                        if (invoiceId) {
+                          const { error } = await supabase
+                            .from("invoices")
+                            .update({
+                              recipient_email: edit.email || null,
+                              recipient_address: edit.address || null,
+                            } as any)
+                            .eq("id", invoiceId);
+                          if (error) throw error;
+                        }
+                        toast.success("Contact details saved");
+                        fetchData();
+                        setEditingContact(prev => {
+                          const next = { ...prev };
+                          delete next[dealId];
+                          return next;
+                        });
+                      } catch (err: any) {
+                        toast.error(err.message || "Failed to save");
+                      } finally {
+                        setSavingContact(null);
+                      }
+                    };
 
                     return (
-                      <div className="space-y-2">
-                        {Object.entries(pendingByDeal).map(([dealId, info]) => (
-                          <div key={dealId} className="flex flex-col gap-2 p-3 rounded-lg border border-border bg-card">
-                            <div className="flex items-center justify-between">
-                              <div>
-                                <p className="text-xs font-medium text-foreground capitalize">{info.category} — {info.vendor || "Vendor"}</p>
-                                <p className="text-[10px] text-muted-foreground">Deal {dealId.slice(0, 8).toUpperCase()}</p>
-                                {info.recipientEmail && (
-                                  <p className="text-[10px] text-muted-foreground flex items-center gap-1 mt-0.5">
-                                    <Mail size={10} /> {info.recipientName || ""} &lt;{info.recipientEmail}&gt;
-                                  </p>
-                                )}
+                      <div className="space-y-3">
+                        {Object.entries(pendingByDeal).map(([dealId, info]) => {
+                          const isEditing = !!editingContact[dealId];
+                          const editValues = editingContact[dealId] || { email: info.recipientEmail || "", address: info.recipientAddress || "" };
+
+                          return (
+                            <div key={dealId} className="flex flex-col gap-2 p-3 rounded-lg border border-border bg-card">
+                              <div className="flex items-center justify-between">
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-xs font-medium text-foreground capitalize">{info.category} — {info.vendor || "Vendor"}</p>
+                                  <p className="text-[10px] text-muted-foreground">Deal {dealId.slice(0, 8).toUpperCase()}</p>
+                                </div>
+                                <p className="text-sm font-bold text-foreground ml-3">£{(info.totalCents / 100).toLocaleString()}</p>
                               </div>
-                              <p className="text-sm font-bold text-foreground">£{(info.totalCents / 100).toLocaleString()}</p>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={async () => {
-                                  setCollectingDealId(dealId);
-                                  try {
-                                    const { data, error } = await supabase.functions.invoke("invoice-checkout", {
-                                      body: { dealId },
-                                    });
-                                    if (error) throw error;
-                                    if (data?.error) throw new Error(data.error);
-                                    if (data?.split && data?.urls) {
-                                      const allUrls = data.urls.join("\n");
-                                      await navigator.clipboard.writeText(allUrls);
-                                      toast.success(`${data.urls.length} split payment links copied! (Amount exceeds single-session limit)`);
-                                    } else if (data?.url) {
-                                      await navigator.clipboard.writeText(data.url);
-                                      toast.success("Payment link copied to clipboard!");
-                                    }
-                                  } catch (err: any) {
-                                    toast.error(err.message || "Failed to create payment link");
-                                  } finally {
-                                    setCollectingDealId(null);
-                                  }
-                                }}
-                                disabled={collectingDealId === dealId}
-                                className="gap-1.5 text-xs"
-                              >
-                                {collectingDealId === dealId ? <Loader2 size={12} className="animate-spin" /> : <Copy size={12} />}
-                                Copy Link
-                              </Button>
-                              <Button
-                                size="sm"
-                                onClick={async () => {
-                                  setSendingDealId(dealId);
-                                  try {
-                                    const { data, error } = await supabase.functions.invoke("invoice-checkout", {
-                                      body: { dealId },
-                                    });
-                                    if (error) throw error;
-                                    if (data?.error) throw new Error(data.error);
-                                    const paymentUrl = data?.split ? data.urls.join("\n") : data?.url;
-                                    if (paymentUrl) {
-                                      const email = info.recipientEmail;
-                                      if (!email) {
-                                        toast.error("No customer email on file for this deal. Use 'Copy Link' instead.");
-                                        return;
-                                      }
-                                      await supabase.functions.invoke("send-transactional-email", {
-                                        body: {
-                                          templateName: "payment-reminder",
-                                          recipientEmail: email,
-                                          idempotencyKey: `payment-link-${dealId}-${Date.now()}`,
-                                          templateData: {
-                                            name: info.recipientName || "Customer",
-                                            amount: `£${(info.totalCents / 100).toLocaleString()}`,
-                                            category: info.category,
-                                            paymentUrl,
-                                            splitPayment: data?.split || false,
-                                            partCount: data?.parts?.length || 1,
-                                          },
-                                        },
+
+                              {/* Contact details - display or edit */}
+                              {!isEditing ? (
+                                <div
+                                  className="space-y-0.5 cursor-pointer rounded p-1.5 -mx-1.5 hover:bg-muted/50 transition-colors"
+                                  onClick={() => setEditingContact(prev => ({
+                                    ...prev,
+                                    [dealId]: { email: info.recipientEmail || "", address: info.recipientAddress || "" },
+                                  }))}
+                                >
+                                  <p className="text-[10px] text-muted-foreground flex items-center gap-1">
+                                    <Mail size={10} />
+                                    {info.recipientEmail ? (
+                                      <span>{info.recipientName ? `${info.recipientName} — ` : ""}{info.recipientEmail}</span>
+                                    ) : (
+                                      <span className="italic">Click to add email</span>
+                                    )}
+                                  </p>
+                                  <p className="text-[10px] text-muted-foreground flex items-center gap-1">
+                                    <MapPin size={10} />
+                                    {info.recipientAddress || <span className="italic">Click to add address</span>}
+                                  </p>
+                                </div>
+                              ) : (
+                                <div className="space-y-1.5">
+                                  <div className="flex items-center gap-1.5">
+                                    <Mail size={10} className="text-muted-foreground shrink-0" />
+                                    <input
+                                      type="email"
+                                      value={editValues.email}
+                                      onChange={e => setEditingContact(prev => ({ ...prev, [dealId]: { ...editValues, email: e.target.value } }))}
+                                      placeholder="customer@example.com"
+                                      className="flex-1 text-xs px-2 py-1 rounded border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                                    />
+                                  </div>
+                                  <div className="flex items-center gap-1.5">
+                                    <MapPin size={10} className="text-muted-foreground shrink-0" />
+                                    <input
+                                      type="text"
+                                      value={editValues.address}
+                                      onChange={e => setEditingContact(prev => ({ ...prev, [dealId]: { ...editValues, address: e.target.value } }))}
+                                      placeholder="123 Main St, London, UK"
+                                      className="flex-1 text-xs px-2 py-1 rounded border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                                    />
+                                  </div>
+                                  <div className="flex items-center gap-1.5">
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      className="gap-1 text-xs h-7"
+                                      disabled={savingContact === dealId}
+                                      onClick={() => saveContact(dealId, info.invoiceId)}
+                                    >
+                                      {savingContact === dealId ? <Loader2 size={10} className="animate-spin" /> : <Save size={10} />}
+                                      Save
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      variant="ghost"
+                                      className="text-xs h-7"
+                                      onClick={() => setEditingContact(prev => {
+                                        const next = { ...prev };
+                                        delete next[dealId];
+                                        return next;
+                                      })}
+                                    >
+                                      Cancel
+                                    </Button>
+                                  </div>
+                                </div>
+                              )}
+
+                              <div className="flex items-center gap-2">
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={async () => {
+                                    setCollectingDealId(dealId);
+                                    try {
+                                      const { data, error } = await supabase.functions.invoke("invoice-checkout", {
+                                        body: { dealId },
                                       });
-                                      toast.success(`Payment link${data?.split ? "s" : ""} emailed to ${email}`);
+                                      if (error) throw error;
+                                      if (data?.error) throw new Error(data.error);
+                                      if (data?.split && data?.urls) {
+                                        await navigator.clipboard.writeText(data.urls.join("\n"));
+                                        toast.success(`${data.urls.length} split payment links copied!`);
+                                      } else if (data?.url) {
+                                        await navigator.clipboard.writeText(data.url);
+                                        toast.success("Payment link copied to clipboard!");
+                                      }
+                                    } catch (err: any) {
+                                      toast.error(err.message || "Failed to create payment link");
+                                    } finally {
+                                      setCollectingDealId(null);
                                     }
-                                  } catch (err: any) {
-                                    toast.error(err.message || "Failed to send payment email");
-                                  } finally {
-                                    setSendingDealId(null);
-                                  }
-                                }}
-                                disabled={sendingDealId === dealId || !info.recipientEmail}
-                                className="gap-1.5 text-xs bg-emerald-600 hover:bg-emerald-700 text-white"
-                              >
-                                {sendingDealId === dealId ? <Loader2 size={12} className="animate-spin" /> : <Send size={12} />}
-                                Email Link {info.recipientEmail ? "" : "(no email)"}
-                              </Button>
+                                  }}
+                                  disabled={collectingDealId === dealId}
+                                  className="gap-1.5 text-xs"
+                                >
+                                  {collectingDealId === dealId ? <Loader2 size={12} className="animate-spin" /> : <Copy size={12} />}
+                                  Copy Link
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  onClick={async () => {
+                                    setSendingDealId(dealId);
+                                    try {
+                                      const { data, error } = await supabase.functions.invoke("invoice-checkout", {
+                                        body: { dealId },
+                                      });
+                                      if (error) throw error;
+                                      if (data?.error) throw new Error(data.error);
+                                      const paymentUrl = data?.split ? data.urls.join("\n") : data?.url;
+                                      if (paymentUrl) {
+                                        const email = info.recipientEmail;
+                                        if (!email) {
+                                          toast.error("No customer email on file — add one above first.");
+                                          return;
+                                        }
+                                        await supabase.functions.invoke("send-transactional-email", {
+                                          body: {
+                                            templateName: "payment-reminder",
+                                            recipientEmail: email,
+                                            idempotencyKey: `payment-link-${dealId}-${Date.now()}`,
+                                            templateData: {
+                                              name: info.recipientName || "Customer",
+                                              amount: `£${(info.totalCents / 100).toLocaleString()}`,
+                                              category: info.category,
+                                              paymentUrl,
+                                              splitPayment: data?.split || false,
+                                              partCount: data?.parts?.length || 1,
+                                            },
+                                          },
+                                        });
+                                        toast.success(`Payment link emailed to ${email}`);
+                                      }
+                                    } catch (err: any) {
+                                      toast.error(err.message || "Failed to send payment email");
+                                    } finally {
+                                      setSendingDealId(null);
+                                    }
+                                  }}
+                                  disabled={sendingDealId === dealId || !info.recipientEmail}
+                                  className="gap-1.5 text-xs bg-primary hover:bg-primary/90 text-primary-foreground"
+                                >
+                                  {sendingDealId === dealId ? <Loader2 size={12} className="animate-spin" /> : <Send size={12} />}
+                                  Email Link {info.recipientEmail ? "" : "(no email)"}
+                                </Button>
+                              </div>
                             </div>
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     );
                   })()}
