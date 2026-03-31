@@ -105,6 +105,8 @@ const CookieConsent = forwardRef<HTMLDivElement>((_, ref) => {
       )}
     </AnimatePresence>
   );
-};
+});
+
+CookieConsent.displayName = "CookieConsent";
 
 export default CookieConsent;
