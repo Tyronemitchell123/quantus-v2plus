@@ -412,6 +412,9 @@ const DealCompletion = () => {
 
                   {/* Action Buttons */}
                   <div className="flex flex-col sm:flex-row gap-3">
+                    {summary.outstanding_revenue_cents > 0 && (
+                      <CollectPaymentButton dealId={dealId!} outstandingCents={summary.outstanding_revenue_cents} currency="GBP" />
+                    )}
                     <button
                       onClick={() => toast.success("Completion package downloading…")}
                       className="flex-1 flex items-center justify-center gap-2 px-6 py-3 border border-[hsl(var(--primary)/0.3)] rounded-xl font-body text-[10px] tracking-widest uppercase text-[hsl(var(--primary))] hover:bg-[hsl(var(--primary)/0.05)] transition-all"
