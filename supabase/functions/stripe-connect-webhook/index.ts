@@ -82,47 +82,31 @@ serve(async (req) => {
 
     // Requirements changed on a connected account
     // This fires when regulators or Stripe update KYC/compliance requirements
-    if (event.type === "v2.core.account[requirements].updated") {
-      const accountId = event.related_object?.id;
+    if (event.type === "account.updated") {
+      const account = (event as any).data?.object;
+      const accountId = account?.id;
       if (accountId) {
-        console.log(`Requirements updated for account: ${accountId}`);
+        console.log(`Account updated: ${accountId}`);
 
-        // Fetch the latest account status to check if action is needed
-        const account = await stripeClient.v2.core.accounts.retrieve(accountId, {
-          include: ["requirements"],
-        });
+        const needsAction =
+          (account.requirements?.currently_due?.length > 0) ||
+          (account.requirements?.past_due?.length > 0);
 
-        const reqStatus = account.requirements?.summary?.minimum_deadline?.status;
-        const needsAction = reqStatus === "currently_due" || reqStatus === "past_due";
-
-        // Update our local record
         await supabaseAdmin
           .from("stripe_connected_accounts")
           .update({ onboarding_complete: !needsAction })
           .eq("stripe_account_id", accountId);
 
-        console.log(
-          `Account ${accountId} requirements status: ${reqStatus}, needs action: ${needsAction}`
-        );
+        console.log(`Account ${accountId} needs action: ${needsAction}`);
       }
     }
 
     // Capability status changed on a connected account
-    // This fires when a capability (like stripe_transfers) becomes active or inactive
-    if (event.type.includes("capability_status_updated")) {
-      const accountId = event.related_object?.id;
+    if (event.type === "capability.updated") {
+      const capability = (event as any).data?.object;
+      const accountId = capability?.account;
       if (accountId) {
-        console.log(`Capability status updated for account: ${accountId}`);
-
-        // Fetch the latest status
-        const account = await stripeClient.v2.core.accounts.retrieve(accountId, {
-          include: ["configuration.recipient", "requirements"],
-        });
-
-        const transfersActive =
-          account?.configuration?.recipient?.capabilities?.stripe_balance?.stripe_transfers?.status === "active";
-
-        console.log(`Account ${accountId} transfers active: ${transfersActive}`);
+        console.log(`Capability ${capability?.id} updated for account: ${accountId}, status: ${capability?.status}`);
       }
     }
 
