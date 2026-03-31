@@ -124,11 +124,48 @@ serve(async (req) => {
         // Update invoice status
         const invoiceId = paymentIntent?.metadata?.invoice_id;
         if (invoiceId) {
+          const now = new Date().toISOString();
           await supabaseAdmin
             .from("invoices")
-            .update({ status: "paid", paid_at: new Date().toISOString() })
+            .update({ status: "paid", paid_at: now, updated_at: now })
             .eq("id", invoiceId);
+
+          // Mark all pending commissions for this deal as paid
+          await supabaseAdmin
+            .from("commission_logs")
+            .update({ status: "paid", paid_at: now, invoice_id: invoiceId })
+            .eq("deal_id", dealId)
+            .in("status", ["pending", "expected", "processing"]);
+
+          console.log(`Commissions for deal ${dealId} marked as paid via invoice ${invoiceId}`);
         }
+      }
+    }
+
+    // ── Step 5: Handle checkout.session.completed → same logic for checkout flow
+    if (event.type === "checkout.session.completed") {
+      const session = (event as any).data?.object;
+      const paymentIntent = session?.payment_intent;
+      // If payment_intent metadata was set, it's already handled above
+      // This handles direct checkout metadata
+      const dealId = session?.metadata?.deal_id;
+      const invoiceId = session?.metadata?.invoice_id;
+      if (dealId && invoiceId && session?.payment_status === "paid") {
+        const now = new Date().toISOString();
+        console.log(`Checkout completed for deal: ${dealId}, invoice: ${invoiceId}`);
+
+        await supabaseAdmin
+          .from("invoices")
+          .update({ status: "paid", paid_at: now, updated_at: now })
+          .eq("id", invoiceId);
+
+        await supabaseAdmin
+          .from("commission_logs")
+          .update({ status: "paid", paid_at: now, invoice_id: invoiceId })
+          .eq("deal_id", dealId)
+          .in("status", ["pending", "expected", "processing"]);
+
+        console.log(`Commissions for deal ${dealId} marked as paid via checkout`);
       }
     }
 
