@@ -36,6 +36,7 @@ type InvoiceRecord = {
   created_at: string;
   recipient_email: string | null;
   recipient_name: string | null;
+  recipient_address: string | null;
   deal_id: string;
 };
 
