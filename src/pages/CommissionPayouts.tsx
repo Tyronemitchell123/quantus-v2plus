@@ -34,6 +34,9 @@ type InvoiceRecord = {
   status: string;
   metadata: any;
   created_at: string;
+  recipient_email: string | null;
+  recipient_name: string | null;
+  deal_id: string;
 };
 
 type SortKey = "created_at" | "commission_cents" | "category" | "status";
