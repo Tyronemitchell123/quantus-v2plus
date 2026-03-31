@@ -153,12 +153,14 @@ serve(async (req) => {
     // If amount exceeds Stripe limit, split into multiple checkout sessions
     if (invoice.amount_cents > MAX_STRIPE_CENTS) {
       const totalCents = invoice.amount_cents;
+      // Split evenly into N parts, each ≤ MAX_STRIPE_CENTS
+      const numParts = Math.ceil(totalCents / MAX_STRIPE_CENTS);
+      const basePart = Math.floor(totalCents / numParts);
+      const remainder = totalCents - basePart * numParts;
       const parts: number[] = [];
-      let remaining = totalCents;
-      while (remaining > 0) {
-        const chunk = Math.min(remaining, MAX_STRIPE_CENTS);
-        parts.push(chunk);
-        remaining -= chunk;
+      for (let i = 0; i < numParts; i++) {
+        // Distribute remainder across the first few parts (1 cent each)
+        parts.push(basePart + (i < remainder ? 1 : 0));
       }
 
       const urls: string[] = [];
