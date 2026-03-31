@@ -197,10 +197,10 @@ serve(async (req) => {
       for (const c of commissions) {
         await supabase
           .from("commission_logs")
-          .update({ invoice_id: dbInvoice.id })
+          .update({ invoice_id: dbInvoice.id, status: "paid", paid_at: new Date().toISOString() })
           .eq("id", c.id);
       }
-      logStep("Commission logs linked to invoice", { invoiceId: dbInvoice.id });
+      logStep("Commission logs linked to invoice and marked paid", { invoiceId: dbInvoice.id });
     }
 
     return new Response(JSON.stringify({
