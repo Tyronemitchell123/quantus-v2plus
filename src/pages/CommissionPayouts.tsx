@@ -111,8 +111,23 @@ const CommissionPayouts = () => {
       const { data, error } = await supabase.functions.invoke("process-commission-payouts", {
         body: { action: "execute" },
       });
-      if (error) throw new Error(error.message);
-      if (data?.error) throw new Error(data.error);
+      // Parse error response — could be in data or error
+      const errorBody = data?.error || error?.message;
+      if (errorBody) {
+        // Check for insufficient balance specifically
+        if (typeof errorBody === "string" && errorBody.includes("Insufficient")) {
+          toast.error("Insufficient Stripe balance — customers must pay their invoices before you can withdraw. Use 'Collect Payment' or 'Send Reminders' to request payment.");
+        } else {
+          try {
+            const parsed = typeof errorBody === "string" ? JSON.parse(errorBody) : errorBody;
+            toast.error(parsed?.error || parsed?.guidance || "Payout failed");
+          } catch {
+            toast.error(typeof errorBody === "string" ? errorBody : "Payout failed");
+          }
+        }
+        setPayoutLoading(false);
+        return;
+      }
       setPayoutResult(data);
       setPayoutPreview(null);
       toast.success(`Commission payout of ${data.total} processed via Stripe`);
