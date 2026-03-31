@@ -122,6 +122,66 @@ const CommissionPayouts = () => {
     setPayoutLoading(false);
   };
 
+  const sendReminders = async () => {
+    setReminderLoading(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("Not authenticated");
+
+      // Get pending commissions that haven't been reminded yet
+      const pendingDeals = commissions.filter(
+        c => (c.status === "pending" || c.status === "expected") && !remindersSent.includes(c.id)
+      );
+
+      if (pendingDeals.length === 0) {
+        toast.info("No pending commissions to send reminders for");
+        setReminderLoading(false);
+        return;
+      }
+
+      let sentCount = 0;
+      const newRemindersSent: string[] = [];
+
+      for (const commission of pendingDeals) {
+        // Send email reminder
+        const { error: emailError } = await supabase.functions.invoke("send-transactional-email", {
+          body: {
+            templateName: "payment-reminder",
+            recipientEmail: session.user.email,
+            idempotencyKey: `payment-reminder-${commission.id}-${new Date().toISOString().slice(0, 10)}`,
+            templateData: {
+              customerName: commission.vendor_name || "Customer",
+              dealCategory: commission.category,
+              dealNumber: commission.deal_id.slice(0, 8).toUpperCase(),
+              amountDue: `$${(commission.commission_cents / 100).toLocaleString("en-US", { minimumFractionDigits: 0 })}`,
+            },
+          },
+        });
+
+        // Create in-app notification
+        await supabase.from("notifications").insert({
+          user_id: session.user.id,
+          title: "Payment Reminder Sent",
+          body: `Reminder sent for ${commission.category} deal — ${commission.vendor_name || "vendor"} — $${(commission.commission_cents / 100).toLocaleString()}`,
+          category: "billing",
+          severity: "info",
+          action_url: "/commission-payouts",
+        });
+
+        if (!emailError) {
+          sentCount++;
+          newRemindersSent.push(commission.id);
+        }
+      }
+
+      setRemindersSent(prev => [...prev, ...newRemindersSent]);
+      toast.success(`Sent ${sentCount} payment reminder${sentCount !== 1 ? "s" : ""} (email + notification)`);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to send reminders");
+    }
+    setReminderLoading(false);
+  };
+
   const categories = useMemo(() => {
     const cats = new Set(commissions.map(c => c.category));
     return Array.from(cats).sort();
