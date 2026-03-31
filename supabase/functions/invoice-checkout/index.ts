@@ -134,18 +134,6 @@ serve(async (req) => {
       throw new Error("This invoice has already been paid");
     }
 
-    // Stripe Checkout max is $999,999.99 (99999999 cents)
-    if (invoice.amount_cents > 99999999) {
-      return new Response(
-        JSON.stringify({
-          error: "Amount exceeds Stripe Checkout limit ($999,999.99). For invoices over this amount, please contact support for a wire transfer or split payment arrangement.",
-          amount_cents: invoice.amount_cents,
-          amount_formatted: `$${(invoice.amount_cents / 100).toLocaleString("en-US", { minimumFractionDigits: 2 })}`,
-        }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
     // Get deal info for description
     const { data: deal } = await supabaseAdmin
       .from("deals")
@@ -160,6 +148,69 @@ serve(async (req) => {
       ? `${deal.deal_number} (${deal.category})`
       : invoice.invoice_number;
 
+    const MAX_STRIPE_CENTS = 99999999; // $999,999.99
+
+    // If amount exceeds Stripe limit, split into multiple checkout sessions
+    if (invoice.amount_cents > MAX_STRIPE_CENTS) {
+      const totalCents = invoice.amount_cents;
+      const parts: number[] = [];
+      let remaining = totalCents;
+      while (remaining > 0) {
+        const chunk = Math.min(remaining, MAX_STRIPE_CENTS);
+        parts.push(chunk);
+        remaining -= chunk;
+      }
+
+      const urls: string[] = [];
+      for (let i = 0; i < parts.length; i++) {
+        const partLabel = `Part ${i + 1}/${parts.length}`;
+        const session = await stripe.checkout.sessions.create({
+          line_items: [
+            {
+              price_data: {
+                currency: (invoice.currency || "GBP").toLowerCase(),
+                product_data: {
+                  name: `Invoice ${invoice.invoice_number} — ${partLabel}`,
+                  description: `Payment for deal ${dealLabel} (${partLabel}: ${(invoice.currency || "GBP").toUpperCase()} ${(parts[i] / 100).toLocaleString("en-US", { minimumFractionDigits: 2 })})`,
+                },
+                unit_amount: parts[i],
+              },
+              quantity: 1,
+            },
+          ],
+          mode: "payment",
+          payment_intent_data: {
+            metadata: {
+              deal_id: invoice.deal_id,
+              invoice_id: invoice.id,
+              invoice_number: invoice.invoice_number,
+              split_part: `${i + 1}/${parts.length}`,
+            },
+          },
+          success_url: `${origin}/completion?deal=${invoice.deal_id}&payment=success&part=${i + 1}`,
+          cancel_url: `${origin}/completion?deal=${invoice.deal_id}&payment=canceled`,
+        });
+        urls.push(session.url!);
+      }
+
+      await supabaseAdmin
+        .from("invoices")
+        .update({ status: "sent", updated_at: new Date().toISOString() })
+        .eq("id", invoice.id);
+
+      return new Response(
+        JSON.stringify({
+          split: true,
+          urls,
+          parts: parts.map((c, i) => ({ part: i + 1, amount_cents: c, amount: `${(invoice.currency || "GBP").toUpperCase()} ${(c / 100).toLocaleString("en-US", { minimumFractionDigits: 2 })}` })),
+          invoiceId: invoice.id,
+          total: `${(invoice.currency || "GBP").toUpperCase()} ${(totalCents / 100).toLocaleString("en-US", { minimumFractionDigits: 2 })}`,
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Normal single checkout
     const session = await stripe.checkout.sessions.create({
       line_items: [
         {
@@ -186,7 +237,6 @@ serve(async (req) => {
       cancel_url: `${origin}/completion?deal=${invoice.deal_id}&payment=canceled`,
     });
 
-    // Update invoice status to "sent"
     await supabaseAdmin
       .from("invoices")
       .update({ status: "sent", updated_at: new Date().toISOString() })
