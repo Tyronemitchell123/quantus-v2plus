@@ -43,10 +43,17 @@ const DEFAULT_TOOLTIPS: WelcomeTooltip[] = [
 ];
 
 export function useWelcomeSequence(userId: string | undefined) {
+  const storageKey = userId ? `${TOOLTIPS_KEY}_${userId}` : TOOLTIPS_KEY;
+
   const [tooltips, setTooltips] = useState<WelcomeTooltip[]>(() => {
     try {
-      const stored = localStorage.getItem(TOOLTIPS_KEY);
-      return stored ? JSON.parse(stored) : DEFAULT_TOOLTIPS;
+      const stored = localStorage.getItem(storageKey);
+      if (stored) {
+        const parsed = JSON.parse(stored) as WelcomeTooltip[];
+        // Validate structure
+        if (Array.isArray(parsed) && parsed.every(t => typeof t.id === "string")) return parsed;
+      }
+      return DEFAULT_TOOLTIPS;
     } catch {
       return DEFAULT_TOOLTIPS;
     }
