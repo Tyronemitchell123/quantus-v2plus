@@ -679,6 +679,80 @@ const CommissionPayouts = () => {
               </Card>
             )}
 
+            {/* Public Payment Portal Link */}
+            <Card className="border-border">
+              <CardContent className="p-4 flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-foreground">Public Payment Portal</p>
+                  <p className="text-xs text-muted-foreground">Share this link with vendors — they can pay by entering their invoice number.</p>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-1.5 text-xs shrink-0"
+                  onClick={() => {
+                    const url = `${window.location.origin}/pay`;
+                    navigator.clipboard.writeText(url);
+                    toast.success("Payment portal link copied!");
+                  }}
+                >
+                  <Copy size={12} /> Copy Portal Link
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* QR Code Modal */}
+            <AnimatePresence>
+              {qrDealId && qrUrl && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+                  onClick={() => { setQrDealId(null); setQrUrl(null); }}
+                >
+                  <motion.div
+                    initial={{ scale: 0.9, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.9, opacity: 0 }}
+                    onClick={(e) => e.stopPropagation()}
+                    className="bg-card border border-border rounded-xl p-6 max-w-sm w-full space-y-4"
+                  >
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-display text-sm font-bold text-foreground">Payment QR Code</h3>
+                      <button onClick={() => { setQrDealId(null); setQrUrl(null); }} className="text-muted-foreground hover:text-foreground">
+                        <X size={16} />
+                      </button>
+                    </div>
+                    <div className="flex justify-center p-4 bg-white rounded-lg">
+                      <QRCodeSVG value={qrUrl} size={200} level="H" />
+                    </div>
+                    <p className="text-[10px] text-muted-foreground text-center break-all">{qrUrl}</p>
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="flex-1 gap-1.5 text-xs"
+                        onClick={() => {
+                          navigator.clipboard.writeText(qrUrl);
+                          toast.success("Link copied!");
+                        }}
+                      >
+                        <Copy size={12} /> Copy Link
+                      </Button>
+                      <Button
+                        size="sm"
+                        className="flex-1 gap-1.5 text-xs"
+                        onClick={() => window.open(qrUrl, "_blank")}
+                      >
+                        <ExternalLink size={12} /> Open
+                      </Button>
+                    </div>
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             {/* Filters */}
             <div className="flex flex-col sm:flex-row gap-3">
               <div className="relative flex-1">
