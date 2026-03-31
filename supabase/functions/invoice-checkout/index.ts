@@ -134,6 +134,18 @@ serve(async (req) => {
       throw new Error("This invoice has already been paid");
     }
 
+    // Stripe Checkout max is $999,999.99 (99999999 cents)
+    if (invoice.amount_cents > 99999999) {
+      return new Response(
+        JSON.stringify({
+          error: "Amount exceeds Stripe Checkout limit ($999,999.99). For invoices over this amount, please contact support for a wire transfer or split payment arrangement.",
+          amount_cents: invoice.amount_cents,
+          amount_formatted: `$${(invoice.amount_cents / 100).toLocaleString("en-US", { minimumFractionDigits: 2 })}`,
+        }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     // Get deal info for description
     const { data: deal } = await supabaseAdmin
       .from("deals")
