@@ -179,7 +179,6 @@ const App = () => (
           <AnimatedRoutes />
           <WelcomeTooltips />
           <CookieConsent />
-          <CookieConsent />
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
