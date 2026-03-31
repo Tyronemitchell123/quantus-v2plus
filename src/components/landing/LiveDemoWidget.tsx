@@ -185,7 +185,7 @@ const LiveDemoWidget = () => {
                     <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0 ring-1 ring-primary/20">
                       <Bot size={10} className="text-primary" />
                     </div>
-                    <div className="bg-secondary/60 border border-border/30 rounded-xl rounded-bl-sm px-3 py-2">
+                    <div className="bg-card border border-border/40 rounded-xl rounded-bl-sm px-3 py-2">
                       <div className="flex gap-1">
                         <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
                         <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse [animation-delay:0.2s]" />
