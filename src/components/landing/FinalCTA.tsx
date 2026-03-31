@@ -1,8 +1,10 @@
+import { forwardRef } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 
-const FinalCTA = () => (
+const FinalCTA = forwardRef<HTMLElement>((_, ref) => (
+  <section ref={ref} className="relative py-32 sm:py-40 overflow-hidden bg-background">
   <section className="relative py-32 sm:py-40 overflow-hidden bg-background">
     {/* Animated gold line sweep */}
     <motion.div

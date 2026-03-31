@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { logAudit } from "@/lib/audit";
 import type { User, Session } from "@supabase/supabase-js";
@@ -7,6 +7,7 @@ export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const auditedRef = useRef(false);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -14,9 +15,11 @@ export function useAuth() {
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
-        if (event === "SIGNED_IN" && session?.user) {
+        if (event === "SIGNED_IN" && session?.user && !auditedRef.current) {
+          auditedRef.current = true;
           logAudit("login", "auth", session.user.id);
         } else if (event === "SIGNED_OUT") {
+          auditedRef.current = false;
           logAudit("logout", "auth");
         }
       }
