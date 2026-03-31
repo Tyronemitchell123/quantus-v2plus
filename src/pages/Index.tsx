@@ -10,6 +10,7 @@ import PartnerEcosystem from "@/components/landing/PartnerEcosystem";
 import Testimonials from "@/components/landing/Testimonials";
 import FinalCTA from "@/components/landing/FinalCTA";
 import LeadCapture from "@/components/landing/LeadCapture";
+import LiveActivityFeed from "@/components/landing/LiveActivityFeed";
 
 const Index = () => {
   useDocumentHead({
@@ -37,6 +38,8 @@ const Index = () => {
       <ModuleShowcase />
       <div className="luxury-divider" />
       <CinematicStrip />
+      <div className="luxury-divider" />
+      <LiveActivityFeed />
       <div className="luxury-divider" />
       <MembershipTiers />
       <div className="luxury-divider" />

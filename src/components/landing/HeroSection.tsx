@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
 import ParticleGrid from "@/components/ParticleGrid";
 import HomepageHeroVideo from "@/components/HomepageHeroVideo";
+import LiveDemoWidget from "@/components/landing/LiveDemoWidget";
+import MagneticButton from "@/components/landing/MagneticButton";
 
 const HeroSection = () => {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -92,18 +94,15 @@ const HeroSection = () => {
             transition={{ delay: 1.2, duration: 0.6 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
-            <Link
-              to="/auth"
-              className="inline-block px-10 py-4 font-body text-[10px] font-medium tracking-[0.35em] uppercase bg-primary text-primary-foreground rounded-xl hover:brightness-110 transition-all duration-500 gold-glow"
-            >
-              Enter the Platform
-            </Link>
-            <Link
-              to="/about"
-              className="inline-block px-10 py-4 font-body text-[10px] font-medium tracking-[0.35em] uppercase border border-primary/30 text-primary/80 rounded-xl hover:border-primary/60 hover:text-primary hover:bg-primary/[0.03] transition-all duration-500"
-            >
-              The Architecture
-            </Link>
+            <MagneticButton strength={0.2}>
+              <Link
+                to="/auth"
+                className="inline-block px-10 py-4 font-body text-[10px] font-medium tracking-[0.35em] uppercase bg-primary text-primary-foreground rounded-xl hover:brightness-110 transition-all duration-500 gold-glow"
+              >
+                Enter the Platform
+              </Link>
+            </MagneticButton>
+            <LiveDemoWidget />
           </motion.div>
         </motion.div>
       </motion.div>
