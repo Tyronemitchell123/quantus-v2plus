@@ -52,6 +52,7 @@ const CommissionPayouts = () => {
   const [payoutResult, setPayoutResult] = useState<any>(null);
   const [reminderLoading, setReminderLoading] = useState(false);
   const [remindersSent, setRemindersSent] = useState<string[]>([]);
+  const [collectingDealId, setCollectingDealId] = useState<string | null>(null);
 
   useDocumentHead({
     title: "Commission Payouts — QUANTUS V2+",
