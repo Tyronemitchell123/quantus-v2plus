@@ -262,10 +262,14 @@ const DealCompletion = () => {
     setCompleting(false);
   };
 
+  const dealValueFormatted = summary?.deal_value
+    ? `£${summary.deal_value.toLocaleString("en-GB")}`
+    : "—";
+
   const summaryLines = summary ? [
     { icon: Star, label: "Selected Option", value: `${summary.category} — ${summary.sub_category || "Primary Vendor"}` },
-    { icon: TrendingUp, label: "Final Value", value: formatCurrency(summary.total_revenue_cents) },
-    { icon: Shield, label: "Vendor Confirmations", value: "All confirmations received" },
+    { icon: TrendingUp, label: "Final Value", value: dealValueFormatted },
+    { icon: Shield, label: "Commission Revenue", value: summary.total_revenue_cents > 0 ? formatCurrency(summary.total_revenue_cents) : "Pending" },
     { icon: FileText, label: "Documents", value: `${summary.signed_documents}/${summary.total_documents} signed and archived` },
     { icon: Receipt, label: "Payments", value: summary.paid_invoices === summary.total_invoices ? "Completed" : `${summary.paid_invoices}/${summary.total_invoices} paid` },
     { icon: BarChart3, label: "Tasks", value: `${summary.completed_tasks}/${summary.total_tasks} completed` },
