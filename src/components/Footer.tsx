@@ -3,7 +3,7 @@ import { Linkedin, Twitter, Instagram } from "lucide-react";
 
 const socialLinks = [
   { icon: Linkedin, href: "https://linkedin.com/company/quantus", label: "LinkedIn" },
-  { icon: Twitter, href: "https://x.com/quantus", label: "X (Twitter)" },
+  { icon: Twitter, href: "https://x.com/Quantusv2plus", label: "X (Twitter)" },
   { icon: Instagram, href: "https://instagram.com/quantus", label: "Instagram" },
 ];
 
