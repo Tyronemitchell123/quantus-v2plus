@@ -459,17 +459,16 @@ const CommissionPayouts = () => {
                                     });
                                     if (error) throw error;
                                     if (data?.error) throw new Error(data.error);
-                                    if (data?.url) {
+                                    if (data?.split && data?.urls) {
+                                      const allUrls = data.urls.join("\n");
+                                      await navigator.clipboard.writeText(allUrls);
+                                      toast.success(`${data.urls.length} split payment links copied! (Amount exceeds single-session limit)`);
+                                    } else if (data?.url) {
                                       await navigator.clipboard.writeText(data.url);
                                       toast.success("Payment link copied to clipboard!");
                                     }
                                   } catch (err: any) {
-                                    const msg = err.message || "Failed to create payment link";
-                                    if (msg.includes("exceeds") || msg.includes("Checkout limit")) {
-                                      toast.error("This invoice exceeds Stripe's $999,999.99 limit. Contact support for wire transfer arrangements.");
-                                    } else {
-                                      toast.error(msg);
-                                    }
+                                    toast.error(err.message || "Failed to create payment link");
                                   } finally {
                                     setCollectingDealId(null);
                                   }
@@ -490,7 +489,8 @@ const CommissionPayouts = () => {
                                     });
                                     if (error) throw error;
                                     if (data?.error) throw new Error(data.error);
-                                    if (data?.url) {
+                                    const paymentUrl = data?.split ? data.urls.join("\n") : data?.url;
+                                    if (paymentUrl) {
                                       const email = info.recipientEmail;
                                       if (!email) {
                                         toast.error("No customer email on file for this deal. Use 'Copy Link' instead.");
@@ -505,19 +505,16 @@ const CommissionPayouts = () => {
                                             name: info.recipientName || "Customer",
                                             amount: `£${(info.totalCents / 100).toLocaleString()}`,
                                             category: info.category,
-                                            paymentUrl: data.url,
+                                            paymentUrl,
+                                            splitPayment: data?.split || false,
+                                            partCount: data?.parts?.length || 1,
                                           },
                                         },
                                       });
-                                      toast.success(`Payment link emailed to ${email}`);
+                                      toast.success(`Payment link${data?.split ? "s" : ""} emailed to ${email}`);
                                     }
                                   } catch (err: any) {
-                                    const msg = err.message || "Failed to send payment email";
-                                    if (msg.includes("exceeds") || msg.includes("Checkout limit")) {
-                                      toast.error("This invoice exceeds Stripe's $999,999.99 limit.");
-                                    } else {
-                                      toast.error(msg);
-                                    }
+                                    toast.error(err.message || "Failed to send payment email");
                                   } finally {
                                     setSendingDealId(null);
                                   }
