@@ -10,6 +10,7 @@ import PartnerEcosystem from "@/components/landing/PartnerEcosystem";
 import Testimonials from "@/components/landing/Testimonials";
 import FinalCTA from "@/components/landing/FinalCTA";
 import LeadCapture from "@/components/landing/LeadCapture";
+import LiveActivityFeed from "@/components/landing/LiveActivityFeed";
 
 const Index = () => {
   useDocumentHead({
