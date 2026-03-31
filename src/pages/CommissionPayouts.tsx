@@ -380,6 +380,76 @@ const CommissionPayouts = () => {
               </CardContent>
             </Card>
 
+            {/* Collect Payment */}
+            {commissions.filter(c => c.status === "pending" || c.status === "expected").length > 0 && (
+              <Card className="border-emerald-500/30">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm font-display flex items-center gap-2">
+                    <CreditCard size={16} className="text-emerald-500" />
+                    Collect Payment
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <p className="text-xs text-muted-foreground">
+                    Generate a Stripe Checkout link for pending deals. Share with the customer or open to complete payment.
+                  </p>
+                  {(() => {
+                    // Group pending commissions by deal_id
+                    const pendingByDeal = commissions
+                      .filter(c => c.status === "pending" || c.status === "expected")
+                      .reduce((acc, c) => {
+                        if (!acc[c.deal_id]) acc[c.deal_id] = { totalCents: 0, category: c.category, vendor: c.vendor_name };
+                        acc[c.deal_id].totalCents += c.commission_cents;
+                        return acc;
+                      }, {} as Record<string, { totalCents: number; category: string; vendor: string | null }>);
+
+                    return (
+                      <div className="space-y-2">
+                        {Object.entries(pendingByDeal).map(([dealId, info]) => (
+                          <div key={dealId} className="flex items-center justify-between p-3 rounded-lg border border-border bg-card">
+                            <div>
+                              <p className="text-xs font-medium text-foreground capitalize">{info.category} — {info.vendor || "Vendor"}</p>
+                              <p className="text-[10px] text-muted-foreground">Deal {dealId.slice(0, 8).toUpperCase()}</p>
+                            </div>
+                            <Button
+                              size="sm"
+                              onClick={async () => {
+                                setCollectingDealId(dealId);
+                                try {
+                                  const { data, error } = await supabase.functions.invoke("invoice-checkout", {
+                                    body: { dealId },
+                                  });
+                                  if (error) throw error;
+                                  if (data?.error) throw new Error(data.error);
+                                  if (data?.url) {
+                                    window.open(data.url, "_blank");
+                                    toast.success("Payment link opened in new tab");
+                                  }
+                                } catch (err: any) {
+                                  toast.error(err.message || "Failed to create payment link");
+                                } finally {
+                                  setCollectingDealId(null);
+                                }
+                              }}
+                              disabled={collectingDealId === dealId}
+                              className="gap-2 bg-emerald-600 hover:bg-emerald-700 text-white"
+                            >
+                              {collectingDealId === dealId ? (
+                                <Loader2 size={12} className="animate-spin" />
+                              ) : (
+                                <CreditCard size={12} />
+                              )}
+                              Collect £{(info.totalCents / 100).toLocaleString()}
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  })()}
+                </CardContent>
+              </Card>
+            )}
+
             {/* Filters */}
             <div className="flex flex-col sm:flex-row gap-3">
               <div className="relative flex-1">
