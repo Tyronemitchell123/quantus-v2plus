@@ -61,7 +61,7 @@ serve(async (req) => {
     );
   }
 
-  const stripeClient = new Stripe(stripeSecretKey);
+  const stripeClient = new Stripe(stripeSecretKey, { apiVersion: "2025-08-27.basil" });
 
   const supabaseAdmin = createClient(
     Deno.env.get("SUPABASE_URL") ?? "",
