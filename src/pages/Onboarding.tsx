@@ -110,6 +110,8 @@ const Onboarding = () => {
       triggerWelcomeSequence(user.email || "", user.user_metadata?.full_name).catch(() => {});
 
       clearProgress();
+      // Set localStorage flag so ProtectedRoute doesn't redirect back before DB propagates
+      localStorage.setItem("quantus_onboarding_done", "true");
     }
     navigate("/dashboard", { replace: true });
   };
