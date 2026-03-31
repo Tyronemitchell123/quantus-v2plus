@@ -264,7 +264,7 @@ const DealAutopilot = () => {
             </TabsList>
 
             <TabsContent value="pipeline" className="space-y-3">
-              {mockPipeline.map((deal, i) => (
+              {livePipeline.map((deal, i) => (
                 <motion.div
                   key={deal.id}
                   initial={{ opacity: 0, x: -20 }}
