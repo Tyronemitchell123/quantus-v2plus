@@ -56,8 +56,18 @@ const Privacy = () => {
 We never sell your personal data to third parties.`,
     },
     {
-      title: "6. International Transfers",
-      content: `Your data may be processed in countries outside the EEA. We ensure adequate protection through Standard Contractual Clauses (SCCs) and only use providers with appropriate certifications (SOC 2, ISO 27001).`,
+      title: "6. Data Residency & International Transfers",
+      content: `We offer data residency options across multiple compliance zones to meet regional requirements:
+
+• **United Kingdom (London)**: Data stored in UK-based data centres, compliant with UK GDPR, the Data Protection Act 2018, and ICO requirements. This is the default region for UK-based clients.
+• **European Union (Frankfurt)**: Data stored within EU borders under full EU GDPR compliance with Standard Contractual Clauses (SCCs) governing any sub-processor transfers.
+• **APAC — Singapore**: Data stored in Singapore, compliant with the Personal Data Protection Act (PDPA), MAS Technology Risk Management guidelines, and APEC Cross-Border Privacy Rules (CBPR).
+• **APAC — Australia** (coming soon): Compliant with the Privacy Act 1988 and the Australian Privacy Principles (APPs).
+• **APAC — Japan** (coming soon): Compliant with the Act on Protection of Personal Information (APPI), with EU adequacy recognition.
+
+You can select your preferred data residency zone in Settings → Data Residency. Changing your region applies to new data only; historical data is not automatically migrated.
+
+For any cross-border transfers outside your selected zone, we ensure adequate protection through Standard Contractual Clauses (SCCs) or APEC CBPR and only use providers with appropriate certifications (SOC 2, ISO 27001).`,
     },
     {
       title: "7. Data Retention",
