@@ -61,8 +61,8 @@ serve(async (req) => {
       if (error || !data) throw new Error("Invoice not found");
       invoice = data;
     } else {
-      // Get the first unpaid invoice for the deal
-      const { data, error } = await supabaseAdmin
+      // Try to find an existing unpaid invoice for the deal
+      const { data: existing } = await supabaseAdmin
         .from("invoices")
         .select("*")
         .eq("deal_id", dealId)
@@ -70,9 +70,64 @@ serve(async (req) => {
         .neq("status", "paid")
         .order("created_at", { ascending: true })
         .limit(1)
-        .single();
-      if (error || !data) throw new Error("No unpaid invoice found for this deal");
-      invoice = data;
+        .maybeSingle();
+
+      if (existing) {
+        invoice = existing;
+      } else {
+        // No invoice exists — auto-create one from pending commissions
+        const { data: commissions } = await supabaseAdmin
+          .from("commission_logs")
+          .select("*")
+          .eq("deal_id", dealId)
+          .eq("user_id", userData.user.id)
+          .in("status", ["pending", "expected"])
+          .is("invoice_id", null)
+          .gt("commission_cents", 0);
+
+        if (!commissions || commissions.length === 0) {
+          throw new Error("No pending commissions found for this deal");
+        }
+
+        const totalCents = commissions.reduce((s, c) => s + c.commission_cents, 0);
+        const { data: deal } = await supabaseAdmin
+          .from("deals")
+          .select("deal_number, category")
+          .eq("id", dealId)
+          .single();
+
+        const { data: newInv, error: invErr } = await supabaseAdmin
+          .from("invoices")
+          .insert({
+            deal_id: dealId,
+            user_id: userData.user.id,
+            amount_cents: totalCents,
+            currency: "USD",
+            status: "draft",
+            invoice_type: "commission",
+            recipient_name: userData.user.user_metadata?.full_name || userData.user.email,
+            recipient_email: userData.user.email,
+            notes: `Auto-generated for ${commissions.length} commission(s)`,
+            metadata: {
+              commission_count: commissions.length,
+              commission_ids: commissions.map(c => c.id),
+            },
+          })
+          .select()
+          .single();
+
+        if (invErr || !newInv) throw new Error("Failed to create invoice");
+
+        // Link commissions to the new invoice
+        for (const c of commissions) {
+          await supabaseAdmin
+            .from("commission_logs")
+            .update({ invoice_id: newInv.id })
+            .eq("id", c.id);
+        }
+
+        invoice = newInv;
+      }
     }
 
     if (invoice.status === "paid") {
