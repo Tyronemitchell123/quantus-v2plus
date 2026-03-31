@@ -61,6 +61,9 @@ const CommissionPayouts = () => {
   const [sendingDealId, setSendingDealId] = useState<string | null>(null);
   const [editingContact, setEditingContact] = useState<Record<string, { email: string; address: string }>>({});
   const [savingContact, setSavingContact] = useState<string | null>(null);
+  const [qrDealId, setQrDealId] = useState<string | null>(null);
+  const [qrUrl, setQrUrl] = useState<string | null>(null);
+  const [qrLoading, setQrLoading] = useState<string | null>(null);
 
   useDocumentHead({
     title: "Commission Payouts — QUANTUS V2+",
