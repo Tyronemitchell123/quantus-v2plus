@@ -347,6 +347,36 @@ const CommissionPayouts = () => {
               </CardContent>
             </Card>
 
+            {/* Payment Reminders */}
+            <Card className="border-border">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-display flex items-center gap-2">
+                  <Bell size={16} className="text-primary" />
+                  Customer Payment Reminders
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-xs text-muted-foreground mb-3">
+                  Send email and in-app reminders to follow up on outstanding payments for pending commissions.
+                </p>
+                <div className="flex items-center gap-3">
+                  <Button
+                    onClick={sendReminders}
+                    disabled={reminderLoading || commissions.filter(c => (c.status === "pending" || c.status === "expected") && !remindersSent.includes(c.id)).length === 0}
+                    variant="outline"
+                    className="gap-2"
+                  >
+                    {reminderLoading ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
+                    Send Reminders
+                  </Button>
+                  <span className="text-xs text-muted-foreground">
+                    {commissions.filter(c => (c.status === "pending" || c.status === "expected") && !remindersSent.includes(c.id)).length} pending
+                    {remindersSent.length > 0 && ` · ${remindersSent.length} sent this session`}
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Filters */}
             <div className="flex flex-col sm:flex-row gap-3">
               <div className="relative flex-1">
