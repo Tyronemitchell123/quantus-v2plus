@@ -219,6 +219,7 @@ function ReflectionsPanel({ summary, tierRec, upsells }: {
 const DealCompletion = () => {
   useDocumentHead({ title: "Finalization & Closeout — Quantus V2+", description: "Phase 7: Ceremonial deal completion for UHNW operations." });
   const [params] = useSearchParams();
+  const navigate = useNavigate();
   const dealId = params.get("deal");
 
   const [loading, setLoading] = useState(false);
