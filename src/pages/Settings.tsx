@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Download, Bell, Webhook, Key, Brain, Shield, Percent } from "lucide-react";
+import { Download, Bell, Webhook, Key, Brain, Shield, Percent, Globe } from "lucide-react";
 import useDocumentHead from "@/hooks/use-document-head";
 import ExportPanel from "@/components/settings/ExportPanel";
 import AlertsPanel from "@/components/settings/AlertsPanel";
@@ -8,9 +8,11 @@ import WebhooksPanel from "@/components/settings/WebhooksPanel";
 import ApiKeysPanel from "@/components/settings/ApiKeysPanel";
 import AuditLogPanel from "@/components/settings/AuditLogPanel";
 import CommissionPanel from "@/components/settings/CommissionPanel";
+import DataResidencyPanel from "@/components/settings/DataResidencyPanel";
 
 const tabs = [
   { key: "commission", label: "Commission Rates", icon: Percent },
+  { key: "residency", label: "Data Residency", icon: Globe },
   { key: "export", label: "Data Export", icon: Download },
   { key: "alerts", label: "Anomaly Alerts", icon: Bell },
   { key: "webhooks", label: "Webhooks", icon: Webhook },
