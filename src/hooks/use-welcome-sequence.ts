@@ -62,8 +62,8 @@ export function useWelcomeSequence(userId: string | undefined) {
   const [sequenceTriggered, setSequenceTriggered] = useState(false);
 
   useEffect(() => {
-    localStorage.setItem(TOOLTIPS_KEY, JSON.stringify(tooltips));
-  }, [tooltips]);
+    localStorage.setItem(storageKey, JSON.stringify(tooltips));
+  }, [tooltips, storageKey]);
 
   const triggerWelcomeSequence = useCallback(
     async (email: string, displayName?: string) => {

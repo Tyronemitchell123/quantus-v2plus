@@ -170,7 +170,7 @@ const LiveDemoWidget = () => {
                       }`}
                     >
                       {m.role === "assistant" ? (
-                        <div className="prose prose-xs prose-invert max-w-none prose-headings:text-foreground prose-p:text-foreground prose-strong:text-primary prose-p:my-1">
+                        <div className="prose prose-xs prose-invert max-w-none prose-headings:text-foreground prose-p:text-foreground/95 prose-strong:text-primary prose-li:text-foreground/90 prose-p:my-1">
                           <ReactMarkdown>{m.content}</ReactMarkdown>
                         </div>
                       ) : (

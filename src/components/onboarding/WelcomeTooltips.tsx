@@ -13,7 +13,8 @@ const WelcomeTooltips = () => {
   const { activeTooltips, dismissTooltip } = useWelcomeSequence(user?.id);
   const navigate = useNavigate();
 
-  if (activeTooltips.length === 0) return null;
+  // Only show for authenticated users who haven't dismissed all tips
+  if (!user || activeTooltips.length === 0) return null;
 
   // Show only the first undismissed tooltip
   const tip = activeTooltips[0];
