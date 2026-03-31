@@ -5,7 +5,7 @@ import {
   CheckCircle2, Loader2, ArrowRight, Sparkles, TrendingUp,
   Archive, Crown, Plane, Heart, Users, Globe, Truck, Handshake,
   FileText, Receipt, Clock, ChevronDown, ChevronUp, Zap, RefreshCw,
-  Download, Copy, Home, Shield, Star, BarChart3,
+  Download, Copy, Home, Shield, Star, BarChart3, CreditCard,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
