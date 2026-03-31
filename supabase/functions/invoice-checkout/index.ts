@@ -96,6 +96,18 @@ serve(async (req) => {
           .eq("id", dealId)
           .single();
 
+        // Look up vendor contact from outreach records for this deal
+        const { data: outreach } = await supabaseAdmin
+          .from("vendor_outreach")
+          .select("vendor_name, vendor_email, vendor_company")
+          .eq("deal_id", dealId)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        const recipientName = outreach?.vendor_name || outreach?.vendor_company || "Customer";
+        const recipientEmail = outreach?.vendor_email || null;
+
         const { data: newInv, error: invErr } = await supabaseAdmin
           .from("invoices")
           .insert({
@@ -105,8 +117,8 @@ serve(async (req) => {
             currency: "USD",
             status: "draft",
             invoice_type: "commission",
-            recipient_name: userData.user.user_metadata?.full_name || userData.user.email,
-            recipient_email: userData.user.email,
+            recipient_name: recipientName,
+            recipient_email: recipientEmail,
             notes: `Auto-generated for ${commissions.length} commission(s)`,
             metadata: {
               commission_count: commissions.length,
