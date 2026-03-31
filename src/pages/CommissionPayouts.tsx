@@ -77,7 +77,7 @@ const CommissionPayouts = () => {
         .order("created_at", { ascending: false }),
       supabase
         .from("invoices")
-        .select("id, invoice_number, amount_cents, status, metadata, created_at")
+        .select("id, invoice_number, amount_cents, status, metadata, created_at, recipient_email, recipient_name, deal_id")
         .eq("user_id", session.user.id)
         .eq("invoice_type", "commission")
         .order("created_at", { ascending: false }),
