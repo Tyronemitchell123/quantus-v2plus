@@ -28,7 +28,7 @@
  */
 
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import Stripe from "https://esm.sh/stripe@21.0.1";
+import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "npm:@supabase/supabase-js@2.57.2";
 
 const corsHeaders = {
@@ -61,7 +61,7 @@ serve(async (req) => {
     );
   }
 
-  const stripeClient = new Stripe(stripeSecretKey);
+  const stripeClient = new Stripe(stripeSecretKey, { apiVersion: "2025-08-27.basil" });
 
   const supabaseAdmin = createClient(
     Deno.env.get("SUPABASE_URL") ?? "",
@@ -69,18 +69,12 @@ serve(async (req) => {
   );
 
   try {
-    // ── Step 1: Verify the webhook signature and parse the thin event ──────
+    // ── Step 1: Verify the webhook signature and parse the event ──────
     const body = await req.text();
     const sig = req.headers.get("stripe-signature");
     if (!sig) throw new Error("Missing stripe-signature header");
 
-    // parseThinEvent validates the signature and returns a minimal event object
-    const thinEvent = stripeClient.parseThinEvent(body, sig, webhookSecret);
-
-    // ── Step 2: Fetch the full event from Stripe ──────────────────────────
-    // Thin events only contain the event ID — we need to retrieve the full
-    // payload to understand what changed
-    const event = await stripeClient.v2.core.events.retrieve(thinEvent.id);
+    const event = stripeClient.webhooks.constructEvent(body, sig, webhookSecret);
 
     console.log(`Received Stripe Connect event: ${event.type}`);
 
@@ -88,47 +82,31 @@ serve(async (req) => {
 
     // Requirements changed on a connected account
     // This fires when regulators or Stripe update KYC/compliance requirements
-    if (event.type === "v2.core.account[requirements].updated") {
-      const accountId = event.related_object?.id;
+    if (event.type === "account.updated") {
+      const account = (event as any).data?.object;
+      const accountId = account?.id;
       if (accountId) {
-        console.log(`Requirements updated for account: ${accountId}`);
+        console.log(`Account updated: ${accountId}`);
 
-        // Fetch the latest account status to check if action is needed
-        const account = await stripeClient.v2.core.accounts.retrieve(accountId, {
-          include: ["requirements"],
-        });
+        const needsAction =
+          (account.requirements?.currently_due?.length > 0) ||
+          (account.requirements?.past_due?.length > 0);
 
-        const reqStatus = account.requirements?.summary?.minimum_deadline?.status;
-        const needsAction = reqStatus === "currently_due" || reqStatus === "past_due";
-
-        // Update our local record
         await supabaseAdmin
           .from("stripe_connected_accounts")
           .update({ onboarding_complete: !needsAction })
           .eq("stripe_account_id", accountId);
 
-        console.log(
-          `Account ${accountId} requirements status: ${reqStatus}, needs action: ${needsAction}`
-        );
+        console.log(`Account ${accountId} needs action: ${needsAction}`);
       }
     }
 
     // Capability status changed on a connected account
-    // This fires when a capability (like stripe_transfers) becomes active or inactive
-    if (event.type.includes("capability_status_updated")) {
-      const accountId = event.related_object?.id;
+    if (event.type === "capability.updated") {
+      const capability = (event as any).data?.object;
+      const accountId = capability?.account;
       if (accountId) {
-        console.log(`Capability status updated for account: ${accountId}`);
-
-        // Fetch the latest status
-        const account = await stripeClient.v2.core.accounts.retrieve(accountId, {
-          include: ["configuration.recipient", "requirements"],
-        });
-
-        const transfersActive =
-          account?.configuration?.recipient?.capabilities?.stripe_balance?.stripe_transfers?.status === "active";
-
-        console.log(`Account ${accountId} transfers active: ${transfersActive}`);
+        console.log(`Capability ${capability?.id} updated for account: ${accountId}, status: ${capability?.status}`);
       }
     }
 
