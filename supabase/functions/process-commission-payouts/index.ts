@@ -71,7 +71,7 @@ serve(async (req) => {
       .from("commission_logs")
       .select("*")
       .eq("user_id", user.id)
-      .in("status", ["pending", "paid"])
+      .eq("status", "pending")
       .is("invoice_id", null)
       .gt("commission_cents", 0)
       .order("created_at", { ascending: true });
