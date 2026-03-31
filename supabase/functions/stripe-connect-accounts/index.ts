@@ -73,7 +73,7 @@ serve(async (req) => {
         display_name: displayName,
         contact_email: contactEmail,
         identity: {
-          country: "us", // Default to US; adjust per your needs
+          country: "gb",
         },
         dashboard: "express",
         defaults: {
