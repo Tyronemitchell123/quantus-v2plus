@@ -39,6 +39,8 @@ const Index = () => {
       <div className="luxury-divider" />
       <CinematicStrip />
       <div className="luxury-divider" />
+      <LiveActivityFeed />
+      <div className="luxury-divider" />
       <MembershipTiers />
       <div className="luxury-divider" />
       <HowItWorks />
