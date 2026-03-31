@@ -163,14 +163,22 @@ const CommissionPayouts = () => {
       const newRemindersSent: string[] = [];
 
       for (const commission of pendingDeals) {
-        // Send email reminder
+        // Find the invoice/vendor email for this commission's deal
+        const inv = invoices.find(i => i.deal_id === commission.deal_id);
+        const recipientEmail = inv?.recipient_email;
+        if (!recipientEmail) {
+          // Skip if no customer email on file
+          continue;
+        }
+
+        // Send email reminder to the customer, not to ourselves
         const { error: emailError } = await supabase.functions.invoke("send-transactional-email", {
           body: {
             templateName: "payment-reminder",
-            recipientEmail: session.user.email,
+            recipientEmail,
             idempotencyKey: `payment-reminder-${commission.id}-${new Date().toISOString().slice(0, 10)}`,
             templateData: {
-              customerName: commission.vendor_name || "Customer",
+              customerName: inv?.recipient_name || commission.vendor_name || "Customer",
               dealCategory: commission.category,
               dealNumber: commission.deal_id.slice(0, 8).toUpperCase(),
               amountDue: `$${(commission.commission_cents / 100).toLocaleString("en-US", { minimumFractionDigits: 0 })}`,
