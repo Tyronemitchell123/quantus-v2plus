@@ -71,7 +71,7 @@ serve(async (req) => {
       .from("commission_logs")
       .select("*")
       .eq("user_id", user.id)
-      .in("status", ["pending", "paid"])
+      .eq("status", "pending")
       .is("invoice_id", null)
       .gt("commission_cents", 0)
       .order("created_at", { ascending: true });
@@ -150,20 +150,49 @@ serve(async (req) => {
     }
 
     // Create Stripe Payout (balance → bank account)
-    const payout = await stripe.payouts.create({
-      amount: totalCents,
-      currency: "usd",
-      description: `Commission payout — ${commissions.length} deal(s), $${(totalCents / 100).toLocaleString()}`,
-      metadata: {
-        type: "commission_payout",
-        user_id: user.id,
-        commission_count: String(commissions.length),
-        commission_ids: commissions.map((c) => c.id).join(","),
-      },
-    });
+    let payout;
+    try {
+      payout = await stripe.payouts.create({
+        amount: totalCents,
+        currency: "usd",
+        description: `Commission payout — ${commissions.length} deal(s), $${(totalCents / 100).toLocaleString()}`,
+        metadata: {
+          type: "commission_payout",
+          user_id: user.id,
+          commission_count: String(commissions.length),
+          commission_ids: commissions.map((c) => c.id).join(","),
+        },
+      });
+    } catch (stripeErr) {
+      const msg = stripeErr instanceof Error ? stripeErr.message : String(stripeErr);
+      logStep("Stripe payout creation FAILED", { error: msg });
+      return new Response(JSON.stringify({
+        error: `Stripe payout failed: ${msg}`,
+        payouts: summary,
+        total: `$${(totalCents / 100).toLocaleString()}`,
+      }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     logStep("Payout created", { payoutId: payout.id, amount: payout.amount, status: payout.status });
 
-    // Create internal invoice record for audit trail
+    // Verify the payout was accepted by Stripe (status should be "pending", "in_transit", or "paid")
+    const validStatuses = ["pending", "in_transit", "paid"];
+    if (!validStatuses.includes(payout.status)) {
+      logStep("Payout rejected by Stripe", { status: payout.status });
+      return new Response(JSON.stringify({
+        error: `Stripe payout was not accepted (status: ${payout.status}). Commissions remain pending.`,
+        stripe_payout_id: payout.id,
+        stripe_payout_status: payout.status,
+      }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Only now create the invoice and mark commissions — Stripe confirmed the transfer
     const deal = commissions[0];
     const { data: dbInvoice, error: invErr } = await supabase
       .from("invoices")
@@ -172,12 +201,12 @@ serve(async (req) => {
         user_id: user.id,
         amount_cents: totalCents,
         currency: "USD",
-        status: "paid",
+        status: payout.status === "paid" ? "paid" : "sent",
         invoice_type: "commission",
         recipient_name: user.user_metadata?.full_name || user.email,
         recipient_email: user.email,
         notes: `Stripe Payout: ${payout.id}`,
-        paid_at: new Date().toISOString(),
+        paid_at: payout.status === "paid" ? new Date().toISOString() : null,
         metadata: {
           stripe_payout_id: payout.id,
           stripe_payout_status: payout.status,
@@ -192,15 +221,20 @@ serve(async (req) => {
       logStep("WARNING: Failed to create DB invoice", { error: invErr.message });
     }
 
-    // Link all commission_logs to the internal invoice and mark as paid
+    // Link commissions and set status based on confirmed Stripe payout state
+    const commissionStatus = payout.status === "paid" ? "paid" : "processing";
     if (dbInvoice) {
       for (const c of commissions) {
         await supabase
           .from("commission_logs")
-          .update({ invoice_id: dbInvoice.id, status: "paid", paid_at: new Date().toISOString() })
+          .update({
+            invoice_id: dbInvoice.id,
+            status: commissionStatus,
+            paid_at: payout.status === "paid" ? new Date().toISOString() : null,
+          })
           .eq("id", c.id);
       }
-      logStep("Commission logs linked to invoice and marked paid", { invoiceId: dbInvoice.id });
+      logStep(`Commission logs marked as '${commissionStatus}'`, { invoiceId: dbInvoice.id });
     }
 
     return new Response(JSON.stringify({
