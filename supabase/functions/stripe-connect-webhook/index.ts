@@ -69,18 +69,12 @@ serve(async (req) => {
   );
 
   try {
-    // ── Step 1: Verify the webhook signature and parse the thin event ──────
+    // ── Step 1: Verify the webhook signature and parse the event ──────
     const body = await req.text();
     const sig = req.headers.get("stripe-signature");
     if (!sig) throw new Error("Missing stripe-signature header");
 
-    // parseThinEvent validates the signature and returns a minimal event object
-    const thinEvent = stripeClient.parseThinEvent(body, sig, webhookSecret);
-
-    // ── Step 2: Fetch the full event from Stripe ──────────────────────────
-    // Thin events only contain the event ID — we need to retrieve the full
-    // payload to understand what changed
-    const event = await stripeClient.v2.core.events.retrieve(thinEvent.id);
+    const event = stripeClient.webhooks.constructEvent(body, sig, webhookSecret);
 
     console.log(`Received Stripe Connect event: ${event.type}`);
 
