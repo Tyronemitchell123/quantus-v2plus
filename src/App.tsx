@@ -71,6 +71,7 @@ const ConnectProducts = lazy(() => import("./pages/ConnectProducts"));
 const ConnectStorefront = lazy(() => import("./pages/ConnectStorefront"));
 const CommissionPayouts = lazy(() => import("./pages/CommissionPayouts"));
 const PayInvoice = lazy(() => import("./pages/PayInvoice"));
+const VendorRegister = lazy(() => import("./pages/VendorRegister"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
@@ -113,6 +114,7 @@ const AnimatedRoutes = () => {
             <Route path="/reset-password" element={<R name="Reset Password"><PageTransition><ResetPassword /></PageTransition></R>} />
             <Route path="/unsubscribe" element={<R name="Unsubscribe"><PageTransition><Unsubscribe /></PageTransition></R>} />
             <Route path="/pay" element={<R name="Pay Invoice"><PageTransition><PayInvoice /></PageTransition></R>} />
+            <Route path="/vendor-register" element={<R name="Vendor Register"><PageTransition><VendorRegister /></PageTransition></R>} />
             <Route path="/onboarding" element={<ProtectedRoute skipOnboardingCheck><R name="Onboarding"><PageTransition><Onboarding /></PageTransition></R></ProtectedRoute>} />
 
             {/* Dashboard shell routes */}
