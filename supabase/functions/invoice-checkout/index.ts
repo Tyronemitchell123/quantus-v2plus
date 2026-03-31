@@ -35,7 +35,88 @@ serve(async (req) => {
   );
 
   try {
-    // Authenticate
+    const body = await req.json();
+    const { invoiceId, dealId, invoiceNumber, action } = body;
+
+    // Public invoice lookup by invoice number (no auth required)
+    if (invoiceNumber && !invoiceId && !dealId) {
+      const { data: inv, error: lookupErr } = await supabaseAdmin
+        .from("invoices")
+        .select("id, invoice_number, amount_cents, currency, status, recipient_name")
+        .eq("invoice_number", invoiceNumber)
+        .maybeSingle();
+
+      if (lookupErr || !inv) {
+        return new Response(
+          JSON.stringify({ error: "Invoice not found. Please check the number and try again." }),
+          { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      // If action=checkout, create a Stripe session for this invoice
+      if (action === "checkout" && inv.status !== "paid") {
+        const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
+        const origin = req.headers.get("origin") || "https://quantus-loom.lovable.app";
+
+        const { data: fullInv } = await supabaseAdmin
+          .from("invoices")
+          .select("*")
+          .eq("id", inv.id)
+          .single();
+
+        if (!fullInv) throw new Error("Invoice not found");
+
+        const { data: deal } = await supabaseAdmin
+          .from("deals")
+          .select("deal_number, category")
+          .eq("id", fullInv.deal_id)
+          .single();
+
+        const dealLabel = deal ? `${deal.deal_number} (${deal.category})` : fullInv.invoice_number;
+
+        const session = await stripe.checkout.sessions.create({
+          line_items: [{
+            price_data: {
+              currency: (fullInv.currency || "GBP").toLowerCase(),
+              product_data: {
+                name: `Invoice ${fullInv.invoice_number}`,
+                description: `Payment for deal ${dealLabel}`,
+              },
+              unit_amount: fullInv.amount_cents,
+            },
+            quantity: 1,
+          }],
+          mode: "payment",
+          payment_intent_data: {
+            metadata: {
+              deal_id: fullInv.deal_id,
+              invoice_id: fullInv.id,
+              invoice_number: fullInv.invoice_number,
+            },
+          },
+          success_url: `${origin}/pay?status=success&invoice=${fullInv.invoice_number}`,
+          cancel_url: `${origin}/pay?status=canceled&invoice=${fullInv.invoice_number}`,
+        });
+
+        await supabaseAdmin
+          .from("invoices")
+          .update({ status: "sent", updated_at: new Date().toISOString() })
+          .eq("id", fullInv.id);
+
+        return new Response(
+          JSON.stringify({ url: session.url, invoiceId: fullInv.id }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      // Just return invoice info for display
+      return new Response(
+        JSON.stringify({ invoice: inv }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Authenticated flow for deal-based checkout
     const supabaseAnon = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_ANON_KEY") ?? ""
@@ -45,8 +126,6 @@ serve(async (req) => {
     const token = authHeader.replace("Bearer ", "");
     const { data: userData, error: authErr } = await supabaseAnon.auth.getUser(token);
     if (authErr || !userData.user) throw new Error("Not authenticated");
-
-    const { invoiceId, dealId } = await req.json();
     if (!invoiceId && !dealId) throw new Error("invoiceId or dealId is required");
 
     let invoice: any;
