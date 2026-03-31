@@ -73,10 +73,22 @@ const LiveDemoWidget = () => {
             speak(plain);
           }
         },
-        onError: (msg) => {
+        onError: () => {
           sendingRef.current = false;
           setLoading(false);
-          toast.error(msg);
+          // Graceful fallback for unauthenticated demo users
+          const fallback =
+            "Thank you for trying the live demo! To unlock the full AI concierge experience — including real-time sourcing, vendor outreach, and deal orchestration — **[create your account](/auth)** in seconds. No credit card required.";
+          assistantRef.current = fallback;
+          setMessages((prev) => {
+            const last = prev[prev.length - 1];
+            if (last?.role === "assistant" && prev.length > allMessages.length) {
+              return prev.map((m, i) =>
+                i === prev.length - 1 ? { ...m, content: fallback } : m
+              );
+            }
+            return [...prev, { role: "assistant", content: fallback }];
+          });
         },
       });
     },
@@ -124,7 +136,7 @@ const LiveDemoWidget = () => {
                   <h3 className="font-display text-sm font-semibold text-foreground tracking-wide">
                     QUANTUS V2+ — Live Demo
                   </h3>
-                  <p className="text-[10px] text-muted-foreground tracking-wider uppercase">
+                  <p className="text-[10px] text-foreground/60 tracking-wider uppercase">
                     No signup required
                   </p>
                 </div>
@@ -154,11 +166,11 @@ const LiveDemoWidget = () => {
                       className={`max-w-[85%] rounded-xl px-4 py-3 text-sm leading-relaxed ${
                         m.role === "user"
                           ? "bg-primary text-primary-foreground rounded-br-sm"
-                          : "bg-secondary/60 border border-border/30 rounded-bl-sm text-foreground"
+                          : "bg-card border border-border/40 rounded-bl-sm text-foreground"
                       }`}
                     >
                       {m.role === "assistant" ? (
-                        <div className="prose prose-xs prose-invert max-w-none prose-headings:text-foreground prose-p:text-foreground prose-strong:text-primary prose-p:my-1">
+                        <div className="prose prose-xs prose-invert max-w-none prose-headings:text-foreground prose-p:text-foreground/95 prose-strong:text-primary prose-li:text-foreground/90 prose-p:my-1">
                           <ReactMarkdown>{m.content}</ReactMarkdown>
                         </div>
                       ) : (
@@ -173,7 +185,7 @@ const LiveDemoWidget = () => {
                     <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0 ring-1 ring-primary/20">
                       <Bot size={10} className="text-primary" />
                     </div>
-                    <div className="bg-secondary/60 border border-border/30 rounded-xl rounded-bl-sm px-3 py-2">
+                    <div className="bg-card border border-border/40 rounded-xl rounded-bl-sm px-3 py-2">
                       <div className="flex gap-1">
                         <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
                         <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse [animation-delay:0.2s]" />
