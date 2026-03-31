@@ -441,7 +441,12 @@ const CommissionPayouts = () => {
                                     toast.success("Payment link copied! Send it to your customer to collect £" + (info.totalCents / 100).toLocaleString());
                                   }
                                 } catch (err: any) {
-                                  toast.error(err.message || "Failed to create payment link");
+                                  const msg = err.message || "Failed to create payment link";
+                                  if (msg.includes("exceeds") || msg.includes("Checkout limit")) {
+                                    toast.error("This invoice exceeds Stripe's $999,999.99 limit. Contact support for wire transfer arrangements.");
+                                  } else {
+                                    toast.error(msg);
+                                  }
                                 } finally {
                                   setCollectingDealId(null);
                                 }
