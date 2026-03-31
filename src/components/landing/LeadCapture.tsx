@@ -34,7 +34,7 @@ const LeadCapture = forwardRef<HTMLElement>((_, ref) => {
   };
 
   return (
-    <section className="py-20 sm:py-28 border-t border-border/30">
+    <section ref={ref} className="py-20 sm:py-28 border-t border-border/30">
       <div className="container mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
@@ -88,6 +88,8 @@ const LeadCapture = forwardRef<HTMLElement>((_, ref) => {
       </div>
     </section>
   );
-};
+});
+
+LeadCapture.displayName = "LeadCapture";
 
 export default LeadCapture;

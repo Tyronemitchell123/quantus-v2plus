@@ -57,6 +57,8 @@ const FinalCTA = forwardRef<HTMLElement>((_, ref) => (
       </motion.div>
     </div>
   </section>
-);
+));
+
+FinalCTA.displayName = "FinalCTA";
 
 export default FinalCTA;
