@@ -1,10 +1,10 @@
 import { motion } from "framer-motion";
 
 const stats = [
-  { value: "10¹⁸", label: "Quantum Ops / Second", sub: "Zero classical bottlenecks" },
+  { value: "9", label: "Service Verticals", sub: "Aviation to Finance" },
   { value: "99.99%", label: "Uptime SLA", sub: "Enterprise-grade reliability" },
-  { value: "$2.4B+", label: "Client Revenue Protected", sub: "Across 14 countries" },
-  { value: "0", label: "Human Operators", sub: "Fully autonomous platform" },
+  { value: "E2E", label: "Encrypted", sub: "GDPR & SOC 2 compliant" },
+  { value: "AI", label: "Autonomous Engine", sub: "Fully orchestrated platform" },
 ];
 
 const AboutStats = () => (
