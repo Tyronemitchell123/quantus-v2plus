@@ -38,37 +38,59 @@ serve(async (req) => {
     const body = await req.json();
     const { invoiceId, dealId, invoiceNumber, action } = body;
 
-    // Public invoice lookup by invoice number (no auth required)
+    // Public invoice lookup by invoice number or deal number (no auth required)
     if (invoiceNumber && !invoiceId && !dealId) {
-      console.log("[invoice-checkout] Looking up invoice:", invoiceNumber);
+      const searchTerm = String(invoiceNumber).trim().toUpperCase();
+      console.log("[invoice-checkout] Looking up:", searchTerm);
 
-      // Try exact match first, then partial match
       let inv: any = null;
-      let lookupErr: any = null;
 
-      const { data: exactMatch, error: exactErr } = await supabaseAdmin
+      // 1. Exact invoice number match
+      const { data: exactMatch } = await supabaseAdmin
         .from("invoices")
         .select("id, invoice_number, amount_cents, currency, status, recipient_name")
-        .eq("invoice_number", invoiceNumber.trim().toUpperCase())
+        .eq("invoice_number", searchTerm)
         .maybeSingle();
 
       if (exactMatch) {
         inv = exactMatch;
       } else {
-        // Try partial match (user may omit prefix)
-        const { data: partialMatch, error: partialErr } = await supabaseAdmin
+        // 2. Partial invoice number match
+        const { data: partialMatch } = await supabaseAdmin
           .from("invoices")
           .select("id, invoice_number, amount_cents, currency, status, recipient_name")
-          .ilike("invoice_number", `%${invoiceNumber.trim().toUpperCase()}%`)
+          .ilike("invoice_number", `%${searchTerm}%`)
           .limit(1)
           .maybeSingle();
 
-        inv = partialMatch;
-        lookupErr = partialErr;
+        if (partialMatch) {
+          inv = partialMatch;
+        } else {
+          // 3. Try matching by deal number (user may have entered deal number instead)
+          const { data: deal } = await supabaseAdmin
+            .from("deals")
+            .select("id")
+            .ilike("deal_number", `%${searchTerm}%`)
+            .limit(1)
+            .maybeSingle();
+
+          if (deal) {
+            const { data: dealInvoice } = await supabaseAdmin
+              .from("invoices")
+              .select("id, invoice_number, amount_cents, currency, status, recipient_name")
+              .eq("deal_id", deal.id)
+              .neq("status", "paid")
+              .order("created_at", { ascending: false })
+              .limit(1)
+              .maybeSingle();
+
+            inv = dealInvoice;
+          }
+        }
       }
 
       if (!inv) {
-        console.log("[invoice-checkout] No invoice found for:", invoiceNumber);
+        console.log("[invoice-checkout] No invoice found for:", searchTerm);
         return new Response(
           JSON.stringify({ error: "Invoice not found. Please check the number and try again." }),
           { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
