@@ -64,6 +64,9 @@ const AviationScanPanel = () => {
         <TabsTrigger value="scanner" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary">
           <Search className="h-3.5 w-3.5 mr-1.5" /> Scanner
         </TabsTrigger>
+        <TabsTrigger value="live-deals" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary">
+          <Zap className="h-3.5 w-3.5 mr-1.5" /> Live Deals
+        </TabsTrigger>
         <TabsTrigger value="simulation" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary">
           <MessageSquare className="h-3.5 w-3.5 mr-1.5" /> Negotiation Sandbox
         </TabsTrigger>
