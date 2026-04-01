@@ -11,7 +11,19 @@ const DEFAULT_TARGETS = [
   "https://www.intellijet.co.uk/empty-leg-flights",
 ];
 
-const HIGH_PRIORITY_DESTINATIONS = ["london", "paris", "dubai", "geneva", "nice", "milan"];
+// Fail-over source rotation: if primary fails, try these
+const FALLBACK_SOURCES: Record<string, string[]> = {
+  "https://skyaccess.com/listings": [
+    "https://www.privatefly.com/empty-legs",
+    "https://www.victor.com/empty-legs",
+  ],
+  "https://www.intellijet.co.uk/empty-leg-flights": [
+    "https://www.aircharter.co.uk/empty-legs",
+    "https://www.sovereignbusiness.com/empty-legs",
+  ],
+};
+
+const HIGH_PRIORITY_DESTINATIONS = ["london", "paris", "dubai", "geneva", "nice", "milan", "tokyo", "zurich"];
 
 // ── Prompt Injection Sanitizer ──
 function sanitizeScrapedText(text: string): string {
