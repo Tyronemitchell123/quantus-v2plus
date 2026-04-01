@@ -21,6 +21,20 @@ const PARTNER_CLINICS: Record<string, string[]> = {
   LUG: ['Clinica Sant\'Anna'],
 };
 
+// Pacific Sovereign: TEB-NRT ULR corridor
+const PACIFIC_ULR_AIRCRAFT = ['G650ER', 'Global 7500', 'Falcon 10X', 'G700', 'G800'];
+const PACIFIC_FRESH_AIR_AIRCRAFT = ['G650ER', 'Global 7500', 'G700', 'G800']; // 100% fresh air systems
+
+const PACIFIC_HUBS: Record<string, { label: string; role: string }> = {
+  TEB: { label: 'Teterboro', role: 'origin' },
+  HPN: { label: 'Westchester County', role: 'origin' },
+};
+
+const TOKYO_CLINICS: Record<string, string[]> = {
+  NRT: ['Prevention Clinic Tokyo (Peninsula)', 'Tokyo Midtown Medical Center', 'St. Luke\'s International Hospital'],
+  HND: ['Prevention Clinic Tokyo (Peninsula)', 'Keio University Hospital'],
+};
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -43,6 +57,93 @@ Deno.serve(async (req) => {
 
     const body = await req.json().catch(() => ({}));
     const { destination_iata, origin_iata, lead_name, flight_details, mode } = body;
+
+    // ── Pacific Sovereign: TEB → NRT ULR corridor ──
+    if (mode === 'pacific-sovereign') {
+      console.log('[LongevityBridge] Pacific Sovereign ULR corridor scan initiated');
+
+      const corridorRoutes: any[] = [];
+      for (const [hubIata, hubConf] of Object.entries(PACIFIC_HUBS)) {
+        for (const destIata of ['NRT', 'HND']) {
+          corridorRoutes.push({
+            origin: hubIata,
+            origin_label: hubConf.label,
+            destination: destIata,
+            aircraft_priority: PACIFIC_ULR_AIRCRAFT,
+            fresh_air_only: PACIFIC_FRESH_AIR_AIRCRAFT,
+            clinics: TOKYO_CLINICS[destIata] || [],
+          });
+        }
+      }
+
+      // Firecrawl: scan Tokyo clinics for cancellation slots
+      const availabilityScans: any[] = [];
+      if (firecrawlKey) {
+        const clinicTargets = [
+          { name: 'Prevention Clinic Tokyo (Peninsula)', url: 'https://www.peninsula.com/en/tokyo/hotel-fine-dining/wellness', city: 'Tokyo' },
+        ];
+        for (const clinic of clinicTargets) {
+          try {
+            console.log(`[Pacific] Scanning ${clinic.name} for diagnostic slots`);
+            const scrapeRes = await fetch('https://api.firecrawl.dev/v1/scrape', {
+              method: 'POST',
+              headers: { 'Authorization': `Bearer ${firecrawlKey}`, 'Content-Type': 'application/json' },
+              body: JSON.stringify({ url: clinic.url, formats: ['markdown'], onlyMainContent: true, waitFor: 3000 }),
+            });
+            const scrapeData = await scrapeRes.json();
+            const md = scrapeData?.data?.markdown || scrapeData?.markdown || '';
+            availabilityScans.push({
+              clinic: clinic.name, city: clinic.city,
+              has_slots: md.toLowerCase().includes('available') || md.toLowerCase().includes('cancellation') || md.toLowerCase().includes('booking'),
+              snippet: md.substring(0, 400),
+            });
+          } catch (e) {
+            console.error(`[Pacific] Scan failed for ${clinic.name}:`, e);
+          }
+        }
+      }
+
+      // AI outreach draft
+      let pacificDraft = '';
+      if (lovableKey) {
+        try {
+          const aiRes = await fetch('https://ai.lovable.dev/api/v1/chat/completions', {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${lovableKey}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              model: 'google/gemini-2.5-flash',
+              messages: [
+                { role: 'system', content: `You are the Quantus Vanguard Concierge. Tone: Neural-Performance, elite, urgent. Under 80 words. American English. No exclamation marks. Mention specific aircraft model, dollar savings, the "Don't Die" protocol, and end with "Confirm?" Feel like a tactical advisor.` },
+                { role: 'user', content: `Draft a Pacific Sovereign outreach. Context:\n- Aircraft: G650ER empty leg from Teterboro to Tokyo\n- Saving: $53k vs charter rate\n- Clinic: Prevention Clinic at The Peninsula Tokyo — "Don't Die" epigenetic diagnostic protocol\n- Usually reserved for private medical club members\n- Car is ready for TEB departure\n- Target: $200k+ total interaction value` },
+              ],
+              max_tokens: 250, temperature: 0.6,
+            }),
+          });
+          const aiData = await aiRes.json();
+          pacificDraft = aiData?.choices?.[0]?.message?.content || '';
+        } catch (e) {
+          console.error('[Pacific] AI draft failed:', e);
+        }
+      }
+      if (!pacificDraft) {
+        pacificDraft = `I have intercepted a G650ER empty leg from Teterboro to Tokyo for tomorrow ($53k saving). Simultaneously, I've snatched an exclusive diagnostic slot at The Peninsula's Prevention Clinic — this is the "Don't Die" protocol usually reserved for their private medical club. Your car is ready for TEB. Confirm?`;
+      }
+
+      return new Response(JSON.stringify({
+        success: true,
+        mode: 'pacific-sovereign',
+        ulr_corridor: { routes: corridorRoutes, total_routes: corridorRoutes.length },
+        circadian_filter: { eligible_aircraft: PACIFIC_FRESH_AIR_AIRCRAFT, fresh_air_premium: '15% Vanguard surcharge for 100% fresh air cabin' },
+        availability: availabilityScans,
+        outreach_draft: pacificDraft,
+        commission_model: {
+          flight_arbitrage: '$53,000',
+          diagnostic_fee: '$15,000 (10% = $1,500)',
+          vanguard_retainer: '$20,000/mo',
+          total_interaction: '$200k+ target',
+        },
+      }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }
 
     // Geneva Power-Play mode: scan the full London-Swiss corridor
     if (mode === 'geneva-corridor') {
