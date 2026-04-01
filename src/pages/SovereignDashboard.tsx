@@ -219,6 +219,10 @@ const SovereignDashboard = () => {
           {activeSector === "Aviation" && <AviationScanPanel />}
           {activeSector === "Medical" && <MedicalScanPanel />}
           {activeSector === "Hospitality" && <HospitalityScanPanel />}
+          {activeSector === "Longevity" && <LongevityScanPanel />}
+
+          {/* Sovereign Master View — Cross-Pillar Analytics */}
+          <SovereignMasterView />
 
           {/* Monitoring Feed */}
           <div className="space-y-3">
