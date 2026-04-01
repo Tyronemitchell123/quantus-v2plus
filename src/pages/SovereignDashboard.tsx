@@ -208,6 +208,7 @@ const SovereignDashboard = () => {
           {/* Sector Scan Panels */}
           {activeSector === "Aviation" && <AviationScanPanel />}
           {activeSector === "Medical" && <MedicalScanPanel />}
+          {activeSector === "Hospitality" && <HospitalityScanPanel />}
 
           {/* Monitoring Feed */}
           <div className="space-y-3">
