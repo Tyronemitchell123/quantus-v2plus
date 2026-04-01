@@ -8,23 +8,26 @@ import DashboardTopBar from "@/components/dashboard/DashboardTopBar";
 import MobileBottomNav from "@/components/mobile/MobileBottomNav";
 import ParticleGrid from "@/components/ParticleGrid";
 import {
-  Plane, Stethoscope, Gem, Hotel, Activity, TrendingUp, TrendingDown,
+  Plane, Stethoscope, Gem, Hotel, HeartPulse, Activity, TrendingUp, TrendingDown,
   AlertTriangle, Eye, Ghost, RefreshCcw, ArrowUpRight, Zap,
 } from "lucide-react";
 import MedicalScanPanel from "@/components/sovereign/MedicalScanPanel";
 import AviationScanPanel from "@/components/sovereign/AviationScanPanel";
 import HospitalityScanPanel from "@/components/sovereign/HospitalityScanPanel";
+import LongevityScanPanel from "@/components/sovereign/LongevityScanPanel";
+import SovereignMasterView from "@/components/sovereign/SovereignMasterView";
 
-type Sector = "Aviation" | "Medical" | "Lifestyle" | "Hospitality";
+type Sector = "Aviation" | "Medical" | "Lifestyle" | "Hospitality" | "Longevity";
 
 const sectorConfig: Record<Sector, { icon: typeof Plane; color: string; kpiLabel: string; leakLabel: string }> = {
   Aviation: { icon: Plane, color: "text-blue-400", kpiLabel: "Empty Legs Detected", leakLabel: "Charter Revenue Leaking" },
   Medical: { icon: Stethoscope, color: "text-emerald-400", kpiLabel: "No-Shows Tracked", leakLabel: "Appointment Revenue Lost" },
   Lifestyle: { icon: Gem, color: "text-purple-400", kpiLabel: "Luxury Leads Active", leakLabel: "Luxury Spend Unrecovered" },
   Hospitality: { icon: Hotel, color: "text-amber-400", kpiLabel: "Vacancy Alerts", leakLabel: "Room Revenue Leaking" },
+  Longevity: { icon: HeartPulse, color: "text-rose-400", kpiLabel: "Diagnostic Slots", leakLabel: "Health Revenue Leaking" },
 };
 
-const sectors: Sector[] = ["Aviation", "Medical", "Lifestyle", "Hospitality"];
+const sectors: Sector[] = ["Aviation", "Medical", "Lifestyle", "Hospitality", "Longevity"];
 
 // Simulated live leak data
 const generateLeakData = () => ({
@@ -62,6 +65,13 @@ const generateFeedItems = (sector: Sector) => {
       { status: "Ghosted", text: "Marriott Intl — Conference block unfilled (5d)", value: 62000 },
       { status: "Monitoring", text: "Wayfair — Hospitality furniture bulk lead", value: 19000 },
       { status: "Recovered", text: "Currys — Smart room tech installation deal", value: 14500 },
+    ],
+    Longevity: [
+      { status: "Monitoring", text: "Prenuvo London — Full-Body MRI cancellation slot", value: 8500 },
+      { status: "Recovered", text: "Fountain Life — Executive Cardiac Panel rebooked", value: 12000 },
+      { status: "Ghosted", text: "Longevity Clinic Harley St — DEXA no-show (24h)", value: 5200 },
+      { status: "Monitoring", text: "Prenuvo NYC — Cancer Screening slot opening", value: 18500 },
+      { status: "Recovered", text: "Clinique La Prairie — Anti-Aging programme secured", value: 15000 },
     ],
   };
   return items[sector];
@@ -209,6 +219,10 @@ const SovereignDashboard = () => {
           {activeSector === "Aviation" && <AviationScanPanel />}
           {activeSector === "Medical" && <MedicalScanPanel />}
           {activeSector === "Hospitality" && <HospitalityScanPanel />}
+          {activeSector === "Longevity" && <LongevityScanPanel />}
+
+          {/* Sovereign Master View — Cross-Pillar Analytics */}
+          <SovereignMasterView />
 
           {/* Monitoring Feed */}
           <div className="space-y-3">
