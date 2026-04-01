@@ -352,7 +352,7 @@ const ProvingGround = () => {
             </div>
           </div>
         </main>
-        <MobileBottomNav />
+        <MobileBottomNav onAIOpen={() => {}} />
       </div>
     </div>
   );
