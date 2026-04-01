@@ -197,6 +197,10 @@ const AviationScanPanel = () => {
       )}
       </TabsContent>
 
+      <TabsContent value="live-deals">
+        <AviationLiveDeals />
+      </TabsContent>
+
       <TabsContent value="simulation">
         <AviationNegotiationSandbox />
       </TabsContent>
