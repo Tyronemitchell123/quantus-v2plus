@@ -10,6 +10,7 @@ import useDocumentHead from "@/hooks/use-document-head";
 import ConversionFunnel from "@/components/admin/ConversionFunnel";
 import EmailMonitoringTab from "@/components/admin/EmailMonitoringTab";
 import VendorManagementTab from "@/components/admin/VendorManagementTab";
+import SystemHealthPanel from "@/components/admin/SystemHealthPanel";
 
 interface DashboardData {
   addonSales: {
