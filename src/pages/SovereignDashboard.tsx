@@ -20,6 +20,7 @@ import SovereignMasterView from "@/components/sovereign/SovereignMasterView";
 import GenevaPowerPlay from "@/components/sovereign/GenevaPowerPlay";
 import PacificSovereign from "@/components/sovereign/PacificSovereign";
 import VanguardDashboard from "@/components/sovereign/VanguardDashboard";
+import RevenueVault from "@/components/sovereign/RevenueVault";
 
 type Sector = "Aviation" | "Medical" | "Lifestyle" | "Hospitality" | "Longevity" | "Vanguard";
 
@@ -236,6 +237,7 @@ const SovereignDashboard = () => {
           {activeSector === "Longevity" && <GenevaPowerPlay />}
           {activeSector === "Longevity" && <PacificSovereign />}
           {activeSector === "Vanguard" && <VanguardDashboard />}
+          {activeSector === "Vanguard" && <RevenueVault />}
 
           {/* Sovereign Master View — Cross-Pillar Analytics */}
           <SovereignMasterView />
