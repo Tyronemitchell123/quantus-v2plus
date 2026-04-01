@@ -17,6 +17,7 @@ import HospitalityScanPanel from "@/components/sovereign/HospitalityScanPanel";
 import LongevityScanPanel from "@/components/sovereign/LongevityScanPanel";
 import LongevityBridgePanel from "@/components/sovereign/LongevityBridgePanel";
 import SovereignMasterView from "@/components/sovereign/SovereignMasterView";
+import VanguardDashboard from "@/components/sovereign/VanguardDashboard";
 
 type Sector = "Aviation" | "Medical" | "Lifestyle" | "Hospitality" | "Longevity";
 
