@@ -15,6 +15,7 @@ import MedicalScanPanel from "@/components/sovereign/MedicalScanPanel";
 import AviationScanPanel from "@/components/sovereign/AviationScanPanel";
 import HospitalityScanPanel from "@/components/sovereign/HospitalityScanPanel";
 import LongevityScanPanel from "@/components/sovereign/LongevityScanPanel";
+import LongevityBridgePanel from "@/components/sovereign/LongevityBridgePanel";
 import SovereignMasterView from "@/components/sovereign/SovereignMasterView";
 
 type Sector = "Aviation" | "Medical" | "Lifestyle" | "Hospitality" | "Longevity";
@@ -220,6 +221,7 @@ const SovereignDashboard = () => {
           {activeSector === "Medical" && <MedicalScanPanel />}
           {activeSector === "Hospitality" && <HospitalityScanPanel />}
           {activeSector === "Longevity" && <LongevityScanPanel />}
+          {activeSector === "Longevity" && <LongevityBridgePanel />}
 
           {/* Sovereign Master View — Cross-Pillar Analytics */}
           <SovereignMasterView />

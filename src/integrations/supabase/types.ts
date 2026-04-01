@@ -821,6 +821,54 @@ export type Database = {
           },
         ]
       }
+      longevity_providers: {
+        Row: {
+          avg_price_cents: number
+          city: string
+          clinic_name: string
+          country: string
+          created_at: string
+          firecrawl_target_url: string | null
+          iata_codes: string[]
+          id: string
+          is_active: boolean
+          metadata: Json | null
+          specialties: string[]
+          updated_at: string
+          website_url: string | null
+        }
+        Insert: {
+          avg_price_cents?: number
+          city: string
+          clinic_name: string
+          country?: string
+          created_at?: string
+          firecrawl_target_url?: string | null
+          iata_codes?: string[]
+          id?: string
+          is_active?: boolean
+          metadata?: Json | null
+          specialties?: string[]
+          updated_at?: string
+          website_url?: string | null
+        }
+        Update: {
+          avg_price_cents?: number
+          city?: string
+          clinic_name?: string
+          country?: string
+          created_at?: string
+          firecrawl_target_url?: string | null
+          iata_codes?: string[]
+          id?: string
+          is_active?: boolean
+          metadata?: Json | null
+          specialties?: string[]
+          updated_at?: string
+          website_url?: string | null
+        }
+        Relationships: []
+      }
       marketing_ads: {
         Row: {
           body_text: string
