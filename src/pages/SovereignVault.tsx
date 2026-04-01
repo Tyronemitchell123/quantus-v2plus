@@ -82,10 +82,10 @@ const SovereignVault = () => {
             </Button>
           </div>
 
-          {isDemo && (
+          {isEmpty && !loading && (
             <div className="glass-card p-4 border-primary/20">
               <p className="font-body text-xs text-muted-foreground">
-                <span className="text-primary font-medium">Demo Mode</span> — Showing simulated commission data. Real commissions will appear once leads are recovered and deals closed.
+                No commissions yet. Revenue will appear here once leads are recovered and deals closed.
               </p>
             </div>
           )}
