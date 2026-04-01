@@ -18,6 +18,7 @@ const navItems = [
   { icon: ShieldCheck, label: "Compliance", to: "/compliance" },
   { icon: Users, label: "Network", to: "/network" },
   { icon: FolderOpen, label: "Vault", to: "/vault" },
+  { icon: Vault, label: "Financials", to: "/sovereign/vault" },
   { icon: FileText, label: "Documents", to: "/documents" },
   { icon: CreditCard, label: "Billing", to: "/account/subscription" },
   { icon: DollarSign, label: "Payouts", to: "/commission-payouts" },
