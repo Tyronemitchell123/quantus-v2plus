@@ -72,7 +72,7 @@ serve(async (req) => {
       });
     }
 
-    // ACTION: trigger-success-fee
+    // ACTION: trigger-success-fee (Phase 11: minimum $8k aviation, $2k medical)
     if (action === "trigger-success-fee") {
       if (!event_type || !event_value_cents) {
         throw new Error("event_type and event_value_cents required");
@@ -88,8 +88,13 @@ serve(async (req) => {
         });
       }
 
-      const feeCents = Math.round(event_value_cents * rate);
-      const feeLabel = event_type === "flight_confirmed" ? "Aviation Success Fee (5%)" : "Medical Success Fee (10%)";
+      // Phase 11: Enforce minimum success fees
+      const AVIATION_MIN_FEE_CENTS = 800000; // $8,000 minimum
+      const MEDICAL_MIN_FEE_CENTS = 200000;  // $2,000 minimum
+      const minFee = event_type === "flight_confirmed" ? AVIATION_MIN_FEE_CENTS : MEDICAL_MIN_FEE_CENTS;
+      const calculatedFee = Math.round(event_value_cents * rate);
+      const feeCents = Math.max(calculatedFee, minFee);
+      const feeLabel = event_type === "flight_confirmed" ? `Aviation Success Fee (5%, min $8k)` : `Medical Success Fee (10%, min $2k)`;
 
       // Log to commission_logs
       if (user_id) {

@@ -24,7 +24,7 @@ Deno.serve(async (req) => {
     const sb = createClient(supabaseUrl, serviceKey);
 
     const body = await req.json().catch(() => ({}));
-    const { client_id, client_name, recovery_scores, calendar_stress_index, preferred_destinations, preferred_airports } = body;
+    const { client_id, client_name, recovery_scores, calendar_stress_index, preferred_destinations, preferred_airports, deep_sleep_scores, mental_readiness_scores, trigger_mode } = body;
 
     // Defaults for simulation
     const scores = recovery_scores || [35, 38, 32];
@@ -32,46 +32,93 @@ Deno.serve(async (req) => {
     const destinations = preferred_destinations || ['NRT', 'BKK', 'ZRH'];
     const airports = preferred_airports || ['FAB', 'TEB'];
     const name = client_name || 'Sterling';
+    const deepSleep = deep_sleep_scores || [42, 38, 35, 31]; // minutes of deep sleep over 4 days
+    const mentalReadiness = mental_readiness_scores || [55, 48, 42, 38]; // 0-100 scale over 4 days
 
-    // 1. Check bio-recovery trigger condition
+    // 1. Check bio-recovery trigger condition (original burnout)
     const avgRecovery = scores.reduce((a: number, b: number) => a + b, 0) / scores.length;
     const allBelow40 = scores.every((s: number) => s < 40);
-    const triggered = allBelow40 && scores.length >= 3 && stressIndex > 8;
+    const burnoutTriggered = allBelow40 && scores.length >= 3 && stressIndex > 8;
 
-    console.log(`[Vanguard] Client: ${name}, Avg Recovery: ${avgRecovery}, Stress: ${stressIndex}, Triggered: ${triggered}`);
+    // 1b. Cognitive Fatigue trigger (Phase 11 - Pacific Vitality)
+    const avgDeepSleep = deepSleep.reduce((a: number, b: number) => a + b, 0) / deepSleep.length;
+    const avgMentalReadiness = mentalReadiness.reduce((a: number, b: number) => a + b, 0) / mentalReadiness.length;
+    const deepSleepDeclining = deepSleep.length >= 4 && deepSleep[deepSleep.length - 1] < deepSleep[0] * 0.8;
+    const mentalReadinessLow = mentalReadiness.length >= 4 && mentalReadiness.every((m: number) => m < 60);
+    const cognitiveFatigueTriggered = deepSleepDeclining && mentalReadinessLow && avgMentalReadiness < 50;
+
+    const triggered = burnoutTriggered || (trigger_mode === 'cognitive_fatigue' && cognitiveFatigueTriggered);
+    const triggerType = cognitiveFatigueTriggered ? 'cognitive_fatigue' : 'burnout_risk';
+
+    console.log(`[Vanguard] Client: ${name}, Avg Recovery: ${avgRecovery}, Stress: ${stressIndex}, Trigger: ${triggerType}, Deep Sleep Avg: ${avgDeepSleep.toFixed(0)}min, Mental Readiness Avg: ${avgMentalReadiness.toFixed(0)}, Triggered: ${triggered}`);
 
     if (!triggered) {
       return new Response(JSON.stringify({
         success: true,
         triggered: false,
-        biometrics: { recovery_scores: scores, avg_recovery: avgRecovery, stress_index: stressIndex },
+        biometrics: {
+          recovery_scores: scores, avg_recovery: avgRecovery, stress_index: stressIndex,
+          deep_sleep: { scores: deepSleep, avg_minutes: Math.round(avgDeepSleep), declining: deepSleepDeclining },
+          mental_readiness: { scores: mentalReadiness, avg_score: Math.round(avgMentalReadiness), all_below_60: mentalReadinessLow },
+        },
         message: 'Biometric levels within acceptable range. No intervention required.',
       }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    // 2. Build escape manifest
-    const escapeManifest: any = { flights: [], clinics: [] };
+    // 2. Build escape manifest with ULR cabin altitude filtering
+    const escapeManifest: any = { flights: [], clinics: [], trigger_type: triggerType };
 
-    // Simulated flight options (would use Firecrawl in production)
-    const flightOptions = [
+    // ULR aircraft with cabin altitude data (Phase 11: only flag <4000ft cabin altitude)
+    const ulrAircraft: Record<string, { cabin_altitude_ft: number; fresh_air: boolean }> = {
+      'Global 7500': { cabin_altitude_ft: 2900, fresh_air: true },
+      'G650ER': { cabin_altitude_ft: 3000, fresh_air: true },
+      'G700': { cabin_altitude_ft: 2916, fresh_air: true },
+      'G800': { cabin_altitude_ft: 2916, fresh_air: true },
+      'Falcon 10X': { cabin_altitude_ft: 3000, fresh_air: true },
+      'Challenger 350': { cabin_altitude_ft: 4850, fresh_air: false },
+      'Gulfstream G650': { cabin_altitude_ft: 4100, fresh_air: false },
+    };
+
+    // Simulated flight options with cabin altitude filtering
+    const allFlightOptions = [
       { route: `${airports[0]} → NRT`, aircraft: 'Global 7500', price_cents: 4200000, departure: '5 hours', duration: '11h 40m', type: 'Empty Leg' },
-      { route: `${airports[0]} → BKK`, aircraft: 'Gulfstream G650', price_cents: 3800000, departure: '8 hours', duration: '10h 30m', type: 'Empty Leg' },
+      { route: `${airports[0]} → BKK`, aircraft: 'G650ER', price_cents: 3800000, departure: '8 hours', duration: '10h 30m', type: 'Empty Leg' },
       { route: `${airports[1]} → ZRH`, aircraft: 'Challenger 350', price_cents: 1850000, departure: '3 hours', duration: '1h 45m', type: 'Repositioning' },
-    ].filter(f => destinations.some(d => f.route.includes(d)));
+      { route: `${airports[0]} → NRT`, aircraft: 'G700', price_cents: 5300000, departure: '6 hours', duration: '11h 20m', type: 'Repositioning' },
+      { route: `${airports[1]} → BKK`, aircraft: 'Falcon 10X', price_cents: 4600000, departure: '12 hours', duration: '12h 10m', type: 'Empty Leg' },
+    ];
+
+    // Filter: destinations match + cabin altitude <4000ft for Vanguard premium
+    const flightOptions = allFlightOptions
+      .filter(f => destinations.some(d => f.route.includes(d)))
+      .map(f => {
+        const spec = ulrAircraft[f.aircraft];
+        return { ...f, cabin_altitude_ft: spec?.cabin_altitude_ft || 5000, fresh_air_system: spec?.fresh_air || false, vanguard_qualified: (spec?.cabin_altitude_ft || 5000) < 4000 };
+      });
 
     escapeManifest.flights = flightOptions;
 
-    // Simulated clinic options
+    // Simulated clinic options (Phase 11: added Neural-Reset and Green Lung protocols)
     const clinicOptions = [
-      { clinic: 'Tokyo Brain Hub', city: 'Tokyo', programme: 'Neuro-Sync 48h Reset', price_cents: 1200000, availability: 'Tomorrow AM', waitlist: '3 months' },
-      { clinic: 'Samitivej Wellness', city: 'Bangkok', programme: 'Cellular Revive 72h', price_cents: 950000, availability: 'Day after tomorrow', waitlist: '6 weeks' },
-      { clinic: 'Nescens Genolier', city: 'Geneva', programme: 'Brain-Reset Protocol', price_cents: 1500000, availability: 'Saturday 09:00', waitlist: '4 months' },
+      { clinic: 'Tokyo Brain Hub', city: 'Tokyo', programme: 'Neuro-Sync 48h Reset', price_cents: 1200000, availability: 'Tomorrow AM', waitlist: '3 months', protocol: 'neural-reset' },
+      { clinic: 'Prevention Clinic Tokyo', city: 'Tokyo', programme: 'Epigenetic Neural-Reset', price_cents: 2800000, availability: '2 days', waitlist: '6 months', protocol: 'neural-reset' },
+      { clinic: 'Samitivej Wellness', city: 'Bangkok', programme: 'Green Lung Cellular Reset', price_cents: 950000, availability: 'Day after tomorrow', waitlist: '6 weeks', protocol: 'green-lung' },
+      { clinic: 'Bumrungrad Longevity', city: 'Bangkok', programme: 'Green Lung 5-Day Protocol', price_cents: 1800000, availability: '3 days', waitlist: '2 months', protocol: 'green-lung' },
+      { clinic: 'Nescens Genolier', city: 'Geneva', programme: 'Brain-Reset Protocol', price_cents: 1500000, availability: 'Saturday 09:00', waitlist: '4 months', protocol: 'neural-reset' },
     ].filter(c => destinations.some(d => {
       const cityMap: Record<string, string> = { NRT: 'Tokyo', BKK: 'Bangkok', ZRH: 'Geneva' };
       return cityMap[d] === c.city;
     }));
+
+    // For cognitive fatigue, prioritize Neural-Reset and Green Lung protocols
+    if (triggerType === 'cognitive_fatigue') {
+      clinicOptions.sort((a, b) => {
+        const order: Record<string, number> = { 'neural-reset': 0, 'green-lung': 1 };
+        return (order[a.protocol] ?? 2) - (order[b.protocol] ?? 2);
+      });
+    }
 
     escapeManifest.clinics = clinicOptions;
 
@@ -162,7 +209,9 @@ Deno.serve(async (req) => {
         recovery_scores: scores,
         avg_recovery: Math.round(avgRecovery),
         stress_index: stressIndex,
-        status: 'burnout_risk',
+        status: triggerType,
+        deep_sleep: { scores: deepSleep, avg_minutes: Math.round(avgDeepSleep), declining: deepSleepDeclining },
+        mental_readiness: { scores: mentalReadiness, avg_score: Math.round(avgMentalReadiness), all_below_60: mentalReadinessLow },
       },
       escape_manifest: escapeManifest,
       outreach_draft: outreachDraft,
