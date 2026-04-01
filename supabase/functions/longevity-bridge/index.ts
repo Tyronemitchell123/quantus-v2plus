@@ -21,6 +21,20 @@ const PARTNER_CLINICS: Record<string, string[]> = {
   LUG: ['Clinica Sant\'Anna'],
 };
 
+// Pacific Sovereign: TEB-NRT ULR corridor
+const PACIFIC_ULR_AIRCRAFT = ['G650ER', 'Global 7500', 'Falcon 10X', 'G700', 'G800'];
+const PACIFIC_FRESH_AIR_AIRCRAFT = ['G650ER', 'Global 7500', 'G700', 'G800']; // 100% fresh air systems
+
+const PACIFIC_HUBS: Record<string, { label: string; role: string }> = {
+  TEB: { label: 'Teterboro', role: 'origin' },
+  HPN: { label: 'Westchester County', role: 'origin' },
+};
+
+const TOKYO_CLINICS: Record<string, string[]> = {
+  NRT: ['Prevention Clinic Tokyo (Peninsula)', 'Tokyo Midtown Medical Center', 'St. Luke\'s International Hospital'],
+  HND: ['Prevention Clinic Tokyo (Peninsula)', 'Keio University Hospital'],
+};
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
