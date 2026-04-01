@@ -667,6 +667,39 @@ export type Database = {
         }
         Relationships: []
       }
+      encrypted_secrets: {
+        Row: {
+          category: string
+          created_at: string
+          encrypted_value: string
+          encryption_method: string
+          id: string
+          key_name: string
+          last_rotated_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          encrypted_value: string
+          encryption_method?: string
+          id?: string
+          key_name: string
+          last_rotated_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          encrypted_value?: string
+          encryption_method?: string
+          id?: string
+          key_name?: string
+          last_rotated_at?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       invoices: {
         Row: {
           amount_cents: number
@@ -1028,6 +1061,53 @@ export type Database = {
         }
         Relationships: []
       }
+      patient_vault: {
+        Row: {
+          contact_email: string | null
+          contact_phone: string | null
+          created_at: string
+          id: string
+          metadata: Json | null
+          patient_uuid: string
+          procedure_intent: string | null
+          real_name: string
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          patient_uuid?: string
+          procedure_intent?: string | null
+          real_name: string
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          patient_uuid?: string
+          procedure_intent?: string | null
+          real_name?: string
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "patient_vault_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       payments: {
         Row: {
           amount_cents: number
@@ -1315,6 +1395,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      security_audit_log: {
+        Row: {
+          action: string
+          agent_id: string | null
+          created_at: string
+          id: string
+          ip_address: string | null
+          metadata: Json | null
+          resource_id: string | null
+          resource_type: string
+          user_id: string
+        }
+        Insert: {
+          action: string
+          agent_id?: string | null
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          resource_id?: string | null
+          resource_type: string
+          user_id: string
+        }
+        Update: {
+          action?: string
+          agent_id?: string | null
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          resource_id?: string | null
+          resource_type?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       sourcing_results: {
         Row: {

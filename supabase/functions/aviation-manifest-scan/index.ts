@@ -13,6 +13,22 @@ const DEFAULT_TARGETS = [
 
 const HIGH_PRIORITY_DESTINATIONS = ["london", "paris", "dubai", "geneva", "nice", "milan"];
 
+// ── Prompt Injection Sanitizer ──
+function sanitizeScrapedText(text: string): string {
+  if (!text) return "";
+  const patterns = [
+    /ignore\s+(all\s+)?previous\s+instructions?/gi,
+    /you\s+are\s+now\s+(a|an)\s+/gi,
+    /system\s*:\s*/gi,
+    /\[INST\]/gi,
+    /override\s+(your|the)\s+(instructions?|prompt)/gi,
+    /disregard\s+(your|the|all)\s+(instructions?|rules?)/gi,
+  ];
+  let sanitized = text;
+  for (const p of patterns) sanitized = sanitized.replace(p, "[FILTERED]");
+  return sanitized;
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -152,7 +168,14 @@ Deno.serve(async (req) => {
         }
       }
 
-      allFlights.push(...flights.map((f: any) => ({ ...f, source: targetUrl })));
+      // Sanitize scraped data before processing
+      allFlights.push(...flights.map((f: any) => ({
+        ...f,
+        origin: sanitizeScrapedText(f.origin || ""),
+        destination: sanitizeScrapedText(f.destination || ""),
+        aircraft: sanitizeScrapedText(f.aircraft || ""),
+        source: targetUrl,
+      })));
       logs.push(`[EXTRACT] ${flights.length} empty-leg listings from ${new URL(targetUrl).hostname}`);
     }
 

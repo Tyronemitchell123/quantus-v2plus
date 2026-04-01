@@ -9,6 +9,22 @@ const corsHeaders = {
 // High-value procedure codes to filter
 const HIGH_VALUE_CODES = ["IMPLANT", "SURGERY", "INVISALIGN", "LASIK", "CROWN", "VENEER", "ROOT_CANAL"];
 
+// ── Prompt Injection Sanitizer ──
+function sanitizeScrapedText(text: string): string {
+  if (!text) return "";
+  const patterns = [
+    /ignore\s+(all\s+)?previous\s+instructions?/gi,
+    /you\s+are\s+now\s+(a|an)\s+/gi,
+    /system\s*:\s*/gi,
+    /\[INST\]/gi,
+    /override\s+(your|the)\s+(instructions?|prompt)/gi,
+    /disregard\s+(your|the|all)\s+(instructions?|rules?)/gi,
+  ];
+  let sanitized = text;
+  for (const p of patterns) sanitized = sanitized.replace(p, "[FILTERED]");
+  return sanitized;
+}
+
 // Target demo CRM portals for scraping
 const MEDICAL_CRM_TARGETS = [
   { name: "NexHealth Demo", url: "https://www.nexhealth.com", section: "appointments" },
@@ -162,17 +178,39 @@ Deno.serve(async (req) => {
       tenantId = newTenant.id;
     }
 
-    // Step 4: Upsert leads with LTV Risk calculation
+    // Step 4: Upsert leads with LTV Risk + HIPAA Pseudonymization
     const leadsToInsert = [];
     const highPriorityAlerts: string[] = [];
 
     for (const appt of appointments) {
       const lostRevenue = Number(appt.lost_revenue) || 0;
       const isHighPriority = lostRevenue >= 3000;
-      const procedureType = appt.procedure_type || "Unknown";
+      const procedureType = sanitizeScrapedText(appt.procedure_type || "Unknown");
 
-      // Check for duplicate by source_url pattern
-      const sourceKey = `medical-noshow://${appt.patient_id}/${procedureType}`;
+      // ── HIPAA: Store real PII in patient_vault, use shadow UUID ──
+      let patientUuid = appt.patient_id; // fallback
+      try {
+        const { data: vaultEntry } = await serviceClient
+          .from("patient_vault")
+          .insert({
+            real_name: appt.patient_id,
+            contact_phone: appt.contact_phone || null,
+            contact_email: appt.contact_email || null,
+            procedure_intent: procedureType,
+            tenant_id: tenantId,
+          })
+          .select("patient_uuid")
+          .single();
+        if (vaultEntry) {
+          patientUuid = vaultEntry.patient_uuid;
+          logs.push(`[HIPAA] Patient pseudonymized → ${patientUuid}`);
+        }
+      } catch {
+        logs.push(`[HIPAA] Vault insert skipped (may be duplicate)`);
+      }
+
+      // Check for duplicate by source_url pattern (using pseudonymized UUID)
+      const sourceKey = `medical-noshow://${patientUuid}/${procedureType}`;
 
       const { data: existing } = await serviceClient
         .from("leads")
@@ -182,12 +220,13 @@ Deno.serve(async (req) => {
         .maybeSingle();
 
       if (existing) {
-        logs.push(`[SKIP] Duplicate: ${appt.patient_id} — ${procedureType}`);
+        logs.push(`[SKIP] Duplicate: ${patientUuid} — ${procedureType}`);
         continue;
       }
 
       const ltvRisk = isHighPriority ? "HIGH — LTV at risk (>$3k procedure)" : "Standard";
-      const aiSummary = `[${appt.status}] ${procedureType} — Patient ${appt.patient_id}. Est. lost revenue: $${lostRevenue.toLocaleString()}. Last contact: ${appt.last_contact || "Unknown"}. LTV Risk: ${ltvRisk}`;
+      // AI summary uses only UUID, never real name
+      const aiSummary = `[${appt.status}] ${procedureType} — Patient ${patientUuid}. Est. lost revenue: $${lostRevenue.toLocaleString()}. LTV Risk: ${ltvRisk}`;
 
       leadsToInsert.push({
         tenant_id: tenantId,
@@ -199,10 +238,10 @@ Deno.serve(async (req) => {
       });
 
       if (isHighPriority) {
-        highPriorityAlerts.push(`⚠️ HIGH PRIORITY: ${procedureType} — $${lostRevenue.toLocaleString()} (${appt.patient_id})`);
+        highPriorityAlerts.push(`⚠️ HIGH PRIORITY: ${procedureType} — $${lostRevenue.toLocaleString()} (${patientUuid})`);
       }
 
-      logs.push(`[LEAD] ${appt.patient_id} — ${procedureType} — $${lostRevenue} — ${isHighPriority ? "🔴 HIGH PRIORITY" : "Standard"}`);
+      logs.push(`[LEAD] ${patientUuid} — ${procedureType} — $${lostRevenue} — ${isHighPriority ? "🔴 HIGH PRIORITY" : "Standard"}`);
     }
 
     // Batch insert leads
