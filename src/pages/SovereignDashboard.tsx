@@ -237,6 +237,7 @@ const SovereignDashboard = () => {
           {activeSector === "Longevity" && <GenevaPowerPlay />}
           {activeSector === "Longevity" && <PacificSovereign />}
           {activeSector === "Vanguard" && <VanguardDashboard />}
+          {activeSector === "Vanguard" && <RevenueVault />}
 
           {/* Sovereign Master View — Cross-Pillar Analytics */}
           <SovereignMasterView />
