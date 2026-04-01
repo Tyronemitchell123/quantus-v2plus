@@ -11,6 +11,7 @@ import {
   Plane, Stethoscope, Gem, Hotel, Activity, TrendingUp, TrendingDown,
   AlertTriangle, Eye, Ghost, RefreshCcw, ArrowUpRight, Zap,
 } from "lucide-react";
+import MedicalScanPanel from "@/components/sovereign/MedicalScanPanel";
 
 type Sector = "Aviation" | "Medical" | "Lifestyle" | "Hospitality";
 
