@@ -67,15 +67,36 @@ Deno.serve(async (req) => {
       });
     }
 
-    // 2. Build escape manifest
-    const escapeManifest: any = { flights: [], clinics: [] };
+    // 2. Build escape manifest with ULR cabin altitude filtering
+    const escapeManifest: any = { flights: [], clinics: [], trigger_type: triggerType };
 
-    // Simulated flight options (would use Firecrawl in production)
-    const flightOptions = [
+    // ULR aircraft with cabin altitude data (Phase 11: only flag <4000ft cabin altitude)
+    const ulrAircraft: Record<string, { cabin_altitude_ft: number; fresh_air: boolean }> = {
+      'Global 7500': { cabin_altitude_ft: 2900, fresh_air: true },
+      'G650ER': { cabin_altitude_ft: 3000, fresh_air: true },
+      'G700': { cabin_altitude_ft: 2916, fresh_air: true },
+      'G800': { cabin_altitude_ft: 2916, fresh_air: true },
+      'Falcon 10X': { cabin_altitude_ft: 3000, fresh_air: true },
+      'Challenger 350': { cabin_altitude_ft: 4850, fresh_air: false },
+      'Gulfstream G650': { cabin_altitude_ft: 4100, fresh_air: false },
+    };
+
+    // Simulated flight options with cabin altitude filtering
+    const allFlightOptions = [
       { route: `${airports[0]} → NRT`, aircraft: 'Global 7500', price_cents: 4200000, departure: '5 hours', duration: '11h 40m', type: 'Empty Leg' },
-      { route: `${airports[0]} → BKK`, aircraft: 'Gulfstream G650', price_cents: 3800000, departure: '8 hours', duration: '10h 30m', type: 'Empty Leg' },
+      { route: `${airports[0]} → BKK`, aircraft: 'G650ER', price_cents: 3800000, departure: '8 hours', duration: '10h 30m', type: 'Empty Leg' },
       { route: `${airports[1]} → ZRH`, aircraft: 'Challenger 350', price_cents: 1850000, departure: '3 hours', duration: '1h 45m', type: 'Repositioning' },
-    ].filter(f => destinations.some(d => f.route.includes(d)));
+      { route: `${airports[0]} → NRT`, aircraft: 'G700', price_cents: 5300000, departure: '6 hours', duration: '11h 20m', type: 'Repositioning' },
+      { route: `${airports[1]} → BKK`, aircraft: 'Falcon 10X', price_cents: 4600000, departure: '12 hours', duration: '12h 10m', type: 'Empty Leg' },
+    ];
+
+    // Filter: destinations match + cabin altitude <4000ft for Vanguard premium
+    const flightOptions = allFlightOptions
+      .filter(f => destinations.some(d => f.route.includes(d)))
+      .map(f => {
+        const spec = ulrAircraft[f.aircraft];
+        return { ...f, cabin_altitude_ft: spec?.cabin_altitude_ft || 5000, fresh_air_system: spec?.fresh_air || false, vanguard_qualified: (spec?.cabin_altitude_ft || 5000) < 4000 };
+      });
 
     escapeManifest.flights = flightOptions;
 
