@@ -2,10 +2,11 @@ import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   LayoutDashboard, Briefcase, Grid3X3, Bot, FileText, CreditCard, Settings, MessageSquare, Radar, FolderOpen,
-  Wallet, CalendarDays, ShieldCheck, Users, DollarSign,
+  Wallet, CalendarDays, ShieldCheck, Users, DollarSign, Crown, Vault,
 } from "lucide-react";
 
 const navItems = [
+  { icon: Crown, label: "Sovereign", to: "/sovereign" },
   { icon: LayoutDashboard, label: "Dashboard", to: "/dashboard" },
   { icon: Briefcase, label: "Deals", to: "/deals" },
   { icon: Grid3X3, label: "Modules", to: "/dashboard/modules" },
@@ -17,6 +18,7 @@ const navItems = [
   { icon: ShieldCheck, label: "Compliance", to: "/compliance" },
   { icon: Users, label: "Network", to: "/network" },
   { icon: FolderOpen, label: "Vault", to: "/vault" },
+  { icon: Vault, label: "Financials", to: "/sovereign/vault" },
   { icon: FileText, label: "Documents", to: "/documents" },
   { icon: CreditCard, label: "Billing", to: "/account/subscription" },
   { icon: DollarSign, label: "Payouts", to: "/commission-payouts" },
