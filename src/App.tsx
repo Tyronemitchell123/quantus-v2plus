@@ -76,6 +76,7 @@ const WaitingList = lazy(() => import("./pages/WaitingList"));
 const PartnerWithUs = lazy(() => import("./pages/PartnerWithUs"));
 const SovereignDashboard = lazy(() => import("./pages/SovereignDashboard"));
 const SovereignVault = lazy(() => import("./pages/SovereignVault"));
+const ProvingGround = lazy(() => import("./pages/ProvingGround"));
 const MarketplacePage = lazy(() => import("./pages/Marketplace"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Terms = lazy(() => import("./pages/Terms"));
@@ -171,6 +172,7 @@ const AnimatedRoutes = () => {
             <Route path="/commission-payouts" element={<ProtectedRoute><R name="Commission Payouts"><CommissionPayouts /></R></ProtectedRoute>} />
             <Route path="/sovereign" element={<ProtectedRoute><R name="Sovereign"><SovereignDashboard /></R></ProtectedRoute>} />
             <Route path="/sovereign/vault" element={<ProtectedRoute><R name="Sovereign Vault"><SovereignVault /></R></ProtectedRoute>} />
+            <Route path="/sovereign/proving-ground" element={<ProtectedRoute><R name="Proving Ground"><ProvingGround /></R></ProtectedRoute>} />
 
             <Route path="/privacy" element={<R name="Privacy"><PageTransition><Privacy /><Footer /></PageTransition></R>} />
             <Route path="/terms" element={<R name="Terms"><PageTransition><Terms /><Footer /></PageTransition></R>} />

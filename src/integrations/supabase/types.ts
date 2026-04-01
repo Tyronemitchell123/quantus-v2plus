@@ -1155,6 +1155,160 @@ export type Database = {
           },
         ]
       }
+      pilot_arbitrage_results: {
+        Row: {
+          aircraft_type: string | null
+          competitor_price_cents: number
+          competitor_source: string | null
+          created_at: string
+          delta_pct: number | null
+          expires_at: string | null
+          id: string
+          internal_price_cents: number
+          is_perishing: boolean | null
+          route_destination: string
+          route_origin: string
+          scanned_at: string
+          tail_number: string | null
+          tenant_id: string
+          user_id: string
+        }
+        Insert: {
+          aircraft_type?: string | null
+          competitor_price_cents?: number
+          competitor_source?: string | null
+          created_at?: string
+          delta_pct?: number | null
+          expires_at?: string | null
+          id?: string
+          internal_price_cents?: number
+          is_perishing?: boolean | null
+          route_destination: string
+          route_origin: string
+          scanned_at?: string
+          tail_number?: string | null
+          tenant_id: string
+          user_id: string
+        }
+        Update: {
+          aircraft_type?: string | null
+          competitor_price_cents?: number
+          competitor_source?: string | null
+          created_at?: string
+          delta_pct?: number | null
+          expires_at?: string | null
+          id?: string
+          internal_price_cents?: number
+          is_perishing?: boolean | null
+          route_destination?: string
+          route_origin?: string
+          scanned_at?: string
+          tail_number?: string | null
+          tenant_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pilot_arbitrage_results_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "pilot_tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pilot_outreach_drafts: {
+        Row: {
+          approved_at: string | null
+          created_at: string
+          draft_message: string
+          id: string
+          lead_name: string
+          savings_amount_cents: number | null
+          sent_via: string | null
+          status: string
+          tail_number: string | null
+          tenant_id: string
+          tone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          approved_at?: string | null
+          created_at?: string
+          draft_message: string
+          id?: string
+          lead_name: string
+          savings_amount_cents?: number | null
+          sent_via?: string | null
+          status?: string
+          tail_number?: string | null
+          tenant_id: string
+          tone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          approved_at?: string | null
+          created_at?: string
+          draft_message?: string
+          id?: string
+          lead_name?: string
+          savings_amount_cents?: number | null
+          sent_via?: string | null
+          status?: string
+          tail_number?: string | null
+          tenant_id?: string
+          tone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pilot_outreach_drafts_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "pilot_tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pilot_tenants: {
+        Row: {
+          company_name: string
+          config: Json | null
+          created_at: string
+          id: string
+          is_active: boolean
+          sector: string
+          tenant_code: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          company_name: string
+          config?: Json | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          sector?: string
+          tenant_code: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          company_name?: string
+          config?: Json | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          sector?: string
+          tenant_code?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       portfolio_assets: {
         Row: {
           allocation_pct: number
