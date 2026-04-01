@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import useDocumentHead from "@/hooks/use-document-head";
 import ConversionFunnel from "@/components/admin/ConversionFunnel";
 import EmailMonitoringTab from "@/components/admin/EmailMonitoringTab";
+import VendorManagementTab from "@/components/admin/VendorManagementTab";
 
 interface DashboardData {
   addonSales: {
