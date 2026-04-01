@@ -56,7 +56,11 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({
         success: true,
         triggered: false,
-        biometrics: { recovery_scores: scores, avg_recovery: avgRecovery, stress_index: stressIndex },
+        biometrics: {
+          recovery_scores: scores, avg_recovery: avgRecovery, stress_index: stressIndex,
+          deep_sleep: { scores: deepSleep, avg_minutes: Math.round(avgDeepSleep), declining: deepSleepDeclining },
+          mental_readiness: { scores: mentalReadiness, avg_score: Math.round(avgMentalReadiness), all_below_60: mentalReadinessLow },
+        },
         message: 'Biometric levels within acceptable range. No intervention required.',
       }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
