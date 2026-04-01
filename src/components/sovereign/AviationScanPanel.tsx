@@ -2,9 +2,11 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  Plane, Search, AlertTriangle, Terminal, Loader2, CheckCircle, XCircle, Zap,
+  Plane, Search, AlertTriangle, Terminal, Loader2, CheckCircle, XCircle, Zap, MessageSquare,
 } from "lucide-react";
+import AviationNegotiationSandbox from "./AviationNegotiationSandbox";
 
 type ScanResult = {
   success: boolean;
