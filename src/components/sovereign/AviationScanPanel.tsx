@@ -2,9 +2,11 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  Plane, Search, AlertTriangle, Terminal, Loader2, CheckCircle, XCircle, Zap,
+  Plane, Search, AlertTriangle, Terminal, Loader2, CheckCircle, XCircle, Zap, MessageSquare,
 } from "lucide-react";
+import AviationNegotiationSandbox from "./AviationNegotiationSandbox";
 
 type ScanResult = {
   success: boolean;
@@ -56,7 +58,17 @@ const AviationScanPanel = () => {
   const formatCurrency = (v: number) => `£${v.toLocaleString("en-GB")}`;
 
   return (
-    <div className="space-y-4">
+    <Tabs defaultValue="scanner" className="space-y-4">
+      <TabsList className="bg-card/60 border border-border/30">
+        <TabsTrigger value="scanner" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary">
+          <Search className="h-3.5 w-3.5 mr-1.5" /> Scanner
+        </TabsTrigger>
+        <TabsTrigger value="simulation" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary">
+          <MessageSquare className="h-3.5 w-3.5 mr-1.5" /> Negotiation Sandbox
+        </TabsTrigger>
+      </TabsList>
+
+      <TabsContent value="scanner" className="space-y-4">
       {/* Scan Controls */}
       <div className="glass-card p-4">
         <div className="flex items-center gap-3 mb-3">
@@ -179,7 +191,12 @@ const AviationScanPanel = () => {
           </div>
         </div>
       )}
-    </div>
+      </TabsContent>
+
+      <TabsContent value="simulation">
+        <AviationNegotiationSandbox />
+      </TabsContent>
+    </Tabs>
   );
 };
 
