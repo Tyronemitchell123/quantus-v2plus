@@ -23,6 +23,7 @@ import PacificVitality from "@/components/sovereign/PacificVitality";
 import HospitalityConciergePanel from "@/components/sovereign/HospitalityConciergePanel";
 import VanguardDashboard from "@/components/sovereign/VanguardDashboard";
 import RevenueVault from "@/components/sovereign/RevenueVault";
+import LifestyleScanPanel from "@/components/sovereign/LifestyleScanPanel";
 
 type Sector = "Aviation" | "Medical" | "Lifestyle" | "Hospitality" | "Longevity" | "Vanguard";
 
