@@ -168,7 +168,14 @@ Deno.serve(async (req) => {
         }
       }
 
-      allFlights.push(...flights.map((f: any) => ({ ...f, source: targetUrl })));
+      // Sanitize scraped data before processing
+      allFlights.push(...flights.map((f: any) => ({
+        ...f,
+        origin: sanitizeScrapedText(f.origin || ""),
+        destination: sanitizeScrapedText(f.destination || ""),
+        aircraft: sanitizeScrapedText(f.aircraft || ""),
+        source: targetUrl,
+      })));
       logs.push(`[EXTRACT] ${flights.length} empty-leg listings from ${new URL(targetUrl).hostname}`);
     }
 
