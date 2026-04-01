@@ -93,9 +93,9 @@ const SovereignVault = () => {
           {/* Summary Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {[
-              { label: "Total Accrued", value: formatCurrency(displayTotal), icon: DollarSign, accent: "text-primary" },
-              { label: "Pending Payout", value: formatCurrency(displayPending), icon: Clock, accent: "text-amber-400" },
-              { label: "Paid Out", value: formatCurrency(displayPaid), icon: CheckCircle, accent: "text-emerald-400" },
+              { label: "Total Accrued", value: formatCurrency(totalAccrued), icon: DollarSign, accent: "text-primary" },
+              { label: "Pending Payout", value: formatCurrency(pendingTotal), icon: Clock, accent: "text-amber-400" },
+              { label: "Paid Out", value: formatCurrency(paidTotal), icon: CheckCircle, accent: "text-emerald-400" },
             ].map((card, i) => (
               <motion.div
                 key={card.label}
