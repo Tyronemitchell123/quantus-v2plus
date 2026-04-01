@@ -248,7 +248,7 @@ const VendorManagementTab = () => {
                     <TableCell>
                       <div className="flex gap-1">
                         {v.is_verified && (
-                          <Badge className="bg-emerald-500/10 text-emerald-500 border-emerald-500/30">Verified</Badge>
+                          <Badge className="bg-primary/10 text-primary border-primary/30">Verified</Badge>
                         )}
                         <Badge variant={v.is_active ? "default" : "destructive"}>
                           {v.is_active ? "Active" : "Inactive"}
