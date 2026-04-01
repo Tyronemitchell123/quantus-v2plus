@@ -9,7 +9,7 @@ import MobileBottomNav from "@/components/mobile/MobileBottomNav";
 import ParticleGrid from "@/components/ParticleGrid";
 import {
   Plane, Stethoscope, Gem, Hotel, HeartPulse, Activity, TrendingUp, TrendingDown,
-  AlertTriangle, Eye, Ghost, RefreshCcw, ArrowUpRight, Zap,
+  AlertTriangle, Eye, Ghost, RefreshCcw, ArrowUpRight, Zap, Brain,
 } from "lucide-react";
 import MedicalScanPanel from "@/components/sovereign/MedicalScanPanel";
 import AviationScanPanel from "@/components/sovereign/AviationScanPanel";
@@ -17,8 +17,9 @@ import HospitalityScanPanel from "@/components/sovereign/HospitalityScanPanel";
 import LongevityScanPanel from "@/components/sovereign/LongevityScanPanel";
 import LongevityBridgePanel from "@/components/sovereign/LongevityBridgePanel";
 import SovereignMasterView from "@/components/sovereign/SovereignMasterView";
+import VanguardDashboard from "@/components/sovereign/VanguardDashboard";
 
-type Sector = "Aviation" | "Medical" | "Lifestyle" | "Hospitality" | "Longevity";
+type Sector = "Aviation" | "Medical" | "Lifestyle" | "Hospitality" | "Longevity" | "Vanguard";
 
 const sectorConfig: Record<Sector, { icon: typeof Plane; color: string; kpiLabel: string; leakLabel: string }> = {
   Aviation: { icon: Plane, color: "text-blue-400", kpiLabel: "Empty Legs Detected", leakLabel: "Charter Revenue Leaking" },
@@ -26,9 +27,10 @@ const sectorConfig: Record<Sector, { icon: typeof Plane; color: string; kpiLabel
   Lifestyle: { icon: Gem, color: "text-purple-400", kpiLabel: "Luxury Leads Active", leakLabel: "Luxury Spend Unrecovered" },
   Hospitality: { icon: Hotel, color: "text-amber-400", kpiLabel: "Vacancy Alerts", leakLabel: "Room Revenue Leaking" },
   Longevity: { icon: HeartPulse, color: "text-rose-400", kpiLabel: "Diagnostic Slots", leakLabel: "Health Revenue Leaking" },
+  Vanguard: { icon: Brain, color: "text-violet-400", kpiLabel: "Bio-Recovery Triggers", leakLabel: "Burnout Revenue Lost" },
 };
 
-const sectors: Sector[] = ["Aviation", "Medical", "Lifestyle", "Hospitality", "Longevity"];
+const sectors: Sector[] = ["Aviation", "Medical", "Lifestyle", "Hospitality", "Longevity", "Vanguard"];
 
 // Simulated live leak data
 const generateLeakData = () => ({
@@ -73,6 +75,13 @@ const generateFeedItems = (sector: Sector) => {
       { status: "Ghosted", text: "Longevity Clinic Harley St — DEXA no-show (24h)", value: 5200 },
       { status: "Monitoring", text: "Prenuvo NYC — Cancer Screening slot opening", value: 18500 },
       { status: "Recovered", text: "Clinique La Prairie — Anti-Aging programme secured", value: 15000 },
+    ],
+    Vanguard: [
+      { status: "Monitoring", text: "Mr. Sterling — Recovery 35/100, Stress 9/10 (3-day trend)", value: 42000 },
+      { status: "Recovered", text: "Bio-Reset itinerary confirmed — FAB → NRT + Tokyo Brain Hub", value: 54000 },
+      { status: "Ghosted", text: "Ms. Ashworth — Burnout alert sent, no response (12h)", value: 38000 },
+      { status: "Monitoring", text: "Mr. Chen — Wearable sync active, recovery trending down", value: 28000 },
+      { status: "Recovered", text: "Cellular Revive at Samitivej — booked via Sovereign Push", value: 9500 },
     ],
   };
   return items[sector];
@@ -222,6 +231,7 @@ const SovereignDashboard = () => {
           {activeSector === "Hospitality" && <HospitalityScanPanel />}
           {activeSector === "Longevity" && <LongevityScanPanel />}
           {activeSector === "Longevity" && <LongevityBridgePanel />}
+          {activeSector === "Vanguard" && <VanguardDashboard />}
 
           {/* Sovereign Master View — Cross-Pillar Analytics */}
           <SovereignMasterView />
