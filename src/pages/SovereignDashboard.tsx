@@ -23,6 +23,7 @@ import PacificVitality from "@/components/sovereign/PacificVitality";
 import HospitalityConciergePanel from "@/components/sovereign/HospitalityConciergePanel";
 import VanguardDashboard from "@/components/sovereign/VanguardDashboard";
 import RevenueVault from "@/components/sovereign/RevenueVault";
+import LifestyleScanPanel from "@/components/sovereign/LifestyleScanPanel";
 
 type Sector = "Aviation" | "Medical" | "Lifestyle" | "Hospitality" | "Longevity" | "Vanguard";
 
@@ -233,6 +234,7 @@ const SovereignDashboard = () => {
           {/* Sector Scan Panels */}
           {activeSector === "Aviation" && <AviationScanPanel />}
           {activeSector === "Medical" && <MedicalScanPanel />}
+          {activeSector === "Lifestyle" && <LifestyleScanPanel />}
           {activeSector === "Hospitality" && <HospitalityScanPanel />}
           {activeSector === "Hospitality" && <HospitalityConciergePanel />}
           {activeSector === "Longevity" && <LongevityScanPanel />}
