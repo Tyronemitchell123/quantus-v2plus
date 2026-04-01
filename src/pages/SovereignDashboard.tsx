@@ -66,6 +66,13 @@ const generateFeedItems = (sector: Sector) => {
       { status: "Monitoring", text: "Wayfair — Hospitality furniture bulk lead", value: 19000 },
       { status: "Recovered", text: "Currys — Smart room tech installation deal", value: 14500 },
     ],
+    Longevity: [
+      { status: "Monitoring", text: "Prenuvo London — Full-Body MRI cancellation slot", value: 8500 },
+      { status: "Recovered", text: "Fountain Life — Executive Cardiac Panel rebooked", value: 12000 },
+      { status: "Ghosted", text: "Longevity Clinic Harley St — DEXA no-show (24h)", value: 5200 },
+      { status: "Monitoring", text: "Prenuvo NYC — Cancer Screening slot opening", value: 18500 },
+      { status: "Recovered", text: "Clinique La Prairie — Anti-Aging programme secured", value: 15000 },
+    ],
   };
   return items[sector];
 };
