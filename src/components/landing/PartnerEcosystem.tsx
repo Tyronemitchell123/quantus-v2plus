@@ -27,8 +27,10 @@ const PartnerEcosystem = () => {
     const { error } = await supabase.from("contact_submissions").insert({
       name: form.name,
       email: `${form.company.toLowerCase().replace(/\s/g, "")}@partner.quantus`,
-      message: `Partner application — Category: ${form.category}, Region: ${form.region}`,
+      message: `Partner application\nCategory: ${form.category}\nRegion: ${form.region}`,
       company: form.company,
+      classification: "partner_application",
+      sentiment: "positive",
     });
     setSubmitting(false);
     if (error) {
