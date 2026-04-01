@@ -19,7 +19,7 @@ import LongevityBridgePanel from "@/components/sovereign/LongevityBridgePanel";
 import SovereignMasterView from "@/components/sovereign/SovereignMasterView";
 import VanguardDashboard from "@/components/sovereign/VanguardDashboard";
 
-type Sector = "Aviation" | "Medical" | "Lifestyle" | "Hospitality" | "Longevity";
+type Sector = "Aviation" | "Medical" | "Lifestyle" | "Hospitality" | "Longevity" | "Vanguard";
 
 const sectorConfig: Record<Sector, { icon: typeof Plane; color: string; kpiLabel: string; leakLabel: string }> = {
   Aviation: { icon: Plane, color: "text-blue-400", kpiLabel: "Empty Legs Detected", leakLabel: "Charter Revenue Leaking" },
