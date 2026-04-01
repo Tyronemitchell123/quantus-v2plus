@@ -129,6 +129,7 @@ const AdminDashboard = () => {
           <TabsList>
             <TabsTrigger value="funnel">Conversion Funnel</TabsTrigger>
             <TabsTrigger value="vendors">Vendors</TabsTrigger>
+            <TabsTrigger value="health">System Health</TabsTrigger>
             <TabsTrigger value="emails">Email Monitoring</TabsTrigger>
             <TabsTrigger value="addons">Add-on Sales</TabsTrigger>
             <TabsTrigger value="referrals">Referral Metrics</TabsTrigger>
