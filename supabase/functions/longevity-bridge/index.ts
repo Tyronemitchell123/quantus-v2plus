@@ -12,6 +12,7 @@ Deno.serve(async (req) => {
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
     const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
     const firecrawlKey = Deno.env.get('FIRECRAWL_API_KEY');
+    const lovableKey = Deno.env.get('LOVABLE_API_KEY');
 
     if (!supabaseUrl || !serviceKey) {
       return new Response(JSON.stringify({ error: 'Missing configuration' }), {
@@ -50,6 +51,7 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({
         success: true,
         match: false,
+        destination: iata,
         message: `No longevity partners found near ${iata}`,
       }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -58,7 +60,7 @@ Deno.serve(async (req) => {
 
     console.log(`[LongevityBridge] Found ${providers.length} providers near ${iata}`);
 
-    // 2. Firecrawl availability check (if key available)
+    // 2. Firecrawl availability check
     const availabilityResults: any[] = [];
 
     if (firecrawlKey) {
@@ -88,7 +90,7 @@ Deno.serve(async (req) => {
             clinic: provider.clinic_name,
             city: provider.city,
             has_availability_data: markdown.length > 100,
-            snippet: markdown.substring(0, 300),
+            snippet: markdown.substring(0, 500),
           });
         } catch (e) {
           console.error(`[LongevityBridge] Scrape failed for ${provider.clinic_name}:`, e);
@@ -96,19 +98,72 @@ Deno.serve(async (req) => {
       }
     }
 
-    // 3. Generate AI outreach draft
+    // 3. AI-powered outreach draft via Lovable AI
     const leadDisplay = lead_name || 'the client';
     const topProvider = providers[0];
     const avgPrice = (topProvider.avg_price_cents / 100).toLocaleString('en-US');
     const topSpecialty = topProvider.specialties?.[0] || 'Executive Health Assessment';
     const arrivalInfo = flight_details?.arrival_time || 'tomorrow';
+    const aircraft = flight_details?.aircraft || 'G650';
+    const route = flight_details?.route || `flight to ${topProvider.city}`;
 
-    const outreachDraft = `Mr. ${leadDisplay}, since you're landing in ${topProvider.city} ${arrivalInfo}, I've flagged a rare cancellation at ${topProvider.clinic_name} for their 2026 '${topSpecialty}' on Saturday morning. This usually has a 4-month waitlist. Would you like me to bundle this into your itinerary?`;
+    let outreachDraft = '';
+
+    if (lovableKey) {
+      try {
+        console.log('[LongevityBridge] Generating AI draft via Lovable AI');
+        const aiRes = await fetch('https://ai.lovable.dev/api/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${lovableKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: 'google/gemini-2.5-flash',
+            messages: [
+              {
+                role: 'system',
+                content: `You are the Quantus Elite Concierge — a discreet, ultra-premium personal assistant for HNW clients. You write short, elegant cross-sell messages that feel like a personal favor, never a sales pitch. You emphasize exclusivity, waitlist bypass, and time-sensitivity. Keep messages under 80 words. Never use exclamation marks. Use a warm but authoritative British English tone.`,
+              },
+              {
+                role: 'user',
+                content: `Draft a cross-sell message for Mr. ${leadDisplay}. Context:
+- Confirmed ${aircraft} ${route}, arriving ${arrivalInfo}
+- Destination: ${topProvider.city}, ${topProvider.country}
+- Longevity partner: ${topProvider.clinic_name}
+- Available programme: ${topSpecialty} (avg. $${avgPrice})
+- Usually has a 4-month waitlist
+- Include: full-body MRI and epigenetic age-mapping if relevant
+- Mention bundling into their itinerary
+${availabilityResults.length > 0 ? `- Availability data found at ${availabilityResults[0].clinic}` : ''}`,
+              },
+            ],
+            max_tokens: 300,
+            temperature: 0.7,
+          }),
+        });
+
+        const aiData = await aiRes.json();
+        outreachDraft = aiData?.choices?.[0]?.message?.content || '';
+        console.log('[LongevityBridge] AI draft generated successfully');
+      } catch (e) {
+        console.error('[LongevityBridge] AI draft failed, using template:', e);
+      }
+    }
+
+    // Fallback template
+    if (!outreachDraft) {
+      outreachDraft = `Mr. ${leadDisplay}, your ${aircraft} is confirmed for ${arrivalInfo}. Since you'll be in ${topProvider.city}, I've used the Quantus network to secure a priority diagnostic slot at ${topProvider.clinic_name} for Saturday morning — usually a 4-month wait. This includes a full-body MRI and epigenetic age-mapping. Shall I add this to your itinerary?`;
+    }
 
     // 4. Calculate dual-commission
     const aviationFee = flight_details?.aviation_fee_cents || 415000;
     const longevityFee = Math.round(topProvider.avg_price_cents * 0.10);
     const totalRevenue = aviationFee + longevityFee;
+
+    // Weekly throughput projection (30 seats × avg deal)
+    const weeklyTarget = 6500000; // $65,000 in cents
+    const currentWeeklyRun = totalRevenue * 3; // simulate 3 deals/week for this lead type
 
     return new Response(JSON.stringify({
       success: true,
@@ -121,9 +176,11 @@ Deno.serve(async (req) => {
         country: p.country,
         specialties: p.specialties,
         avg_price: `$${(p.avg_price_cents / 100).toLocaleString('en-US')}`,
+        avg_price_cents: p.avg_price_cents,
       })),
       availability: availabilityResults,
       outreach_draft: outreachDraft,
+      ai_generated: !!lovableKey && outreachDraft !== '',
       commission: {
         aviation_fee_cents: aviationFee,
         longevity_fee_cents: longevityFee,
@@ -131,6 +188,13 @@ Deno.serve(async (req) => {
         aviation_fee: `$${(aviationFee / 100).toLocaleString('en-US')}`,
         longevity_fee: `$${(longevityFee / 100).toLocaleString('en-US')}`,
         total_revenue: `$${(totalRevenue / 100).toLocaleString('en-US')}`,
+      },
+      throughput: {
+        weekly_target: `$${(weeklyTarget / 100).toLocaleString('en-US')}`,
+        weekly_target_cents: weeklyTarget,
+        current_run_rate_cents: currentWeeklyRun,
+        current_run_rate: `$${(currentWeeklyRun / 100).toLocaleString('en-US')}`,
+        pilot_seats: 30,
       },
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
