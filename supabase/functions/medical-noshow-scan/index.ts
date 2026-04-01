@@ -9,6 +9,22 @@ const corsHeaders = {
 // High-value procedure codes to filter
 const HIGH_VALUE_CODES = ["IMPLANT", "SURGERY", "INVISALIGN", "LASIK", "CROWN", "VENEER", "ROOT_CANAL"];
 
+// ── Prompt Injection Sanitizer ──
+function sanitizeScrapedText(text: string): string {
+  if (!text) return "";
+  const patterns = [
+    /ignore\s+(all\s+)?previous\s+instructions?/gi,
+    /you\s+are\s+now\s+(a|an)\s+/gi,
+    /system\s*:\s*/gi,
+    /\[INST\]/gi,
+    /override\s+(your|the)\s+(instructions?|prompt)/gi,
+    /disregard\s+(your|the|all)\s+(instructions?|rules?)/gi,
+  ];
+  let sanitized = text;
+  for (const p of patterns) sanitized = sanitized.replace(p, "[FILTERED]");
+  return sanitized;
+}
+
 // Target demo CRM portals for scraping
 const MEDICAL_CRM_TARGETS = [
   { name: "NexHealth Demo", url: "https://www.nexhealth.com", section: "appointments" },
