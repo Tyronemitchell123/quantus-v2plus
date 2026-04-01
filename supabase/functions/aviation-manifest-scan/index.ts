@@ -413,6 +413,13 @@ Deno.serve(async (req) => {
           high_priority: highPriorityAlerts.length,
           total_value: allFlights.reduce((s: number, f: any) => s + (Number(f.price) || 0), 0),
         },
+        resilience: {
+          success_rate: successRate,
+          total_attempts: totalAttempts,
+          successful_scrapes: successfulScrapes,
+          visual_llm_active: logs.some(l => l.includes("[VISUAL-LLM]")),
+          source_rotations: logs.filter(l => l.includes("[ROTATE]")).length,
+        },
         high_priority_alerts: highPriorityAlerts,
         logs,
       }),
