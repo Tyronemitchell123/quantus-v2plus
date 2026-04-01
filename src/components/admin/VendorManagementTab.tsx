@@ -300,6 +300,7 @@ const VendorManagementTab = () => {
         )}
       </CardContent>
     </Card>
+    </div>
   );
 };
 
