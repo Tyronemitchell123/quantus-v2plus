@@ -151,6 +151,15 @@ const AdminDashboard = () => {
             <VendorManagementTab />
           </TabsContent>
 
+          {/* System Health */}
+          <TabsContent value="health">
+            <Card>
+              <CardContent className="pt-6">
+                <SystemHealthPanel />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
           {/* Add-on Sales */}
           <TabsContent value="addons">
             <Card>
