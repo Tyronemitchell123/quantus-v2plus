@@ -24,7 +24,7 @@ Deno.serve(async (req) => {
     const sb = createClient(supabaseUrl, serviceKey);
 
     const body = await req.json().catch(() => ({}));
-    const { client_id, client_name, recovery_scores, calendar_stress_index, preferred_destinations, preferred_airports } = body;
+    const { client_id, client_name, recovery_scores, calendar_stress_index, preferred_destinations, preferred_airports, deep_sleep_scores, mental_readiness_scores, trigger_mode } = body;
 
     // Defaults for simulation
     const scores = recovery_scores || [35, 38, 32];
@@ -32,11 +32,23 @@ Deno.serve(async (req) => {
     const destinations = preferred_destinations || ['NRT', 'BKK', 'ZRH'];
     const airports = preferred_airports || ['FAB', 'TEB'];
     const name = client_name || 'Sterling';
+    const deepSleep = deep_sleep_scores || [42, 38, 35, 31]; // minutes of deep sleep over 4 days
+    const mentalReadiness = mental_readiness_scores || [55, 48, 42, 38]; // 0-100 scale over 4 days
 
-    // 1. Check bio-recovery trigger condition
+    // 1. Check bio-recovery trigger condition (original burnout)
     const avgRecovery = scores.reduce((a: number, b: number) => a + b, 0) / scores.length;
     const allBelow40 = scores.every((s: number) => s < 40);
-    const triggered = allBelow40 && scores.length >= 3 && stressIndex > 8;
+    const burnoutTriggered = allBelow40 && scores.length >= 3 && stressIndex > 8;
+
+    // 1b. Cognitive Fatigue trigger (Phase 11 - Pacific Vitality)
+    const avgDeepSleep = deepSleep.reduce((a: number, b: number) => a + b, 0) / deepSleep.length;
+    const avgMentalReadiness = mentalReadiness.reduce((a: number, b: number) => a + b, 0) / mentalReadiness.length;
+    const deepSleepDeclining = deepSleep.length >= 4 && deepSleep[deepSleep.length - 1] < deepSleep[0] * 0.8;
+    const mentalReadinessLow = mentalReadiness.length >= 4 && mentalReadiness.every((m: number) => m < 60);
+    const cognitiveFatigueTriggered = deepSleepDeclining && mentalReadinessLow && avgMentalReadiness < 50;
+
+    const triggered = burnoutTriggered || (trigger_mode === 'cognitive_fatigue' && cognitiveFatigueTriggered);
+    const triggerType = cognitiveFatigueTriggered ? 'cognitive_fatigue' : 'burnout_risk';
 
     console.log(`[Vanguard] Client: ${name}, Avg Recovery: ${avgRecovery}, Stress: ${stressIndex}, Triggered: ${triggered}`);
 
