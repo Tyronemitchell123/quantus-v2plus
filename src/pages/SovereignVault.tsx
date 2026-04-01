@@ -53,18 +53,7 @@ const SovereignVault = () => {
     toast.info("Payout request submitted. Your admin will review and process pending commissions.");
   };
 
-  // Demo data when empty
-  const demoCommissions: Commission[] = [
-    { id: "demo-1", total_value: 42000, quantus_cut: 4200, payout_status: "Pending", created_at: new Date().toISOString(), lead_id: "demo" },
-    { id: "demo-2", total_value: 18500, quantus_cut: 1850, payout_status: "Paid", created_at: new Date(Date.now() - 86400000).toISOString(), lead_id: "demo" },
-    { id: "demo-3", total_value: 31000, quantus_cut: 3100, payout_status: "Pending", created_at: new Date(Date.now() - 172800000).toISOString(), lead_id: "demo" },
-  ];
-
-  const displayCommissions = commissions.length > 0 ? commissions : demoCommissions;
-  const isDemo = commissions.length === 0;
-  const displayTotal = isDemo ? demoCommissions.reduce((s, c) => s + c.quantus_cut, 0) : totalAccrued;
-  const displayPending = isDemo ? demoCommissions.filter(c => c.payout_status === "Pending").reduce((s, c) => s + c.quantus_cut, 0) : pendingTotal;
-  const displayPaid = isDemo ? demoCommissions.filter(c => c.payout_status === "Paid").reduce((s, c) => s + c.quantus_cut, 0) : paidTotal;
+  const isEmpty = commissions.length === 0;
 
   return (
     <div className="min-h-screen bg-background flex relative">
