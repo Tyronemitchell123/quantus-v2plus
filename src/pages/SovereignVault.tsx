@@ -9,7 +9,7 @@ import MobileBottomNav from "@/components/mobile/MobileBottomNav";
 import ParticleGrid from "@/components/ParticleGrid";
 import { Button } from "@/components/ui/button";
 import {
-  Vault, DollarSign, ArrowUpRight, Clock, CheckCircle, Loader2, Ban,
+  Vault, DollarSign, Clock, CheckCircle, Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
 
