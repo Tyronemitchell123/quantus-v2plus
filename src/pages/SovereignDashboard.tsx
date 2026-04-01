@@ -12,6 +12,7 @@ import {
   AlertTriangle, Eye, Ghost, RefreshCcw, ArrowUpRight, Zap,
 } from "lucide-react";
 import MedicalScanPanel from "@/components/sovereign/MedicalScanPanel";
+import AviationScanPanel from "@/components/sovereign/AviationScanPanel";
 
 type Sector = "Aviation" | "Medical" | "Lifestyle" | "Hospitality";
 
@@ -203,7 +204,8 @@ const SovereignDashboard = () => {
             ))}
           </div>
 
-          {/* Medical Scan Panel */}
+          {/* Sector Scan Panels */}
+          {activeSector === "Aviation" && <AviationScanPanel />}
           {activeSector === "Medical" && <MedicalScanPanel />}
 
           {/* Monitoring Feed */}
