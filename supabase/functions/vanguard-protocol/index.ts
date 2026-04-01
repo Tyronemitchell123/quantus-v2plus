@@ -100,15 +100,25 @@ Deno.serve(async (req) => {
 
     escapeManifest.flights = flightOptions;
 
-    // Simulated clinic options
+    // Simulated clinic options (Phase 11: added Neural-Reset and Green Lung protocols)
     const clinicOptions = [
-      { clinic: 'Tokyo Brain Hub', city: 'Tokyo', programme: 'Neuro-Sync 48h Reset', price_cents: 1200000, availability: 'Tomorrow AM', waitlist: '3 months' },
-      { clinic: 'Samitivej Wellness', city: 'Bangkok', programme: 'Cellular Revive 72h', price_cents: 950000, availability: 'Day after tomorrow', waitlist: '6 weeks' },
-      { clinic: 'Nescens Genolier', city: 'Geneva', programme: 'Brain-Reset Protocol', price_cents: 1500000, availability: 'Saturday 09:00', waitlist: '4 months' },
+      { clinic: 'Tokyo Brain Hub', city: 'Tokyo', programme: 'Neuro-Sync 48h Reset', price_cents: 1200000, availability: 'Tomorrow AM', waitlist: '3 months', protocol: 'neural-reset' },
+      { clinic: 'Prevention Clinic Tokyo', city: 'Tokyo', programme: 'Epigenetic Neural-Reset', price_cents: 2800000, availability: '2 days', waitlist: '6 months', protocol: 'neural-reset' },
+      { clinic: 'Samitivej Wellness', city: 'Bangkok', programme: 'Green Lung Cellular Reset', price_cents: 950000, availability: 'Day after tomorrow', waitlist: '6 weeks', protocol: 'green-lung' },
+      { clinic: 'Bumrungrad Longevity', city: 'Bangkok', programme: 'Green Lung 5-Day Protocol', price_cents: 1800000, availability: '3 days', waitlist: '2 months', protocol: 'green-lung' },
+      { clinic: 'Nescens Genolier', city: 'Geneva', programme: 'Brain-Reset Protocol', price_cents: 1500000, availability: 'Saturday 09:00', waitlist: '4 months', protocol: 'neural-reset' },
     ].filter(c => destinations.some(d => {
       const cityMap: Record<string, string> = { NRT: 'Tokyo', BKK: 'Bangkok', ZRH: 'Geneva' };
       return cityMap[d] === c.city;
     }));
+
+    // For cognitive fatigue, prioritize Neural-Reset and Green Lung protocols
+    if (triggerType === 'cognitive_fatigue') {
+      clinicOptions.sort((a, b) => {
+        const order: Record<string, number> = { 'neural-reset': 0, 'green-lung': 1 };
+        return (order[a.protocol] ?? 2) - (order[b.protocol] ?? 2);
+      });
+    }
 
     escapeManifest.clinics = clinicOptions;
 
