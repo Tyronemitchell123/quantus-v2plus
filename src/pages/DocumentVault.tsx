@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { FileText, Search, Shield, PenTool, Clock, CheckCircle2, Sparkles, FolderOpen, Lock, Upload } from "lucide-react";
+import { FileText, Search, Shield, PenTool, Clock, CheckCircle2, Sparkles, FolderOpen, Lock, Upload, Loader2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -14,14 +14,23 @@ import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import DashboardTopBar from "@/components/dashboard/DashboardTopBar";
 import useDocumentHead from "@/hooks/use-document-head";
 import VaultUploadZone from "@/components/vault/VaultUploadZone";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/use-auth";
+import { formatDistanceToNow } from "date-fns";
 
-const mockDocuments = [
-  { id: "1", title: "Aircraft Charter Agreement — G650", deal: "QAI-7A3F2B1C", type: "Contract", status: "pending_signature", created: "2h ago", pages: 12, signers: 2, signed: 1, encrypted: true },
-  { id: "2", title: "Medical Tourism NDA — Bangkok Clinic", deal: "QAI-9E4D8C2A", type: "NDA", status: "signed", created: "1d ago", pages: 4, signers: 2, signed: 2, encrypted: true },
-  { id: "3", title: "Executive Staffing SoW — TechCorp", deal: "QAI-1B5F6D3E", type: "Statement of Work", status: "draft", created: "3h ago", pages: 8, signers: 3, signed: 0, encrypted: false },
-  { id: "4", title: "Luxury Safari Terms & Conditions", deal: "QAI-5D2B1C8G", type: "Terms", status: "ai_review", created: "30m ago", pages: 6, signers: 1, signed: 0, encrypted: true },
-  { id: "5", title: "Logistics Partnership MoU", deal: "QAI-3C7A9E4F", type: "MoU", status: "signed", created: "3d ago", pages: 3, signers: 2, signed: 2, encrypted: true },
-];
+type DealDocument = {
+  id: string;
+  title: string;
+  deal_id: string;
+  document_type: string;
+  status: string;
+  created_at: string;
+  content: string | null;
+  fields: any;
+  metadata: any;
+  signed_at: string | null;
+  signed_by: string | null;
+};
 
 const templates = [
   { name: "Service Agreement", desc: "Standard service contract with customizable clauses", category: "Contracts" },
@@ -35,12 +44,30 @@ const templates = [
 const DocumentVault = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [generateOpen, setGenerateOpen] = useState(false);
+  const [documents, setDocuments] = useState<DealDocument[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
 
   useDocumentHead({
     title: "AI Document Vault — Smart Contracts & E-Sign | QUANTUS V2+",
     description: "AI-powered document generation, encrypted storage, and digital e-signature workflow.",
     canonical: "https://quantus-loom.lovable.app/vault",
   });
+
+  useEffect(() => {
+    if (!user) return;
+    const load = async () => {
+      setLoading(true);
+      const { data } = await supabase
+        .from("deal_documents")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
+      if (data) setDocuments(data);
+      setLoading(false);
+    };
+    load();
+  }, [user]);
 
   const getStatusBadge = (status: string) => {
     const map: Record<string, { label: string; className: string; icon: typeof CheckCircle2 }> = {
@@ -57,7 +84,10 @@ const DocumentVault = () => {
     );
   };
 
-  const filtered = mockDocuments.filter(d => d.title.toLowerCase().includes(searchQuery.toLowerCase()));
+  const filtered = documents.filter(d => d.title.toLowerCase().includes(searchQuery.toLowerCase()));
+  const totalDocs = documents.length;
+  const pendingSigs = documents.filter(d => d.status === "pending_signature").length;
+  const signedDocs = documents.filter(d => d.status === "signed").length;
 
   return (
     <div className="flex h-screen bg-background overflow-hidden">
@@ -65,7 +95,6 @@ const DocumentVault = () => {
       <div className="flex-1 flex flex-col overflow-hidden">
         <DashboardTopBar />
         <main className="flex-1 overflow-y-auto px-4 sm:px-6 py-6 space-y-6">
-          {/* Header */}
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div>
               <h1 className="font-display text-xl sm:text-2xl font-bold text-foreground flex items-center gap-3">
@@ -79,9 +108,7 @@ const DocumentVault = () => {
             </div>
             <Dialog open={generateOpen} onOpenChange={setGenerateOpen}>
               <DialogTrigger asChild>
-                <Button className="gap-2">
-                  <Sparkles size={14} /> Generate Document
-                </Button>
+                <Button className="gap-2"><Sparkles size={14} /> Generate Document</Button>
               </DialogTrigger>
               <DialogContent className="max-w-lg">
                 <DialogHeader>
@@ -120,10 +147,10 @@ const DocumentVault = () => {
           {/* Stats */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {[
-              { label: "Total Documents", value: "342", icon: FileText },
-              { label: "Pending Signatures", value: "8", icon: PenTool },
-              { label: "Encrypted Files", value: "98%", icon: Shield },
-              { label: "AI-Generated", value: "156", icon: Sparkles },
+              { label: "Total Documents", value: String(totalDocs), icon: FileText },
+              { label: "Pending Signatures", value: String(pendingSigs), icon: PenTool },
+              { label: "Signed", value: String(signedDocs), icon: CheckCircle2 },
+              { label: "Templates", value: String(templates.length), icon: Sparkles },
             ].map((stat, i) => (
               <motion.div key={stat.label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }}>
                 <Card className="glass-card border-border/50">
@@ -151,7 +178,6 @@ const DocumentVault = () => {
               </div>
             </div>
 
-            {/* NEW: File Upload Tab */}
             <TabsContent value="uploads">
               <Card className="glass-card border-border/50">
                 <CardHeader>
@@ -166,7 +192,16 @@ const DocumentVault = () => {
             </TabsContent>
 
             <TabsContent value="documents" className="space-y-3">
-              {filtered.map((doc, i) => (
+              {loading ? (
+                <div className="flex items-center justify-center py-12 gap-2 text-muted-foreground">
+                  <Loader2 size={16} className="animate-spin" /> Loading documents…
+                </div>
+              ) : filtered.length === 0 ? (
+                <Card className="glass-card border-border/50 p-8 text-center">
+                  <FileText size={24} className="text-muted-foreground mx-auto mb-2" />
+                  <p className="text-sm text-muted-foreground">No documents yet. Generate one or upload files to the vault.</p>
+                </Card>
+              ) : filtered.map((doc, i) => (
                 <motion.div key={doc.id} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.06 }}>
                   <Card className="glass-card border-border/50 hover:border-primary/20 transition-all">
                     <CardContent className="p-4 sm:p-5">
@@ -178,26 +213,17 @@ const DocumentVault = () => {
                           <div className="min-w-0">
                             <div className="flex items-center gap-2 flex-wrap">
                               <h3 className="text-sm font-medium text-foreground truncate">{doc.title}</h3>
-                              {doc.encrypted && <Lock size={10} className="text-emerald-400" />}
+                              <Lock size={10} className="text-emerald-400" />
                             </div>
                             <div className="flex items-center gap-3 mt-1 flex-wrap">
-                              <span className="text-xs text-muted-foreground font-mono">{doc.deal}</span>
-                              <Badge variant="outline" className="text-[10px]">{doc.type}</Badge>
+                              <span className="text-xs text-muted-foreground font-mono">{doc.deal_id.substring(0, 8)}</span>
+                              <Badge variant="outline" className="text-[10px]">{doc.document_type}</Badge>
                               {getStatusBadge(doc.status)}
                             </div>
                           </div>
                         </div>
-                        <span className="text-xs text-muted-foreground">{doc.pages} pages • {doc.created}</span>
+                        <span className="text-xs text-muted-foreground">{formatDistanceToNow(new Date(doc.created_at), { addSuffix: true })}</span>
                       </div>
-                      {doc.status === "pending_signature" && (
-                        <div className="mt-3 pt-3 border-t border-border/30">
-                          <div className="flex items-center justify-between text-xs mb-1.5">
-                            <span className="text-muted-foreground">Signatures: {doc.signed}/{doc.signers}</span>
-                            <span className="text-foreground font-medium">{Math.round((doc.signed / doc.signers) * 100)}%</span>
-                          </div>
-                          <Progress value={(doc.signed / doc.signers) * 100} className="h-1" />
-                        </div>
-                      )}
                     </CardContent>
                   </Card>
                 </motion.div>
@@ -231,11 +257,13 @@ const DocumentVault = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {mockDocuments.filter(d => d.status === "pending_signature").map((doc) => (
+                  {documents.filter(d => d.status === "pending_signature").length === 0 ? (
+                    <p className="text-sm text-muted-foreground text-center py-4">No documents awaiting signature.</p>
+                  ) : documents.filter(d => d.status === "pending_signature").map((doc) => (
                     <div key={doc.id} className="flex items-center justify-between py-3 border-b border-border/30 last:border-0 flex-wrap gap-2">
                       <div>
                         <h4 className="text-sm font-medium text-foreground">{doc.title}</h4>
-                        <p className="text-xs text-muted-foreground mt-0.5">Waiting on {doc.signers - doc.signed} of {doc.signers} signers</p>
+                        <p className="text-xs text-muted-foreground mt-0.5">Awaiting signature</p>
                       </div>
                       <div className="flex items-center gap-2">
                         <Button size="sm" className="text-xs gap-1"><PenTool size={12} /> Sign Now</Button>
