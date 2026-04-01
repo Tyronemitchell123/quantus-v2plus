@@ -144,6 +144,11 @@ const AdminDashboard = () => {
             <EmailMonitoringTab />
           </TabsContent>
 
+          {/* Vendor Management */}
+          <TabsContent value="vendors">
+            <VendorManagementTab />
+          </TabsContent>
+
           {/* Add-on Sales */}
           <TabsContent value="addons">
             <Card>
