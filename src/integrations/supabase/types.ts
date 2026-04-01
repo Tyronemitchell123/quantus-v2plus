@@ -1697,6 +1697,69 @@ export type Database = {
           },
         ]
       }
+      vendors: {
+        Row: {
+          category: string
+          company: string
+          created_at: string | null
+          credentials: Json | null
+          description: string | null
+          email: string | null
+          id: string
+          is_active: boolean | null
+          is_verified: boolean | null
+          location: string | null
+          logo_url: string | null
+          metadata: Json | null
+          name: string
+          phone: string | null
+          specialties: string[] | null
+          tier: string | null
+          updated_at: string | null
+          website: string | null
+        }
+        Insert: {
+          category: string
+          company: string
+          created_at?: string | null
+          credentials?: Json | null
+          description?: string | null
+          email?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_verified?: boolean | null
+          location?: string | null
+          logo_url?: string | null
+          metadata?: Json | null
+          name: string
+          phone?: string | null
+          specialties?: string[] | null
+          tier?: string | null
+          updated_at?: string | null
+          website?: string | null
+        }
+        Update: {
+          category?: string
+          company?: string
+          created_at?: string | null
+          credentials?: Json | null
+          description?: string | null
+          email?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_verified?: boolean | null
+          location?: string | null
+          logo_url?: string | null
+          metadata?: Json | null
+          name?: string
+          phone?: string | null
+          specialties?: string[] | null
+          tier?: string | null
+          updated_at?: string | null
+          website?: string | null
+        }
+        Relationships: []
+      }
       webhooks: {
         Row: {
           created_at: string
