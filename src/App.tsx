@@ -74,6 +74,8 @@ const PayInvoice = lazy(() => import("./pages/PayInvoice"));
 const VendorRegister = lazy(() => import("./pages/VendorRegister"));
 const WaitingList = lazy(() => import("./pages/WaitingList"));
 const PartnerWithUs = lazy(() => import("./pages/PartnerWithUs"));
+const SovereignDashboard = lazy(() => import("./pages/SovereignDashboard"));
+const SovereignVault = lazy(() => import("./pages/SovereignVault"));
 const MarketplacePage = lazy(() => import("./pages/Marketplace"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Terms = lazy(() => import("./pages/Terms"));
