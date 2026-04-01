@@ -24,9 +24,10 @@ const sectorConfig: Record<Sector, { icon: typeof Plane; color: string; kpiLabel
   Medical: { icon: Stethoscope, color: "text-emerald-400", kpiLabel: "No-Shows Tracked", leakLabel: "Appointment Revenue Lost" },
   Lifestyle: { icon: Gem, color: "text-purple-400", kpiLabel: "Luxury Leads Active", leakLabel: "Luxury Spend Unrecovered" },
   Hospitality: { icon: Hotel, color: "text-amber-400", kpiLabel: "Vacancy Alerts", leakLabel: "Room Revenue Leaking" },
+  Longevity: { icon: HeartPulse, color: "text-rose-400", kpiLabel: "Diagnostic Slots", leakLabel: "Health Revenue Leaking" },
 };
 
-const sectors: Sector[] = ["Aviation", "Medical", "Lifestyle", "Hospitality"];
+const sectors: Sector[] = ["Aviation", "Medical", "Lifestyle", "Hospitality", "Longevity"];
 
 // Simulated live leak data
 const generateLeakData = () => ({
