@@ -733,6 +733,56 @@ export type Database = {
         }
         Relationships: []
       }
+      hospitality_concierge: {
+        Row: {
+          bms_settings: Json
+          client_id: string | null
+          created_at: string
+          id: string
+          is_active: boolean
+          metadata: Json | null
+          nutritional_preload: Json
+          partnerships: string[]
+          trigger_type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          bms_settings?: Json
+          client_id?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          metadata?: Json | null
+          nutritional_preload?: Json
+          partnerships?: string[]
+          trigger_type?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          bms_settings?: Json
+          client_id?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          metadata?: Json | null
+          nutritional_preload?: Json
+          partnerships?: string[]
+          trigger_type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hospitality_concierge_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "vanguard_clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       invoices: {
         Row: {
           amount_cents: number
