@@ -17,6 +17,7 @@ import HospitalityScanPanel from "@/components/sovereign/HospitalityScanPanel";
 import LongevityScanPanel from "@/components/sovereign/LongevityScanPanel";
 import LongevityBridgePanel from "@/components/sovereign/LongevityBridgePanel";
 import SovereignMasterView from "@/components/sovereign/SovereignMasterView";
+import GenevaPowerPlay from "@/components/sovereign/GenevaPowerPlay";
 import VanguardDashboard from "@/components/sovereign/VanguardDashboard";
 
 type Sector = "Aviation" | "Medical" | "Lifestyle" | "Hospitality" | "Longevity" | "Vanguard";
@@ -231,6 +232,7 @@ const SovereignDashboard = () => {
           {activeSector === "Hospitality" && <HospitalityScanPanel />}
           {activeSector === "Longevity" && <LongevityScanPanel />}
           {activeSector === "Longevity" && <LongevityBridgePanel />}
+          {activeSector === "Longevity" && <GenevaPowerPlay />}
           {activeSector === "Vanguard" && <VanguardDashboard />}
 
           {/* Sovereign Master View — Cross-Pillar Analytics */}
