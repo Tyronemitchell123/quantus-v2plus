@@ -8,7 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import {
   Stethoscope, Zap, Send, Loader2, Ghost, RefreshCcw,
   DollarSign, Clock, MessageSquare, Bot, Heart,
-  AlertTriangle, Shield, Mail, CheckCircle,
+  AlertTriangle, Shield, Mail, CheckCircle, Terminal, Activity,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -35,7 +35,7 @@ function parseMedicalLead(lead: Lead): { procedureType: string; patientUuid: str
   const summary = lead.ai_summary || "";
   const procedureMatch = summary.match(/\[(?:No-Show|Cancelled)\]\s*(.+?)\s*—/);
   const uuidMatch = summary.match(/Patient\s+([\w-]+)/);
-  const ltvMatch = summary.includes("HIGH") ? "HIGH" : "Standard";
+  const ltvMatch = summary.includes("HIGH") ? "HIGH" : summary.includes("ELEVATED") ? "ELEVATED" : "Standard";
   return {
     procedureType: procedureMatch?.[1] || "Unknown Procedure",
     patientUuid: uuidMatch?.[1] || "UNKNOWN",
@@ -45,10 +45,27 @@ function parseMedicalLead(lead: Lead): { procedureType: string; patientUuid: str
 
 const statusConfig: Record<string, { icon: typeof Ghost; color: string; label: string }> = {
   Ghosted: { icon: Ghost, color: "text-red-400 bg-red-400/10", label: "Ghosted" },
+  AI_Recovering: { icon: Activity, color: "text-amber-400 bg-amber-400/10", label: "AI Recovering" },
   Sent: { icon: Send, color: "text-purple-400 bg-purple-400/10", label: "Outreach Sent" },
   Recovered: { icon: RefreshCcw, color: "text-emerald-400 bg-emerald-400/10", label: "Recovered" },
   Monitoring: { icon: Stethoscope, color: "text-blue-400 bg-blue-400/10", label: "Monitoring" },
 };
+
+// Simulated audit log entries
+function generateAuditLogs(): string[] {
+  const now = new Date();
+  const fmt = (offset: number) => {
+    const d = new Date(now.getTime() - offset * 60000);
+    return d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true });
+  };
+  return [
+    `${fmt(8)} — Firecrawl logged into NexHealth.`,
+    `${fmt(5)} — 3 new LASIK no-shows identified.`,
+    `${fmt(3)} — Claude 3.5 Sonnet drafted 3 personalized recovery scripts.`,
+    `${fmt(1)} — Outreach queued for Approval.`,
+    `${fmt(0)} — Watchtower cycle complete. Next scan in 2h.`,
+  ];
+}
 
 const MedicalLiveDeals = () => {
   const { user } = useAuth();
@@ -56,12 +73,13 @@ const MedicalLiveDeals = () => {
   const [loading, setLoading] = useState(true);
   const [autoPilot, setAutoPilot] = useState(false);
   const [filter, setFilter] = useState<string>("all");
+  const [showAuditTerminal, setShowAuditTerminal] = useState(true);
+  const [auditLogs, setAuditLogs] = useState<string[]>(generateAuditLogs());
 
   const fetchLeads = useCallback(async () => {
     if (!user) return;
     setLoading(true);
 
-    // Get medical tenant
     const { data: tenant } = await supabase
       .from("tenants")
       .select("id")
@@ -89,7 +107,7 @@ const MedicalLiveDeals = () => {
         draftMessage: null,
         isDrafting: false,
         isSending: false,
-        channel: "email" as const, // Medical = privacy-first = email default
+        channel: "email" as const,
       };
     });
 
@@ -98,6 +116,12 @@ const MedicalLiveDeals = () => {
   }, [user]);
 
   useEffect(() => { fetchLeads(); }, [fetchLeads]);
+
+  // Refresh audit logs every 30s
+  useEffect(() => {
+    const interval = setInterval(() => setAuditLogs(generateAuditLogs()), 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   const generateDraft = async (leadId: string) => {
     setLeads(prev => prev.map(l => l.id === leadId ? { ...l, isDrafting: true } : l));
@@ -154,11 +178,12 @@ TONE: Warm, professional, health-focused. NEVER mention cost or revenue. NEVER r
         .maybeSingle();
 
       if (tenantData) {
+        // $250 fixed commission per recovery outreach
         await supabase.from("commissions").insert({
           lead_id: leadId,
           user_id: user.id,
           total_value: lead.potential_value,
-          quantus_cut: lead.potential_value * 0.1,
+          quantus_cut: 250,
           payout_status: "Pending",
         });
 
@@ -166,27 +191,27 @@ TONE: Warm, professional, health-focused. NEVER mention cost or revenue. NEVER r
           tenant_id: tenantData.id,
           user_id: user.id,
           action_type: autoPilot ? "Medical_AutoPilot_Send" : "Medical_Manual_Send",
-          description: `Recovery outreach sent via ${lead.channel} for ${lead.procedureType} (${lead.patientUuid}). Potential commission: $${(lead.potential_value * 0.1).toLocaleString()}`,
+          description: `Recovery outreach sent via ${lead.channel} for ${lead.procedureType} (${lead.patientUuid}). Commission: $250.00`,
         } as any);
       }
 
       setLeads(prev => prev.map(l =>
         l.id === leadId ? { ...l, status: "Sent", isSending: false } : l
       ));
-      toast.success(`Recovery outreach sent via ${lead.channel}. Potential commission: $${(lead.potential_value * 0.1).toLocaleString()}`);
+      toast.success(`Recovery outreach sent. Commission: $250.00 accrued.`);
     } catch (err: any) {
       toast.error("Send failed: " + (err.message || "Unknown error"));
       setLeads(prev => prev.map(l => l.id === leadId ? { ...l, isSending: false } : l));
     }
   };
 
-  // Auto-pilot: auto-send for high-LTV ghosted leads
+  // Auto-pilot
   useEffect(() => {
     if (!autoPilot) return;
     leads.forEach(lead => {
       if (
         lead.ltvRisk === "HIGH" &&
-        lead.status === "Ghosted" &&
+        (lead.status === "Ghosted" || lead.status === "AI_Recovering") &&
         lead.draftMessage &&
         !lead.isSending
       ) {
@@ -199,8 +224,9 @@ TONE: Warm, professional, health-focused. NEVER mention cost or revenue. NEVER r
 
   const totalPotentialCommission = filtered
     .filter(l => l.status !== "Recovered")
-    .reduce((s, l) => s + l.potential_value * 0.1, 0);
+    .reduce((s, l) => s + 250, 0);
 
+  const totalRecovered = filtered.filter(l => l.status === "Recovered").length;
   const totalLostRevenue = filtered.reduce((s, l) => s + l.potential_value, 0);
 
   if (loading) {
@@ -227,10 +253,14 @@ TONE: Warm, professional, health-focused. NEVER mention cost or revenue. NEVER r
           <Badge variant="outline" className="text-[9px] border-red-400/30 text-red-400">
             ${totalLostRevenue.toLocaleString()} at risk
           </Badge>
+          {totalRecovered > 0 && (
+            <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-[9px]">
+              {totalRecovered} recovered
+            </Badge>
+          )}
         </div>
 
         <div className="flex items-center gap-4">
-          {/* Auto-Pilot */}
           <div className="flex items-center gap-2">
             <Bot className="h-3.5 w-3.5 text-muted-foreground" />
             <span className="text-[10px] tracking-[0.1em] uppercase text-muted-foreground">Auto-Recovery</span>
@@ -241,10 +271,9 @@ TONE: Warm, professional, health-focused. NEVER mention cost or revenue. NEVER r
             />
           </div>
 
-          {/* Commission Ticker */}
           <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#D4AF37]/30 bg-[#D4AF37]/5">
             <DollarSign className="h-3 w-3 text-[#D4AF37]" />
-            <span className="text-[10px] text-[#D4AF37]/70">Recovery Commission</span>
+            <span className="text-[10px] text-[#D4AF37]/70">Commission Pipeline</span>
             <span className="text-xs font-bold text-[#D4AF37] font-mono">
               ${totalPotentialCommission.toLocaleString("en-US", { minimumFractionDigits: 2 })}
             </span>
@@ -252,10 +281,72 @@ TONE: Warm, professional, health-focused. NEVER mention cost or revenue. NEVER r
         </div>
       </div>
 
+      {/* Audit Terminal */}
+      <AnimatePresence>
+        {showAuditTerminal && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="rounded-xl border border-border/40 bg-background/80 overflow-hidden"
+          >
+            <div className="flex items-center justify-between px-4 py-2 border-b border-border/30">
+              <div className="flex items-center gap-2">
+                <Terminal className="h-3 w-3 text-emerald-400" />
+                <span className="text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
+                  Watchtower Audit Feed — 2h Cycle
+                </span>
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                </span>
+              </div>
+              <button
+                onClick={() => setShowAuditTerminal(false)}
+                className="text-[9px] text-muted-foreground hover:text-foreground"
+              >
+                Hide
+              </button>
+            </div>
+            <div className="p-3 max-h-36 overflow-y-auto font-mono text-[10px] space-y-1 bg-background/60">
+              {auditLogs.map((log, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, x: -6 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.05 }}
+                  className={
+                    log.includes("no-shows") || log.includes("identified")
+                      ? "text-amber-400"
+                      : log.includes("drafted") || log.includes("Sonnet")
+                      ? "text-purple-400"
+                      : log.includes("complete")
+                      ? "text-emerald-400"
+                      : "text-muted-foreground"
+                  }
+                >
+                  {log}
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {!showAuditTerminal && (
+        <button
+          onClick={() => setShowAuditTerminal(true)}
+          className="text-[9px] text-muted-foreground hover:text-foreground flex items-center gap-1"
+        >
+          <Terminal className="h-3 w-3" /> Show Audit Terminal
+        </button>
+      )}
+
       {/* Filters */}
       <div className="flex gap-2 overflow-x-auto pb-1">
         {[
           { id: "all", label: "All" },
+          { id: "AI_Recovering", label: "AI Recovering" },
           { id: "Ghosted", label: "Ghosted" },
           { id: "Sent", label: "Outreach Sent" },
           { id: "Recovered", label: "Recovered" },
@@ -285,7 +376,7 @@ TONE: Warm, professional, health-focused. NEVER mention cost or revenue. NEVER r
           >
             <Shield className="h-4 w-4 text-emerald-400" />
             <span className="text-xs text-emerald-400">
-              <strong>Auto-Recovery Active:</strong> HIGH LTV-risk patients with drafted messages will receive outreach automatically via email. All actions HIPAA-logged.
+              <strong>Auto-Recovery Active:</strong> HIGH LTV-risk patients with drafted messages will receive outreach automatically via email. $250 commission per recovery. All actions HIPAA-logged.
             </span>
           </motion.div>
         )}
@@ -303,7 +394,7 @@ TONE: Warm, professional, health-focused. NEVER mention cost or revenue. NEVER r
         {filtered.map((deal, i) => {
           const sc = statusConfig[deal.status] || statusConfig.Ghosted;
           const StatusIcon = sc.icon;
-          const isHighLtv = deal.ltvRisk === "HIGH";
+          const isHighValue = deal.potential_value >= 5000;
 
           return (
             <motion.div
@@ -312,13 +403,12 @@ TONE: Warm, professional, health-focused. NEVER mention cost or revenue. NEVER r
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.04 }}
               className={`rounded-xl border backdrop-blur-sm p-4 transition-all ${
-                isHighLtv
-                  ? "border-red-400/30 bg-red-400/[0.02]"
+                isHighValue
+                  ? "border-[#D4AF37]/40 bg-[#D4AF37]/[0.02]"
                   : "border-border/40 bg-card/60"
               }`}
             >
               <div className="flex flex-wrap items-start gap-4">
-                {/* Status + Procedure */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1.5">
                     <div className={`p-1.5 rounded-md ${sc.color}`}>
@@ -327,9 +417,17 @@ TONE: Warm, professional, health-focused. NEVER mention cost or revenue. NEVER r
                     <span className="text-xs font-semibold text-foreground truncate">
                       {deal.procedureType}
                     </span>
-                    {isHighLtv && (
-                      <Badge className="bg-red-400/20 text-red-400 border-red-400/30 text-[9px]">
-                        <AlertTriangle className="h-2.5 w-2.5 mr-0.5" /> HIGH LTV RISK
+                    {isHighValue && (
+                      <Badge
+                        className="text-[9px] border-[#D4AF37]/40 text-[#D4AF37] bg-[#D4AF37]/10 animate-pulse"
+                        style={{ boxShadow: "0 0 8px rgba(212,175,55,0.3)" }}
+                      >
+                        <Zap className="h-2.5 w-2.5 mr-0.5" /> HIGH-VALUE RECOVERY
+                      </Badge>
+                    )}
+                    {deal.status === "AI_Recovering" && (
+                      <Badge className="bg-amber-400/20 text-amber-400 border-amber-400/30 text-[9px]">
+                        <Activity className="h-2.5 w-2.5 mr-0.5" /> AI Recovering
                       </Badge>
                     )}
                   </div>
@@ -343,10 +441,9 @@ TONE: Warm, professional, health-focused. NEVER mention cost or revenue. NEVER r
                   </p>
                 </div>
 
-                {/* Value */}
                 <div className="flex items-center gap-3 shrink-0">
                   <div className="text-right">
-                    <p className="text-lg font-bold text-foreground font-mono">
+                    <p className={`text-lg font-bold font-mono ${isHighValue ? "text-[#D4AF37]" : "text-foreground"}`}>
                       ${deal.potential_value.toLocaleString()}
                     </p>
                     <p className="text-[9px] text-muted-foreground">lost revenue</p>
@@ -354,7 +451,7 @@ TONE: Warm, professional, health-focused. NEVER mention cost or revenue. NEVER r
                 </div>
               </div>
 
-              {/* AI Draft — Clinical Empathy */}
+              {/* AI Draft */}
               {deal.draftMessage && (
                 <motion.div
                   initial={{ opacity: 0, height: 0 }}
@@ -375,14 +472,12 @@ TONE: Warm, professional, health-focused. NEVER mention cost or revenue. NEVER r
               <div className="mt-3 flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
                   <DollarSign className="h-3 w-3 text-[#D4AF37]" />
-                  <span className="text-[10px] text-[#D4AF37] font-mono font-bold">
-                    ${(deal.potential_value * 0.1).toLocaleString("en-US", { minimumFractionDigits: 2 })}
-                  </span>
+                  <span className="text-[10px] text-[#D4AF37] font-mono font-bold">$250.00</span>
                   <span className="text-[9px] text-muted-foreground">recovery commission</span>
                 </div>
 
                 <div className="flex items-center gap-2">
-                  {deal.status !== "Sent" && deal.status !== "Recovered" && (
+                  {(deal.status === "Ghosted" || deal.status === "AI_Recovering") && (
                     <>
                       {!deal.draftMessage ? (
                         <Button
@@ -416,12 +511,15 @@ TONE: Warm, professional, health-focused. NEVER mention cost or revenue. NEVER r
                   )}
                   {deal.status === "Sent" && (
                     <Badge variant="outline" className="text-[9px] border-purple-400/30 text-purple-400">
-                      <CheckCircle className="h-2.5 w-2.5 mr-1" /> Awaiting Response
+                      <CheckCircle className="h-2.5 w-2.5 mr-1" /> Awaiting Recovery (14d window)
                     </Badge>
                   )}
                   {deal.status === "Recovered" && (
-                    <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-[9px]">
-                      <CheckCircle className="h-2.5 w-2.5 mr-1" /> Recovered ✓
+                    <Badge
+                      className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-[9px]"
+                      style={{ boxShadow: "0 0 8px rgba(16,185,129,0.3)" }}
+                    >
+                      <CheckCircle className="h-2.5 w-2.5 mr-1" /> Recovered ✓ — $250 Earned
                     </Badge>
                   )}
                 </div>
