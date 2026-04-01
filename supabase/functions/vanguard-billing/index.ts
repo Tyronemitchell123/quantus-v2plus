@@ -94,7 +94,7 @@ serve(async (req) => {
       const minFee = event_type === "flight_confirmed" ? AVIATION_MIN_FEE_CENTS : MEDICAL_MIN_FEE_CENTS;
       const calculatedFee = Math.round(event_value_cents * rate);
       const feeCents = Math.max(calculatedFee, minFee);
-      const feeLabel = event_type === "flight_confirmed" ? "Aviation Success Fee (5%)" : "Medical Success Fee (10%)";
+      const feeLabel = event_type === "flight_confirmed" ? `Aviation Success Fee (5%, min $8k)` : `Medical Success Fee (10%, min $2k)`;
 
       // Log to commission_logs
       if (user_id) {
