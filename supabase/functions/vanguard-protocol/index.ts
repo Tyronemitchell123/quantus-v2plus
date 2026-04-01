@@ -50,7 +50,7 @@ Deno.serve(async (req) => {
     const triggered = burnoutTriggered || (trigger_mode === 'cognitive_fatigue' && cognitiveFatigueTriggered);
     const triggerType = cognitiveFatigueTriggered ? 'cognitive_fatigue' : 'burnout_risk';
 
-    console.log(`[Vanguard] Client: ${name}, Avg Recovery: ${avgRecovery}, Stress: ${stressIndex}, Triggered: ${triggered}`);
+    console.log(`[Vanguard] Client: ${name}, Avg Recovery: ${avgRecovery}, Stress: ${stressIndex}, Trigger: ${triggerType}, Deep Sleep Avg: ${avgDeepSleep.toFixed(0)}min, Mental Readiness Avg: ${avgMentalReadiness.toFixed(0)}, Triggered: ${triggered}`);
 
     if (!triggered) {
       return new Response(JSON.stringify({
