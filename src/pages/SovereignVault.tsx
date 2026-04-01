@@ -9,7 +9,7 @@ import MobileBottomNav from "@/components/mobile/MobileBottomNav";
 import ParticleGrid from "@/components/ParticleGrid";
 import { Button } from "@/components/ui/button";
 import {
-  Vault, DollarSign, ArrowUpRight, Clock, CheckCircle, Loader2, Ban,
+  Vault, DollarSign, Clock, CheckCircle, Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -53,18 +53,7 @@ const SovereignVault = () => {
     toast.info("Payout request submitted. Your admin will review and process pending commissions.");
   };
 
-  // Demo data when empty
-  const demoCommissions: Commission[] = [
-    { id: "demo-1", total_value: 42000, quantus_cut: 4200, payout_status: "Pending", created_at: new Date().toISOString(), lead_id: "demo" },
-    { id: "demo-2", total_value: 18500, quantus_cut: 1850, payout_status: "Paid", created_at: new Date(Date.now() - 86400000).toISOString(), lead_id: "demo" },
-    { id: "demo-3", total_value: 31000, quantus_cut: 3100, payout_status: "Pending", created_at: new Date(Date.now() - 172800000).toISOString(), lead_id: "demo" },
-  ];
-
-  const displayCommissions = commissions.length > 0 ? commissions : demoCommissions;
-  const isDemo = commissions.length === 0;
-  const displayTotal = isDemo ? demoCommissions.reduce((s, c) => s + c.quantus_cut, 0) : totalAccrued;
-  const displayPending = isDemo ? demoCommissions.filter(c => c.payout_status === "Pending").reduce((s, c) => s + c.quantus_cut, 0) : pendingTotal;
-  const displayPaid = isDemo ? demoCommissions.filter(c => c.payout_status === "Paid").reduce((s, c) => s + c.quantus_cut, 0) : paidTotal;
+  const isEmpty = commissions.length === 0;
 
   return (
     <div className="min-h-screen bg-background flex relative">
@@ -93,10 +82,10 @@ const SovereignVault = () => {
             </Button>
           </div>
 
-          {isDemo && (
+          {isEmpty && !loading && (
             <div className="glass-card p-4 border-primary/20">
               <p className="font-body text-xs text-muted-foreground">
-                <span className="text-primary font-medium">Demo Mode</span> — Showing simulated commission data. Real commissions will appear once leads are recovered and deals closed.
+                No commissions yet. Revenue will appear here once leads are recovered and deals closed.
               </p>
             </div>
           )}
@@ -104,9 +93,9 @@ const SovereignVault = () => {
           {/* Summary Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {[
-              { label: "Total Accrued", value: formatCurrency(displayTotal), icon: DollarSign, accent: "text-primary" },
-              { label: "Pending Payout", value: formatCurrency(displayPending), icon: Clock, accent: "text-amber-400" },
-              { label: "Paid Out", value: formatCurrency(displayPaid), icon: CheckCircle, accent: "text-emerald-400" },
+              { label: "Total Accrued", value: formatCurrency(totalAccrued), icon: DollarSign, accent: "text-primary" },
+              { label: "Pending Payout", value: formatCurrency(pendingTotal), icon: Clock, accent: "text-amber-400" },
+              { label: "Paid Out", value: formatCurrency(paidTotal), icon: CheckCircle, accent: "text-emerald-400" },
             ].map((card, i) => (
               <motion.div
                 key={card.label}
@@ -134,7 +123,7 @@ const SovereignVault = () => {
               </div>
             ) : (
               <div className="space-y-2">
-                {displayCommissions.map((c, i) => (
+                {commissions.map((c, i) => (
                   <motion.div
                     key={c.id}
                     initial={{ opacity: 0, y: 8 }}
