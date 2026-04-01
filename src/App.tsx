@@ -119,6 +119,8 @@ const AnimatedRoutes = () => {
             <Route path="/pay" element={<R name="Pay Invoice"><PageTransition><PayInvoice /></PageTransition></R>} />
             <Route path="/vendor-register" element={<R name="Vendor Register"><PageTransition><VendorRegister /></PageTransition></R>} />
             <Route path="/waiting-list" element={<R name="Waiting List"><PageTransition><WaitingList /><Footer /></PageTransition></R>} />
+            <Route path="/partner-with-us" element={<R name="Partner With Us"><PageTransition><PartnerWithUs /><Footer /></PageTransition></R>} />
+            <Route path="/marketplace" element={<R name="Marketplace"><PageTransition><MarketplacePage /><Footer /></PageTransition></R>} />
             <Route path="/onboarding" element={<ProtectedRoute skipOnboardingCheck><R name="Onboarding"><PageTransition><Onboarding /></PageTransition></R></ProtectedRoute>} />
 
             {/* Dashboard shell routes */}
