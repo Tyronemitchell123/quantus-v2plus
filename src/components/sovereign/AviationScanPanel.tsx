@@ -191,7 +191,12 @@ const AviationScanPanel = () => {
           </div>
         </div>
       )}
-    </div>
+      </TabsContent>
+
+      <TabsContent value="simulation">
+        <AviationNegotiationSandbox />
+      </TabsContent>
+    </Tabs>
   );
 };
 
