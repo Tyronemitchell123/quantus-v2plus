@@ -23,7 +23,7 @@ export const PAGE_SEO: Record<string, { title: string; description: string; cano
   },
   "/about": {
     title: "About Quantus V2+ — The Sovereign Intelligence Platform",
-    description: "Discover how Quantus V2+ orchestrates multi-million dollar deals across aviation, marine, legal, finance, and lifestyle verticals for elite private offices worldwide.",
+    description: "Quantus V2+ orchestrates multi-million dollar deals across aviation, marine, legal, finance & lifestyle verticals for elite private offices worldwide.",
     canonical: `${SITE}/about`,
   },
   "/services": {
