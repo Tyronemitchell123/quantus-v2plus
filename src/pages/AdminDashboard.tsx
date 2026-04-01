@@ -10,6 +10,7 @@ import useDocumentHead from "@/hooks/use-document-head";
 import ConversionFunnel from "@/components/admin/ConversionFunnel";
 import EmailMonitoringTab from "@/components/admin/EmailMonitoringTab";
 import VendorManagementTab from "@/components/admin/VendorManagementTab";
+import SystemHealthPanel from "@/components/admin/SystemHealthPanel";
 
 interface DashboardData {
   addonSales: {
@@ -128,6 +129,7 @@ const AdminDashboard = () => {
           <TabsList>
             <TabsTrigger value="funnel">Conversion Funnel</TabsTrigger>
             <TabsTrigger value="vendors">Vendors</TabsTrigger>
+            <TabsTrigger value="health">System Health</TabsTrigger>
             <TabsTrigger value="emails">Email Monitoring</TabsTrigger>
             <TabsTrigger value="addons">Add-on Sales</TabsTrigger>
             <TabsTrigger value="referrals">Referral Metrics</TabsTrigger>
@@ -147,6 +149,15 @@ const AdminDashboard = () => {
           {/* Vendor Management */}
           <TabsContent value="vendors">
             <VendorManagementTab />
+          </TabsContent>
+
+          {/* System Health */}
+          <TabsContent value="health">
+            <Card>
+              <CardContent className="pt-6">
+                <SystemHealthPanel />
+              </CardContent>
+            </Card>
           </TabsContent>
 
           {/* Add-on Sales */}

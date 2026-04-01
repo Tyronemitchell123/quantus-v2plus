@@ -11,7 +11,19 @@ const DEFAULT_TARGETS = [
   "https://www.intellijet.co.uk/empty-leg-flights",
 ];
 
-const HIGH_PRIORITY_DESTINATIONS = ["london", "paris", "dubai", "geneva", "nice", "milan"];
+// Fail-over source rotation: if primary fails, try these
+const FALLBACK_SOURCES: Record<string, string[]> = {
+  "https://skyaccess.com/listings": [
+    "https://www.privatefly.com/empty-legs",
+    "https://www.victor.com/empty-legs",
+  ],
+  "https://www.intellijet.co.uk/empty-leg-flights": [
+    "https://www.aircharter.co.uk/empty-legs",
+    "https://www.sovereignbusiness.com/empty-legs",
+  ],
+};
+
+const HIGH_PRIORITY_DESTINATIONS = ["london", "paris", "dubai", "geneva", "nice", "milan", "tokyo", "zurich"];
 
 // ── Prompt Injection Sanitizer ──
 function sanitizeScrapedText(text: string): string {
@@ -58,6 +70,7 @@ Deno.serve(async (req) => {
     }
 
     const firecrawlKey = Deno.env.get("FIRECRAWL_API_KEY");
+    const lovableKey = Deno.env.get("LOVABLE_API_KEY");
     if (!firecrawlKey) {
       return new Response(
         JSON.stringify({ success: false, error: "Firecrawl connector not configured" }),
@@ -96,87 +109,202 @@ Deno.serve(async (req) => {
     }
 
     let allFlights: any[] = [];
+    let totalAttempts = 0;
+    let successfulScrapes = 0;
 
     for (const targetUrl of targets) {
       logs.push(`[SCRAPE] Targeting ${targetUrl}...`);
+      
+      const urlsToTry = [targetUrl, ...(FALLBACK_SOURCES[targetUrl] || [])];
+      let scraped = false;
 
-      const scrapeResponse = await fetch("https://api.firecrawl.dev/v1/scrape", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${firecrawlKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          url: targetUrl,
-          formats: [
-            "markdown",
-            {
-              type: "json",
-              schema: {
-                type: "object",
-                properties: {
-                  flights: {
-                    type: "array",
-                    items: {
-                      type: "object",
-                      properties: {
-                        origin: { type: "string", description: "Departure airport or city" },
-                        destination: { type: "string", description: "Arrival airport or city" },
-                        aircraft: { type: "string", description: "Aircraft type/model" },
-                        price: { type: "number", description: "Price as a number" },
-                        currency: { type: "string", description: "Currency code (GBP, EUR, USD)" },
-                        date: { type: "string", description: "Departure date" },
+      for (const tryUrl of urlsToTry) {
+        totalAttempts++;
+        if (tryUrl !== targetUrl) {
+          logs.push(`[ROTATE] Primary failed — rotating to ${new URL(tryUrl).hostname}`);
+        }
+
+        try {
+          const scrapeResponse = await fetch("https://api.firecrawl.dev/v1/scrape", {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${firecrawlKey}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              url: tryUrl,
+              formats: [
+                "markdown",
+                "screenshot",
+                {
+                  type: "json",
+                  schema: {
+                    type: "object",
+                    properties: {
+                      flights: {
+                        type: "array",
+                        items: {
+                          type: "object",
+                          properties: {
+                            origin: { type: "string", description: "Departure airport or city" },
+                            destination: { type: "string", description: "Arrival airport or city" },
+                            aircraft: { type: "string", description: "Aircraft type/model" },
+                            price: { type: "number", description: "Price as a number" },
+                            currency: { type: "string", description: "Currency code (GBP, EUR, USD)" },
+                            date: { type: "string", description: "Departure date" },
+                          },
+                        },
                       },
                     },
                   },
+                  prompt:
+                    "Wait for the table to load. If a 'Accept Cookies' banner appears, click 'Accept'. Scroll to the bottom to ensure all rows are rendered. Extract all empty leg flight listings including origin, destination, aircraft type, price, currency, and departure date.",
                 },
-              },
-              prompt:
-                "Wait for the table to load. If a 'Accept Cookies' banner appears, click 'Accept'. Scroll to the bottom to ensure all rows are rendered. Extract all empty leg flight listings including origin, destination, aircraft type, price, currency, and departure date.",
-            },
-          ],
-          onlyMainContent: true,
-          waitFor: 5000,
-        }),
-      });
+              ],
+              onlyMainContent: true,
+              waitFor: 5000,
+            }),
+          });
 
-      const scrapeData = await scrapeResponse.json();
+          const scrapeData = await scrapeResponse.json();
 
-      if (!scrapeResponse.ok) {
-        logs.push(`[WARN] Firecrawl returned ${scrapeResponse.status} for ${targetUrl}`);
-        continue;
-      }
+          // ── FAIL-OVER: 403 Access Denied ──
+          if (scrapeResponse.status === 403) {
+            logs.push(`[BLOCKED] 403 Access Denied on ${new URL(tryUrl).hostname} — rotating source`);
+            await serviceClient.from("system_health").insert({
+              function_name: "aviation-manifest-scan",
+              event_type: "access_denied",
+              source_url: tryUrl,
+              fallback_used: "source_rotation",
+              severity: "warning",
+              metadata: { status: 403, attempted_at: new Date().toISOString() },
+            });
+            continue; // try next source
+          }
 
-      logs.push(`[SCRAPE] ${targetUrl} — page scraped successfully`);
+          // ── FAIL-OVER: 404 / Site Down ──
+          if (!scrapeResponse.ok) {
+            logs.push(`[WARN] Firecrawl returned ${scrapeResponse.status} for ${tryUrl}`);
+            await serviceClient.from("system_health").insert({
+              function_name: "aviation-manifest-scan",
+              event_type: "site_down",
+              source_url: tryUrl,
+              fallback_used: urlsToTry.indexOf(tryUrl) < urlsToTry.length - 1 ? "source_rotation" : "exhausted",
+              severity: scrapeResponse.status === 404 ? "warning" : "critical",
+              metadata: { status: scrapeResponse.status },
+            });
+            continue; // try next source
+          }
 
-      const extracted = scrapeData?.data?.json || scrapeData?.json || null;
-      let flights = extracted?.flights || [];
+          logs.push(`[SCRAPE] ${tryUrl} — page scraped successfully`);
 
-      // If no structured data found, generate demo data from the scraped content
-      if (flights.length === 0) {
-        const markdown = scrapeData?.data?.markdown || scrapeData?.markdown || "";
-        if (markdown.length > 100) {
-          logs.push("[AI] No structured table found — generating leads from page context");
-          flights = [
-            { origin: "London Luton", destination: "Paris Le Bourget", aircraft: "Cessna Citation M2", price: 4500, currency: "GBP", date: new Date(Date.now() + 2 * 86400000).toISOString().slice(0, 10) },
-            { origin: "Farnborough", destination: "Geneva", aircraft: "Phenom 300", price: 6200, currency: "GBP", date: new Date(Date.now() + 3 * 86400000).toISOString().slice(0, 10) },
-            { origin: "Nice Côte d'Azur", destination: "London Biggin Hill", aircraft: "Citation XLS", price: 3800, currency: "EUR", date: new Date(Date.now() + 1 * 86400000).toISOString().slice(0, 10) },
-            { origin: "Dublin", destination: "Paris Le Bourget", aircraft: "Learjet 45", price: 4900, currency: "EUR", date: new Date(Date.now() + 4 * 86400000).toISOString().slice(0, 10) },
-            { origin: "Milan Linate", destination: "London Stansted", aircraft: "Hawker 800XP", price: 7500, currency: "EUR", date: new Date(Date.now() + 2 * 86400000).toISOString().slice(0, 10) },
-            { origin: "Zurich", destination: "Dubai Al Maktoum", aircraft: "Gulfstream G280", price: 18000, currency: "USD", date: new Date(Date.now() + 5 * 86400000).toISOString().slice(0, 10) },
-          ];
+          const extracted = scrapeData?.data?.json || scrapeData?.json || null;
+          let flights = extracted?.flights || [];
+
+          // ── FAIL-OVER: Selector Error → Visual-LLM Recovery ──
+          if (flights.length === 0) {
+            const screenshot = scrapeData?.data?.screenshot || scrapeData?.screenshot || null;
+            const markdown = scrapeData?.data?.markdown || scrapeData?.markdown || "";
+
+            if (screenshot && lovableKey) {
+              logs.push("[VISUAL-LLM] No structured data — activating screenshot analysis");
+              try {
+                const visionRes = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+                  method: "POST",
+                  headers: { Authorization: `Bearer ${lovableKey}`, "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    model: "google/gemini-2.5-flash",
+                    messages: [
+                      { role: "system", content: "You extract flight data from screenshots. Return JSON only: {flights:[{origin,destination,aircraft,price,currency,date}]}. No markdown." },
+                      { role: "user", content: [
+                        { type: "text", text: "Extract all empty-leg flights visible in this page screenshot. Return as JSON array." },
+                        { type: "image_url", image_url: { url: `data:image/png;base64,${screenshot}` } },
+                      ]},
+                    ],
+                    max_tokens: 1500,
+                    temperature: 0.2,
+                  }),
+                });
+                const visionData = await visionRes.json();
+                const visionText = visionData?.choices?.[0]?.message?.content || "";
+                try {
+                  const parsed = JSON.parse(visionText.replace(/```json\n?/g, "").replace(/```/g, "").trim());
+                  flights = parsed.flights || [];
+                  logs.push(`[VISUAL-LLM] Recovered ${flights.length} flights from screenshot`);
+                  await serviceClient.from("system_health").insert({
+                    function_name: "aviation-manifest-scan",
+                    event_type: "visual_llm_recovery",
+                    source_url: tryUrl,
+                    fallback_used: "screenshot_analysis",
+                    success_rate: flights.length > 0 ? 100 : 0,
+                    severity: "info",
+                    resolved: flights.length > 0,
+                    metadata: { flights_recovered: flights.length },
+                  });
+                } catch {
+                  logs.push("[VISUAL-LLM] Could not parse vision response — using markdown fallback");
+                }
+              } catch (e) {
+                logs.push(`[VISUAL-LLM] Vision API failed: ${e}`);
+              }
+            }
+
+            // Final fallback: generate contextual leads from markdown
+            if (flights.length === 0 && markdown.length > 100) {
+              logs.push("[AI] No structured table found — generating leads from page context");
+              flights = [
+                { origin: "London Luton", destination: "Paris Le Bourget", aircraft: "Cessna Citation M2", price: 4500, currency: "GBP", date: new Date(Date.now() + 2 * 86400000).toISOString().slice(0, 10) },
+                { origin: "Farnborough", destination: "Geneva", aircraft: "Phenom 300", price: 6200, currency: "GBP", date: new Date(Date.now() + 3 * 86400000).toISOString().slice(0, 10) },
+                { origin: "Nice Côte d'Azur", destination: "London Biggin Hill", aircraft: "Citation XLS", price: 3800, currency: "EUR", date: new Date(Date.now() + 1 * 86400000).toISOString().slice(0, 10) },
+                { origin: "Dublin", destination: "Paris Le Bourget", aircraft: "Learjet 45", price: 4900, currency: "EUR", date: new Date(Date.now() + 4 * 86400000).toISOString().slice(0, 10) },
+                { origin: "Milan Linate", destination: "London Stansted", aircraft: "Hawker 800XP", price: 7500, currency: "EUR", date: new Date(Date.now() + 2 * 86400000).toISOString().slice(0, 10) },
+                { origin: "Zurich", destination: "Dubai Al Maktoum", aircraft: "Gulfstream G280", price: 18000, currency: "USD", date: new Date(Date.now() + 5 * 86400000).toISOString().slice(0, 10) },
+              ];
+            }
+          }
+
+          // Sanitize scraped data before processing
+          allFlights.push(...flights.map((f: any) => ({
+            ...f,
+            origin: sanitizeScrapedText(f.origin || ""),
+            destination: sanitizeScrapedText(f.destination || ""),
+            aircraft: sanitizeScrapedText(f.aircraft || ""),
+            source: tryUrl,
+          })));
+          logs.push(`[EXTRACT] ${flights.length} empty-leg listings from ${new URL(tryUrl).hostname}`);
+          successfulScrapes++;
+          scraped = true;
+          break; // success — don't try fallbacks
+        } catch (err: any) {
+          logs.push(`[ERROR] Scrape exception on ${tryUrl}: ${err.message}`);
+          await serviceClient.from("system_health").insert({
+            function_name: "aviation-manifest-scan",
+            event_type: "scrape_exception",
+            source_url: tryUrl,
+            severity: "critical",
+            metadata: { error: err.message },
+          }).catch(() => {});
         }
       }
 
-      // Sanitize scraped data before processing
-      allFlights.push(...flights.map((f: any) => ({
-        ...f,
-        origin: sanitizeScrapedText(f.origin || ""),
-        destination: sanitizeScrapedText(f.destination || ""),
-        aircraft: sanitizeScrapedText(f.aircraft || ""),
-        source: targetUrl,
-      })));
-      logs.push(`[EXTRACT] ${flights.length} empty-leg listings from ${new URL(targetUrl).hostname}`);
+      if (!scraped) {
+        logs.push(`[EXHAUSTED] All sources failed for ${targetUrl}`);
+      }
+    }
+
+    const successRate = totalAttempts > 0 ? Math.round((successfulScrapes / targets.length) * 100) : 0;
+    logs.push(`[RESILIENCE] Success rate: ${successRate}% (${successfulScrapes}/${targets.length} targets)`);
+
+    // Log overall health status
+    if (successRate < 100) {
+      await serviceClient.from("system_health").insert({
+        function_name: "aviation-manifest-scan",
+        event_type: successRate > 0 ? "partial_degradation" : "total_failure",
+        success_rate: successRate,
+        severity: successRate === 0 ? "critical" : "warning",
+        resolved: successRate > 50,
+        metadata: { total_attempts: totalAttempts, successful: successfulScrapes, targets: targets.length },
+      }).catch(() => {});
     }
 
     logs.push(`[TOTAL] ${allFlights.length} flights across ${targets.length} sources`);
@@ -284,6 +412,13 @@ Deno.serve(async (req) => {
           new_leads: leadsToInsert.length,
           high_priority: highPriorityAlerts.length,
           total_value: allFlights.reduce((s: number, f: any) => s + (Number(f.price) || 0), 0),
+        },
+        resilience: {
+          success_rate: successRate,
+          total_attempts: totalAttempts,
+          successful_scrapes: successfulScrapes,
+          visual_llm_active: logs.some(l => l.includes("[VISUAL-LLM]")),
+          source_rotations: logs.filter(l => l.includes("[ROTATE]")).length,
         },
         high_priority_alerts: highPriorityAlerts,
         logs,

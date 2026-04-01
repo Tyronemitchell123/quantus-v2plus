@@ -1849,6 +1849,45 @@ export type Database = {
         }
         Relationships: []
       }
+      system_health: {
+        Row: {
+          created_at: string
+          event_type: string
+          fallback_used: string | null
+          function_name: string
+          id: string
+          metadata: Json | null
+          resolved: boolean
+          severity: string
+          source_url: string | null
+          success_rate: number | null
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          fallback_used?: string | null
+          function_name: string
+          id?: string
+          metadata?: Json | null
+          resolved?: boolean
+          severity?: string
+          source_url?: string | null
+          success_rate?: number | null
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          fallback_used?: string | null
+          function_name?: string
+          id?: string
+          metadata?: Json | null
+          resolved?: boolean
+          severity?: string
+          source_url?: string | null
+          success_rate?: number | null
+        }
+        Relationships: []
+      }
       system_logs: {
         Row: {
           action_type: string
