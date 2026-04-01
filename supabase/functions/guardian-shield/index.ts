@@ -130,22 +130,26 @@ Deno.serve(async (req) => {
     const approved = passedFactors >= (isHighValue ? 3 : 2);
 
     // Log to security audit
-    await sb.from('security_audit_log').insert({
-      user_id: client_id || '00000000-0000-0000-0000-000000000000',
-      action: approved ? 'transaction_approved' : 'transaction_blocked',
-      resource_type: 'guardian_shield',
-      resource_id: transaction_id || crypto.randomUUID(),
-      ip_address: client_ip || null,
-      metadata: {
-        amount_cents,
-        currency,
-        settlement_type,
-        factors,
-        passed_factors: passedFactors,
-        overall_confidence: overallConfidence,
-        is_high_value: isHighValue,
-      },
-    }).catch(e => console.error('[Guardian] Audit log failed:', e));
+    try {
+      await sb.from('security_audit_log').insert({
+        user_id: client_id || '00000000-0000-0000-0000-000000000000',
+        action: approved ? 'transaction_approved' : 'transaction_blocked',
+        resource_type: 'guardian_shield',
+        resource_id: transaction_id || crypto.randomUUID(),
+        ip_address: client_ip || null,
+        metadata: {
+          amount_cents,
+          currency,
+          settlement_type,
+          factors,
+          passed_factors: passedFactors,
+          overall_confidence: overallConfidence,
+          is_high_value: isHighValue,
+        },
+      });
+    } catch (e) {
+      console.error('[Guardian] Audit log failed:', e);
+    }
 
     return new Response(JSON.stringify({
       success: true,
