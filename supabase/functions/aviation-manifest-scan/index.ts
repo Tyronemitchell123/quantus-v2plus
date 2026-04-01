@@ -185,15 +185,35 @@ Deno.serve(async (req) => {
     const leadsToInsert: any[] = [];
     const highPriorityAlerts: string[] = [];
 
+    // Market average estimates by aircraft class
+    const MARKET_AVG: Record<string, number> = {
+      gulfstream: 22000, global: 22000, falcon: 18000, g280: 12000,
+      challenger: 12000, citation: 5500, phenom: 6000, learjet: 5000,
+      hawker: 8000, default: 8000,
+    };
+
+    function getMarketAvg(aircraft: string): number {
+      const lower = (aircraft || "").toLowerCase();
+      for (const [key, val] of Object.entries(MARKET_AVG)) {
+        if (lower.includes(key)) return val;
+      }
+      return MARKET_AVG.default;
+    }
+
     for (const flight of allFlights) {
       const price = Number(flight.price) || 0;
       const currency = flight.currency || "GBP";
       const dest = (flight.destination || "").toLowerCase();
       const origin = (flight.origin || "").toLowerCase();
+      const marketAvg = getMarketAvg(flight.aircraft || "");
+      const arbitragePct = marketAvg > 0 ? ((marketAvg - price) / marketAvg) * 100 : 0;
 
       // High priority: price < 5000 AND destination is London/Paris (or other key cities)
       const isHighPriority =
         price > 0 && price < 5000 && HIGH_PRIORITY_DESTINATIONS.some((c) => dest.includes(c) || origin.includes(c));
+
+      // Arbitrage detection: >15% below market average
+      const isArbitrage = price > 0 && arbitragePct > 15;
 
       // Deduplicate by source URL + origin + destination + date
       const sourceKey = `aviation-emptyleg://${flight.source || "unknown"}/${flight.origin}-${flight.destination}/${flight.date || "nodate"}`;
@@ -210,13 +230,16 @@ Deno.serve(async (req) => {
         continue;
       }
 
-      const aiSummary = `[Empty Leg] ${flight.origin} → ${flight.destination} | ${flight.aircraft || "Unknown aircraft"} | ${currency} ${price.toLocaleString()} | Date: ${flight.date || "TBC"}${isHighPriority ? " | ⚡ HIGH PRIORITY" : ""}`;
+      const aiSummary = `[Empty Leg] ${flight.origin} → ${flight.destination} | ${flight.aircraft || "Unknown aircraft"} | ${currency} ${price.toLocaleString()} | Date: ${flight.date || "TBC"}${isHighPriority ? " | ⚡ HIGH PRIORITY" : ""}${isArbitrage ? ` | 📊 ARBITRAGE ${arbitragePct.toFixed(0)}% below market (avg ${currency} ${marketAvg.toLocaleString()})` : ""}`;
+
+      // Determine status
+      const leadStatus = isArbitrage ? "Arbitrage_Detected" : "Monitoring";
 
       leadsToInsert.push({
         tenant_id: tenantId,
         user_id: user.id,
         source_url: sourceKey,
-        status: "Monitoring",
+        status: leadStatus,
         potential_value: price,
         ai_summary: aiSummary,
       });
@@ -224,9 +247,12 @@ Deno.serve(async (req) => {
       if (isHighPriority) {
         highPriorityAlerts.push(`⚡ ${flight.origin} → ${flight.destination} — ${currency} ${price.toLocaleString()} (${flight.aircraft || "N/A"})`);
       }
+      if (isArbitrage) {
+        highPriorityAlerts.push(`📊 ARBITRAGE: ${flight.origin} → ${flight.destination} — ${arbitragePct.toFixed(0)}% below market (${currency} ${price.toLocaleString()} vs avg ${currency} ${marketAvg.toLocaleString()})`);
+      }
 
       logs.push(
-        `[LEAD] ${flight.origin} → ${flight.destination} — ${currency} ${price} — ${flight.aircraft || "N/A"}${isHighPriority ? " 🔴 HIGH PRIORITY" : ""}`
+        `[LEAD] ${flight.origin} → ${flight.destination} — ${currency} ${price} — ${flight.aircraft || "N/A"}${isHighPriority ? " 🔴 HIGH PRIORITY" : ""}${isArbitrage ? ` 📊 ARBITRAGE (${arbitragePct.toFixed(0)}%)` : ""}`
       );
     }
 
