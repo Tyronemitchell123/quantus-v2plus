@@ -7,6 +7,7 @@ import {
   Plane, Search, AlertTriangle, Terminal, Loader2, CheckCircle, XCircle, Zap, MessageSquare,
 } from "lucide-react";
 import AviationNegotiationSandbox from "./AviationNegotiationSandbox";
+import AviationLiveDeals from "./AviationLiveDeals";
 
 type ScanResult = {
   success: boolean;
