@@ -8,7 +8,7 @@ import DashboardTopBar from "@/components/dashboard/DashboardTopBar";
 import MobileBottomNav from "@/components/mobile/MobileBottomNav";
 import ParticleGrid from "@/components/ParticleGrid";
 import {
-  Plane, Stethoscope, Gem, Hotel, Activity, TrendingUp, TrendingDown,
+  Plane, Stethoscope, Gem, Hotel, HeartPulse, Activity, TrendingUp, TrendingDown,
   AlertTriangle, Eye, Ghost, RefreshCcw, ArrowUpRight, Zap,
 } from "lucide-react";
 import MedicalScanPanel from "@/components/sovereign/MedicalScanPanel";
