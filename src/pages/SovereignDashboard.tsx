@@ -14,8 +14,10 @@ import {
 import MedicalScanPanel from "@/components/sovereign/MedicalScanPanel";
 import AviationScanPanel from "@/components/sovereign/AviationScanPanel";
 import HospitalityScanPanel from "@/components/sovereign/HospitalityScanPanel";
+import LongevityScanPanel from "@/components/sovereign/LongevityScanPanel";
+import SovereignMasterView from "@/components/sovereign/SovereignMasterView";
 
-type Sector = "Aviation" | "Medical" | "Lifestyle" | "Hospitality";
+type Sector = "Aviation" | "Medical" | "Lifestyle" | "Hospitality" | "Longevity";
 
 const sectorConfig: Record<Sector, { icon: typeof Plane; color: string; kpiLabel: string; leakLabel: string }> = {
   Aviation: { icon: Plane, color: "text-blue-400", kpiLabel: "Empty Legs Detected", leakLabel: "Charter Revenue Leaking" },
