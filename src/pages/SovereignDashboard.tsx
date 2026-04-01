@@ -19,6 +19,7 @@ import LongevityBridgePanel from "@/components/sovereign/LongevityBridgePanel";
 import SovereignMasterView from "@/components/sovereign/SovereignMasterView";
 import GenevaPowerPlay from "@/components/sovereign/GenevaPowerPlay";
 import PacificSovereign from "@/components/sovereign/PacificSovereign";
+import PacificVitality from "@/components/sovereign/PacificVitality";
 import VanguardDashboard from "@/components/sovereign/VanguardDashboard";
 import RevenueVault from "@/components/sovereign/RevenueVault";
 
