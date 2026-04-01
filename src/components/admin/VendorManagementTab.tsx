@@ -24,10 +24,25 @@ interface Vendor {
   credentials: Record<string, unknown>;
 }
 
+interface DiscoveredVendor {
+  name: string;
+  company: string;
+  website?: string;
+  location?: string;
+  description?: string;
+}
+
+const CATEGORIES = ["aviation", "medical", "staffing", "hospitality", "logistics", "marine", "legal", "finance", "lifestyle"];
+
 const VendorManagementTab = () => {
   const [vendors, setVendors] = useState<Vendor[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [discoveryCategory, setDiscoveryCategory] = useState("aviation");
+  const [discoveryRegion, setDiscoveryRegion] = useState("");
+  const [discovering, setDiscovering] = useState(false);
+  const [discovered, setDiscovered] = useState<DiscoveredVendor[]>([]);
+  const [addingVendor, setAddingVendor] = useState<string | null>(null);
 
   const fetchVendors = async () => {
     const { data, error } = await supabase
