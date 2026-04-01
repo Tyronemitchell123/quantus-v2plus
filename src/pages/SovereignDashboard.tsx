@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import MedicalScanPanel from "@/components/sovereign/MedicalScanPanel";
 import AviationScanPanel from "@/components/sovereign/AviationScanPanel";
+import HospitalityScanPanel from "@/components/sovereign/HospitalityScanPanel";
 
 type Sector = "Aviation" | "Medical" | "Lifestyle" | "Hospitality";
 
