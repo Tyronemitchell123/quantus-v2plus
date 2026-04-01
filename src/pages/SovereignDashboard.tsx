@@ -76,6 +76,13 @@ const generateFeedItems = (sector: Sector) => {
       { status: "Monitoring", text: "Prenuvo NYC — Cancer Screening slot opening", value: 18500 },
       { status: "Recovered", text: "Clinique La Prairie — Anti-Aging programme secured", value: 15000 },
     ],
+    Vanguard: [
+      { status: "Monitoring", text: "Mr. Sterling — Recovery 35/100, Stress 9/10 (3-day trend)", value: 42000 },
+      { status: "Recovered", text: "Bio-Reset itinerary confirmed — FAB → NRT + Tokyo Brain Hub", value: 54000 },
+      { status: "Ghosted", text: "Ms. Ashworth — Burnout alert sent, no response (12h)", value: 38000 },
+      { status: "Monitoring", text: "Mr. Chen — Wearable sync active, recovery trending down", value: 28000 },
+      { status: "Recovered", text: "Cellular Revive at Samitivej — booked via Sovereign Push", value: 9500 },
+    ],
   };
   return items[sector];
 };
