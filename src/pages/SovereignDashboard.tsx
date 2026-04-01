@@ -9,7 +9,7 @@ import MobileBottomNav from "@/components/mobile/MobileBottomNav";
 import ParticleGrid from "@/components/ParticleGrid";
 import {
   Plane, Stethoscope, Gem, Hotel, HeartPulse, Activity, TrendingUp, TrendingDown,
-  AlertTriangle, Eye, Ghost, RefreshCcw, ArrowUpRight, Zap,
+  AlertTriangle, Eye, Ghost, RefreshCcw, ArrowUpRight, Zap, Brain,
 } from "lucide-react";
 import MedicalScanPanel from "@/components/sovereign/MedicalScanPanel";
 import AviationScanPanel from "@/components/sovereign/AviationScanPanel";
