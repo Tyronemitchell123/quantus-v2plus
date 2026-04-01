@@ -8,7 +8,7 @@ const SITE = "https://quantus-loom.lovable.app";
 export const PAGE_SEO: Record<string, { title: string; description: string; canonical?: string; jsonLd?: Record<string, unknown> }> = {
   "/": {
     title: "Quantus V2+ — Ultra-Premium AI Intelligence Platform for UHNW Clients",
-    description: "Multi-vertical orchestration engine for ultra-high-net-worth clients. Aviation, marine, medical, legal, finance, staffing & lifestyle — unified in one sovereign interface.",
+    description: "AI orchestration for ultra-high-net-worth clients. Aviation, marine, medical, legal, finance, staffing & lifestyle unified in one sovereign interface.",
     canonical: `${SITE}/`,
     jsonLd: {
       "@context": "https://schema.org",
