@@ -2025,6 +2025,128 @@ export type Database = {
         }
         Relationships: []
       }
+      vanguard_clients: {
+        Row: {
+          bio_recovery_threshold: number
+          calendar_provider: string | null
+          client_code: string
+          client_name: string
+          consecutive_days: number
+          created_at: string
+          id: string
+          is_active: boolean
+          metadata: Json | null
+          preferred_airports: string[] | null
+          preferred_destinations: string[] | null
+          retainer_cents: number
+          stress_index_threshold: number
+          success_fee_rate: number
+          updated_at: string
+          user_id: string
+          wearable_api_token: string | null
+          wearable_provider: string
+        }
+        Insert: {
+          bio_recovery_threshold?: number
+          calendar_provider?: string | null
+          client_code?: string
+          client_name: string
+          consecutive_days?: number
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          metadata?: Json | null
+          preferred_airports?: string[] | null
+          preferred_destinations?: string[] | null
+          retainer_cents?: number
+          stress_index_threshold?: number
+          success_fee_rate?: number
+          updated_at?: string
+          user_id: string
+          wearable_api_token?: string | null
+          wearable_provider?: string
+        }
+        Update: {
+          bio_recovery_threshold?: number
+          calendar_provider?: string | null
+          client_code?: string
+          client_name?: string
+          consecutive_days?: number
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          metadata?: Json | null
+          preferred_airports?: string[] | null
+          preferred_destinations?: string[] | null
+          retainer_cents?: number
+          stress_index_threshold?: number
+          success_fee_rate?: number
+          updated_at?: string
+          user_id?: string
+          wearable_api_token?: string | null
+          wearable_provider?: string
+        }
+        Relationships: []
+      }
+      vanguard_triggers: {
+        Row: {
+          ai_generated: boolean
+          calendar_stress_index: number
+          client_id: string
+          commission_cents: number | null
+          created_at: string
+          escape_manifest: Json | null
+          executed_at: string | null
+          id: string
+          outreach_draft: string | null
+          recovery_scores: number[]
+          status: string
+          trigger_type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ai_generated?: boolean
+          calendar_stress_index?: number
+          client_id: string
+          commission_cents?: number | null
+          created_at?: string
+          escape_manifest?: Json | null
+          executed_at?: string | null
+          id?: string
+          outreach_draft?: string | null
+          recovery_scores?: number[]
+          status?: string
+          trigger_type?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ai_generated?: boolean
+          calendar_stress_index?: number
+          client_id?: string
+          commission_cents?: number | null
+          created_at?: string
+          escape_manifest?: Json | null
+          executed_at?: string | null
+          id?: string
+          outreach_draft?: string | null
+          recovery_scores?: number[]
+          status?: string
+          trigger_type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vanguard_triggers_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "vanguard_clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       vendor_messages: {
         Row: {
           ai_generated: boolean | null
