@@ -234,6 +234,7 @@ const SovereignDashboard = () => {
           {/* Sector Scan Panels */}
           {activeSector === "Aviation" && <AviationScanPanel />}
           {activeSector === "Medical" && <MedicalScanPanel />}
+          {activeSector === "Lifestyle" && <LifestyleScanPanel />}
           {activeSector === "Hospitality" && <HospitalityScanPanel />}
           {activeSector === "Hospitality" && <HospitalityConciergePanel />}
           {activeSector === "Longevity" && <LongevityScanPanel />}
