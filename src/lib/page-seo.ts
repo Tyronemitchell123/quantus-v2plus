@@ -8,7 +8,7 @@ const SITE = "https://quantus-loom.lovable.app";
 export const PAGE_SEO: Record<string, { title: string; description: string; canonical?: string; jsonLd?: Record<string, unknown> }> = {
   "/": {
     title: "Quantus V2+ — Ultra-Premium AI Intelligence Platform for UHNW Clients",
-    description: "Multi-vertical orchestration engine for ultra-high-net-worth clients. Aviation, marine, medical, legal, finance, staffing & lifestyle — unified in one sovereign interface.",
+    description: "AI orchestration for ultra-high-net-worth clients. Aviation, marine, medical, legal, finance, staffing & lifestyle unified in one sovereign interface.",
     canonical: `${SITE}/`,
     jsonLd: {
       "@context": "https://schema.org",
@@ -23,7 +23,7 @@ export const PAGE_SEO: Record<string, { title: string; description: string; cano
   },
   "/about": {
     title: "About Quantus V2+ — The Sovereign Intelligence Platform",
-    description: "Discover how Quantus V2+ orchestrates multi-million dollar deals across aviation, marine, legal, finance, and lifestyle verticals for elite private offices worldwide.",
+    description: "Quantus V2+ orchestrates multi-million dollar deals across aviation, marine, legal, finance & lifestyle verticals for elite private offices worldwide.",
     canonical: `${SITE}/about`,
   },
   "/services": {
