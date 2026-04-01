@@ -11,6 +11,7 @@ import {
   Plane, Stethoscope, Gem, Hotel, Activity, TrendingUp, TrendingDown,
   AlertTriangle, Eye, Ghost, RefreshCcw, ArrowUpRight, Zap,
 } from "lucide-react";
+import MedicalScanPanel from "@/components/sovereign/MedicalScanPanel";
 
 type Sector = "Aviation" | "Medical" | "Lifestyle" | "Hospitality";
 
@@ -201,6 +202,9 @@ const SovereignDashboard = () => {
               </motion.div>
             ))}
           </div>
+
+          {/* Medical Scan Panel */}
+          {activeSector === "Medical" && <MedicalScanPanel />}
 
           {/* Monitoring Feed */}
           <div className="space-y-3">
