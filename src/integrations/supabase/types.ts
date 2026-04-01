@@ -97,6 +97,39 @@ export type Database = {
         }
         Relationships: []
       }
+      agent_logs: {
+        Row: {
+          agent_name: string
+          created_at: string
+          failure_reason: string | null
+          id: string
+          metadata: Json | null
+          status: string
+          task_type: string
+          visual_coordinates: Json | null
+        }
+        Insert: {
+          agent_name: string
+          created_at?: string
+          failure_reason?: string | null
+          id?: string
+          metadata?: Json | null
+          status?: string
+          task_type?: string
+          visual_coordinates?: Json | null
+        }
+        Update: {
+          agent_name?: string
+          created_at?: string
+          failure_reason?: string | null
+          id?: string
+          metadata?: Json | null
+          status?: string
+          task_type?: string
+          visual_coordinates?: Json | null
+        }
+        Relationships: []
+      }
       anomaly_alerts: {
         Row: {
           created_at: string
@@ -1825,6 +1858,59 @@ export type Database = {
         }
         Relationships: []
       }
+      success_fees: {
+        Row: {
+          billed_status: boolean
+          client_id: string
+          created_at: string
+          fee_cents: number | null
+          fee_percentage: number
+          id: string
+          metadata: Json | null
+          raw_cost_cents: number
+          service_type: string
+          stripe_invoice_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          billed_status?: boolean
+          client_id: string
+          created_at?: string
+          fee_cents?: number | null
+          fee_percentage?: number
+          id?: string
+          metadata?: Json | null
+          raw_cost_cents?: number
+          service_type?: string
+          stripe_invoice_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          billed_status?: boolean
+          client_id?: string
+          created_at?: string
+          fee_cents?: number | null
+          fee_percentage?: number
+          id?: string
+          metadata?: Json | null
+          raw_cost_cents?: number
+          service_type?: string
+          stripe_invoice_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "success_fees_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "vanguard_clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       suppressed_emails: {
         Row: {
           created_at: string
@@ -2079,6 +2165,7 @@ export type Database = {
           preferred_destinations: string[] | null
           retainer_cents: number
           stress_index_threshold: number
+          stripe_customer_id: string | null
           success_fee_rate: number
           updated_at: string
           user_id: string
@@ -2099,6 +2186,7 @@ export type Database = {
           preferred_destinations?: string[] | null
           retainer_cents?: number
           stress_index_threshold?: number
+          stripe_customer_id?: string | null
           success_fee_rate?: number
           updated_at?: string
           user_id: string
@@ -2119,6 +2207,7 @@ export type Database = {
           preferred_destinations?: string[] | null
           retainer_cents?: number
           stress_index_threshold?: number
+          stripe_customer_id?: string | null
           success_fee_rate?: number
           updated_at?: string
           user_id?: string
