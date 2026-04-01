@@ -123,7 +123,7 @@ const SovereignVault = () => {
               </div>
             ) : (
               <div className="space-y-2">
-                {displayCommissions.map((c, i) => (
+                {commissions.map((c, i) => (
                   <motion.div
                     key={c.id}
                     initial={{ opacity: 0, y: 8 }}
