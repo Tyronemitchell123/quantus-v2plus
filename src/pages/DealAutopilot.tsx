@@ -105,6 +105,9 @@ const DealAutopilot = () => {
   const [dealCategory, setDealCategory] = useState("");
   const [dealBudget, setDealBudget] = useState("");
   const [livePipeline, setLivePipeline] = useState<any[]>([]);
+  const [dealDetails, setDealDetails] = useState<Record<string, { vendorsContacted: number; confidence: number }>>({});
+  const [activityLogs, setActivityLogs] = useState<{ time: string; action: string; type: string }[]>([]);
+  const [launching, setLaunching] = useState(false);
   const autopilotStats = useAutopilotStats();
   const navigate = useNavigate();
 
@@ -117,7 +120,8 @@ const DealAutopilot = () => {
         .order("updated_at", { ascending: false })
         .limit(20);
 
-      setLivePipeline((data || []).map((d: any) => ({
+      const dealRows = data || [];
+      setLivePipeline(dealRows.map((d: any) => ({
         id: d.id,
         dealNumber: d.deal_number,
         category: d.category?.charAt(0).toUpperCase() + d.category?.slice(1),
@@ -127,9 +131,71 @@ const DealAutopilot = () => {
         eta: d.status === "completed" ? "Done" : "Auto",
         value: d.deal_value_estimate ? `$${(d.deal_value_estimate / 1000).toFixed(0)}K` : "—",
       })));
+
+      // Fetch vendor outreach counts per deal
+      if (dealRows.length > 0) {
+        const dealIds = dealRows.map((d: any) => d.id);
+        const { data: outreach } = await supabase
+          .from("vendor_outreach")
+          .select("deal_id, vendor_score, negotiation_ready")
+          .in("deal_id", dealIds);
+        const details: Record<string, { vendorsContacted: number; confidence: number }> = {};
+        (outreach || []).forEach((o: any) => {
+          if (!details[o.deal_id]) details[o.deal_id] = { vendorsContacted: 0, confidence: 0 };
+          details[o.deal_id].vendorsContacted++;
+          details[o.deal_id].confidence = Math.max(details[o.deal_id].confidence, o.vendor_score || 0);
+        });
+        setDealDetails(details);
+      }
     };
+
+    const fetchLogs = async () => {
+      const { data } = await supabase
+        .from("agent_logs")
+        .select("agent_name, task_type, status, created_at, metadata")
+        .order("created_at", { ascending: false })
+        .limit(10);
+      if (data) {
+        const now = new Date();
+        setActivityLogs(data.map((log: any) => {
+          const diff = now.getTime() - new Date(log.created_at).getTime();
+          const mins = Math.floor(diff / 60000);
+          const time = mins < 60 ? `${mins}m ago` : `${Math.floor(mins / 60)}h ago`;
+          return {
+            time,
+            action: `${log.agent_name}: ${log.task_type}${log.status === "failed" ? " — failed" : ""}`,
+            type: log.status === "failed" ? "warning" : "success",
+          };
+        }));
+      }
+    };
+
     fetchDeals();
+    fetchLogs();
   }, []);
+
+  const handleAutopilotLaunch = async () => {
+    if (!dealDescription.trim() || launching) return;
+    setLaunching(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("intake-classify", {
+        body: { message: dealDescription.trim(), channel: "autopilot", category: dealCategory || undefined },
+      });
+      if (error) throw new Error(error.message);
+      if (data?.error) throw new Error(data.error);
+      toast.success(`Deal ${data.deal?.deal_number} created and on autopilot`);
+      setCreateOpen(false);
+      setDealDescription("");
+      setDealCategory("");
+      setDealBudget("");
+      // Refresh
+      window.location.reload();
+    } catch (e: any) {
+      toast.error(e.message || "Failed to create deal");
+    } finally {
+      setLaunching(false);
+    }
+  };
 
   useDocumentHead({
     title: "AI Deal Autopilot — Autonomous Deal Execution | QUANTUS V2+",
