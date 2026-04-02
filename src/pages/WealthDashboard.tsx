@@ -25,13 +25,7 @@ const ICON_MAP: Record<string, any> = {
   vehicles: Car, cash: Wallet, other: Activity,
 };
 
-const recentActivity = [
-  { action: "Portfolio rebalanced", detail: "Shifted 2% from Equities to Private Equity", time: "2h ago", type: "rebalance" },
-  { action: "Dividend received", detail: "£42,500 from Hargreaves Fund III", time: "6h ago", type: "income" },
-  { action: "Property valuation updated", detail: "Mayfair residence +£380K", time: "1d ago", type: "valuation" },
-  { action: "Risk alert resolved", detail: "Emerging market exposure rebalanced", time: "2d ago", type: "alert" },
-  { action: "Trust distribution", detail: "Q1 distribution processed — £125K", time: "3d ago", type: "income" },
-];
+type ActivityItem = { action: string; detail: string; time: string; type: string };
 
 const aiInsights = [
   { title: "Rebalancing Opportunity", desc: "Equities overweight by 3.2%. Consider shifting to fixed income for risk-adjusted returns.", priority: "high" },
