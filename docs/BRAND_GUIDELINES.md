@@ -7,6 +7,8 @@
 **Philosophy:** Obsidian Reverence  
 **Aesthetic:** Jet-Cabin Minimalism  
 
+> **Canonical Note:** Quantus V2 is the first official release of the Quantus Sovereign OS. There is no Quantus V1. The "V2" naming reflects the system's evolved, cinematic, and sovereign architecture — it is a brand identity marker, not a version number.
+
 ## Quantus Lexicon™
 
 These proprietary terms define the platform's voice:
