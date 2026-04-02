@@ -162,7 +162,7 @@ const PayInvoice = () => {
                 )}
 
                 {invoiceInfo.status === "paid" && (
-                  <p className="text-center text-xs text-green-400">This invoice has already been paid. Thank you!</p>
+                  <p className="text-center text-xs text-success">This invoice has already been paid. Thank you!</p>
                 )}
               </motion.div>
             )}
