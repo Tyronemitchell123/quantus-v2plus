@@ -12,10 +12,11 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import RouteErrorBoundary from "@/components/RouteErrorBoundary";
 import PageLoader from "@/components/PageLoader";
-import CookieConsent from "@/components/CookieConsent";
-import { OfflineIndicator } from "@/components/mobile/MobileEnhancements";
-import WelcomeTooltips from "@/components/onboarding/WelcomeTooltips";
 import Index from "./pages/Index";
+
+const CookieConsent = lazy(() => import("@/components/CookieConsent"));
+const WelcomeTooltips = lazy(() => import("@/components/onboarding/WelcomeTooltips"));
+const OfflineIndicator = lazy(() => import("@/components/mobile/MobileEnhancements").then(m => ({ default: m.OfflineIndicator })));
 import { useAuth } from "@/hooks/use-auth";
 
 const ModulesRedirect = () => {
