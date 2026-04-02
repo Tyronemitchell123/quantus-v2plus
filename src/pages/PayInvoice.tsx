@@ -145,11 +145,11 @@ const PayInvoice = () => {
                   <div className="flex justify-between items-center">
                     <span className="text-xs text-muted-foreground">Status</span>
                     {invoiceInfo.status === "paid" ? (
-                      <span className="flex items-center gap-1 text-xs text-green-400">
+                      <span className="flex items-center gap-1 text-xs text-success">
                         <CheckCircle2 size={12} /> Paid
                       </span>
                     ) : (
-                      <span className="text-xs text-amber-400">Unpaid</span>
+                      <span className="text-xs text-warning">Unpaid</span>
                     )}
                   </div>
                 </div>
