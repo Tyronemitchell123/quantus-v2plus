@@ -6,6 +6,9 @@ import {
 } from "lucide-react";
 
 const navItems = [
+  { icon: Cpu, label: "Core", to: "/core" },
+  { icon: Dna, label: "Helix", to: "/helix" },
+  { icon: Globe, label: "Forge", to: "/forge" },
   { icon: Crown, label: "Sovereign", to: "/sovereign" },
   { icon: LayoutDashboard, label: "Dashboard", to: "/dashboard" },
   { icon: Briefcase, label: "Deals", to: "/deals" },
