@@ -259,7 +259,5 @@ const QuantusHelix = () => {
   );
 };
 
-// Fix: import was missing
-import { CheckCircle2 } from "lucide-react";
 
 export default QuantusHelix;
