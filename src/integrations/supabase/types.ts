@@ -2740,6 +2740,54 @@ export type Database = {
         }
         Relationships: []
       }
+      vendors_safe: {
+        Row: {
+          category: string | null
+          company: string | null
+          created_at: string | null
+          description: string | null
+          id: string | null
+          is_active: boolean | null
+          is_verified: boolean | null
+          location: string | null
+          logo_url: string | null
+          name: string | null
+          specialties: string[] | null
+          tier: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          category?: string | null
+          company?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string | null
+          is_active?: boolean | null
+          is_verified?: boolean | null
+          location?: string | null
+          logo_url?: string | null
+          name?: string | null
+          specialties?: string[] | null
+          tier?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string | null
+          company?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string | null
+          is_active?: boolean | null
+          is_verified?: boolean | null
+          location?: string | null
+          logo_url?: string | null
+          name?: string | null
+          specialties?: string[] | null
+          tier?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       webhooks_safe: {
         Row: {
           created_at: string | null
