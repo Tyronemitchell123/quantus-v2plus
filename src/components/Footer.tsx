@@ -50,7 +50,7 @@ const Footer = () => (
           </div>
         </div>
         <div>
-          <p className="font-body text-[9px] tracking-[0.4em] uppercase text-primary/80 mb-6" role="heading" aria-level="2">Connect</p>
+          <p className="font-body text-[9px] tracking-[0.4em] uppercase text-primary/80 mb-6" role="heading" aria-level={2}>Connect</p>
           <div className="flex gap-5 mb-5">
             {socialLinks.map(({ icon: Icon, href, label }) => (
               <a
