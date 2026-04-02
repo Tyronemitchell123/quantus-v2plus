@@ -23,7 +23,7 @@ const Privacy = () => {
 • **Usage Data**: How you interact with our platform, including pages visited, features used, and session duration.
 • **Device Data**: Browser type, operating system, IP address, and device identifiers.
 • **Communication Data**: Messages exchanged through our concierge and vendor outreach features.
-• **Payment Data**: Billing information processed securely through Stripe. We never store full card numbers.`,
+• **Payment Data**: Billing information processed securely through our encrypted payment infrastructure. We never store full card numbers.`,
     },
     {
       title: "3. Legal Basis for Processing",
