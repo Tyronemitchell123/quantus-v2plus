@@ -22,7 +22,7 @@ const Footer = () => (
 
       <div className="grid md:grid-cols-4 gap-12 max-w-5xl mx-auto">
         <div>
-          <h3 className="font-body text-[9px] tracking-[0.4em] uppercase text-primary/40 mb-6">Company</h3>
+          <p className="font-body text-[9px] tracking-[0.4em] uppercase text-primary/80 mb-6" role="heading" aria-level={2}>Company</p>
           <div className="flex flex-col gap-3">
             <Link to="/about" className="font-body text-xs text-muted-foreground/60 hover:text-primary transition-colors duration-500">About</Link>
             <Link to="/contact" className="font-body text-xs text-muted-foreground/60 hover:text-primary transition-colors duration-500">Contact</Link>
@@ -31,7 +31,7 @@ const Footer = () => (
           </div>
         </div>
         <div>
-          <h3 className="font-body text-[9px] tracking-[0.4em] uppercase text-primary/40 mb-6">Modules</h3>
+          <p className="font-body text-[9px] tracking-[0.4em] uppercase text-primary/80 mb-6" role="heading" aria-level={2}>Modules</p>
           <div className="flex flex-col gap-3">
             <Link to="/modules" className="font-body text-xs text-muted-foreground/60 hover:text-primary transition-colors duration-500">Aviation</Link>
             <Link to="/modules" className="font-body text-xs text-muted-foreground/60 hover:text-primary transition-colors duration-500">Medical</Link>
@@ -41,7 +41,7 @@ const Footer = () => (
           </div>
         </div>
         <div>
-          <h3 className="font-body text-[9px] tracking-[0.4em] uppercase text-primary/40 mb-6">Partners</h3>
+          <p className="font-body text-[9px] tracking-[0.4em] uppercase text-primary/80 mb-6" role="heading" aria-level={2}>Partners</p>
           <div className="flex flex-col gap-3">
             <Link to="/partner-with-us" className="font-body text-xs text-muted-foreground/60 hover:text-primary transition-colors duration-500">Partner With Us</Link>
             <Link to="/marketplace" className="font-body text-xs text-muted-foreground/60 hover:text-primary transition-colors duration-500">Vendor Marketplace</Link>
@@ -50,7 +50,7 @@ const Footer = () => (
           </div>
         </div>
         <div>
-          <h3 className="font-body text-[9px] tracking-[0.4em] uppercase text-primary/40 mb-6">Connect</h3>
+          <p className="font-body text-[9px] tracking-[0.4em] uppercase text-primary/80 mb-6" role="heading" aria-level={2}>Connect</p>
           <div className="flex gap-5 mb-5">
             {socialLinks.map(({ icon: Icon, href, label }) => (
               <a
