@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import useDocumentHead from "@/hooks/use-document-head";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
