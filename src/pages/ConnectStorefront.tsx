@@ -1,5 +1,5 @@
 /**
- * Stripe Connect – Storefront Page
+ * Quantus Marketplace — Storefront
  *
  * A public-facing storefront that displays all products from all connected
  * accounts. Customers can purchase any product — the checkout uses

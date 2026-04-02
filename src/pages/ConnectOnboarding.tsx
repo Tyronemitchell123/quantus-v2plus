@@ -22,7 +22,7 @@ import { CheckCircle, AlertCircle, Loader2, ExternalLink, RefreshCw } from "luci
 import useDocumentHead from "@/hooks/use-document-head";
 
 const ConnectOnboarding = () => {
-  useDocumentHead({ title: "Vendor Onboarding — Stripe Connect | QUANTUS V2+", description: "Set up your Stripe connected account to receive commissions and vendor payouts." });
+  useDocumentHead({ title: "Vendor Onboarding — Quantus Commerce | QUANTUS V2+", description: "Set up your connected commerce account to receive commissions and vendor payouts." });
   const { user } = useAuth();
   const { toast } = useToast();
   const [searchParams] = useSearchParams();

@@ -170,7 +170,7 @@ const PayInvoice = () => {
         </Card>
 
         <p className="text-center text-[10px] text-muted-foreground mt-6">
-          Payments processed securely by Stripe. Your payment details are never stored on our servers.
+          Payments processed through encrypted sovereign infrastructure. Your payment details are never stored on our servers.
         </p>
       </motion.div>
     </div>

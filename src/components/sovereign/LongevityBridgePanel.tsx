@@ -203,7 +203,7 @@ const LongevityBridgePanel = () => {
             >
               <div className="flex items-center gap-2">
                 <Clock size={13} className="text-emerald-400" />
-                <span className="font-body text-[10px] tracking-[0.2em] uppercase text-emerald-400">Firecrawl Availability Intel</span>
+                <span className="font-body text-[10px] tracking-[0.2em] uppercase text-emerald-400">Sovereign Availability Intel</span>
               </div>
               {result.availability.map((av, i) => (
                 <div key={i} className="bg-muted/20 rounded-lg p-3">
