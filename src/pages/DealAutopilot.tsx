@@ -389,15 +389,15 @@ const DealAutopilot = () => {
                             <div className="mt-4 pt-4 border-t border-border/50 grid grid-cols-3 gap-4">
                               <div className="text-center">
                                 <div className="text-xs text-muted-foreground mb-1">AI Actions</div>
-                                <div className="text-sm font-semibold text-foreground">24 completed</div>
+                                <div className="text-sm font-semibold text-foreground">{deal.progress > 50 ? "Active" : "Queued"}</div>
                               </div>
                               <div className="text-center">
                                 <div className="text-xs text-muted-foreground mb-1">Vendors Contacted</div>
-                                <div className="text-sm font-semibold text-foreground">8 matched</div>
+                                <div className="text-sm font-semibold text-foreground">{dealDetails[deal.id]?.vendorsContacted || 0} matched</div>
                               </div>
                               <div className="text-center">
                                 <div className="text-xs text-muted-foreground mb-1">Confidence</div>
-                                <div className="text-sm font-semibold text-emerald-400">94%</div>
+                                <div className="text-sm font-semibold text-emerald-400">{dealDetails[deal.id]?.confidence || "—"}%</div>
                               </div>
                             </div>
                             <div className="mt-3 flex gap-2">
