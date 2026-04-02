@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Bot, Zap, Play, Pause, RotateCcw, CheckCircle2, AlertTriangle, Clock, TrendingUp, ArrowRight, Shield, Settings2, Activity, Plus, Send } from "lucide-react";
+import { Bot, Zap, Play, Pause, RotateCcw, CheckCircle2, AlertTriangle, Clock, TrendingUp, ArrowRight, Shield, Settings2, Activity, Plus, Send, Loader2 as Loader2Icon } from "lucide-react";
+import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
@@ -105,6 +106,9 @@ const DealAutopilot = () => {
   const [dealCategory, setDealCategory] = useState("");
   const [dealBudget, setDealBudget] = useState("");
   const [livePipeline, setLivePipeline] = useState<any[]>([]);
+  const [dealDetails, setDealDetails] = useState<Record<string, { vendorsContacted: number; confidence: number }>>({});
+  const [activityLogs, setActivityLogs] = useState<{ time: string; action: string; type: string }[]>([]);
+  const [launching, setLaunching] = useState(false);
   const autopilotStats = useAutopilotStats();
   const navigate = useNavigate();
 
@@ -117,7 +121,8 @@ const DealAutopilot = () => {
         .order("updated_at", { ascending: false })
         .limit(20);
 
-      setLivePipeline((data || []).map((d: any) => ({
+      const dealRows = data || [];
+      setLivePipeline(dealRows.map((d: any) => ({
         id: d.id,
         dealNumber: d.deal_number,
         category: d.category?.charAt(0).toUpperCase() + d.category?.slice(1),
@@ -127,9 +132,71 @@ const DealAutopilot = () => {
         eta: d.status === "completed" ? "Done" : "Auto",
         value: d.deal_value_estimate ? `$${(d.deal_value_estimate / 1000).toFixed(0)}K` : "—",
       })));
+
+      // Fetch vendor outreach counts per deal
+      if (dealRows.length > 0) {
+        const dealIds = dealRows.map((d: any) => d.id);
+        const { data: outreach } = await supabase
+          .from("vendor_outreach")
+          .select("deal_id, vendor_score, negotiation_ready")
+          .in("deal_id", dealIds);
+        const details: Record<string, { vendorsContacted: number; confidence: number }> = {};
+        (outreach || []).forEach((o: any) => {
+          if (!details[o.deal_id]) details[o.deal_id] = { vendorsContacted: 0, confidence: 0 };
+          details[o.deal_id].vendorsContacted++;
+          details[o.deal_id].confidence = Math.max(details[o.deal_id].confidence, o.vendor_score || 0);
+        });
+        setDealDetails(details);
+      }
     };
+
+    const fetchLogs = async () => {
+      const { data } = await supabase
+        .from("agent_logs")
+        .select("agent_name, task_type, status, created_at, metadata")
+        .order("created_at", { ascending: false })
+        .limit(10);
+      if (data) {
+        const now = new Date();
+        setActivityLogs(data.map((log: any) => {
+          const diff = now.getTime() - new Date(log.created_at).getTime();
+          const mins = Math.floor(diff / 60000);
+          const time = mins < 60 ? `${mins}m ago` : `${Math.floor(mins / 60)}h ago`;
+          return {
+            time,
+            action: `${log.agent_name}: ${log.task_type}${log.status === "failed" ? " — failed" : ""}`,
+            type: log.status === "failed" ? "warning" : "success",
+          };
+        }));
+      }
+    };
+
     fetchDeals();
+    fetchLogs();
   }, []);
+
+  const handleAutopilotLaunch = async () => {
+    if (!dealDescription.trim() || launching) return;
+    setLaunching(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("intake-classify", {
+        body: { message: dealDescription.trim(), channel: "autopilot", category: dealCategory || undefined },
+      });
+      if (error) throw new Error(error.message);
+      if (data?.error) throw new Error(data.error);
+      toast.success(`Deal ${data.deal?.deal_number} created and on autopilot`);
+      setCreateOpen(false);
+      setDealDescription("");
+      setDealCategory("");
+      setDealBudget("");
+      // Refresh
+      window.location.reload();
+    } catch (e: any) {
+      toast.error(e.message || "Failed to create deal");
+    } finally {
+      setLaunching(false);
+    }
+  };
 
   useDocumentHead({
     title: "AI Deal Autopilot — Autonomous Deal Execution | QUANTUS V2+",
@@ -206,10 +273,11 @@ const DealAutopilot = () => {
                     <div className="flex gap-2">
                       <Button
                         className="flex-1 gap-2"
-                        disabled={!dealDescription.trim()}
-                        onClick={() => { setCreateOpen(false); navigate("/intake"); }}
+                        disabled={!dealDescription.trim() || launching}
+                        onClick={handleAutopilotLaunch}
                       >
-                        <Send size={14} /> Launch on Autopilot
+                        {launching ? <Loader2Icon size={14} className="animate-spin" /> : <Send size={14} />}
+                        {launching ? "Launching…" : "Launch on Autopilot"}
                       </Button>
                       <Button
                         variant="outline"
@@ -321,15 +389,15 @@ const DealAutopilot = () => {
                             <div className="mt-4 pt-4 border-t border-border/50 grid grid-cols-3 gap-4">
                               <div className="text-center">
                                 <div className="text-xs text-muted-foreground mb-1">AI Actions</div>
-                                <div className="text-sm font-semibold text-foreground">24 completed</div>
+                                <div className="text-sm font-semibold text-foreground">{deal.progress > 50 ? "Active" : "Queued"}</div>
                               </div>
                               <div className="text-center">
                                 <div className="text-xs text-muted-foreground mb-1">Vendors Contacted</div>
-                                <div className="text-sm font-semibold text-foreground">8 matched</div>
+                                <div className="text-sm font-semibold text-foreground">{dealDetails[deal.id]?.vendorsContacted || 0} matched</div>
                               </div>
                               <div className="text-center">
                                 <div className="text-xs text-muted-foreground mb-1">Confidence</div>
-                                <div className="text-sm font-semibold text-emerald-400">94%</div>
+                                <div className="text-sm font-semibold text-emerald-400">{dealDetails[deal.id]?.confidence || "—"}%</div>
                               </div>
                             </div>
                             <div className="mt-3 flex gap-2">
@@ -390,14 +458,9 @@ const DealAutopilot = () => {
             <TabsContent value="logs">
               <Card className="glass-card border-border/50">
                 <CardContent className="p-5 space-y-3">
-                  {[
-                    { time: "2 min ago", action: "Auto-classified deal QAI-5D2B1C8G as Logistics", type: "info" },
-                    { time: "8 min ago", action: "Sent vendor outreach to 3 suppliers for QAI-1B5F6D3E", type: "success" },
-                    { time: "15 min ago", action: "Negotiation stall detected on QAI-1B5F6D3E — escalated", type: "warning" },
-                    { time: "22 min ago", action: "Generated comparison report for QAI-9E4D8C2A", type: "info" },
-                    { time: "35 min ago", action: "Deal QAI-3C7A9E4F entering final completion stage", type: "success" },
-                    { time: "1h ago", action: "Budget optimization: saved $42K on QAI-7A3F2B1C sourcing", type: "success" },
-                  ].map((log, i) => (
+                  {activityLogs.length === 0 ? (
+                    <p className="text-sm text-muted-foreground text-center py-8">No activity logs yet. Autopilot will record actions here as deals are processed.</p>
+                  ) : activityLogs.map((log, i) => (
                     <motion.div key={i} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.05 }}
                       className="flex items-start gap-3 py-2.5 border-b border-border/30 last:border-0">
                       <div className={`mt-1 w-2 h-2 rounded-full shrink-0 ${log.type === "success" ? "bg-emerald-400" : log.type === "warning" ? "bg-amber-400" : "bg-primary"}`} />

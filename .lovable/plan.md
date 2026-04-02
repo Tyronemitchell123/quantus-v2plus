@@ -1,78 +1,46 @@
 
+# Wiring Quantus V2 UI to Live Backend
 
-# Plan: Build Vendor Marketplace + Partner Portal Infrastructure
+## Phase 1: Deal Pipeline (Intake → Completion)
+**Goal**: Ensure the full 8-phase deal flow works end-to-end with real DB writes and AI classification.
 
-## What We Are Building
+### Audit & Fix:
+1. **Intake page** — Verify `intake-classify` edge function is called on submission, deal is created in `deals` table
+2. **Sourcing page** — Verify `sourcing-engine` edge function is triggered, results stored in `sourcing_results` 
+3. **Shortlisting page** — Verify selections write to DB and advance deal status
+4. **Vendor Outreach** — Verify `vendor-outreach` / `outreach-ai` edge functions fire, `vendor_outreach` table populated
+5. **Negotiation** — Verify `negotiate` / `negotiation-engine` edge functions work
+6. **Deal Completion** — Verify `deal-completion` edge function runs, invoices created
+7. **Deal Engine / Dashboard** — Verify deals query from DB, not mock data
+8. **Deal Autopilot** — Verify autonomous pipeline reads/writes real deal statuses
 
-Two key pieces that will make the platform ready to onboard real vendors and display real deals:
+## Phase 2: AI Autopilot / Orchestrator
+**Goal**: Ensure the autonomous orchestrator advances deals, triggers outreach, auto-publishes.
 
-1. **"Partner With Us" landing page** — a professional, public-facing page that sells vendors on listing their services. Includes a detailed application form stored in the database.
+1. **`autonomous-orchestrator`** edge function — Verify it's deployed and pg_cron triggers it
+2. **`director-agent`** — Verify it plans and dispatches tasks
+3. **AI Assistant Panel** — Verify it calls `concierge-chat` edge function with real context
+4. **Marketing Hub** — Verify `ai-marketing` edge function generates real content saved to `marketing_posts`, `marketing_social`, `marketing_ads`
 
-2. **Public Vendor Marketplace page** — a browsable directory (replacing the current fake-data Private Network) that pulls real vendor data from the database, displays trust badges (AOC Verified, ISO Certified), urgency indicators, and category filters.
+## Phase 3: Document Vault & Storage
+**Goal**: Ensure uploads, downloads, deal-linked documents work with Supabase Storage.
 
-3. **Footer + site-wide "Partner With Us" link** — adds visibility across the entire site.
+1. **VaultUploadZone** — Verify uploads go to `quantusbucket` with user-scoped paths
+2. **Document Vault page** — Verify `useVaultFiles` hook lists real files
+3. **Deal Documents** — Verify `deal_documents` table is used for deal-linked docs
+4. **Documents Billing** — Verify `document-billing` edge function works
 
-4. **Remove all remaining hardcoded fake vendor data** from the Private Network page.
+## Phase 4: Vertical Modules
+**Goal**: Connect the 9 vertical dashboards to real data.
 
----
+1. **Aviation** — Wire to `pilot_arbitrage_results`, `aviation-manifest-scan`
+2. **Medical** — Wire to `patient_vault`, `medical-noshow-scan`, `longevity_providers`
+3. **Lifestyle** — Wire to deals filtered by category
+4. **Staffing, Logistics, Partnerships, Marine, Legal, Finance** — Wire to category-filtered deal queries
+5. **Module AI Panels** — Verify they call real AI edge functions
+6. **Module Live Deals** — Verify they query `deals` table filtered by category
 
-## Technical Details
-
-### Step 1: Database — Add a `vendors` table
-
-Create a new `vendors` table to store real vendor profiles separately from `contact_submissions`:
-
-```sql
-CREATE TABLE public.vendors (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  name text NOT NULL,
-  company text NOT NULL,
-  email text,
-  phone text,
-  website text,
-  category text NOT NULL,
-  description text,
-  location text,
-  specialties text[] DEFAULT '{}',
-  credentials jsonb DEFAULT '{}',  -- { "aoc": true, "iso": "ISO 13485", etc. }
-  tier text DEFAULT 'standard',     -- standard, verified, premium
-  is_verified boolean DEFAULT false,
-  is_active boolean DEFAULT true,
-  logo_url text,
-  metadata jsonb DEFAULT '{}',
-  created_at timestamptz DEFAULT now(),
-  updated_at timestamptz DEFAULT now()
-);
-
-ALTER TABLE public.vendors ENABLE ROW LEVEL SECURITY;
-
--- Public read for active vendors (marketplace is public-facing)
-CREATE POLICY "Anyone can view active vendors"
-  ON public.vendors FOR SELECT TO anon, authenticated
-  USING (is_active = true);
-
--- Admin full access
-CREATE POLICY "Admins manage vendors"
-  ON public.vendors FOR ALL TO authenticated
-  USING (has_role(auth.uid(), 'admin'))
-  WITH CHECK (has_role(auth.uid(), 'admin'));
-```
-
-### Step 2: "Partner With Us" Page (`/partner-with-us`)
-
-A new page with:
-- **Value proposition section**: "List your services in front of qualified buyers. No upfront cost — pay only on results."
-- **Benefits**: Global reach, verified badge program, deal matching, commission-based model
-- **Application form**: Company name, contact name, email, phone, website, category (dropdown), description, credentials/certifications upload mention
-- Submissions go to `contact_submissions` with classification `partner_application`
-- Professional design matching the site's obsidian aesthetic
-
-### Step 3: Public Vendor Marketplace (`/marketplace`)
-
-Replace the hardcoded Private Network with a real data-driven page:
-- Fetches from `vendors` table (public read for active vendors)
-- Category filter tabs (Aviation, Medical, Staffing, Lifestyle, Logistics, Partnerships)
-- Trust badges rendered from `credentials` JSONB: "AOC Verified" for aviation, "ISO Certified" for medical
-- Search by name/company/specialty
-- Each card shows: company, location, specialties, tier badge, verification status
-- CTA buttons: "Request Quote"
+### Approach
+- Audit each component file to determine if it uses mock/hardcoded data vs real Supabase queries
+- Fix components that aren't wired up
+- Verify with edge function curl tests where applicable
