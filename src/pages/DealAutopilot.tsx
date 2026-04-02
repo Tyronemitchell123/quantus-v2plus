@@ -273,10 +273,11 @@ const DealAutopilot = () => {
                     <div className="flex gap-2">
                       <Button
                         className="flex-1 gap-2"
-                        disabled={!dealDescription.trim()}
-                        onClick={() => { setCreateOpen(false); navigate("/intake"); }}
+                        disabled={!dealDescription.trim() || launching}
+                        onClick={handleAutopilotLaunch}
                       >
-                        <Send size={14} /> Launch on Autopilot
+                        {launching ? <Loader2Icon size={14} className="animate-spin" /> : <Send size={14} />}
+                        {launching ? "Launching…" : "Launch on Autopilot"}
                       </Button>
                       <Button
                         variant="outline"
