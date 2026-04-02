@@ -22,7 +22,7 @@ const Footer = () => (
 
       <div className="grid md:grid-cols-4 gap-12 max-w-5xl mx-auto">
         <div>
-          <h3 className="font-body text-[9px] tracking-[0.4em] uppercase text-primary/40 mb-6">Company</h3>
+          <p className="font-body text-[9px] tracking-[0.4em] uppercase text-primary/80 mb-6" role="heading" aria-level="2">Company</p>
           <div className="flex flex-col gap-3">
             <Link to="/about" className="font-body text-xs text-muted-foreground/60 hover:text-primary transition-colors duration-500">About</Link>
             <Link to="/contact" className="font-body text-xs text-muted-foreground/60 hover:text-primary transition-colors duration-500">Contact</Link>
