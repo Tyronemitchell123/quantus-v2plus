@@ -66,7 +66,7 @@ const UpsellBanner = ({ tier, usagePercent, feature = "AI queries", className = 
             <Link to="/pricing" className="text-xs font-semibold text-primary hover:text-primary/80 transition-colors whitespace-nowrap">
               Upgrade
             </Link>
-            <button onClick={handleDismiss} className="text-muted-foreground hover:text-foreground transition-colors">
+            <button onClick={handleDismiss} className="text-muted-foreground hover:text-foreground transition-colors" aria-label="Dismiss banner">
               <X size={12} />
             </button>
           </div>

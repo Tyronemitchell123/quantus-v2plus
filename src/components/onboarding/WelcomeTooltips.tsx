@@ -31,6 +31,7 @@ const WelcomeTooltips = () => {
         <button
           onClick={() => dismissTooltip(tip.id)}
           className="absolute top-3 right-3 text-muted-foreground hover:text-foreground transition-colors"
+          aria-label="Dismiss tooltip"
         >
           <X size={14} />
         </button>
