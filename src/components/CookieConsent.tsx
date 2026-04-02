@@ -57,7 +57,7 @@ const CookieConsent = forwardRef<HTMLDivElement>((_, ref) => {
                 <Cookie className="text-primary shrink-0" size={18} />
                 <h3 className="font-display text-sm font-semibold text-foreground">Cookie Preferences</h3>
               </div>
-              <button onClick={reject} className="text-muted-foreground hover:text-foreground transition-colors">
+              <button onClick={reject} className="text-muted-foreground hover:text-foreground transition-colors" aria-label="Dismiss cookie preferences">
                 <X size={16} />
               </button>
             </div>
