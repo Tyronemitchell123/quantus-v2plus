@@ -127,6 +127,9 @@ const AnimatedRoutes = () => {
             <Route path="/onboarding" element={<ProtectedRoute skipOnboardingCheck><R name="Onboarding"><PageTransition><Onboarding /></PageTransition></R></ProtectedRoute>} />
 
             {/* Dashboard shell routes */}
+            <Route path="/core" element={<ProtectedRoute><R name="Core"><QuantusCore /></R></ProtectedRoute>} />
+            <Route path="/helix" element={<ProtectedRoute><R name="Helix"><QuantusHelix /></R></ProtectedRoute>} />
+            <Route path="/forge" element={<ProtectedRoute><R name="Forge"><QuantusForge /></R></ProtectedRoute>} />
             <Route path="/dashboard" element={<ProtectedRoute><R name="Dashboard"><Dashboard /></R></ProtectedRoute>} />
             <Route path="/dashboard/modules" element={<ProtectedRoute><R name="Modules"><ModulesDashboard /></R></ProtectedRoute>} />
             <Route path="/dashboard/intake" element={<Navigate to="/intake" replace />} />
