@@ -3,7 +3,7 @@
  */
 import useDocumentHead from "@/hooks/use-document-head";
 
-const SITE = "https://quantus-loom.lovable.app";
+const SITE = "https://quantus-v2plus.lovable.app";
 
 export const PAGE_SEO: Record<string, { title: string; description: string; canonical?: string; jsonLd?: Record<string, unknown> }> = {
   "/": {
