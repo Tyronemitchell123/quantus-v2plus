@@ -17,6 +17,8 @@ import PortfolioAINarrative from "@/components/wealth/PortfolioAINarrative";
 import PortfolioDonutChart from "@/components/wealth/PortfolioDonutChart";
 import PortfolioTreemap from "@/components/wealth/PortfolioTreemap";
 import { usePortfolioAssets, centsToValue, fmtGBP } from "@/hooks/use-portfolio-assets";
+import { supabase } from "@/integrations/supabase/client";
+import { formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
 
 const ICON_MAP: Record<string, any> = {
