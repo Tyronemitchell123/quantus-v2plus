@@ -65,7 +65,7 @@ const FinalCTA = forwardRef<HTMLElement>((_, ref) => (
           </Link>
           <Link
             to="/pricing"
-            className="inline-flex items-center gap-2 px-8 py-4 font-body text-[10px] font-medium tracking-[0.3em] uppercase text-primary/60 hover:text-primary transition-all duration-500"
+            className="inline-flex items-center gap-2 px-8 py-4 font-body text-[10px] font-medium tracking-[0.3em] uppercase text-primary/80 hover:text-primary transition-all duration-500"
           >
             Compare Plans
             <ArrowRight size={12} />

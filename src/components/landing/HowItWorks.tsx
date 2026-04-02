@@ -51,7 +51,7 @@ const HowItWorks = () => (
                 <div className="absolute inset-0 rounded-full bg-primary/30 scale-0 group-hover:scale-[2.5] transition-transform duration-500 opacity-40" />
               </div>
 
-              <p className="font-body text-[10px] tracking-[0.2em] text-primary/60 mb-1">{phase.num}</p>
+              <p className="font-body text-[10px] tracking-[0.2em] text-primary/80 mb-1">{phase.num}</p>
               <h3 className="font-display text-sm font-medium text-foreground mb-2">{phase.title}</h3>
               <p className="font-body text-[11px] text-muted-foreground leading-relaxed">{phase.desc}</p>
             </motion.div>
