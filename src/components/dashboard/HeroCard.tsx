@@ -19,7 +19,6 @@ const HeroCard = () => {
 
   useEffect(() => {
     if (!user) return;
-    // Try profile display_name, then user metadata
     const metaName = user.user_metadata?.full_name?.split(" ")[0];
     if (metaName) {
       setDisplayName(metaName);
@@ -42,49 +41,52 @@ const HeroCard = () => {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-      className="glass-card p-6 md:p-8 relative overflow-hidden group"
+      initial={{ opacity: 0, y: 16, filter: "blur(6px)" }}
+      animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+      transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+      className="glass-sovereign rounded-xl p-6 md:p-8 relative overflow-hidden group"
     >
       {/* Top gold line */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+      <div className="absolute top-0 left-0 right-0 sovereign-line" />
+
+      {/* Ambient corner glow */}
+      <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-bl from-primary/[0.04] to-transparent pointer-events-none" />
 
       <div className="relative z-10">
         <div className="flex items-start justify-between mb-1">
           <div>
-            <p className="text-[8px] tracking-[0.4em] uppercase text-primary/40 font-body mb-2">Command Centre</p>
+            <p className="text-[7px] tracking-[0.5em] uppercase text-primary/30 font-body mb-3">Command Centre</p>
             <p className="font-display text-xl md:text-2xl font-medium text-foreground">
-              {timeGreeting}, {name}.
+              {timeGreeting}, <span className="text-gold-gradient gold-glow-text">{name}</span>.
             </p>
           </div>
-          <div className="w-8 h-8 rounded-lg bg-primary/[0.06] flex items-center justify-center">
-            <Sparkles size={14} className="text-primary/50" />
+          <div className="w-9 h-9 rounded-lg bg-primary/[0.04] border border-primary/10 flex items-center justify-center gold-glow-sm">
+            <Sparkles size={13} className="text-primary/40" />
           </div>
         </div>
 
-        <p className="font-display text-sm italic text-primary/60 mb-6">
+        <p className="font-display text-sm italic text-primary/50 mb-8">
           {greeting}
         </p>
 
         <div className="flex flex-wrap gap-3">
           <Link
             to="/intake"
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground font-body text-[10px] tracking-[0.2em] uppercase hover:brightness-110 transition-all duration-300 rounded-lg gold-glow"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground font-body text-[9px] tracking-[0.3em] uppercase hover:brightness-110 transition-all duration-500 rounded-lg gold-glow group/btn"
           >
-            <Plus size={12} /> New Request
+            <Plus size={11} className="group-hover/btn:rotate-90 transition-transform duration-500" /> New Request
           </Link>
           <Link
             to="/deals"
-            className="inline-flex items-center gap-2 px-5 py-2.5 border border-border text-foreground/70 font-body text-[10px] tracking-[0.2em] uppercase hover:border-primary/30 hover:text-foreground transition-all duration-300 rounded-lg"
+            className="inline-flex items-center gap-2 px-6 py-3 border border-border/40 text-foreground/60 font-body text-[9px] tracking-[0.3em] uppercase hover:border-primary/20 hover:text-foreground hover:bg-primary/[0.02] transition-all duration-500 rounded-lg"
           >
-            <Eye size={12} /> Active Deals
+            <Eye size={11} /> Active Deals
           </Link>
         </div>
       </div>
 
       {/* Bottom gold line */}
-      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 sovereign-line" />
     </motion.div>
   );
 };
