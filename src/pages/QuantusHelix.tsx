@@ -2,7 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import {
   Dna, Palette, Type, MessageSquareText, ShieldCheck, Copy, Check,
-  RefreshCw, AlertTriangle, Sparkles, Eye,
+  RefreshCw, AlertTriangle, Sparkles, Eye, CheckCircle2,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
