@@ -41,7 +41,7 @@ const Footer = () => (
           </div>
         </div>
         <div>
-          <h4 className="font-body text-[9px] tracking-[0.4em] uppercase text-primary/40 mb-6">Partners</h4>
+          <h3 className="font-body text-[9px] tracking-[0.4em] uppercase text-primary/40 mb-6">Partners</h3>
           <div className="flex flex-col gap-3">
             <Link to="/partner-with-us" className="font-body text-xs text-muted-foreground/60 hover:text-primary transition-colors duration-500">Partner With Us</Link>
             <Link to="/marketplace" className="font-body text-xs text-muted-foreground/60 hover:text-primary transition-colors duration-500">Vendor Marketplace</Link>
