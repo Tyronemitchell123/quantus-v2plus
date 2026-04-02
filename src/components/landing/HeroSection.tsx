@@ -1,10 +1,11 @@
-import { useRef } from "react";
+import { lazy, Suspense, useRef } from "react";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
-import ParticleGrid from "@/components/ParticleGrid";
-import HomepageHeroVideo from "@/components/HomepageHeroVideo";
-import LiveDemoWidget from "@/components/landing/LiveDemoWidget";
-import MagneticButton from "@/components/landing/MagneticButton";
+
+const ParticleGrid = lazy(() => import("@/components/ParticleGrid"));
+const HomepageHeroVideo = lazy(() => import("@/components/HomepageHeroVideo"));
+const LiveDemoWidget = lazy(() => import("@/components/landing/LiveDemoWidget"));
+const MagneticButton = lazy(() => import("@/components/landing/MagneticButton"));
 
 const HeroSection = () => {
   const heroRef = useRef<HTMLDivElement>(null);
