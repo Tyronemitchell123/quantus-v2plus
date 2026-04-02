@@ -22,7 +22,7 @@ const PayInvoice = () => {
 
   useDocumentHead({
     title: "Pay Invoice — QUANTUS",
-    description: "Enter your invoice number to complete payment securely via Stripe.",
+    description: "Enter your invoice number to complete payment securely through Quantus.",
   });
 
   const lookupInvoice = async () => {
