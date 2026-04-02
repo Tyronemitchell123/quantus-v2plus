@@ -3,46 +3,30 @@ import { Activity, ArrowRightLeft, GitBranch, Workflow } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
-
-const modules = [
-  { name: "Aviation", key: "aviation" },
-  { name: "Medical", key: "medical" },
-  { name: "Hospitality", key: "hospitality" },
-  { name: "Lifestyle", key: "lifestyle" },
-  { name: "Longevity", key: "longevity" },
-  { name: "Marine", key: "marine" },
-  { name: "Finance", key: "finance" },
-  { name: "Legal", key: "legal" },
-  { name: "Logistics", key: "logistics" },
-];
+import { getPipelineStats, getModuleStats } from "@/lib/quantus-core";
 
 const CoreOrchestrate = () => {
-  const { data: deals } = useQuery({
-    queryKey: ["core-orchestrate-deals"],
-    queryFn: async () => {
-      const { data } = await supabase.from("deals").select("status, category");
-      return data || [];
-    },
+  const { data: pipelineStats } = useQuery({
+    queryKey: ["core-pipeline-stats"],
+    queryFn: getPipelineStats,
   });
 
-  const moduleStats = modules.map(m => {
-    const moduleDeals = deals?.filter(d => d.category === m.key) || [];
-    const active = moduleDeals.filter(d => d.status !== "completed" && d.status !== "cancelled").length;
-    return { ...m, active, total: moduleDeals.length, status: active > 0 ? "online" : "standby" };
+  const { data: moduleStats } = useQuery({
+    queryKey: ["core-module-stats"],
+    queryFn: getModuleStats,
   });
 
   const pipelinePhases = [
-    { phase: "Intake", count: deals?.filter(d => d.status === "intake").length || 0 },
-    { phase: "Matching", count: deals?.filter(d => d.status === "matching").length || 0 },
-    { phase: "Sourcing", count: deals?.filter(d => d.status === "sourcing").length || 0 },
-    { phase: "Negotiation", count: deals?.filter(d => d.status === "negotiation").length || 0 },
-    { phase: "Execution", count: deals?.filter(d => d.status === "execution").length || 0 },
-    { phase: "Completed", count: deals?.filter(d => d.status === "completed").length || 0 },
+    { phase: "Intake", count: pipelineStats?.intake || 0 },
+    { phase: "Matching", count: pipelineStats?.matching || 0 },
+    { phase: "Sourcing", count: pipelineStats?.sourcing || 0 },
+    { phase: "Negotiation", count: pipelineStats?.negotiation || 0 },
+    { phase: "Execution", count: pipelineStats?.execution || 0 },
+    { phase: "Completed", count: pipelineStats?.completed || 0 },
   ];
 
-  const totalActive = deals?.filter(d => d.status !== "completed" && d.status !== "cancelled").length || 0;
+  const totalActive = pipelinePhases.slice(0, -1).reduce((a, b) => a + b.count, 0);
 
   return (
     <div className="space-y-6">
@@ -52,10 +36,10 @@ const CoreOrchestrate = () => {
           <Workflow className="w-4 h-4 text-primary" />
           <h3 className="text-sm font-medium text-foreground">Pipeline Flow — {totalActive} Active</h3>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
           {pipelinePhases.map((p, i) => (
             <motion.div key={p.phase} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }}>
-              <Card className="bg-card/60 backdrop-blur-sm border-border/50">
+              <Card className="sovereign-card rounded-xl">
                 <CardContent className="p-3">
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{p.phase}</span>
@@ -76,12 +60,12 @@ const CoreOrchestrate = () => {
           <h3 className="text-sm font-medium text-foreground">Module Routing</h3>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {moduleStats.map((mod, i) => (
+          {(moduleStats || []).map((mod, i) => (
             <motion.div key={mod.name} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.03 }}>
-              <Card className="bg-card/60 backdrop-blur-sm border-border/50">
+              <Card className="sovereign-card rounded-xl">
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-sm font-medium text-foreground">{mod.name}</h3>
+                    <h3 className="text-sm font-medium text-foreground capitalize">{mod.name}</h3>
                     <Badge variant="outline" className={mod.status === "online" ? "text-success border-success/30 text-[9px]" : "text-muted-foreground text-[9px]"}>
                       {mod.status}
                     </Badge>

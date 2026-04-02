@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { auditTone, getDefaultProfile } from "@/lib/quantus-helix";
+import type { HelixToneFinding } from "@/lib/quantus-types";
 
 const toneRules = [
   { label: "Voice", value: "Authoritative yet understated — never sells, only reveals" },
@@ -19,8 +21,8 @@ const toneRules = [
 
 const HelixTone = () => {
   const [auditText, setAuditText] = useState("");
-  const [auditResult, setAuditResult] = useState<string | null>(null);
-  const [findings, setFindings] = useState<{ term: string; issue: string; severity: "warning" | "violation" }[]>([]);
+  const [auditResult, setAuditResult] = useState<"passed" | null>(null);
+  const [findings, setFindings] = useState<HelixToneFinding[]>([]);
   const [isAuditing, setIsAuditing] = useState(false);
 
   const runAIAudit = async () => {
@@ -30,6 +32,7 @@ const HelixTone = () => {
     setAuditResult(null);
 
     try {
+      // Try AI audit first
       const { data, error } = await supabase.functions.invoke("helix-brand-audit", {
         body: { text: auditText, mode: "tone" },
       });
@@ -43,19 +46,15 @@ const HelixTone = () => {
         toast.success("Tone audit passed — fully aligned with Quantus voice");
       }
     } catch {
-      // Fallback to local audit
-      const results: typeof findings = [];
-      if (auditText.includes("!")) results.push({ term: "Tone", issue: "Exclamation mark detected — prohibited", severity: "violation" });
-      if (/amazing|incredible|best|awesome|revolutionary/i.test(auditText)) results.push({ term: "Register", issue: "Superlative detected — use understated authority", severity: "violation" });
-      if (/buy now|limited time|hurry|don't miss/i.test(auditText)) results.push({ term: "Voice", issue: "Sales language detected — Quantus reveals, never sells", severity: "violation" });
-      if (/😀|🎉|👍|🚀|💡|✨/u.test(auditText)) results.push({ term: "Tone", issue: "Emoji detected — prohibited", severity: "violation" });
-      if (/supabase|stripe|aws|firecrawl|10web/i.test(auditText)) results.push({ term: "Sovereignty", issue: "External brand name detected", severity: "violation" });
+      // Fallback to local Helix API
+      const profile = getDefaultProfile();
+      const result = auditTone(auditText, profile.tone);
 
-      if (results.length === 0) {
+      if (result.passed) {
         setAuditResult("passed");
         toast.success("Tone audit passed — fully aligned");
       } else {
-        setFindings(results);
+        setFindings(result.findings);
       }
     } finally {
       setIsAuditing(false);
@@ -68,7 +67,7 @@ const HelixTone = () => {
       <div className="space-y-3">
         {toneRules.map((rule, i) => (
           <motion.div key={rule.label} initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}>
-            <Card className="bg-card/60 backdrop-blur-sm border-border/50">
+            <Card className="sovereign-card rounded-xl">
               <CardContent className="p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <MessageSquareText className="w-4 h-4 text-primary" />
@@ -82,7 +81,7 @@ const HelixTone = () => {
       </div>
 
       {/* AI Tone Enforcer */}
-      <Card className="bg-card/60 backdrop-blur-sm border-border/50">
+      <Card className="sovereign-card rounded-xl">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-sm">
             <ShieldCheck className="w-4 h-4 text-primary" />
