@@ -23,7 +23,7 @@ const Privacy = () => {
 • **Usage Data**: How you interact with our platform, including pages visited, features used, and session duration.
 • **Device Data**: Browser type, operating system, IP address, and device identifiers.
 • **Communication Data**: Messages exchanged through our concierge and vendor outreach features.
-• **Payment Data**: Billing information processed securely through Stripe. We never store full card numbers.`,
+• **Payment Data**: Billing information processed securely through our encrypted payment infrastructure. We never store full card numbers.`,
     },
     {
       title: "3. Legal Basis for Processing",
@@ -49,7 +49,7 @@ const Privacy = () => {
       title: "5. Data Sharing",
       content: `We share data only when necessary:
 
-• **Service Providers**: Hosting (cloud infrastructure), payment processing (Stripe), email delivery, and AI model providers — all bound by data processing agreements.
+• **Service Providers**: Hosting (sovereign cloud infrastructure), payment processing, email delivery, and AI model providers — all bound by data processing agreements.
 • **Vendors**: When you initiate vendor outreach, relevant deal information is shared with selected vendors as part of the service.
 • **Legal Requirements**: When required by law, court order, or regulatory authority.
 

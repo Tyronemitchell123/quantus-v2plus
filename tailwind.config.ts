@@ -61,6 +61,14 @@ export default {
           DEFAULT: "hsl(var(--success))",
           foreground: "hsl(var(--success-foreground))",
         },
+        warning: {
+          DEFAULT: "hsl(var(--warning))",
+          foreground: "hsl(var(--warning-foreground))",
+        },
+        info: {
+          DEFAULT: "hsl(var(--info))",
+          foreground: "hsl(var(--info-foreground))",
+        },
         graphite: "hsl(var(--graphite))",
         "quantum-cyan": "hsl(185 100% 55%)",
         "quantum-purple": "hsl(270 80% 60%)",

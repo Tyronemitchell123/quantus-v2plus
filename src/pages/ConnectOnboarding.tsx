@@ -1,10 +1,10 @@
 /**
- * Stripe Connect – Onboarding Page
+ * Quantus Commerce — Vendor Onboarding
  *
  * This page allows authenticated users to:
- * 1. Create a new Stripe Connected Account (V2 Express)
- * 2. Start the Stripe-hosted onboarding flow via Account Links
- * 3. View real-time onboarding & capability status fetched directly from Stripe
+ * 1. Create a new connected commerce account
+ * 2. Start the hosted onboarding flow via secure account links
+ * 3. View real-time onboarding & capability status
  */
 
 import { useState, useEffect } from "react";
@@ -22,7 +22,7 @@ import { CheckCircle, AlertCircle, Loader2, ExternalLink, RefreshCw } from "luci
 import useDocumentHead from "@/hooks/use-document-head";
 
 const ConnectOnboarding = () => {
-  useDocumentHead({ title: "Vendor Onboarding — Stripe Connect | QUANTUS V2+", description: "Set up your Stripe connected account to receive commissions and vendor payouts." });
+  useDocumentHead({ title: "Vendor Onboarding — Quantus Commerce | QUANTUS V2+", description: "Set up your connected commerce account to receive commissions and vendor payouts." });
   const { user } = useAuth();
   const { toast } = useToast();
   const [searchParams] = useSearchParams();

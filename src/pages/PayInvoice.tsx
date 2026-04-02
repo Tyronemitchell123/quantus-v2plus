@@ -22,7 +22,7 @@ const PayInvoice = () => {
 
   useDocumentHead({
     title: "Pay Invoice — QUANTUS",
-    description: "Enter your invoice number to complete payment securely via Stripe.",
+    description: "Enter your invoice number to complete payment securely through Quantus.",
   });
 
   const lookupInvoice = async () => {
@@ -93,7 +93,7 @@ const PayInvoice = () => {
           </div>
           <h1 className="font-display text-2xl font-bold text-foreground mb-2">Pay Invoice</h1>
           <p className="text-sm text-muted-foreground">
-            Enter your invoice number (e.g. QAI-INV-XXXXXXXX) or deal number to view and pay securely via Stripe.
+            Enter your invoice number (e.g. QAI-INV-XXXXXXXX) or deal number to view and pay securely.
           </p>
         </div>
 
@@ -145,11 +145,11 @@ const PayInvoice = () => {
                   <div className="flex justify-between items-center">
                     <span className="text-xs text-muted-foreground">Status</span>
                     {invoiceInfo.status === "paid" ? (
-                      <span className="flex items-center gap-1 text-xs text-green-400">
+                      <span className="flex items-center gap-1 text-xs text-success">
                         <CheckCircle2 size={12} /> Paid
                       </span>
                     ) : (
-                      <span className="text-xs text-amber-400">Unpaid</span>
+                      <span className="text-xs text-warning">Unpaid</span>
                     )}
                   </div>
                 </div>
@@ -157,12 +157,12 @@ const PayInvoice = () => {
                 {invoiceInfo.status !== "paid" && (
                   <Button onClick={proceedToPayment} disabled={checkoutLoading} className="w-full gap-2">
                     {checkoutLoading ? <Loader2 size={14} className="animate-spin" /> : <ExternalLink size={14} />}
-                    Pay Now via Stripe
+                    Pay Now — Secure Checkout
                   </Button>
                 )}
 
                 {invoiceInfo.status === "paid" && (
-                  <p className="text-center text-xs text-green-400">This invoice has already been paid. Thank you!</p>
+                  <p className="text-center text-xs text-success">This invoice has already been paid. Thank you!</p>
                 )}
               </motion.div>
             )}
@@ -170,7 +170,7 @@ const PayInvoice = () => {
         </Card>
 
         <p className="text-center text-[10px] text-muted-foreground mt-6">
-          Payments processed securely by Stripe. Your payment details are never stored on our servers.
+          Payments processed through encrypted sovereign infrastructure. Your payment details are never stored on our servers.
         </p>
       </motion.div>
     </div>

@@ -22,7 +22,7 @@ const Terms = () => {
 • Automated vendor sourcing, matching, and outreach
 • AI-assisted negotiation support and workflow automation
 • Document management, e-signatures, and billing
-• Quantum computing capabilities (AWS Braket integration)
+• Quantum computing capabilities (Quantus Quantum Engine)
 • Wealth dashboard, marketing hub, and analytics tools
 • Priority deal processing for expedited orchestration
 
@@ -42,7 +42,7 @@ You are responsible for all activity under your account.`,
     {
       title: "4. Subscriptions & Payments",
       content: `• Subscription tiers: Starter ($29/mo or $276/yr), Professional ($149/mo or $1,428/yr), and Teams ($49/seat/mo or $468/seat/yr). Annual plans include a 20% discount.
-• Subscription fees are billed in advance on a monthly or annual basis via Stripe.
+• Subscription fees are billed in advance on a monthly or annual basis through our secure billing infrastructure.
 • Prices are listed in USD and exclude applicable taxes.
 • You may upgrade, downgrade, or cancel your subscription at any time.
 • Cancellation takes effect at the end of the current billing period.

@@ -1,10 +1,9 @@
 /**
- * Stripe Connect – Product Management Page
+ * Quantus Marketplace — Product Management
  *
  * Allows connected account holders to create products on the platform.
- * Products are created at the platform level in Stripe and mapped to
- * the user's connected account ID so that destination charges route
- * funds correctly.
+ * Products are managed through the Quantus Commerce Engine with
+ * destination-charge routing for sovereign revenue distribution.
  */
 
 import { useState, useEffect } from "react";
@@ -21,7 +20,7 @@ import { Loader2, Package, DollarSign } from "lucide-react";
 import useDocumentHead from "@/hooks/use-document-head";
 
 const ConnectProducts = () => {
-  useDocumentHead({ title: "Product Management — Stripe Connect | QUANTUS V2+", description: "Manage your products and pricing through the QUANTUS V2+ marketplace." });
+  useDocumentHead({ title: "Product Management — Quantus Marketplace | QUANTUS V2+", description: "Manage your products and pricing through the QUANTUS V2+ marketplace." });
   const { user } = useAuth();
   const { toast } = useToast();
 
