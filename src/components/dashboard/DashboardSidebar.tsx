@@ -2,10 +2,13 @@ import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   LayoutDashboard, Briefcase, Grid3X3, Bot, FileText, CreditCard, Settings, MessageSquare, Radar, FolderOpen,
-  Wallet, CalendarDays, ShieldCheck, Users, DollarSign, Crown, Vault,
+  Wallet, CalendarDays, ShieldCheck, Users, DollarSign, Crown, Vault, Cpu, Dna, Globe,
 } from "lucide-react";
 
 const navItems = [
+  { icon: Cpu, label: "Core", to: "/core" },
+  { icon: Dna, label: "Helix", to: "/helix" },
+  { icon: Globe, label: "Forge", to: "/forge" },
   { icon: Crown, label: "Sovereign", to: "/sovereign" },
   { icon: LayoutDashboard, label: "Dashboard", to: "/dashboard" },
   { icon: Briefcase, label: "Deals", to: "/deals" },

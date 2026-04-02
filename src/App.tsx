@@ -75,6 +75,9 @@ const VendorRegister = lazy(() => import("./pages/VendorRegister"));
 const WaitingList = lazy(() => import("./pages/WaitingList"));
 const PartnerWithUs = lazy(() => import("./pages/PartnerWithUs"));
 const SovereignDashboard = lazy(() => import("./pages/SovereignDashboard"));
+const QuantusCore = lazy(() => import("./pages/QuantusCore"));
+const QuantusHelix = lazy(() => import("./pages/QuantusHelix"));
+const QuantusForge = lazy(() => import("./pages/QuantusForge"));
 const SovereignVault = lazy(() => import("./pages/SovereignVault"));
 const ProvingGround = lazy(() => import("./pages/ProvingGround"));
 const MarketplacePage = lazy(() => import("./pages/Marketplace"));
@@ -91,7 +94,7 @@ const R = ({ name, children }: { name: string; children: React.ReactNode }) => (
 );
 
 // Routes that use the dashboard shell (no global navbar/footer)
-const dashboardRoutes = ["/dashboard", "/sovereign", "/deals", "/chat", "/intake", "/sourcing", "/outreach", "/shortlist", "/negotiation", "/workflow", "/documents", "/deal-completion", "/settings", "/account/subscription", "/partner", "/admin", "/marketing", "/nlp", "/quantum", "/recommendations", "/autopilot", "/intelligence", "/vault", "/wealth", "/calendar", "/compliance", "/network", "/connect", "/commission-payouts"];
+const dashboardRoutes = ["/dashboard", "/sovereign", "/core", "/helix", "/forge", "/deals", "/chat", "/intake", "/sourcing", "/outreach", "/shortlist", "/negotiation", "/workflow", "/documents", "/deal-completion", "/settings", "/account/subscription", "/partner", "/admin", "/marketing", "/nlp", "/quantum", "/recommendations", "/autopilot", "/intelligence", "/vault", "/wealth", "/calendar", "/compliance", "/network", "/connect", "/commission-payouts"];
 
 const AnimatedRoutes = () => {
   const location = useLocation();
@@ -127,6 +130,9 @@ const AnimatedRoutes = () => {
             <Route path="/onboarding" element={<ProtectedRoute skipOnboardingCheck><R name="Onboarding"><PageTransition><Onboarding /></PageTransition></R></ProtectedRoute>} />
 
             {/* Dashboard shell routes */}
+            <Route path="/core" element={<ProtectedRoute><R name="Core"><QuantusCore /></R></ProtectedRoute>} />
+            <Route path="/helix" element={<ProtectedRoute><R name="Helix"><QuantusHelix /></R></ProtectedRoute>} />
+            <Route path="/forge" element={<ProtectedRoute><R name="Forge"><QuantusForge /></R></ProtectedRoute>} />
             <Route path="/dashboard" element={<ProtectedRoute><R name="Dashboard"><Dashboard /></R></ProtectedRoute>} />
             <Route path="/dashboard/modules" element={<ProtectedRoute><R name="Modules"><ModulesDashboard /></R></ProtectedRoute>} />
             <Route path="/dashboard/intake" element={<Navigate to="/intake" replace />} />
