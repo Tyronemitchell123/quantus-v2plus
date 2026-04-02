@@ -46,6 +46,10 @@ const DocumentVault = () => {
   const [generateOpen, setGenerateOpen] = useState(false);
   const [documents, setDocuments] = useState<DealDocument[]>([]);
   const [loading, setLoading] = useState(true);
+  const [generating, setGenerating] = useState(false);
+  const [genTemplate, setGenTemplate] = useState("");
+  const [genDealRef, setGenDealRef] = useState("");
+  const [genInstructions, setGenInstructions] = useState("");
   const { user } = useAuth();
 
   useDocumentHead({
@@ -54,19 +58,20 @@ const DocumentVault = () => {
     canonical: "https://quantus-loom.lovable.app/vault",
   });
 
-  useEffect(() => {
+  const loadDocs = async () => {
     if (!user) return;
-    const load = async () => {
-      setLoading(true);
-      const { data } = await supabase
-        .from("deal_documents")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false });
-      if (data) setDocuments(data);
-      setLoading(false);
-    };
-    load();
+    setLoading(true);
+    const { data } = await supabase
+      .from("deal_documents")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false });
+    if (data) setDocuments(data);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    loadDocs();
   }, [user]);
 
   const getStatusBadge = (status: string) => {
