@@ -2219,7 +2219,6 @@ export type Database = {
           success_fee_rate: number
           updated_at: string
           user_id: string
-          wearable_api_token: string | null
           wearable_provider: string
         }
         Insert: {
@@ -2240,7 +2239,6 @@ export type Database = {
           success_fee_rate?: number
           updated_at?: string
           user_id: string
-          wearable_api_token?: string | null
           wearable_provider?: string
         }
         Update: {
@@ -2261,7 +2259,6 @@ export type Database = {
           success_fee_rate?: number
           updated_at?: string
           user_id?: string
-          wearable_api_token?: string | null
           wearable_provider?: string
         }
         Relationships: []
@@ -2737,6 +2734,54 @@ export type Database = {
           id?: string | null
           name?: string | null
           price_cents?: number | null
+        }
+        Relationships: []
+      }
+      vendors_safe: {
+        Row: {
+          category: string | null
+          company: string | null
+          created_at: string | null
+          description: string | null
+          id: string | null
+          is_active: boolean | null
+          is_verified: boolean | null
+          location: string | null
+          logo_url: string | null
+          name: string | null
+          specialties: string[] | null
+          tier: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          category?: string | null
+          company?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string | null
+          is_active?: boolean | null
+          is_verified?: boolean | null
+          location?: string | null
+          logo_url?: string | null
+          name?: string | null
+          specialties?: string[] | null
+          tier?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string | null
+          company?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string | null
+          is_active?: boolean | null
+          is_verified?: boolean | null
+          location?: string | null
+          logo_url?: string | null
+          name?: string | null
+          specialties?: string[] | null
+          tier?: string | null
+          updated_at?: string | null
         }
         Relationships: []
       }
