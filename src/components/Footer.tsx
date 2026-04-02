@@ -50,7 +50,7 @@ const Footer = () => (
           </div>
         </div>
         <div>
-          <h4 className="font-body text-[9px] tracking-[0.4em] uppercase text-primary/40 mb-6">Connect</h4>
+          <h3 className="font-body text-[9px] tracking-[0.4em] uppercase text-primary/40 mb-6">Connect</h3>
           <div className="flex gap-5 mb-5">
             {socialLinks.map(({ icon: Icon, href, label }) => (
               <a
