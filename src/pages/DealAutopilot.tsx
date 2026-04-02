@@ -458,14 +458,9 @@ const DealAutopilot = () => {
             <TabsContent value="logs">
               <Card className="glass-card border-border/50">
                 <CardContent className="p-5 space-y-3">
-                  {[
-                    { time: "2 min ago", action: "Auto-classified deal QAI-5D2B1C8G as Logistics", type: "info" },
-                    { time: "8 min ago", action: "Sent vendor outreach to 3 suppliers for QAI-1B5F6D3E", type: "success" },
-                    { time: "15 min ago", action: "Negotiation stall detected on QAI-1B5F6D3E — escalated", type: "warning" },
-                    { time: "22 min ago", action: "Generated comparison report for QAI-9E4D8C2A", type: "info" },
-                    { time: "35 min ago", action: "Deal QAI-3C7A9E4F entering final completion stage", type: "success" },
-                    { time: "1h ago", action: "Budget optimization: saved $42K on QAI-7A3F2B1C sourcing", type: "success" },
-                  ].map((log, i) => (
+                  {activityLogs.length === 0 ? (
+                    <p className="text-sm text-muted-foreground text-center py-8">No activity logs yet. Autopilot will record actions here as deals are processed.</p>
+                  ) : activityLogs.map((log, i) => (
                     <motion.div key={i} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.05 }}
                       className="flex items-start gap-3 py-2.5 border-b border-border/30 last:border-0">
                       <div className={`mt-1 w-2 h-2 rounded-full shrink-0 ${log.type === "success" ? "bg-emerald-400" : log.type === "warning" ? "bg-amber-400" : "bg-primary"}`} />
