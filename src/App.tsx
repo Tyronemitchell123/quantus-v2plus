@@ -197,11 +197,13 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <OfflineIndicator />
         <BrowserRouter>
           <AnimatedRoutes />
-          <WelcomeTooltips />
-          <CookieConsent />
+          <Suspense fallback={null}>
+            <OfflineIndicator />
+            <WelcomeTooltips />
+            <CookieConsent />
+          </Suspense>
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
