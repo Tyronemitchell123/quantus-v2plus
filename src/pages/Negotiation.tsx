@@ -337,7 +337,7 @@ export default function Negotiation() {
             </motion.div>
 
             {/* Analyze CTA */}
-            {!a && !analyzing && (
+            {!a && !analyzing && outreachList.length > 0 && (
               <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="glass-card rounded-xl p-8 text-center mb-8">
                 <div className="w-16 h-16 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-4">
                   <Brain size={24} className="text-primary" />
@@ -352,6 +352,25 @@ export default function Negotiation() {
                 >
                   <Brain size={14} /> Analyze Negotiation Position
                 </button>
+              </motion.div>
+            )}
+
+            {/* No outreach data — redirect to Phase 3 */}
+            {!a && !analyzing && outreachList.length === 0 && !loading && deal && (
+              <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="glass-card rounded-xl p-8 text-center mb-8">
+                <div className="w-16 h-16 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center mx-auto mb-4">
+                  <AlertTriangle size={24} className="text-accent" />
+                </div>
+                <h2 className="font-display text-xl font-medium text-foreground mb-2">Vendor Outreach Required</h2>
+                <p className="font-body text-sm text-muted-foreground mb-6 max-w-md mx-auto">
+                  No vendor outreach data found for this deal. Complete the Outreach phase first so Quantus can analyze vendor positions and craft negotiation strategies.
+                </p>
+                <Link
+                  to={`/outreach?deal=${dealId}`}
+                  className="inline-flex items-center gap-2 px-8 py-3.5 bg-primary text-primary-foreground font-body text-xs tracking-[0.25em] uppercase hover:brightness-110 transition-all rounded-xl gold-glow"
+                >
+                  <ArrowRight size={14} /> Go to Vendor Outreach
+                </Link>
               </motion.div>
             )}
 
