@@ -1,10 +1,11 @@
-import { useRef } from "react";
+import { lazy, Suspense, useRef } from "react";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
-import ParticleGrid from "@/components/ParticleGrid";
-import HomepageHeroVideo from "@/components/HomepageHeroVideo";
-import LiveDemoWidget from "@/components/landing/LiveDemoWidget";
-import MagneticButton from "@/components/landing/MagneticButton";
+
+const ParticleGrid = lazy(() => import("@/components/ParticleGrid"));
+const HomepageHeroVideo = lazy(() => import("@/components/HomepageHeroVideo"));
+const LiveDemoWidget = lazy(() => import("@/components/landing/LiveDemoWidget"));
+const MagneticButton = lazy(() => import("@/components/landing/MagneticButton"));
 
 const HeroSection = () => {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -19,8 +20,10 @@ const HeroSection = () => {
       style={{ opacity: heroOpacity }}
       className="relative min-h-screen flex items-center justify-center overflow-hidden bg-background"
     >
-      <HomepageHeroVideo />
-      <ParticleGrid />
+      <Suspense fallback={null}>
+        <HomepageHeroVideo />
+        <ParticleGrid />
+      </Suspense>
 
       {/* Cinematic vignette overlay */}
       <div className="absolute inset-0 bg-obsidian-vignette pointer-events-none z-[1]" />
@@ -99,15 +102,24 @@ const HeroSection = () => {
             transition={{ delay: 1.3, duration: 0.6 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-5"
           >
-            <MagneticButton strength={0.2}>
+            <Suspense fallback={
               <Link
                 to="/auth"
                 className="inline-block px-10 py-4 font-body text-[9px] font-medium tracking-[0.4em] uppercase bg-primary text-primary-foreground rounded-xl hover:brightness-110 transition-all duration-700 gold-glow"
               >
                 Enter the Platform
               </Link>
-            </MagneticButton>
-            <LiveDemoWidget />
+            }>
+              <MagneticButton strength={0.2}>
+                <Link
+                  to="/auth"
+                  className="inline-block px-10 py-4 font-body text-[9px] font-medium tracking-[0.4em] uppercase bg-primary text-primary-foreground rounded-xl hover:brightness-110 transition-all duration-700 gold-glow"
+                >
+                  Enter the Platform
+                </Link>
+              </MagneticButton>
+              <LiveDemoWidget />
+            </Suspense>
           </motion.div>
         </motion.div>
       </motion.div>
