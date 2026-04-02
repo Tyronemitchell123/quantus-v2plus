@@ -102,15 +102,24 @@ const HeroSection = () => {
             transition={{ delay: 1.3, duration: 0.6 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-5"
           >
-            <MagneticButton strength={0.2}>
+            <Suspense fallback={
               <Link
                 to="/auth"
                 className="inline-block px-10 py-4 font-body text-[9px] font-medium tracking-[0.4em] uppercase bg-primary text-primary-foreground rounded-xl hover:brightness-110 transition-all duration-700 gold-glow"
               >
                 Enter the Platform
               </Link>
-            </MagneticButton>
-            <LiveDemoWidget />
+            }>
+              <MagneticButton strength={0.2}>
+                <Link
+                  to="/auth"
+                  className="inline-block px-10 py-4 font-body text-[9px] font-medium tracking-[0.4em] uppercase bg-primary text-primary-foreground rounded-xl hover:brightness-110 transition-all duration-700 gold-glow"
+                >
+                  Enter the Platform
+                </Link>
+              </MagneticButton>
+              <LiveDemoWidget />
+            </Suspense>
           </motion.div>
         </motion.div>
       </motion.div>
