@@ -20,7 +20,7 @@ const LiveActivityFeed = () => (
       <div className="text-center mb-10">
         <div className="inline-flex items-center gap-2 mb-4">
           <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-          <span className="font-body text-[10px] tracking-[0.4em] uppercase text-primary/60">
+          <span className="font-body text-[10px] tracking-[0.4em] uppercase text-primary/80">
             Platform Capabilities
           </span>
         </div>
