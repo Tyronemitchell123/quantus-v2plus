@@ -208,9 +208,7 @@ const SovereignMasterView = () => {
                   animate={{ width: `${pct}%` }}
                   transition={{ delay: 0.6 + i * 0.1, duration: 0.6 }}
                   className={`h-full rounded-full ${
-                    pillar.label === "Aviation" ? "bg-blue-400" :
-                    pillar.label === "Medical" ? "bg-emerald-400" :
-                    pillar.label === "Hospitality" ? "bg-amber-400" : "bg-rose-400"
+                    PILLAR_CONFIG.find(c => c.label === pillar.label)?.barColor || "bg-primary"
                   }`}
                 />
               </div>
