@@ -2219,7 +2219,6 @@ export type Database = {
           success_fee_rate: number
           updated_at: string
           user_id: string
-          wearable_api_token: string | null
           wearable_provider: string
         }
         Insert: {
@@ -2240,7 +2239,6 @@ export type Database = {
           success_fee_rate?: number
           updated_at?: string
           user_id: string
-          wearable_api_token?: string | null
           wearable_provider?: string
         }
         Update: {
@@ -2261,7 +2259,6 @@ export type Database = {
           success_fee_rate?: number
           updated_at?: string
           user_id?: string
-          wearable_api_token?: string | null
           wearable_provider?: string
         }
         Relationships: []
