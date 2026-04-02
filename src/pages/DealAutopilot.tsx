@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Bot, Zap, Play, Pause, RotateCcw, CheckCircle2, AlertTriangle, Clock, TrendingUp, ArrowRight, Shield, Settings2, Activity, Plus, Send } from "lucide-react";
+import { Bot, Zap, Play, Pause, RotateCcw, CheckCircle2, AlertTriangle, Clock, TrendingUp, ArrowRight, Shield, Settings2, Activity, Plus, Send, Loader2 as Loader2Icon } from "lucide-react";
+import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
