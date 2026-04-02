@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Bot, X, Send, Sparkles, ChevronLeft, Paperclip, Loader2 } from "lucide-react";
+import { Bot, Send, Sparkles, ChevronLeft, Loader2, Trash2 } from "lucide-react";
 import { streamChat } from "@/lib/stream-chat";
+import { useAIChatPersistence } from "@/hooks/use-ai-chat-persistence";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
 
@@ -22,11 +23,11 @@ interface Props {
 
 const AIAssistantPanel = ({ open, onToggle }: Props) => {
   const [input, setInput] = useState("");
-  const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
   const assistantRef = useRef("");
   const sendingRef = useRef(false);
   const endRef = useRef<HTMLDivElement>(null);
+  const { messages, setMessages, loaded, persistMessage, clearHistory } = useAIChatPersistence();
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -43,6 +44,9 @@ const AIAssistantPanel = ({ open, onToggle }: Props) => {
     setLoading(true);
     assistantRef.current = "";
 
+    // Persist user message
+    persistMessage("user", msg);
+
     await streamChat({
       messages: allMessages,
       onDelta: (chunk) => {
@@ -57,6 +61,10 @@ const AIAssistantPanel = ({ open, onToggle }: Props) => {
         });
       },
       onDone: () => {
+        // Persist assistant response
+        if (assistantRef.current) {
+          persistMessage("assistant", assistantRef.current);
+        }
         sendingRef.current = false;
         setLoading(false);
       },
@@ -68,11 +76,10 @@ const AIAssistantPanel = ({ open, onToggle }: Props) => {
     });
   };
 
-  const showPrompts = messages.length === 0;
+  const showPrompts = messages.length === 0 && loaded;
 
   return (
     <>
-      {/* Collapsed trigger */}
       {!open && (
         <motion.button
           initial={{ opacity: 0 }}
@@ -84,7 +91,6 @@ const AIAssistantPanel = ({ open, onToggle }: Props) => {
         </motion.button>
       )}
 
-      {/* Panel */}
       <AnimatePresence>
         {open && (
           <motion.div
@@ -110,16 +116,26 @@ const AIAssistantPanel = ({ open, onToggle }: Props) => {
                   />
                 </div>
               </div>
-              <button onClick={onToggle} className="text-muted-foreground hover:text-foreground transition-colors p-1">
-                <ChevronLeft size={16} className="rotate-180" />
-              </button>
+              <div className="flex items-center gap-1">
+                {messages.length > 0 && (
+                  <button
+                    onClick={clearHistory}
+                    className="text-muted-foreground hover:text-foreground transition-colors p-1"
+                    title="Clear history"
+                  >
+                    <Trash2 size={13} />
+                  </button>
+                )}
+                <button onClick={onToggle} className="text-muted-foreground hover:text-foreground transition-colors p-1">
+                  <ChevronLeft size={16} className="rotate-180" />
+                </button>
+              </div>
             </div>
 
             {/* Messages area */}
             <div className="flex-1 overflow-y-auto p-5 space-y-4">
               {showPrompts && (
                 <>
-                  {/* Welcome message */}
                   <div className="glass-card p-4 rounded-xl">
                     <div className="flex items-start gap-3">
                       <div className="w-7 h-7 rounded-full border border-primary/30 bg-primary/5 flex items-center justify-center shrink-0 mt-0.5">
