@@ -22,7 +22,7 @@ const Terms = () => {
 • Automated vendor sourcing, matching, and outreach
 • AI-assisted negotiation support and workflow automation
 • Document management, e-signatures, and billing
-• Quantum computing capabilities (AWS Braket integration)
+• Quantum computing capabilities (Quantus Quantum Engine)
 • Wealth dashboard, marketing hub, and analytics tools
 • Priority deal processing for expedited orchestration
 
