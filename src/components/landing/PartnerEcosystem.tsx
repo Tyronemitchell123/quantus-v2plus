@@ -94,6 +94,7 @@ const PartnerEcosystem = () => {
               />
               {fieldErrors.company && <p className="text-xs text-destructive mt-1">{fieldErrors.company}</p>}
               <select
+                aria-label="Category"
                 value={form.category}
                 onChange={(e) => setForm({ ...form, category: e.target.value })}
                 className={`w-full bg-background border px-4 py-3 font-body text-sm text-foreground focus:border-primary/40 focus:outline-none transition-colors ${fieldErrors.category ? "border-destructive" : "border-border"}`}
