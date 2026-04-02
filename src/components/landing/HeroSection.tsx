@@ -20,8 +20,10 @@ const HeroSection = () => {
       style={{ opacity: heroOpacity }}
       className="relative min-h-screen flex items-center justify-center overflow-hidden bg-background"
     >
-      <HomepageHeroVideo />
-      <ParticleGrid />
+      <Suspense fallback={null}>
+        <HomepageHeroVideo />
+        <ParticleGrid />
+      </Suspense>
 
       {/* Cinematic vignette overlay */}
       <div className="absolute inset-0 bg-obsidian-vignette pointer-events-none z-[1]" />
