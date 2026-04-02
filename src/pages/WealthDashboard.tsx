@@ -38,9 +38,34 @@ const fmt = (n: number) => "£" + n.toLocaleString("en-GB");
 const WealthDashboard = () => {
   useDocumentHead({ title: "Wealth Intelligence — Quantus V2+", description: "Sovereign net-worth command centre with real-time portfolio intelligence." });
   const [privacyMode, setPrivacyMode] = useState(false);
+  const [recentActivity, setRecentActivity] = useState<ActivityItem[]>([]);
   const mask = (v: string) => privacyMode ? "••••••••" : v;
 
   const { assets, loading, usingDefaults, seedDefaults } = usePortfolioAssets();
+
+  // Fetch recent audit events as activity feed
+  useEffect(() => {
+    const fetchActivity = async () => {
+      const { data } = await supabase
+        .from("audit_logs")
+        .select("action, resource_type, metadata, created_at")
+        .order("created_at", { ascending: false })
+        .limit(8);
+      if (data && data.length > 0) {
+        const mapped: ActivityItem[] = data.map((log: any) => {
+          const meta = log.metadata || {};
+          return {
+            action: log.action.replace(/[._]/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase()),
+            detail: meta.name || meta.url || log.resource_type || "",
+            time: formatDistanceToNow(new Date(log.created_at), { addSuffix: true }),
+            type: log.resource_type === "payment" ? "income" : log.action.includes("alert") ? "alert" : "rebalance",
+          };
+        });
+        setRecentActivity(mapped);
+      }
+    };
+    fetchActivity();
+  }, []);
 
   // Transform DB assets to display format
   const assetClasses = useMemo(() => assets.map((a) => ({
