@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Radar, TrendingUp, TrendingDown, AlertCircle, Globe, BarChart3, ArrowUpRight, ArrowDownRight, Clock, Flame, Eye, Filter } from "lucide-react";
+import { Radar, TrendingUp, TrendingDown, AlertCircle, Globe, BarChart3, ArrowUpRight, ArrowDownRight, Clock, Flame, Eye, Filter, Loader2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -9,33 +9,138 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import DashboardTopBar from "@/components/dashboard/DashboardTopBar";
 import useDocumentHead from "@/hooks/use-document-head";
+import { supabase } from "@/integrations/supabase/client";
+import { formatDistanceToNow } from "date-fns";
 
-const signals = [
-  { id: 1, title: "Private jet charter demand surges 34% in MENA region", vertical: "Aviation", sentiment: "bullish", impact: "high", time: "12m ago", confidence: 92 },
-  { id: 2, title: "New FDA fast-track designation for regenerative therapies", vertical: "Medical", sentiment: "bullish", impact: "high", time: "28m ago", confidence: 88 },
-  { id: 3, title: "UK staffing market contracts for 3rd consecutive quarter", vertical: "Staffing", sentiment: "bearish", impact: "medium", time: "1h ago", confidence: 76 },
-  { id: 4, title: "Luxury wellness retreat bookings up 52% YoY in SE Asia", vertical: "Lifestyle", sentiment: "bullish", impact: "high", time: "2h ago", confidence: 91 },
-  { id: 5, title: "Global shipping rates stabilize after 6-month decline", vertical: "Logistics", sentiment: "neutral", impact: "medium", time: "3h ago", confidence: 84 },
-  { id: 6, title: "UHNW family office allocations shifting toward direct deals", vertical: "Partnerships", sentiment: "bullish", impact: "high", time: "4h ago", confidence: 87 },
-  { id: 7, title: "Competitor AeroLux raises Series C — expanding into Asia", vertical: "Aviation", sentiment: "bearish", impact: "medium", time: "5h ago", confidence: 79 },
-  { id: 8, title: "Medical tourism revenue forecast up 28% for 2026", vertical: "Medical", sentiment: "bullish", impact: "high", time: "6h ago", confidence: 93 },
-];
+type Signal = {
+  id: string;
+  title: string;
+  vertical: string;
+  sentiment: "bullish" | "bearish" | "neutral";
+  impact: "high" | "medium" | "low";
+  time: string;
+  confidence: number;
+};
 
-const opportunities = [
-  { title: "Charter fleet expansion — Dubai ↔ London corridor", potential: "$4.2M", vertical: "Aviation", urgency: "Immediate", score: 94 },
-  { title: "Stem cell clinic partnership — Bangkok network", potential: "$1.8M", vertical: "Medical", urgency: "This week", score: 89 },
-  { title: "Executive staffing contract — Fortune 100 tech", potential: "$720K", vertical: "Staffing", urgency: "This month", score: 82 },
-  { title: "Luxury safari experience — Kenya conservation", potential: "$3.1M", vertical: "Lifestyle", urgency: "This week", score: 91 },
-];
+type Opportunity = {
+  title: string;
+  potential: string;
+  vertical: string;
+  urgency: string;
+  score: number;
+};
 
 const MarketIntelligence = () => {
   const [verticalFilter, setVerticalFilter] = useState("all");
+  const [signals, setSignals] = useState<Signal[]>([]);
+  const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({ signals: 0, bullish: 0, opportunities: 0, sources: 0 });
 
   useDocumentHead({
     title: "Market Intelligence Feed — Real-Time Signals | QUANTUS V2+",
     description: "Live market intelligence with pricing trends, competitor analysis, and AI-scored opportunity alerts.",
     canonical: "https://quantus-loom.lovable.app/intelligence",
   });
+
+  useEffect(() => {
+    async function fetchIntelligence() {
+      setLoading(true);
+
+      // Derive signals from real deal activity + sourcing data
+      const [dealsRes, sourcingRes, outreachRes] = await Promise.all([
+        supabase.from("deals").select("id, category, sub_category, intent, priority_score, status, deal_value_estimate, budget_currency, created_at, updated_at").order("updated_at", { ascending: false }).limit(50),
+        supabase.from("sourcing_results").select("id, category, name, overall_score, estimated_cost, tier, created_at").order("created_at", { ascending: false }).limit(30),
+        supabase.from("vendor_outreach").select("id, category, vendor_name, status, vendor_score, created_at").order("created_at", { ascending: false }).limit(30),
+      ]);
+
+      const deals = dealsRes.data || [];
+      const sourcing = sourcingRes.data || [];
+      const outreach = outreachRes.data || [];
+
+      // Generate signals from real data
+      const derivedSignals: Signal[] = [];
+
+      // Category-level deal activity signals
+      const categoryCounts: Record<string, number> = {};
+      deals.forEach((d: any) => { categoryCounts[d.category] = (categoryCounts[d.category] || 0) + 1; });
+      Object.entries(categoryCounts).forEach(([cat, count]) => {
+        derivedSignals.push({
+          id: `deal-${cat}`,
+          title: `${count} active deal${count > 1 ? "s" : ""} in ${cat.charAt(0).toUpperCase() + cat.slice(1)} vertical`,
+          vertical: cat.charAt(0).toUpperCase() + cat.slice(1),
+          sentiment: count >= 3 ? "bullish" : "neutral",
+          impact: count >= 5 ? "high" : "medium",
+          time: formatDistanceToNow(new Date(deals.find((d: any) => d.category === cat)?.updated_at || new Date()), { addSuffix: true }),
+          confidence: Math.min(95, 70 + count * 5),
+        });
+      });
+
+      // Sourcing signals
+      const primarySourcing = sourcing.filter((s: any) => s.tier === "primary");
+      if (primarySourcing.length > 0) {
+        const cats = [...new Set(primarySourcing.map((s: any) => s.category))];
+        cats.forEach((cat: any) => {
+          const catResults = primarySourcing.filter((s: any) => s.category === cat);
+          const avgScore = catResults.reduce((sum: number, s: any) => sum + s.overall_score, 0) / catResults.length;
+          derivedSignals.push({
+            id: `sourcing-${cat}`,
+            title: `${catResults.length} primary-tier options identified in ${cat.charAt(0).toUpperCase() + cat.slice(1)} — avg score ${Math.round(avgScore)}`,
+            vertical: cat.charAt(0).toUpperCase() + cat.slice(1),
+            sentiment: avgScore > 85 ? "bullish" : "neutral",
+            impact: "high",
+            time: formatDistanceToNow(new Date(catResults[0].created_at), { addSuffix: true }),
+            confidence: Math.round(avgScore),
+          });
+        });
+      }
+
+      // Vendor response signals
+      const respondedVendors = outreach.filter((o: any) => o.status === "responded" || o.status === "negotiation_ready");
+      if (respondedVendors.length > 0) {
+        derivedSignals.push({
+          id: "vendor-responses",
+          title: `${respondedVendors.length} vendor${respondedVendors.length > 1 ? "s" : ""} responded with active interest — negotiation opportunities available`,
+          vertical: "All",
+          sentiment: "bullish",
+          impact: "high",
+          time: formatDistanceToNow(new Date(respondedVendors[0].created_at), { addSuffix: true }),
+          confidence: 90,
+        });
+      }
+
+      setSignals(derivedSignals);
+
+      // Generate opportunities from high-value deals
+      const opps: Opportunity[] = deals
+        .filter((d: any) => d.deal_value_estimate && d.status !== "completed" && d.status !== "cancelled")
+        .slice(0, 6)
+        .map((d: any) => ({
+          title: d.intent || `${d.category} deal — ${d.sub_category || "general"}`,
+          potential: d.deal_value_estimate >= 1000000
+            ? `$${(d.deal_value_estimate / 1000000).toFixed(1)}M`
+            : `$${(d.deal_value_estimate / 1000).toFixed(0)}K`,
+          vertical: d.category.charAt(0).toUpperCase() + d.category.slice(1),
+          urgency: d.priority_score >= 80 ? "Immediate" : d.priority_score >= 60 ? "This week" : "This month",
+          score: d.priority_score,
+        }));
+      setOpportunities(opps);
+
+      // Stats
+      const bullishCount = derivedSignals.filter(s => s.sentiment === "bullish").length;
+      const bullishPct = derivedSignals.length > 0 ? Math.round((bullishCount / derivedSignals.length) * 100) : 0;
+      setStats({
+        signals: derivedSignals.length,
+        bullish: bullishPct,
+        opportunities: opps.length,
+        sources: deals.length + sourcing.length + outreach.length,
+      });
+
+      setLoading(false);
+    }
+
+    fetchIntelligence();
+  }, []);
 
   const filteredSignals = verticalFilter === "all" ? signals : signals.filter(s => s.vertical.toLowerCase() === verticalFilter);
 
@@ -66,7 +171,7 @@ const MarketIntelligence = () => {
                 Market Intelligence
                 <Badge variant="outline" className="text-[10px] border-primary/30 text-primary bg-primary/5">LIVE</Badge>
               </h1>
-              <p className="text-sm text-muted-foreground mt-1">Real-time signals, competitor analysis, and AI-scored opportunities.</p>
+              <p className="text-sm text-muted-foreground mt-1">Real-time signals derived from your deal activity, vendor responses, and sourcing intelligence.</p>
             </div>
             <div className="flex items-center gap-3">
               <Select value={verticalFilter} onValueChange={setVerticalFilter}>
@@ -92,10 +197,10 @@ const MarketIntelligence = () => {
           {/* Quick Stats */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {[
-              { label: "Active Signals", value: "2,847", icon: Radar, color: "text-primary" },
-              { label: "Bullish Trends", value: "68%", icon: TrendingUp, color: "text-emerald-400" },
-              { label: "Opportunities", value: "42", icon: Flame, color: "text-amber-400" },
-              { label: "Data Sources", value: "156", icon: Globe, color: "text-blue-400" },
+              { label: "Active Signals", value: loading ? "—" : String(stats.signals), icon: Radar, color: "text-primary" },
+              { label: "Bullish Trends", value: loading ? "—" : `${stats.bullish}%`, icon: TrendingUp, color: "text-emerald-400" },
+              { label: "Opportunities", value: loading ? "—" : String(stats.opportunities), icon: Flame, color: "text-amber-400" },
+              { label: "Data Points", value: loading ? "—" : String(stats.sources), icon: Globe, color: "text-blue-400" },
             ].map((stat, i) => (
               <motion.div key={stat.label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }}>
                 <Card className="glass-card border-border/50">
@@ -109,111 +214,91 @@ const MarketIntelligence = () => {
             ))}
           </div>
 
-          <Tabs defaultValue="signals" className="space-y-4">
-            <TabsList className="bg-secondary/50">
-              <TabsTrigger value="signals">Signal Feed</TabsTrigger>
-              <TabsTrigger value="opportunities">Opportunities</TabsTrigger>
-              <TabsTrigger value="competitors">Competitor Watch</TabsTrigger>
-            </TabsList>
+          {loading ? (
+            <div className="flex items-center justify-center py-16">
+              <Loader2 size={24} className="animate-spin text-primary" />
+            </div>
+          ) : (
+            <Tabs defaultValue="signals" className="space-y-4">
+              <TabsList className="bg-secondary/50">
+                <TabsTrigger value="signals">Signal Feed</TabsTrigger>
+                <TabsTrigger value="opportunities">Opportunities</TabsTrigger>
+              </TabsList>
 
-            <TabsContent value="signals" className="space-y-3">
-              {filteredSignals.map((signal, i) => (
-                <motion.div key={signal.id} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.06 }}>
-                  <Card className="glass-card border-border/50 hover:border-primary/20 transition-all cursor-pointer group">
-                    <CardContent className="p-5">
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            <Badge variant="outline" className="text-[10px]">{signal.vertical}</Badge>
-                            <Badge variant="outline" className={`text-[10px] ${getSentimentBadge(signal.sentiment)}`}>
-                              {getSentimentIcon(signal.sentiment)}
-                              <span className="ml-1 capitalize">{signal.sentiment}</span>
-                            </Badge>
-                            {signal.impact === "high" && (
-                              <Badge variant="outline" className="text-[10px] bg-red-500/10 text-red-400 border-red-500/20">
-                                <Flame size={10} className="mr-0.5" /> High Impact
+              <TabsContent value="signals" className="space-y-3">
+                {filteredSignals.length === 0 ? (
+                  <Card className="glass-card border-border/50 p-8 text-center">
+                    <Radar size={24} className="text-muted-foreground mx-auto mb-2" />
+                    <p className="text-sm text-muted-foreground">No signals yet. Submit deals to generate intelligence.</p>
+                  </Card>
+                ) : filteredSignals.map((signal, i) => (
+                  <motion.div key={signal.id} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.06 }}>
+                    <Card className="glass-card border-border/50 hover:border-primary/20 transition-all cursor-pointer group">
+                      <CardContent className="p-5">
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2">
+                              <Badge variant="outline" className="text-[10px]">{signal.vertical}</Badge>
+                              <Badge variant="outline" className={`text-[10px] ${getSentimentBadge(signal.sentiment)}`}>
+                                {getSentimentIcon(signal.sentiment)}
+                                <span className="ml-1 capitalize">{signal.sentiment}</span>
                               </Badge>
-                            )}
+                              {signal.impact === "high" && (
+                                <Badge variant="outline" className="text-[10px] bg-red-500/10 text-red-400 border-red-500/20">
+                                  <Flame size={10} className="mr-0.5" /> High Impact
+                                </Badge>
+                              )}
+                            </div>
+                            <h3 className="text-sm font-medium text-foreground group-hover:text-primary transition-colors">{signal.title}</h3>
                           </div>
-                          <h3 className="text-sm font-medium text-foreground group-hover:text-primary transition-colors">{signal.title}</h3>
-                        </div>
-                        <div className="text-right shrink-0">
-                          <div className="flex items-center gap-1 text-xs text-muted-foreground mb-1">
-                            <Clock size={10} /> {signal.time}
+                          <div className="text-right shrink-0">
+                            <div className="flex items-center gap-1 text-xs text-muted-foreground mb-1">
+                              <Clock size={10} /> {signal.time}
+                            </div>
+                            <div className="text-xs text-muted-foreground">
+                              Confidence: <span className="text-foreground font-medium">{signal.confidence}%</span>
+                            </div>
                           </div>
-                          <div className="text-xs text-muted-foreground">
-                            Confidence: <span className="text-foreground font-medium">{signal.confidence}%</span>
-                          </div>
                         </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
-            </TabsContent>
-
-            <TabsContent value="opportunities" className="space-y-3">
-              {opportunities.map((opp, i) => (
-                <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }}>
-                  <Card className="glass-card border-border/50 hover:border-primary/30 transition-all">
-                    <CardContent className="p-5">
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            <Badge variant="outline" className="text-[10px]">{opp.vertical}</Badge>
-                            <Badge variant="outline" className="text-[10px] bg-amber-500/10 text-amber-400 border-amber-500/20">{opp.urgency}</Badge>
-                          </div>
-                          <h3 className="text-sm font-medium text-foreground">{opp.title}</h3>
-                        </div>
-                        <div className="text-right">
-                          <div className="font-display text-lg font-bold text-foreground">{opp.potential}</div>
-                          <div className="text-xs text-muted-foreground">Score: <span className="text-emerald-400 font-semibold">{opp.score}/100</span></div>
-                        </div>
-                        <Button size="sm" variant="outline" className="ml-4 text-xs gap-1">
-                          <Eye size={12} /> Pursue
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
-            </TabsContent>
-
-            <TabsContent value="competitors">
-              <div className="grid md:grid-cols-2 gap-4">
-                {[
-                  { name: "AeroLux Concierge", threat: "Medium", moves: ["Raised $28M Series C", "Expanding to Dubai", "Hired ex-VistaJet CTO"], vertical: "Aviation" },
-                  { name: "MedElite Global", threat: "Low", moves: ["Lost APAC exclusivity deal", "CFO departure announced", "Price cuts on premium tier"], vertical: "Medical" },
-                  { name: "PrimeStaff Solutions", threat: "High", moves: ["Won Fortune 50 contract", "AI matching tool launched", "Acquired TalentScope"], vertical: "Staffing" },
-                  { name: "Luxe Horizons", threat: "Medium", moves: ["New yacht charter vertical", "Partnership with Four Seasons", "App redesign launched"], vertical: "Lifestyle" },
-                ].map((comp, i) => (
-                  <motion.div key={i} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.1 }}>
-                    <Card className="glass-card border-border/50 h-full">
-                      <CardHeader className="pb-3">
-                        <div className="flex items-center justify-between">
-                          <CardTitle className="text-base">{comp.name}</CardTitle>
-                          <Badge variant="outline" className={`text-[10px] ${comp.threat === "High" ? "text-red-400 border-red-500/20" : comp.threat === "Medium" ? "text-amber-400 border-amber-500/20" : "text-emerald-400 border-emerald-500/20"}`}>
-                            {comp.threat} Threat
-                          </Badge>
-                        </div>
-                        <Badge variant="outline" className="text-[10px] w-fit">{comp.vertical}</Badge>
-                      </CardHeader>
-                      <CardContent>
-                        <ul className="space-y-2">
-                          {comp.moves.map((move, j) => (
-                            <li key={j} className="flex items-start gap-2 text-sm text-muted-foreground">
-                              <AlertCircle size={12} className="text-primary shrink-0 mt-0.5" />
-                              {move}
-                            </li>
-                          ))}
-                        </ul>
                       </CardContent>
                     </Card>
                   </motion.div>
                 ))}
-              </div>
-            </TabsContent>
-          </Tabs>
+              </TabsContent>
+
+              <TabsContent value="opportunities" className="space-y-3">
+                {opportunities.length === 0 ? (
+                  <Card className="glass-card border-border/50 p-8 text-center">
+                    <Flame size={24} className="text-muted-foreground mx-auto mb-2" />
+                    <p className="text-sm text-muted-foreground">No opportunities detected yet. Active deals with value estimates will appear here.</p>
+                  </Card>
+                ) : opportunities.map((opp, i) => (
+                  <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }}>
+                    <Card className="glass-card border-border/50 hover:border-primary/30 transition-all">
+                      <CardContent className="p-5">
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2">
+                              <Badge variant="outline" className="text-[10px]">{opp.vertical}</Badge>
+                              <Badge variant="outline" className="text-[10px] bg-amber-500/10 text-amber-400 border-amber-500/20">{opp.urgency}</Badge>
+                            </div>
+                            <h3 className="text-sm font-medium text-foreground capitalize">{opp.title}</h3>
+                          </div>
+                          <div className="text-right">
+                            <div className="font-display text-lg font-bold text-foreground">{opp.potential}</div>
+                            <div className="text-xs text-muted-foreground">Score: <span className="text-emerald-400 font-semibold">{opp.score}/100</span></div>
+                          </div>
+                          <Button size="sm" variant="outline" className="ml-4 text-xs gap-1">
+                            <Eye size={12} /> Pursue
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                ))}
+              </TabsContent>
+            </Tabs>
+          )}
         </main>
       </div>
     </div>
