@@ -157,7 +157,7 @@ const PayInvoice = () => {
                 {invoiceInfo.status !== "paid" && (
                   <Button onClick={proceedToPayment} disabled={checkoutLoading} className="w-full gap-2">
                     {checkoutLoading ? <Loader2 size={14} className="animate-spin" /> : <ExternalLink size={14} />}
-                    Pay Now via Stripe
+                    Pay Now — Secure Checkout
                   </Button>
                 )}
 
