@@ -1,16 +1,18 @@
+import { lazy, Suspense } from "react";
 import useDocumentHead from "@/hooks/use-document-head";
 import HeroSection from "@/components/landing/HeroSection";
 import ValueProposition from "@/components/landing/ValueProposition";
-import SocialProof from "@/components/landing/SocialProof";
-import ModuleShowcase from "@/components/landing/ModuleShowcase";
-import CinematicStrip from "@/components/landing/CinematicStrip";
-import MembershipTiers from "@/components/landing/MembershipTiers";
-import HowItWorks from "@/components/landing/HowItWorks";
-import PartnerEcosystem from "@/components/landing/PartnerEcosystem";
-import Testimonials from "@/components/landing/Testimonials";
-import FinalCTA from "@/components/landing/FinalCTA";
-import LeadCapture from "@/components/landing/LeadCapture";
-import LiveActivityFeed from "@/components/landing/LiveActivityFeed";
+
+const SocialProof = lazy(() => import("@/components/landing/SocialProof"));
+const ModuleShowcase = lazy(() => import("@/components/landing/ModuleShowcase"));
+const CinematicStrip = lazy(() => import("@/components/landing/CinematicStrip"));
+const MembershipTiers = lazy(() => import("@/components/landing/MembershipTiers"));
+const HowItWorks = lazy(() => import("@/components/landing/HowItWorks"));
+const PartnerEcosystem = lazy(() => import("@/components/landing/PartnerEcosystem"));
+const Testimonials = lazy(() => import("@/components/landing/Testimonials"));
+const FinalCTA = lazy(() => import("@/components/landing/FinalCTA"));
+const LeadCapture = lazy(() => import("@/components/landing/LeadCapture"));
+const LiveActivityFeed = lazy(() => import("@/components/landing/LiveActivityFeed"));
 
 const Index = () => {
   useDocumentHead({
@@ -34,25 +36,27 @@ const Index = () => {
       <HeroSection />
       <div className="luxury-divider" />
       <ValueProposition />
-      <div className="luxury-divider" />
-      <ModuleShowcase />
-      <div className="luxury-divider" />
-      <CinematicStrip />
-      <div className="luxury-divider" />
-      <LiveActivityFeed />
-      <div className="luxury-divider" />
-      <MembershipTiers />
-      <div className="luxury-divider" />
-      <HowItWorks />
-      <div className="luxury-divider" />
-      <PartnerEcosystem />
-      <div className="luxury-divider" />
-      <Testimonials />
-      <div className="luxury-divider" />
-      <SocialProof />
-      <div className="luxury-divider" />
-      <FinalCTA />
-      <LeadCapture />
+      <Suspense fallback={null}>
+        <div className="luxury-divider" />
+        <ModuleShowcase />
+        <div className="luxury-divider" />
+        <CinematicStrip />
+        <div className="luxury-divider" />
+        <LiveActivityFeed />
+        <div className="luxury-divider" />
+        <MembershipTiers />
+        <div className="luxury-divider" />
+        <HowItWorks />
+        <div className="luxury-divider" />
+        <PartnerEcosystem />
+        <div className="luxury-divider" />
+        <Testimonials />
+        <div className="luxury-divider" />
+        <SocialProof />
+        <div className="luxury-divider" />
+        <FinalCTA />
+        <LeadCapture />
+      </Suspense>
     </main>
   );
 };

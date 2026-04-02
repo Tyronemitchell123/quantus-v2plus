@@ -12,7 +12,7 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import RouteErrorBoundary from "@/components/RouteErrorBoundary";
 import PageLoader from "@/components/PageLoader";
-import Index from "./pages/Index";
+const Index = lazy(() => import("./pages/Index"));
 
 const CookieConsent = lazy(() => import("@/components/CookieConsent"));
 const WelcomeTooltips = lazy(() => import("@/components/onboarding/WelcomeTooltips"));
