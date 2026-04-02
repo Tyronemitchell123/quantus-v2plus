@@ -35,11 +35,7 @@ const mobileNavItems = [
   { icon: Settings, label: "Settings", to: "/settings" },
 ];
 
-const sampleNotifications = [
-  { id: "1", text: "Vendor response received — Gulfstream G700", time: "12 min ago" },
-  { id: "2", text: "Document signed — Dr. Nazari Service Agreement", time: "1 hour ago" },
-  { id: "3", text: "AI recommendation: Consider charter optimization", time: "3 hours ago" },
-];
+// Notifications are now handled by the live NotificationCenter in DashboardTopBar
 
 const quickActions = [
   { icon: Plus, label: "New Request", to: "/intake" },
