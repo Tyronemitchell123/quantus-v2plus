@@ -218,6 +218,8 @@ function ReflectionsPanel({ summary, tierRec, upsells }: {
 /* ── Collect Payment Button ── */
 function CollectPaymentButton({ dealId, outstandingCents, currency = "GBP" }: { dealId: string; outstandingCents: number; currency?: string }) {
   const [collecting, setCollecting] = useState(false);
+  const [paymentUrl, setPaymentUrl] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const handleCollect = async () => {
     setCollecting(true);
@@ -228,8 +230,9 @@ function CollectPaymentButton({ dealId, outstandingCents, currency = "GBP" }: { 
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
       if (data?.url) {
-        window.open(data.url, "_blank");
-        toast.success("Payment link opened — share with customer or complete payment");
+        setPaymentUrl(data.url);
+        await navigator.clipboard.writeText(data.url);
+        toast.success("Payment link copied to clipboard — send it to your customer");
       }
     } catch (err: any) {
       toast.error(err.message || "Failed to create payment link");
@@ -238,21 +241,46 @@ function CollectPaymentButton({ dealId, outstandingCents, currency = "GBP" }: { 
     }
   };
 
+  const handleCopyAgain = async () => {
+    if (paymentUrl) {
+      await navigator.clipboard.writeText(paymentUrl);
+      toast.success("Payment link copied again");
+    }
+  };
+
   const symbol = currency === "USD" ? "$" : currency === "EUR" ? "€" : "£";
 
   return (
-    <button
-      onClick={handleCollect}
-      disabled={collecting}
-      className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-body text-[10px] tracking-widest uppercase transition-all shadow-[0_0_20px_hsl(142_71%_45%/0.2)] disabled:opacity-60"
-    >
-      {collecting ? (
-        <Loader2 size={12} className="animate-spin" />
-      ) : (
-        <CreditCard size={12} />
+    <div className="flex-1 flex flex-col gap-2">
+      <button
+        onClick={handleCollect}
+        disabled={collecting}
+        className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-body text-[10px] tracking-widest uppercase transition-all shadow-[0_0_20px_hsl(142_71%_45%/0.2)] disabled:opacity-60"
+      >
+        {collecting ? (
+          <Loader2 size={12} className="animate-spin" />
+        ) : (
+          <CreditCard size={12} />
+        )}
+        {paymentUrl ? "Regenerate Link" : `Generate Payment Link — ${symbol}${(outstandingCents / 100).toLocaleString()}`}
+      </button>
+      {paymentUrl && (
+        <div className="flex gap-2">
+          <button
+            onClick={handleCopyAgain}
+            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 border border-emerald-600/30 rounded-lg bg-emerald-600/10 text-emerald-400 font-body text-[9px] tracking-wider uppercase hover:bg-emerald-600/20 transition-all"
+          >
+            <Copy size={10} /> Copy Link
+          </button>
+          <button
+            onClick={() => navigate(`/commission-payouts`)}
+            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 border border-[hsl(var(--primary)/0.3)] rounded-lg bg-[hsl(var(--primary)/0.1)] text-[hsl(var(--primary))] font-body text-[9px] tracking-wider uppercase hover:bg-[hsl(var(--primary)/0.2)] transition-all"
+          >
+            <Receipt size={10} /> Full Invoice Hub
+          </button>
+        </div>
       )}
-      Collect {symbol}{(outstandingCents / 100).toLocaleString()}
-    </button>
+    </div>
   );
 }
 
