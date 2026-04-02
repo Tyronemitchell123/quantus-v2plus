@@ -31,7 +31,7 @@ const Footer = () => (
           </div>
         </div>
         <div>
-          <h4 className="font-body text-[9px] tracking-[0.4em] uppercase text-primary/40 mb-6">Modules</h4>
+          <h3 className="font-body text-[9px] tracking-[0.4em] uppercase text-primary/40 mb-6">Modules</h3>
           <div className="flex flex-col gap-3">
             <Link to="/modules" className="font-body text-xs text-muted-foreground/60 hover:text-primary transition-colors duration-500">Aviation</Link>
             <Link to="/modules" className="font-body text-xs text-muted-foreground/60 hover:text-primary transition-colors duration-500">Medical</Link>
