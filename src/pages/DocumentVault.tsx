@@ -125,7 +125,7 @@ const DocumentVault = () => {
                 <div className="space-y-4 mt-2">
                   <div>
                     <label className="text-sm font-medium text-foreground mb-1.5 block">Template</label>
-                    <Select>
+                    <Select value={genTemplate} onValueChange={setGenTemplate}>
                       <SelectTrigger><SelectValue placeholder="Choose a template…" /></SelectTrigger>
                       <SelectContent>
                         {templates.map(t => (
@@ -136,14 +136,71 @@ const DocumentVault = () => {
                   </div>
                   <div>
                     <label className="text-sm font-medium text-foreground mb-1.5 block">Deal Reference</label>
-                    <Input placeholder="QAI-XXXXXXXX" />
+                    <Input placeholder="QAI-XXXXXXXX" value={genDealRef} onChange={e => setGenDealRef(e.target.value)} />
                   </div>
                   <div>
                     <label className="text-sm font-medium text-foreground mb-1.5 block">Special Instructions</label>
-                    <Textarea placeholder="E.g., Include non-compete clause, payment terms net-30…" rows={3} />
+                    <Textarea placeholder="E.g., Include non-compete clause, payment terms net-30…" rows={3} value={genInstructions} onChange={e => setGenInstructions(e.target.value)} />
                   </div>
-                  <Button className="w-full gap-2" onClick={() => setGenerateOpen(false)}>
-                    <Sparkles size={14} /> Generate with AI
+                  <Button
+                    className="w-full gap-2"
+                    disabled={generating || !genTemplate}
+                    onClick={async () => {
+                      if (!user || !genTemplate) return;
+                      setGenerating(true);
+                      try {
+                        // Look up deal by deal_number if provided
+                        let dealId: string | null = null;
+                        if (genDealRef.trim()) {
+                          const { data: dealData } = await supabase
+                            .from("deals")
+                            .select("id")
+                            .ilike("deal_number", `%${genDealRef.trim()}%`)
+                            .limit(1)
+                            .maybeSingle();
+                          dealId = dealData?.id || null;
+                        }
+                        // If no deal found, get most recent deal
+                        if (!dealId) {
+                          const { data: recentDeal } = await supabase
+                            .from("deals")
+                            .select("id")
+                            .order("created_at", { ascending: false })
+                            .limit(1)
+                            .maybeSingle();
+                          dealId = recentDeal?.id || null;
+                        }
+                        if (!dealId) {
+                          toast.error("No deals found. Create a deal first via Intake.");
+                          return;
+                        }
+                        // Create document in deal_documents
+                        const { error } = await supabase.from("deal_documents").insert({
+                          deal_id: dealId,
+                          user_id: user.id,
+                          title: genTemplate,
+                          document_type: templates.find(t => t.name === genTemplate)?.category.toLowerCase() || "contract",
+                          status: "draft",
+                          content: genInstructions || null,
+                          fields: { template: genTemplate, instructions: genInstructions },
+                        });
+                        if (error) throw error;
+                        toast.success(`${genTemplate} created successfully`);
+                        setGenerateOpen(false);
+                        setGenTemplate("");
+                        setGenDealRef("");
+                        setGenInstructions("");
+                        loadDocs();
+                      } catch (e: any) {
+                        toast.error(e.message || "Failed to generate document");
+                      } finally {
+                        setGenerating(false);
+                      }
+                    }}
+                  >
+                    {generating ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
+                    {generating ? "Generating…" : "Generate with AI"}
+                  </Button>
                   </Button>
                 </div>
               </DialogContent>
