@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import useDocumentHead from "@/hooks/use-document-head";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
@@ -17,6 +17,8 @@ import PortfolioAINarrative from "@/components/wealth/PortfolioAINarrative";
 import PortfolioDonutChart from "@/components/wealth/PortfolioDonutChart";
 import PortfolioTreemap from "@/components/wealth/PortfolioTreemap";
 import { usePortfolioAssets, centsToValue, fmtGBP } from "@/hooks/use-portfolio-assets";
+import { supabase } from "@/integrations/supabase/client";
+import { formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
 
 const ICON_MAP: Record<string, any> = {
@@ -25,13 +27,7 @@ const ICON_MAP: Record<string, any> = {
   vehicles: Car, cash: Wallet, other: Activity,
 };
 
-const recentActivity = [
-  { action: "Portfolio rebalanced", detail: "Shifted 2% from Equities to Private Equity", time: "2h ago", type: "rebalance" },
-  { action: "Dividend received", detail: "£42,500 from Hargreaves Fund III", time: "6h ago", type: "income" },
-  { action: "Property valuation updated", detail: "Mayfair residence +£380K", time: "1d ago", type: "valuation" },
-  { action: "Risk alert resolved", detail: "Emerging market exposure rebalanced", time: "2d ago", type: "alert" },
-  { action: "Trust distribution", detail: "Q1 distribution processed — £125K", time: "3d ago", type: "income" },
-];
+type ActivityItem = { action: string; detail: string; time: string; type: string };
 
 const aiInsights = [
   { title: "Rebalancing Opportunity", desc: "Equities overweight by 3.2%. Consider shifting to fixed income for risk-adjusted returns.", priority: "high" },
@@ -44,9 +40,34 @@ const fmt = (n: number) => "£" + n.toLocaleString("en-GB");
 const WealthDashboard = () => {
   useDocumentHead({ title: "Wealth Intelligence — Quantus V2+", description: "Sovereign net-worth command centre with real-time portfolio intelligence." });
   const [privacyMode, setPrivacyMode] = useState(false);
+  const [recentActivity, setRecentActivity] = useState<ActivityItem[]>([]);
   const mask = (v: string) => privacyMode ? "••••••••" : v;
 
   const { assets, loading, usingDefaults, seedDefaults } = usePortfolioAssets();
+
+  // Fetch recent audit events as activity feed
+  useEffect(() => {
+    const fetchActivity = async () => {
+      const { data } = await supabase
+        .from("audit_logs")
+        .select("action, resource_type, metadata, created_at")
+        .order("created_at", { ascending: false })
+        .limit(8);
+      if (data && data.length > 0) {
+        const mapped: ActivityItem[] = data.map((log: any) => {
+          const meta = log.metadata || {};
+          return {
+            action: log.action.replace(/[._]/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase()),
+            detail: meta.name || meta.url || log.resource_type || "",
+            time: formatDistanceToNow(new Date(log.created_at), { addSuffix: true }),
+            type: log.resource_type === "payment" ? "income" : log.action.includes("alert") ? "alert" : "rebalance",
+          };
+        });
+        setRecentActivity(mapped);
+      }
+    };
+    fetchActivity();
+  }, []);
 
   // Transform DB assets to display format
   const assetClasses = useMemo(() => assets.map((a) => ({

@@ -14,20 +14,56 @@ type PillarData = {
   crossSellRevenue?: number;
 };
 
+const PILLAR_CONFIG = [
+  { label: "Aviation", category: "aviation", icon: Plane, color: "text-blue-400", barColor: "bg-blue-400" },
+  { label: "Medical", category: "medical", icon: Stethoscope, color: "text-emerald-400", barColor: "bg-emerald-400" },
+  { label: "Hospitality", category: "hospitality", icon: Hotel, color: "text-amber-400", barColor: "bg-amber-400" },
+  { label: "Longevity", category: "lifestyle", icon: HeartPulse, color: "text-rose-400", barColor: "bg-rose-400" },
+];
+
 const SovereignMasterView = () => {
   const { user } = useAuth();
+  const [pillars, setPillars] = useState<PillarData[]>([]);
   const [totalCommissions, setTotalCommissions] = useState(0);
   const [leakTicker, setLeakTicker] = useState(0);
 
   useEffect(() => {
     if (!user) return;
     const fetchData = async () => {
-      const { data } = await supabase
+      // Fetch deals by category
+      const { data: deals } = await supabase
+        .from("deals")
+        .select("category, status, deal_value_estimate")
+        .eq("user_id", user.id);
+
+      // Fetch commissions
+      const { data: commissions } = await supabase
         .from("commissions")
         .select("quantus_cut")
         .eq("user_id", user.id);
-      const total = (data || []).reduce((s, c) => s + Number(c.quantus_cut || 0), 0);
-      setTotalCommissions(total);
+
+      const totalComm = (commissions || []).reduce((s, c) => s + Number(c.quantus_cut || 0), 0);
+      setTotalCommissions(totalComm);
+
+      // Build pillar data from live deals
+      const builtPillars: PillarData[] = PILLAR_CONFIG.map(cfg => {
+        const catDeals = (deals || []).filter(d => d.category === cfg.category);
+        const active = catDeals.filter(d => d.status !== "completed" && d.status !== "cancelled");
+        const completed = catDeals.filter(d => d.status === "completed");
+        const recovered = completed.reduce((s, d) => s + Number(d.deal_value_estimate || 0), 0);
+        const commission = Math.round(recovered * 0.1); // 10% commission estimate
+        return {
+          label: cfg.label,
+          icon: cfg.icon,
+          color: cfg.color,
+          recovered,
+          commission,
+          leadsActive: active.length,
+          crossSellRevenue: 0,
+        };
+      });
+
+      setPillars(builtPillars);
     };
     fetchData();
   }, [user]);
@@ -40,13 +76,6 @@ const SovereignMasterView = () => {
     const iv = setInterval(update, 10000);
     return () => clearInterval(iv);
   }, []);
-
-  const pillars: PillarData[] = [
-    { label: "Aviation", icon: Plane, color: "text-blue-400", recovered: 245000, commission: 24500, leadsActive: 12, crossSellRevenue: 15000 },
-    { label: "Medical", icon: Stethoscope, color: "text-emerald-400", recovered: 187000, commission: 18700, leadsActive: 8, crossSellRevenue: 0 },
-    { label: "Hospitality", icon: Hotel, color: "text-amber-400", recovered: 132000, commission: 6600, leadsActive: 15, crossSellRevenue: 0 },
-    { label: "Longevity", icon: HeartPulse, color: "text-rose-400", recovered: 96000, commission: 9600, leadsActive: 5, crossSellRevenue: 15000 },
-  ];
 
   const totalRecovered = pillars.reduce((s, p) => s + p.recovered, 0);
   const totalComm = totalCommissions || pillars.reduce((s, p) => s + p.commission, 0);
@@ -179,9 +208,7 @@ const SovereignMasterView = () => {
                   animate={{ width: `${pct}%` }}
                   transition={{ delay: 0.6 + i * 0.1, duration: 0.6 }}
                   className={`h-full rounded-full ${
-                    pillar.label === "Aviation" ? "bg-blue-400" :
-                    pillar.label === "Medical" ? "bg-emerald-400" :
-                    pillar.label === "Hospitality" ? "bg-amber-400" : "bg-rose-400"
+                    PILLAR_CONFIG.find(c => c.label === pillar.label)?.barColor || "bg-primary"
                   }`}
                 />
               </div>
