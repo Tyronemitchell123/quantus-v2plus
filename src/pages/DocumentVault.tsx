@@ -201,7 +201,6 @@ const DocumentVault = () => {
                     {generating ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
                     {generating ? "Generating…" : "Generate with AI"}
                   </Button>
-                  </Button>
                 </div>
               </DialogContent>
             </Dialog>
