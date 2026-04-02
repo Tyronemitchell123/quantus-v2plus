@@ -37,10 +37,8 @@ const CoreOrchestrate = () => {
     { phase: "Intake", count: deals?.filter(d => d.status === "intake").length || 0 },
     { phase: "Matching", count: deals?.filter(d => d.status === "matching").length || 0 },
     { phase: "Sourcing", count: deals?.filter(d => d.status === "sourcing").length || 0 },
-    { phase: "Outreach", count: deals?.filter(d => d.status === "outreach").length || 0 },
     { phase: "Negotiation", count: deals?.filter(d => d.status === "negotiation").length || 0 },
     { phase: "Execution", count: deals?.filter(d => d.status === "execution").length || 0 },
-    { phase: "Documentation", count: deals?.filter(d => d.status === "documentation").length || 0 },
     { phase: "Completed", count: deals?.filter(d => d.status === "completed").length || 0 },
   ];
 
