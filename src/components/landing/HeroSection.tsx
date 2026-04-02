@@ -37,6 +37,11 @@ const HeroSection = () => {
         style={{ y: heroY }}
         className="relative z-10 container mx-auto px-6 text-center max-w-4xl"
       >
+        {/* H1 outside animated wrapper so LCP element is immediately visible */}
+        <h1 className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-[96px] font-semibold leading-[0.95] tracking-wide mb-4">
+          <span className="text-gold-gradient gold-glow-text">Quantus V2+</span>
+        </h1>
+
         <motion.div
           initial={{ opacity: 0, y: 30, filter: "blur(8px)" }}
           animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
@@ -51,10 +56,6 @@ const HeroSection = () => {
           >
             Autonomous Intelligence Platform
           </motion.p>
-
-          <h1 className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-[96px] font-semibold leading-[0.95] tracking-wide mb-4">
-            <span className="text-gold-gradient gold-glow-text">Quantus V2+</span>
-          </h1>
 
           <motion.div
             initial={{ opacity: 0 }}
