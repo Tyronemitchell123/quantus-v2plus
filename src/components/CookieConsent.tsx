@@ -64,7 +64,7 @@ const CookieConsent = forwardRef<HTMLDivElement>((_, ref) => {
 
             <p className="text-muted-foreground text-xs leading-relaxed mb-4">
               We use essential cookies for authentication and security. Optional analytics cookies help us improve the platform.{" "}
-              <Link to="/privacy" className="text-primary hover:underline">Privacy Policy</Link>
+              <Link to="/privacy" className="text-primary underline hover:text-primary/80">Privacy Policy</Link>
             </p>
 
             {showDetails && (
