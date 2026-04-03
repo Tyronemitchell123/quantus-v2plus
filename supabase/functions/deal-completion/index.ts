@@ -221,10 +221,9 @@ Deno.serve(async (req) => {
                   },
                   body: JSON.stringify({
                     template_name: "payment-reminder",
-                    to: recipientEmail,
-                    purpose: "transactional",
+                    recipient_email: recipientEmail,
                     idempotency_key: `invoice-${newInvoice.id}`,
-                    data: {
+                    templateData: {
                       customerName: recipientName,
                       dealCategory: deal.category,
                       dealNumber: deal.deal_number,
