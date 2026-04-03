@@ -102,7 +102,7 @@ serve(async (req) => {
       // If action=checkout, create a Stripe session for this invoice
       if (action === "checkout" && inv.status !== "paid") {
         const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
-        const origin = req.headers.get("origin") || "https://quantus-loom.lovable.app";
+        const origin = req.headers.get("origin") || "https://quantus-v2plus.lovable.app";
 
         const { data: fullInv } = await supabaseAdmin
           .from("invoices")
@@ -239,7 +239,7 @@ serve(async (req) => {
             deal_id: dealId,
             user_id: userData.user.id,
             amount_cents: totalCents,
-            currency: "USD",
+            currency: "GBP",
             status: "draft",
             invoice_type: "commission",
             recipient_name: recipientName,
@@ -279,7 +279,7 @@ serve(async (req) => {
       .single();
 
     const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
-    const origin = req.headers.get("origin") || "https://quantus-loom.lovable.app";
+    const origin = req.headers.get("origin") || "https://quantus-v2plus.lovable.app";
 
     const dealLabel = deal
       ? `${deal.deal_number} (${deal.category})`

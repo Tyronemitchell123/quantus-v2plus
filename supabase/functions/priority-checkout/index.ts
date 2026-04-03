@@ -54,7 +54,7 @@ serve(async (req) => {
       customerId = customers.data[0].id;
     }
 
-    const origin = req.headers.get("origin") || "https://quantus-loom.lovable.app";
+    const origin = req.headers.get("origin") || "https://quantus-v2plus.lovable.app";
 
     const session = await stripe.checkout.sessions.create({
       customer: customerId,

@@ -15,7 +15,7 @@ export const DealSourcingUpdateEmail = ({
   dealNumber = 'QAI-XXXXXXXX',
   category = 'general',
   optionsCount = 0,
-  siteUrl = 'https://quantus-loom.lovable.app',
+  siteUrl = 'https://quantus-v2plus.lovable.app',
 }: DealSourcingUpdateProps) => (
   <Html lang="en" dir="ltr">
     <Head />

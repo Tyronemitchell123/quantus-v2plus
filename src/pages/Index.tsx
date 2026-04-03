@@ -18,16 +18,16 @@ const Index = () => {
   useDocumentHead({
     title: "Quantus V2+ — Ultra-Premium Intelligence Platform",
     description: "A multi-vertical orchestration engine for UHNW clients. Aviation, medical travel, staffing, luxury lifestyle — unified in one private interface.",
-    canonical: "https://quantus-loom.lovable.app/",
+    canonical: "https://quantus-v2plus.lovable.app/",
     jsonLd: {
       "@context": "https://schema.org",
       "@type": "Organization",
       name: "Quantus V2+",
-      url: "https://quantus-loom.lovable.app",
-      logo: "https://quantus-loom.lovable.app/favicon.png",
+      url: "https://quantus-v2plus.lovable.app",
+      logo: "https://quantus-v2plus.lovable.app/favicon.png",
       description: "Ultra-premium AI orchestration platform for UHNW clients across aviation, medical, staffing, and lifestyle verticals.",
       sameAs: [],
-      contactPoint: { "@type": "ContactPoint", contactType: "sales", url: "https://quantus-loom.lovable.app/contact" },
+      contactPoint: { "@type": "ContactPoint", contactType: "sales", url: "https://quantus-v2plus.lovable.app/contact" },
     },
   });
 

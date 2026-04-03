@@ -15,7 +15,7 @@ export const DealVendorMatchEmail = ({
   dealNumber = 'QAI-XXXXXXXX',
   vendorCount = 0,
   topVendor = '',
-  siteUrl = 'https://quantus-loom.lovable.app',
+  siteUrl = 'https://quantus-v2plus.lovable.app',
 }: DealVendorMatchProps) => (
   <Html lang="en" dir="ltr">
     <Head />
