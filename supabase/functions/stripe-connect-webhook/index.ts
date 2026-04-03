@@ -121,7 +121,6 @@ serve(async (req) => {
           .update({ status: "completed", completed_at: new Date().toISOString() })
           .eq("id", dealId);
 
-        // Update invoice status
         const invoiceId = paymentIntent?.metadata?.invoice_id;
         if (invoiceId) {
           const now = new Date().toISOString();
@@ -130,7 +129,6 @@ serve(async (req) => {
             .update({ status: "paid", paid_at: now, updated_at: now })
             .eq("id", invoiceId);
 
-          // Mark all pending commissions for this deal as paid
           await supabaseAdmin
             .from("commission_logs")
             .update({ status: "paid", paid_at: now, invoice_id: invoiceId })
@@ -138,6 +136,22 @@ serve(async (req) => {
             .in("status", ["pending", "expected", "processing"]);
 
           console.log(`Commissions for deal ${dealId} marked as paid via invoice ${invoiceId}`);
+
+          // Send deal-completion notification email
+          const { data: inv } = await supabaseAdmin.from("invoices").select("recipient_email, recipient_name, invoice_number, amount_cents, currency").eq("id", invoiceId).single();
+          if (inv?.recipient_email) {
+            const symbol = (inv.currency || "GBP").toUpperCase() === "GBP" ? "£" : "$";
+            const amt = `${symbol}${(inv.amount_cents / 100).toLocaleString("en-US", { minimumFractionDigits: 2 })}`;
+            await supabaseAdmin.functions.invoke("send-transactional-email", {
+              body: {
+                template_name: "deal-completion-summary",
+                recipient_email: inv.recipient_email,
+                idempotency_key: `payment-received-${invoiceId}`,
+                templateData: { customerName: inv.recipient_name || "Client", invoiceNumber: inv.invoice_number, amountPaid: amt },
+              },
+            });
+            console.log(`Payment receipt email sent to ${inv.recipient_email}`);
+          }
         }
       }
     }
