@@ -1,42 +1,31 @@
-# Real Vendor Discovery & Deal Pipeline via Firecrawl
+# Full Production Launch Plan — All 4 Priorities
 
-## Phase 1: Scrape Real Vendors (Firecrawl)
-Create an edge function `vendor-firecrawl-discovery` that scrapes real vendor data from known industry directories:
+## 1. Get Real Payments In
+- **Custom domain**: Connect your IONOS domain (A records → 185.158.133.1) so invoice emails come from your brand, not lovable.app
+- **Real invoice emails**: Wire up the existing transactional email system to auto-send branded invoice emails to vendors with Stripe Checkout links when deals complete
+- **Payment follow-up**: Add a cron job that re-sends payment reminders for unpaid invoices every 48 hours
 
-| Vertical | Sources | Data Extracted |
-|---|---|---|
-| **Private Aviation** | privatefly.com, vistajet.com, aircharter.com | Company, contact email, fleet info, pricing |
-| **Luxury Real Estate** | knightfrank.com, savills.com, sothebysrealty.com | Agency, agent contacts, listing specialties |
-| **Medical/Longevity** | lanserhof.com, sha-wellness.com, bfrg.co.uk | Clinic name, location, specialties, pricing |
-| **Luxury Hospitality** | aman.com, fourseasons.com, rosewoodhotels.com | Property, concierge contacts, rates |
+## 2. Acquire Real Clients
+- **Landing page SEO**: Add JSON-LD, meta tags, and sitemap for all key pages
+- **Lead capture upgrade**: Connect the waiting list → auto-nurture email drip → onboarding flow so signups convert to paying users
+- **Referral amplification**: Enable the existing referral program with real credit rewards on signup
 
-The function will:
-1. Use Firecrawl `/scrape` with `formats: ['markdown', { type: 'json', schema }]` to extract structured vendor data
-2. Validate extracted data (name, email, website required)
-3. Insert into `vendors` table as verified, active vendors
+## 3. Polish the Platform
+- **Mobile responsiveness audit**: Fix any layout issues at 360px viewport across all key flows (landing, dashboard, deals, settings)
+- **Performance**: Lazy-load heavy pages (Quantum, Wealth, Sovereign dashboards)
+- **Error handling**: Ensure all edge function failures show user-friendly toasts, not raw errors
 
-## Phase 2: Auto-Create Deals
-For each discovered vendor, create a matching deal in the `deals` table:
-- Category matched to vertical
-- Realistic budget ranges (Aviation £40K-200K, Real Estate £500K-5M, Medical £10K-80K, Hospitality £5K-50K)
-- Status: `sourcing` (ready for the pipeline)
+## 4. Automate Everything
+- **Deal auto-progression cron**: Scheduled function that moves deals through sourcing → negotiation → execution → completion automatically based on time + conditions
+- **Auto-scraping cron**: Run Firecrawl vendor discovery weekly to find new vendors
+- **Auto-outreach**: When new vendors are discovered, auto-generate and queue outreach drafts
 
-## Phase 3: Run Full Pipeline
-Trigger the existing automation chain:
-1. Deals progress through sourcing → negotiation → execution → completed
-2. Commission logs created at completion
-3. Invoices generated with Stripe Checkout URLs
-4. Payment reminder emails dispatched
+## Implementation Order
+1. Custom domain setup (user action — DNS records)
+2. Invoice email pipeline (code + edge function)
+3. Deal auto-progression cron (edge function + pg_cron)
+4. SEO + landing page polish (code changes)
+5. Mobile audit + fixes (code changes)
+6. Auto-scraping cron (edge function + pg_cron)
 
-## Technical Details
-- Uses existing Firecrawl connector (API key already configured)
-- All data is real — scraped from live websites
-- Vendors get real company names, websites, and publicly available contact info
-- Deals use GBP to match the Stripe account currency
-- No code changes to existing pipeline — just seeds real data into it
-
-## What Makes This Production-Ready
-- Real vendor data from real websites (not fabricated)
-- Real Stripe checkout links for real payment collection
-- Real email infrastructure for outreach and payment reminders
-- Existing automated deal-completion pipeline handles everything after seeding
+This is a multi-session effort. I'll start with the highest-impact items: **invoice emails** and **deal auto-progression**, since those directly drive revenue.
