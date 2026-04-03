@@ -19,7 +19,7 @@ export const DealCompletionSummaryEmail = ({
   vendorName = '',
   dealValue = '',
   commissionEarned = '',
-  siteUrl = 'https://quantus-loom.lovable.app',
+  siteUrl = 'https://quantus-v2plus.lovable.app',
 }: DealCompletionSummaryProps) => (
   <Html lang="en" dir="ltr">
     <Head />

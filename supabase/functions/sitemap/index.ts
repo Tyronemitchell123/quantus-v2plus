@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const SITE_URL = "https://quantus-loom.lovable.app";
+const SITE_URL = "https://quantus-v2plus.lovable.app";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",

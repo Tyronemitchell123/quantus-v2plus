@@ -11,7 +11,7 @@ const corsHeaders = {
 
 const SITE_NAME = 'quantus-loom'
 const SENDER_DOMAIN = 'notify.crownprompts.com'
-const SITE_URL = 'https://quantus-loom.lovable.app'
+const SITE_URL = 'https://quantus-v2plus.lovable.app'
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {

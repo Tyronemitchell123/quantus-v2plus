@@ -15,7 +15,7 @@ export const DealIntakeConfirmationEmail = ({
   dealNumber = 'QAI-XXXXXXXX',
   category = 'general',
   rawInput = '',
-  siteUrl = 'https://quantus-loom.lovable.app',
+  siteUrl = 'https://quantus-v2plus.lovable.app',
 }: DealIntakeConfirmationProps) => (
   <Html lang="en" dir="ltr">
     <Head />

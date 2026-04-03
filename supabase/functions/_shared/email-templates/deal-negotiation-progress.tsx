@@ -15,7 +15,7 @@ export const DealNegotiationProgressEmail = ({
   dealNumber = 'QAI-XXXXXXXX',
   vendorName = '',
   stage = 'active negotiation',
-  siteUrl = 'https://quantus-loom.lovable.app',
+  siteUrl = 'https://quantus-v2plus.lovable.app',
 }: DealNegotiationProgressProps) => (
   <Html lang="en" dir="ltr">
     <Head />
