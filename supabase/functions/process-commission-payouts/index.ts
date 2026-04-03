@@ -131,24 +131,26 @@ serve(async (req) => {
 
     logStep("Execute mode — creating Stripe Payout");
 
-    // Check available balance
+    // Check available balance — use GBP (UK-based Stripe account)
     const balance = await stripe.balance.retrieve();
+    const gbpAvailable = balance.available.find((b) => b.currency === "gbp");
     const usdAvailable = balance.available.find((b) => b.currency === "usd");
-    const availableCents = usdAvailable?.amount || 0;
+    const primaryBalance = gbpAvailable || usdAvailable;
+    const payoutCurrency = primaryBalance?.currency || "gbp";
+    const availableCents = primaryBalance?.amount || 0;
+    const symbol = payoutCurrency === "gbp" ? "£" : "$";
 
     if (availableCents < totalCents) {
-      // Insufficient balance — provide clear guidance
-      const gbpAvailable = balance.available.find((b) => b.currency === "gbp");
       return new Response(JSON.stringify({
         error: "Insufficient Stripe balance for payout",
         required_cents: totalCents,
-        required: `$${(totalCents / 100).toFixed(2)}`,
-        available_usd_cents: availableCents,
-        available_usd: `$${(availableCents / 100).toFixed(2)}`,
-        available_gbp: `£${((gbpAvailable?.amount || 0) / 100).toFixed(2)}`,
-        guidance: "Payouts transfer money from your Stripe balance to your bank account. Your balance is funded by customer payments processed through Stripe. Once customers pay, the balance will be available for payout.",
+        required: `${symbol}${(totalCents / 100).toFixed(2)}`,
+        available_cents: availableCents,
+        available: `${symbol}${(availableCents / 100).toFixed(2)}`,
+        currency: payoutCurrency.toUpperCase(),
+        guidance: "Payouts transfer money from your Stripe balance to your bank account. Your balance is funded by customer payments processed through Stripe. Once customers pay via the payment links, the balance will be available for payout.",
         payouts: summary,
-        total: `$${(totalCents / 100).toLocaleString()}`,
+        total: `${symbol}${(totalCents / 100).toLocaleString()}`,
       }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -160,8 +162,8 @@ serve(async (req) => {
     try {
       payout = await stripe.payouts.create({
         amount: totalCents,
-        currency: "usd",
-        description: `Commission payout — ${commissions.length} deal(s), $${(totalCents / 100).toLocaleString()}`,
+        currency: payoutCurrency,
+        description: `Commission payout — ${commissions.length} deal(s), ${symbol}${(totalCents / 100).toLocaleString()}`,
         metadata: {
           type: "commission_payout",
           user_id: user.id,
