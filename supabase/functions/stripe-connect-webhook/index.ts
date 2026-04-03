@@ -197,6 +197,23 @@ serve(async (req) => {
           .eq("deal_id", dealId)
           .in("status", ["pending", "expected", "processing"]);
 
+        // Insert in-app notification for checkout completions
+        const { data: chkDeal } = await supabaseAdmin.from("deals").select("user_id, deal_number").eq("id", dealId).single();
+        if (chkDeal?.user_id) {
+          const { data: chkInv } = await supabaseAdmin.from("invoices").select("amount_cents, currency, invoice_number").eq("id", invoiceId).single();
+          const sym = (chkInv?.currency || "GBP").toUpperCase() === "GBP" ? "£" : "$";
+          const chkAmt = chkInv ? `${sym}${(chkInv.amount_cents / 100).toLocaleString("en-GB", { minimumFractionDigits: 2 })}` : "";
+          await supabaseAdmin.from("notifications").insert({
+            user_id: chkDeal.user_id,
+            title: `Payment Received — ${chkAmt}`,
+            body: `Invoice ${chkInv?.invoice_number || ""} for deal ${chkDeal.deal_number} has been paid.`,
+            category: "payment",
+            severity: "success",
+            action_url: "/deal-completion",
+            metadata: { deal_id: dealId, invoice_id: invoiceId },
+          });
+        }
+
         console.log(`Commissions for deal ${dealId} marked as paid via checkout`);
       }
     }
