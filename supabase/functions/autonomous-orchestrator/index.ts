@@ -19,10 +19,8 @@ const PHASE_ORDER = [
   "intake",
   "sourcing",
   "matching",
-  "shortlisted",
   "negotiation",
   "execution",
-  "documentation",
   "completed",
 ];
 
