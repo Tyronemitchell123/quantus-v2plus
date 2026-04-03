@@ -239,7 +239,7 @@ serve(async (req) => {
             deal_id: dealId,
             user_id: userData.user.id,
             amount_cents: totalCents,
-            currency: "USD",
+            currency: "GBP",
             status: "draft",
             invoice_type: "commission",
             recipient_name: recipientName,
