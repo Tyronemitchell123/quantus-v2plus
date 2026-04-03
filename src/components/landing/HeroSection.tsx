@@ -12,7 +12,6 @@ const HeroSection = () => {
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const heroOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
   const heroY = useTransform(scrollYProgress, [0, 0.7], [0, 60]);
-  const lineScale = useTransform(scrollYProgress, [0, 0.5], [1, 0.3]);
 
   return (
     <motion.section
@@ -46,15 +45,15 @@ const HeroSection = () => {
         </h1>
 
         <motion.div
-          initial={{ opacity: 0, y: 30, filter: "blur(8px)" }}
-          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-          transition={{ duration: 1.6, ease: [0.22, 1, 0.36, 1] }}
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
         >
           {/* Sovereign label */}
           <motion.p
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.8 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.1, duration: 0.4 }}
             className="font-body text-[8px] sm:text-[9px] tracking-[0.6em] uppercase text-primary/40 mb-10"
           >
             Autonomous Intelligence Platform
@@ -63,7 +62,7 @@ const HeroSection = () => {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.5, duration: 0.8 }}
+            transition={{ delay: 0.15, duration: 0.4 }}
             className="mb-6"
           >
             <span className="text-foreground/60 font-display font-light italic text-3xl sm:text-4xl md:text-5xl lg:text-6xl">
@@ -74,7 +73,7 @@ const HeroSection = () => {
           <motion.div
             initial={{ scaleX: 0 }}
             animate={{ scaleX: 1 }}
-            transition={{ delay: 0.7, duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ delay: 0.2, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
             className="w-24 h-px mx-auto mb-10"
             style={{ background: "linear-gradient(90deg, transparent, hsl(var(--gold)/0.6), transparent)" }}
           />
@@ -82,7 +81,7 @@ const HeroSection = () => {
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.9, duration: 0.8 }}
+            transition={{ delay: 0.25, duration: 0.4 }}
             className="font-display text-lg sm:text-xl md:text-2xl italic text-foreground/70 mb-3 leading-relaxed"
           >
             The Intelligence Behind the Extraordinary
@@ -90,16 +89,16 @@ const HeroSection = () => {
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 1.1, duration: 0.8 }}
+            transition={{ delay: 0.3, duration: 0.4 }}
             className="font-body text-sm sm:text-base text-muted-foreground/60 max-w-lg mx-auto leading-relaxed mb-16"
           >
             A sovereign orchestration engine for UHNW clients, private offices, and elite operators.
           </motion.p>
 
           <motion.div
-            initial={{ opacity: 0, y: 16 }}
+            initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.3, duration: 0.6 }}
+            transition={{ delay: 0.35, duration: 0.4 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-5"
           >
             <Suspense fallback={
@@ -129,7 +128,7 @@ const HeroSection = () => {
         className="absolute bottom-10 left-1/2 -translate-x-1/2"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 2 }}
+        transition={{ delay: 0.8 }}
       >
         <motion.div
           animate={{ y: [0, 10, 0] }}
