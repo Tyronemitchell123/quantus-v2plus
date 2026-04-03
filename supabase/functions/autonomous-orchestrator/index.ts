@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
+import Stripe from "https://esm.sh/stripe@18.5.0";
 import {
   corsHeaders,
   handleCors,
@@ -238,26 +239,133 @@ Deno.serve(async (req) => {
               }).select().single();
 
               if (commLog) {
-                await db.from("invoices").insert({
+                // Look up vendor contact for recipient
+                const { data: outreach } = await db
+                  .from("vendor_outreach")
+                  .select("vendor_name, vendor_email, vendor_company")
+                  .eq("deal_id", deal.id)
+                  .order("vendor_score", { ascending: false })
+                  .limit(1)
+                  .maybeSingle();
+
+                const recipientName = outreach?.vendor_name || outreach?.vendor_company || "Customer";
+                const recipientEmail = outreach?.vendor_email || null;
+                const currency = deal.budget_currency || "GBP";
+
+                const { data: newInvoice } = await db.from("invoices").insert({
                   deal_id: deal.id,
                   user_id: deal.user_id,
                   amount_cents: commCents,
-                  currency: deal.budget_currency || "USD",
+                  currency,
                   status: "draft",
                   invoice_type: "commission",
+                  recipient_name: recipientName,
+                  recipient_email: recipientEmail,
                   notes: `Auto-generated commission invoice for ${deal.deal_number}`,
                   metadata: {
                     commission_log_id: commLog.id,
                     commission_rate: commRate,
                     auto_generated: true,
                   },
-                });
+                }).select().single();
+
+                if (newInvoice) {
+                  // Link commission to invoice
+                  await db.from("commission_logs")
+                    .update({ invoice_id: newInvoice.id })
+                    .eq("id", commLog.id);
+
+                  // Generate Stripe checkout link & send payment email
+                  const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
+                  if (stripeKey && recipientEmail && commCents > 0) {
+                    try {
+                      const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
+                      const origin = "https://quantus-v2plus.lovable.app";
+                      const dealLabel = `${deal.deal_number} (${deal.category})`;
+
+                      const session = await stripe.checkout.sessions.create({
+                        line_items: [{
+                          price_data: {
+                            currency: currency.toLowerCase(),
+                            product_data: {
+                              name: `Invoice ${newInvoice.invoice_number}`,
+                              description: `Payment for deal ${dealLabel}`,
+                            },
+                            unit_amount: commCents,
+                          },
+                          quantity: 1,
+                        }],
+                        mode: "payment",
+                        customer_email: recipientEmail,
+                        payment_intent_data: {
+                          metadata: {
+                            deal_id: deal.id,
+                            invoice_id: newInvoice.id,
+                            invoice_number: newInvoice.invoice_number,
+                          },
+                        },
+                        success_url: `${origin}/pay?status=success&invoice=${newInvoice.invoice_number}`,
+                        cancel_url: `${origin}/pay?status=canceled&invoice=${newInvoice.invoice_number}`,
+                      });
+
+                      // Mark invoice as sent with checkout URL
+                      await db.from("invoices")
+                        .update({
+                          status: "sent",
+                          updated_at: new Date().toISOString(),
+                          metadata: {
+                            ...(newInvoice.metadata as Record<string, unknown> || {}),
+                            checkout_url: session.url,
+                            checkout_session_id: session.id,
+                          },
+                        })
+                        .eq("id", newInvoice.id);
+
+                      // Send payment email
+                      const symbol = currency.toUpperCase() === "GBP" ? "£" : "$";
+                      const amountFormatted = `${symbol}${(commCents / 100).toLocaleString("en-US", { minimumFractionDigits: 2 })}`;
+
+                      await fetch(`${supabaseUrl}/functions/v1/send-transactional-email`, {
+                        method: "POST",
+                        headers: {
+                          "Content-Type": "application/json",
+                          Authorization: `Bearer ${serviceRoleKey}`,
+                        },
+                        body: JSON.stringify({
+                          template_name: "payment-reminder",
+                          recipient_email: recipientEmail,
+                          idempotency_key: `invoice-${newInvoice.id}`,
+                          templateData: {
+                            customerName: recipientName,
+                            dealCategory: deal.category,
+                            dealNumber: deal.deal_number,
+                            amountDue: amountFormatted,
+                            paymentUrl: session.url,
+                          },
+                        }),
+                      });
+
+                      edgeLog("info", "orchestrator", "Invoice sent with payment link", {
+                        deal: deal.deal_number,
+                        invoiceId: newInvoice.id,
+                        recipientEmail,
+                        amount: amountFormatted,
+                      });
+                    } catch (stripeErr: any) {
+                      edgeLog("error", "orchestrator", "Failed to generate payment link", {
+                        deal: deal.deal_number,
+                        err: String(stripeErr),
+                      });
+                    }
+                  }
+                }
+
                 edgeLog("info", "orchestrator", "Commission created", {
                   deal: deal.deal_number,
                   commCents,
                   rate: commRate,
                 });
-                actions.push(`Commission $${(commCents / 100).toLocaleString()} + invoice created for ${deal.deal_number}`);
+                actions.push(`Commission £${(commCents / 100).toLocaleString()} + invoice sent for ${deal.deal_number}`);
               }
             }
 
