@@ -27,7 +27,7 @@ const Index = () => {
       logo: "https://quantus-v2plus.lovable.app/favicon.png",
       description: "Ultra-premium AI orchestration platform for UHNW clients across aviation, medical, staffing, and lifestyle verticals.",
       sameAs: [],
-      contactPoint: { "@type": "ContactPoint", contactType: "sales", url: "https://quantus-loom.lovable.app/contact" },
+      contactPoint: { "@type": "ContactPoint", contactType: "sales", url: "https://quantus-v2plus.lovable.app/contact" },
     },
   });
 
