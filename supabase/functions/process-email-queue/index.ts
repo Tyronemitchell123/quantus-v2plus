@@ -246,11 +246,6 @@ Deno.serve(async (req) => {
       }
 
       try {
-        // Ensure transactional emails always have an idempotency_key.
-        // Legacy messages enqueued before this field was added may lack it.
-        const effectiveIdempotencyKey =
-          payload.idempotency_key || payload.message_id || crypto.randomUUID()
-
         await sendLovableEmail(
           {
             run_id: payload.run_id,
@@ -260,9 +255,9 @@ Deno.serve(async (req) => {
             subject: payload.subject,
             html: payload.html,
             text: payload.text,
-            purpose: payload.purpose || (queue === 'auth_emails' ? 'auth' : 'transactional'),
+            purpose: payload.purpose,
             label: payload.label,
-            idempotency_key: effectiveIdempotencyKey,
+            idempotency_key: payload.idempotency_key,
             unsubscribe_token: payload.unsubscribe_token,
             message_id: payload.message_id,
           },
