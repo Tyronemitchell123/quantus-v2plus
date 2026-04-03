@@ -26,10 +26,10 @@ const Auth = () => {
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
 
-  useState(() => {
+  useEffect(() => {
     const ref = searchParams.get("ref");
     if (ref) setReferralCode(ref);
-  });
+  }, [searchParams]);
 
   const redeemReferral = async (code: string) => {
     try {
