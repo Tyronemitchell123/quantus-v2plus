@@ -208,7 +208,7 @@ serve(async (req) => {
         deal_id: deal.deal_id,
         user_id: user.id,
         amount_cents: totalCents,
-        currency: "USD",
+        currency: payoutCurrency.toUpperCase(),
         status: payout.status === "paid" ? "paid" : "sent",
         invoice_type: "commission",
         recipient_name: user.user_metadata?.full_name || user.email,
