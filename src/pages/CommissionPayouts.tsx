@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { DollarSign, Filter, Search, ExternalLink, Loader2, Check, ArrowUpDown, Calendar, Download, RefreshCw, Bell, Mail, Send, CreditCard, Copy, Link, MapPin, Save, QrCode, X } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 import useDocumentHead from "@/hooks/use-document-head";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
