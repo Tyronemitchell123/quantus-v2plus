@@ -137,6 +137,24 @@ serve(async (req) => {
 
           console.log(`Commissions for deal ${dealId} marked as paid via invoice ${invoiceId}`);
 
+          // Insert in-app notification for the deal owner
+          const { data: deal } = await supabaseAdmin.from("deals").select("user_id, deal_number").eq("id", dealId).single();
+          if (deal?.user_id) {
+            const { data: inv2 } = await supabaseAdmin.from("invoices").select("amount_cents, currency, invoice_number").eq("id", invoiceId).single();
+            const symbol = (inv2?.currency || "GBP").toUpperCase() === "GBP" ? "£" : "$";
+            const amt = inv2 ? `${symbol}${(inv2.amount_cents / 100).toLocaleString("en-GB", { minimumFractionDigits: 2 })}` : "";
+            await supabaseAdmin.from("notifications").insert({
+              user_id: deal.user_id,
+              title: `Payment Received — ${amt}`,
+              body: `Invoice ${inv2?.invoice_number || ""} for deal ${deal.deal_number} has been paid.`,
+              category: "payment",
+              severity: "success",
+              action_url: "/deal-completion",
+              metadata: { deal_id: dealId, invoice_id: invoiceId },
+            });
+            console.log(`Payment notification created for user ${deal.user_id}`);
+          }
+
           // Send deal-completion notification email
           const { data: inv } = await supabaseAdmin.from("invoices").select("recipient_email, recipient_name, invoice_number, amount_cents, currency").eq("id", invoiceId).single();
           if (inv?.recipient_email) {
