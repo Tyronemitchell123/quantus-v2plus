@@ -248,7 +248,7 @@ Deno.serve(async (req) => {
               tier: target.tier,
               is_active: true,
               is_verified: true,
-              reliability_score: 92 + Math.floor(Math.random() * 8),
+              
               metadata: {
                 source: "firecrawl_discovery",
                 scraped_at: new Date().toISOString(),
