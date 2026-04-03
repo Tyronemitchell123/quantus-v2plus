@@ -213,24 +213,82 @@ serve(async (req) => {
           }
         }
 
-        // DOCUMENTATION → COMPLETED: Auto-complete
+        // DOCUMENTATION → COMPLETED: Auto-complete + create commission + invoice
         if (currentPhase === "documentation") {
           const dealAge = (Date.now() - new Date(deal.updated_at).getTime()) / 3600000;
           if (dealAge > 12) {
+            const now = new Date().toISOString();
             await db.from("deals").update({
               status: "completed",
-              completed_at: new Date().toISOString(),
+              completed_at: now,
             }).eq("id", deal.id);
 
-            // Trigger completion email
-            await fetch(`${supabaseUrl}/functions/v1/deal-completion`, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${serviceRoleKey}`,
-              },
-              body: JSON.stringify({ deal_id: deal.id }),
-            });
+            // ── Auto-create commission log ──
+            const DEFAULT_RATES: Record<string, number> = {
+              aviation: 0.025, medical: 0.08, staffing: 0.20,
+              lifestyle: 0.10, logistics: 0.05, partnerships: 0.07,
+              marine: 0.05, legal: 0.075, finance: 0.05,
+            };
+
+            let commRate = DEFAULT_RATES[deal.category] || 0.05;
+            if (deal.custom_commission_rate != null) {
+              commRate = deal.custom_commission_rate / 100;
+            } else {
+              const { data: voRate } = await db
+                .from("vendor_outreach")
+                .select("custom_commission_rate")
+                .eq("deal_id", deal.id)
+                .not("custom_commission_rate", "is", null)
+                .limit(1);
+              if (voRate?.[0]?.custom_commission_rate != null) {
+                commRate = voRate[0].custom_commission_rate / 100;
+              }
+            }
+
+            // Get vendor name from outreach
+            const { data: topVendor } = await db
+              .from("vendor_outreach")
+              .select("vendor_name")
+              .eq("deal_id", deal.id)
+              .order("vendor_score", { ascending: false })
+              .limit(1);
+
+            if (deal.deal_value_estimate && deal.deal_value_estimate > 0) {
+              const dealValueCents = Math.min(Math.round(deal.deal_value_estimate * 100), 2000000000);
+              const commCents = Math.round(deal.deal_value_estimate * commRate * 100);
+
+              // Create commission log
+              const { data: commLog } = await db.from("commission_logs").insert({
+                deal_id: deal.id,
+                user_id: deal.user_id,
+                category: deal.category,
+                deal_value_cents: dealValueCents,
+                commission_rate: commRate,
+                commission_cents: commCents,
+                status: "pending",
+                vendor_name: topVendor?.[0]?.vendor_name || null,
+              }).select().single();
+
+              // ── Auto-create invoice ──
+              if (commLog) {
+                await db.from("invoices").insert({
+                  deal_id: deal.id,
+                  user_id: deal.user_id,
+                  amount_cents: commCents,
+                  currency: deal.budget_currency || "USD",
+                  status: "draft",
+                  invoice_type: "commission",
+                  notes: `Auto-generated commission invoice for ${deal.deal_number}`,
+                  metadata: {
+                    commission_log_id: commLog.id,
+                    commission_rate: commRate,
+                    auto_generated: true,
+                  },
+                });
+                actions.push(`Commission $${(commCents / 100).toLocaleString()} + invoice created for ${deal.deal_number}`);
+              }
+            }
+
             actions.push(`Completed ${deal.deal_number}`);
           }
         }
