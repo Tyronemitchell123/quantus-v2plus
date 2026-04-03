@@ -88,7 +88,7 @@ const Auth = () => {
           localStorage.removeItem("pending_referral_code");
           await redeemReferral(pendingCode);
         }
-        navigate("/onboarding");
+        navigate("/dashboard");
       }
     } catch (err: any) {
       toast({ title: "Error", description: err.message, variant: "destructive" });
