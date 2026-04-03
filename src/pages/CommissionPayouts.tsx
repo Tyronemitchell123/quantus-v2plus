@@ -71,9 +71,9 @@ const CommissionPayouts = () => {
     description: "View your full commission history, filter by status, and manage Stripe payouts.",
   });
 
-  useEffect(() => { fetchData(); }, []);
-
   const { user } = useAuth();
+
+  useEffect(() => { fetchData(); }, [user]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -83,12 +83,12 @@ const CommissionPayouts = () => {
       supabase
         .from("commission_logs")
         .select("*")
-        .eq("user_id", session.user.id)
+        .eq("user_id", user.id)
         .order("created_at", { ascending: false }),
       supabase
         .from("invoices")
         .select("id, invoice_number, amount_cents, status, metadata, created_at, recipient_email, recipient_name, recipient_address, deal_id")
-        .eq("user_id", session.user.id)
+        .eq("user_id", user.id)
         .eq("invoice_type", "commission")
         .order("created_at", { ascending: false }),
     ]);
