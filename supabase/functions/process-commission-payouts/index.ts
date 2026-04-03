@@ -100,18 +100,24 @@ serve(async (req) => {
     if (action === "preview") {
       // Also check available balance
       const balance = await stripe.balance.retrieve();
-      const usdAvailable = balance.available.find((b) => b.currency === "usd");
       const gbpAvailable = balance.available.find((b) => b.currency === "gbp");
+      const usdAvailable = balance.available.find((b) => b.currency === "usd");
+      // Use GBP as primary (UK-based Stripe account)
+      const primaryAvailable = gbpAvailable || usdAvailable;
+      const primaryCurrency = primaryAvailable?.currency || "gbp";
+      const primarySymbol = primaryCurrency === "gbp" ? "£" : "$";
 
       return new Response(JSON.stringify({
         payouts: summary,
-        total: `$${(totalCents / 100).toLocaleString()}`,
+        total: `${primarySymbol}${(totalCents / 100).toLocaleString()}`,
         total_cents: totalCents,
         count: commissions.length,
+        currency: primaryCurrency.toUpperCase(),
         stripe_balance: {
-          usd_available_cents: usdAvailable?.amount || 0,
           gbp_available_cents: gbpAvailable?.amount || 0,
-          sufficient_funds: (usdAvailable?.amount || 0) >= totalCents,
+          usd_available_cents: usdAvailable?.amount || 0,
+          primary_available_cents: primaryAvailable?.amount || 0,
+          sufficient_funds: (primaryAvailable?.amount || 0) >= totalCents,
         },
       }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
