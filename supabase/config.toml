@@ -51,3 +51,5 @@ project_id = "eqxgnxgbvvrjaxjiznjo"
     verify_jwt = false
   [functions.log-audit]
     verify_jwt = false
+  [functions.activate-invoices]
+    verify_jwt = false
