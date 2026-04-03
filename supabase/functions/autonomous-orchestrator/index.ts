@@ -151,38 +151,67 @@ serve(async (req) => {
           }
         }
 
-        // SHORTLISTED → NEGOTIATION: Auto-prepare negotiation
-        if (currentPhase === "shortlisted") {
-          const { data: topVendors } = await db
+        // MATCHING → NEGOTIATION: Auto-prepare negotiation for top vendors
+        if (currentPhase === "matching") {
+          const { data: respondedVendors } = await db
             .from("vendor_outreach")
-            .select("id, negotiation_ready")
+            .select("*")
             .eq("deal_id", deal.id)
-            .in("status", ["responded", "negotiation_ready"])
-            .order("vendor_score", { ascending: false })
-            .limit(3);
+            .eq("status", "responded");
 
-          // Auto-prepare negotiation for top vendors
-          for (const v of topVendors || []) {
-            if (!v.negotiation_ready) {
-              await fetch(`${supabaseUrl}/functions/v1/vendor-outreach`, {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                  Authorization: `Bearer ${serviceRoleKey}`,
-                },
-                body: JSON.stringify({ action: "prepare_negotiation", outreach_id: v.id }),
-              });
+          const dealAge = (Date.now() - new Date(deal.updated_at).getTime()) / 3600000;
+          if ((respondedVendors && respondedVendors.length > 0) || dealAge > 48) {
+            // Auto-prepare negotiation for top vendors
+            const { data: topVendors } = await db
+              .from("vendor_outreach")
+              .select("id, negotiation_ready")
+              .eq("deal_id", deal.id)
+              .in("status", ["responded", "pending"])
+              .order("vendor_score", { ascending: false })
+              .limit(3);
+
+            for (const v of topVendors || []) {
+              if (!v.negotiation_ready) {
+                await fetch(`${supabaseUrl}/functions/v1/vendor-outreach`, {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${serviceRoleKey}`,
+                  },
+                  body: JSON.stringify({ action: "prepare_negotiation", outreach_id: v.id }),
+                });
+              }
+            }
+            await db.from("deals").update({ status: "negotiation" }).eq("id", deal.id);
+            actions.push(`Negotiation started for ${deal.deal_number}`);
+          } else {
+            // Auto follow-up on pending outreach
+            const { data: pending } = await db
+              .from("vendor_outreach")
+              .select("id, next_follow_up_at, follow_up_count")
+              .eq("deal_id", deal.id)
+              .eq("status", "pending");
+
+            for (const p of pending || []) {
+              if (p.next_follow_up_at && new Date(p.next_follow_up_at) < new Date() && (p.follow_up_count || 0) < 3) {
+                await fetch(`${supabaseUrl}/functions/v1/vendor-outreach`, {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${serviceRoleKey}`,
+                  },
+                  body: JSON.stringify({ action: "follow_up", outreach_id: p.id }),
+                });
+                actions.push(`Auto follow-up sent for ${deal.deal_number}`);
+              }
             }
           }
-          await db.from("deals").update({ status: "negotiation" }).eq("id", deal.id);
-          actions.push(`Negotiation started for ${deal.deal_number}`);
         }
 
-        // NEGOTIATION → EXECUTION: Auto-advance after negotiation prep
+        // NEGOTIATION → EXECUTION: Auto-advance after 24h
         if (currentPhase === "negotiation") {
           const dealAge = (Date.now() - new Date(deal.updated_at).getTime()) / 3600000;
           if (dealAge > 24) {
-            // Generate workflow
             await fetch(`${supabaseUrl}/functions/v1/workflow-engine`, {
               method: "POST",
               headers: {
@@ -191,30 +220,15 @@ serve(async (req) => {
               },
               body: JSON.stringify({ action: "generate", deal_id: deal.id }),
             });
-            actions.push(`Execution workflow generated for ${deal.deal_number}`);
+            await db.from("deals").update({ status: "execution" }).eq("id", deal.id);
+            actions.push(`Execution started for ${deal.deal_number}`);
           }
         }
 
-        // EXECUTION → DOCUMENTATION: Auto-advance when workflow tasks mostly complete
+        // EXECUTION → COMPLETED: Auto-complete + create commission + invoice
         if (currentPhase === "execution") {
-          const { data: tasks } = await db
-            .from("workflow_tasks")
-            .select("status")
-            .eq("deal_id", deal.id);
-
-          if (tasks && tasks.length > 0) {
-            const completed = tasks.filter((t: any) => t.status === "completed").length;
-            if (completed / tasks.length >= 0.8) {
-              await db.from("deals").update({ status: "documentation" }).eq("id", deal.id);
-              actions.push(`Documentation phase for ${deal.deal_number}`);
-            }
-          }
-        }
-
-        // DOCUMENTATION → COMPLETED: Auto-complete + create commission + invoice
-        if (currentPhase === "documentation") {
           const dealAge = (Date.now() - new Date(deal.updated_at).getTime()) / 3600000;
-          if (dealAge > 12) {
+          if (dealAge > 24) {
             const now = new Date().toISOString();
             await db.from("deals").update({
               status: "completed",
@@ -243,7 +257,6 @@ serve(async (req) => {
               }
             }
 
-            // Get vendor name from outreach
             const { data: topVendor } = await db
               .from("vendor_outreach")
               .select("vendor_name")
@@ -255,7 +268,6 @@ serve(async (req) => {
               const dealValueCents = Math.min(Math.round(deal.deal_value_estimate * 100), 2000000000);
               const commCents = Math.round(deal.deal_value_estimate * commRate * 100);
 
-              // Create commission log
               const { data: commLog } = await db.from("commission_logs").insert({
                 deal_id: deal.id,
                 user_id: deal.user_id,
@@ -267,7 +279,6 @@ serve(async (req) => {
                 vendor_name: topVendor?.[0]?.vendor_name || null,
               }).select().single();
 
-              // ── Auto-create invoice ──
               if (commLog) {
                 await db.from("invoices").insert({
                   deal_id: deal.id,
