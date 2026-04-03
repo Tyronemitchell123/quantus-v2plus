@@ -72,10 +72,11 @@ const CommissionPayouts = () => {
 
   useEffect(() => { fetchData(); }, []);
 
+  const { user } = useAuth();
+
   const fetchData = async () => {
     setLoading(true);
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) { setLoading(false); return; }
+    if (!user) { setLoading(false); return; }
 
     const [commRes, invRes] = await Promise.all([
       supabase

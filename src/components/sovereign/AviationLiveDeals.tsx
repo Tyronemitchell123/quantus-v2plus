@@ -155,25 +155,8 @@ const AviationLiveDeals = () => {
         .eq("sector", "Aviation")
         .maybeSingle();
 
-      if (tenantData) {
-        await supabase.from("commissions").insert({
-          lead_id: leadId,
-          user_id: user!.id,
-          total_value: lead.potential_value,
-          quantus_cut: lead.potential_value * 0.1,
-          payout_status: "Pending",
-        });
-      }
-
-      // Log to system_logs
-      if (tenantData) {
-        await supabase.from("system_logs" as any).insert({
-          tenant_id: tenantData.id,
-          user_id: user!.id,
-          action_type: autoPilot ? "AutoPilot_Send" : "Manual_Send",
-          description: `Outreach sent for ${lead.ai_summary?.slice(0, 80)}. Potential commission: £${(lead.potential_value * 0.1).toLocaleString()}`,
-        } as any);
-      }
+      // Commission tracking is handled by the deal pipeline (commission_logs).
+      // No need to insert into deprecated 'commissions' table.
 
       setLeads(prev => prev.map(l =>
         l.id === leadId ? { ...l, status: "Sent", isSending: false } : l

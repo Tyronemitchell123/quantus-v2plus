@@ -36,13 +36,13 @@ const SovereignMasterView = () => {
         .select("category, status, deal_value_estimate")
         .eq("user_id", user.id);
 
-      // Fetch commissions
+      // Fetch commissions from commission_logs (canonical source)
       const { data: commissions } = await supabase
-        .from("commissions")
-        .select("quantus_cut")
+        .from("commission_logs")
+        .select("commission_cents")
         .eq("user_id", user.id);
 
-      const totalComm = (commissions || []).reduce((s, c) => s + Number(c.quantus_cut || 0), 0);
+      const totalComm = (commissions || []).reduce((s, c) => s + Number(c.commission_cents || 0), 0) / 100;
       setTotalCommissions(totalComm);
 
       // Build pillar data from live deals

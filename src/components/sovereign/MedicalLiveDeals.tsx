@@ -177,23 +177,8 @@ TONE: Warm, professional, health-focused. NEVER mention cost or revenue. NEVER r
         .eq("sector", "Medical")
         .maybeSingle();
 
-      if (tenantData) {
-        // $250 fixed commission per recovery outreach
-        await supabase.from("commissions").insert({
-          lead_id: leadId,
-          user_id: user.id,
-          total_value: lead.potential_value,
-          quantus_cut: 250,
-          payout_status: "Pending",
-        });
-
-        await supabase.from("system_logs" as any).insert({
-          tenant_id: tenantData.id,
-          user_id: user.id,
-          action_type: autoPilot ? "Medical_AutoPilot_Send" : "Medical_Manual_Send",
-          description: `Recovery outreach sent via ${lead.channel} for ${lead.procedureType} (${lead.patientUuid}). Commission: $250.00`,
-        } as any);
-      }
+      // Commission tracking is handled by the deal pipeline (commission_logs).
+      // No need to insert into deprecated 'commissions' table.
 
       setLeads(prev => prev.map(l =>
         l.id === leadId ? { ...l, status: "Sent", isSending: false } : l
