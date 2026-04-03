@@ -2,10 +2,13 @@
  * Shared Supabase admin client factory for edge functions.
  * Centralizes CORS, authentication, and client creation patterns.
  */
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
-import { corsHeaders } from "https://esm.sh/@supabase/supabase-js@2.49.1/cors";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 
-export { corsHeaders };
+export const corsHeaders: Record<string, string> = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+};
 
 /**
  * Create a Supabase service-role client for server-side operations.
@@ -27,6 +30,30 @@ export function createUserClient(authHeader: string) {
   return createClient(url, anonKey, {
     global: { headers: { Authorization: authHeader } },
   });
+}
+
+/**
+ * Authenticate a request and return the user ID.
+ * Returns a Response on failure (send it back), or { userId, userClient } on success.
+ */
+export async function authenticateUser(req: Request): Promise<
+  | { userId: string; userClient: ReturnType<typeof createClient> }
+  | Response
+> {
+  const authHeader = req.headers.get("Authorization");
+  if (!authHeader?.startsWith("Bearer ")) {
+    return errorResponse("Missing or invalid Authorization header", 401);
+  }
+
+  const userClient = createUserClient(authHeader);
+  const token = authHeader.replace("Bearer ", "");
+  const { data, error } = await userClient.auth.getClaims(token);
+
+  if (error || !data?.claims) {
+    return errorResponse("Invalid or expired token", 401);
+  }
+
+  return { userId: data.claims.sub as string, userClient };
 }
 
 /**
@@ -63,19 +90,56 @@ export function errorResponse(message: string, status = 400): Response {
  * Commission rate constants — single source of truth.
  */
 export const COMMISSION_RATES: Record<string, number> = {
-  aviation: 0.10,
+  aviation: 0.025,
   medical: 0.08,
-  lifestyle: 0.12,
+  lifestyle: 0.10,
   hospitality: 0.10,
-  staffing: 0.15,
-  logistics: 0.10,
-  marine: 0.10,
-  legal: 0.08,
-  finance: 0.07,
-  partnerships: 0.10,
-  default: 0.10,
+  staffing: 0.20,
+  logistics: 0.05,
+  marine: 0.05,
+  legal: 0.075,
+  finance: 0.05,
+  partnerships: 0.07,
+  default: 0.05,
 };
 
 export function getCommissionRate(category: string): number {
   return COMMISSION_RATES[category.toLowerCase()] ?? COMMISSION_RATES.default;
+}
+
+/**
+ * Structured edge function logger.
+ * Outputs JSON logs for observability (queryable via analytics).
+ */
+export function edgeLog(
+  level: "info" | "warn" | "error",
+  functionName: string,
+  message: string,
+  meta?: Record<string, unknown>,
+): void {
+  const entry = {
+    level,
+    fn: functionName,
+    msg: message,
+    ts: new Date().toISOString(),
+    ...meta,
+  };
+  if (level === "error") console.error(JSON.stringify(entry));
+  else if (level === "warn") console.warn(JSON.stringify(entry));
+  else console.log(JSON.stringify(entry));
+}
+
+/**
+ * Validate required fields from a parsed JSON body.
+ * Returns an error Response if validation fails, null if OK.
+ */
+export function validateFields(
+  body: Record<string, unknown>,
+  required: string[],
+): Response | null {
+  const missing = required.filter((f) => body[f] === undefined || body[f] === null || body[f] === "");
+  if (missing.length > 0) {
+    return errorResponse(`Missing required fields: ${missing.join(", ")}`, 400);
+  }
+  return null;
 }

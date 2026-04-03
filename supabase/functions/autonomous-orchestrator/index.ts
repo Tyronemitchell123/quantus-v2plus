@@ -1,18 +1,17 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-};
+import {
+  corsHeaders,
+  handleCors,
+  jsonResponse,
+  errorResponse,
+  COMMISSION_RATES,
+  edgeLog,
+} from "../_shared/supabase-admin.ts";
 
 /**
  * Autonomous Orchestrator — runs on a cron schedule.
- * Scans all active deals and auto-advances them through the 8-phase pipeline:
- * intake → sourcing → matching → shortlisted → negotiation → execution → documentation → completed
- *
- * Also auto-publishes draft content and auto-responds to client communications.
+ * Scans all active deals and auto-advances them through the pipeline:
+ * intake → sourcing → matching → negotiation → execution → completed
  */
 
 const PHASE_ORDER = [
@@ -24,8 +23,9 @@ const PHASE_ORDER = [
   "completed",
 ];
 
-serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+Deno.serve(async (req) => {
+  const cors = handleCors(req);
+  if (cors) return cors;
 
   try {
     const authHeader = req.headers.get("Authorization") ?? "";
@@ -37,9 +37,7 @@ serve(async (req) => {
     // Allow service role OR anon key (for cron)
     const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
     if (token !== serviceRoleKey && token !== anonKey) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return errorResponse("Unauthorized", 401);
     }
 
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
@@ -63,7 +61,7 @@ serve(async (req) => {
       if (phaseIndex === -1 || phaseIndex >= PHASE_ORDER.length - 1) continue;
 
       try {
-        // INTAKE → SOURCING: Auto-trigger sourcing engine
+        // INTAKE → SOURCING
         if (currentPhase === "intake") {
           const { data: existingResults } = await db
             .from("sourcing_results")
@@ -72,7 +70,6 @@ serve(async (req) => {
             .limit(1);
 
           if (!existingResults || existingResults.length === 0) {
-            // Call sourcing engine internally
             const resp = await fetch(`${supabaseUrl}/functions/v1/sourcing-engine`, {
               method: "POST",
               headers: {
@@ -81,16 +78,20 @@ serve(async (req) => {
               },
               body: JSON.stringify({ deal_id: deal.id }),
             });
-            if (resp.ok) actions.push(`Sourced deal ${deal.deal_number}`);
-            else console.error(`Sourcing failed for ${deal.deal_number}:`, await resp.text());
+            if (resp.ok) {
+              actions.push(`Sourced deal ${deal.deal_number}`);
+              edgeLog("info", "orchestrator", "Sourced deal", { deal: deal.deal_number });
+            } else {
+              const errText = await resp.text();
+              edgeLog("error", "orchestrator", "Sourcing failed", { deal: deal.deal_number, err: errText });
+            }
           } else {
-            // Already sourced, advance
             await db.from("deals").update({ status: "sourcing" }).eq("id", deal.id);
             actions.push(`Advanced ${deal.deal_number} to sourcing`);
           }
         }
 
-        // SOURCING → MATCHING: Auto-trigger vendor outreach
+        // SOURCING → MATCHING
         if (currentPhase === "sourcing") {
           const { data: existingOutreach } = await db
             .from("vendor_outreach")
@@ -114,44 +115,7 @@ serve(async (req) => {
           }
         }
 
-        // MATCHING → SHORTLISTED: Auto-select top vendors
-        if (currentPhase === "matching") {
-          const { data: respondedVendors } = await db
-            .from("vendor_outreach")
-            .select("*")
-            .eq("deal_id", deal.id)
-            .eq("status", "responded");
-
-          // If vendors responded or 48h passed, auto-advance
-          const dealAge = (Date.now() - new Date(deal.updated_at).getTime()) / 3600000;
-          if ((respondedVendors && respondedVendors.length > 0) || dealAge > 48) {
-            await db.from("deals").update({ status: "shortlisted" }).eq("id", deal.id);
-            actions.push(`Shortlisted vendors for ${deal.deal_number}`);
-          } else {
-            // Auto follow-up on pending outreach
-            const { data: pending } = await db
-              .from("vendor_outreach")
-              .select("id, next_follow_up_at, follow_up_count")
-              .eq("deal_id", deal.id)
-              .eq("status", "pending");
-
-            for (const p of pending || []) {
-              if (p.next_follow_up_at && new Date(p.next_follow_up_at) < new Date() && (p.follow_up_count || 0) < 3) {
-                await fetch(`${supabaseUrl}/functions/v1/vendor-outreach`, {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${serviceRoleKey}`,
-                  },
-                  body: JSON.stringify({ action: "follow_up", outreach_id: p.id }),
-                });
-                actions.push(`Auto follow-up sent for ${deal.deal_number}`);
-              }
-            }
-          }
-        }
-
-        // MATCHING → NEGOTIATION: Auto-prepare negotiation for top vendors
+        // MATCHING → NEGOTIATION
         if (currentPhase === "matching") {
           const { data: respondedVendors } = await db
             .from("vendor_outreach")
@@ -208,7 +172,7 @@ serve(async (req) => {
           }
         }
 
-        // NEGOTIATION → EXECUTION: Auto-advance after 24h
+        // NEGOTIATION → EXECUTION
         if (currentPhase === "negotiation") {
           const dealAge = (Date.now() - new Date(deal.updated_at).getTime()) / 3600000;
           if (dealAge > 24) {
@@ -225,7 +189,7 @@ serve(async (req) => {
           }
         }
 
-        // EXECUTION → COMPLETED: Auto-complete + create commission + invoice
+        // EXECUTION → COMPLETED (uses shared COMMISSION_RATES)
         if (currentPhase === "execution") {
           const dealAge = (Date.now() - new Date(deal.updated_at).getTime()) / 3600000;
           if (dealAge > 24) {
@@ -235,14 +199,8 @@ serve(async (req) => {
               completed_at: now,
             }).eq("id", deal.id);
 
-            // ── Auto-create commission log ──
-            const DEFAULT_RATES: Record<string, number> = {
-              aviation: 0.025, medical: 0.08, staffing: 0.20,
-              lifestyle: 0.10, logistics: 0.05, partnerships: 0.07,
-              marine: 0.05, legal: 0.075, finance: 0.05,
-            };
-
-            let commRate = DEFAULT_RATES[deal.category] || 0.05;
+            // Determine commission rate from shared constants
+            let commRate = COMMISSION_RATES[deal.category] ?? COMMISSION_RATES.default;
             if (deal.custom_commission_rate != null) {
               commRate = deal.custom_commission_rate / 100;
             } else {
@@ -294,6 +252,11 @@ serve(async (req) => {
                     auto_generated: true,
                   },
                 });
+                edgeLog("info", "orchestrator", "Commission created", {
+                  deal: deal.deal_number,
+                  commCents,
+                  rate: commRate,
+                });
                 actions.push(`Commission $${(commCents / 100).toLocaleString()} + invoice created for ${deal.deal_number}`);
               }
             }
@@ -302,7 +265,7 @@ serve(async (req) => {
           }
         }
       } catch (err) {
-        console.error(`Error processing deal ${deal.deal_number}:`, err);
+        edgeLog("error", "orchestrator", `Deal processing failed`, { deal: deal.deal_number, err: String(err) });
       }
     }
 
@@ -350,7 +313,6 @@ serve(async (req) => {
       .limit(5);
 
     for (const submission of unreadNotifications || []) {
-      // AI generates a personalized response
       const aiResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
         method: "POST",
         headers: {
@@ -403,20 +365,16 @@ serve(async (req) => {
       actions.push("Triggered content generation (low draft pool)");
     }
 
-    console.log(`Orchestrator completed: ${actions.length} actions`, actions);
+    edgeLog("info", "orchestrator", "Run complete", { actionsCount: actions.length });
 
-    return new Response(JSON.stringify({
+    return jsonResponse({
       success: true,
       actions_taken: actions.length,
       actions,
       timestamp: new Date().toISOString(),
-    }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
-    console.error("Autonomous orchestrator error:", e);
-    return new Response(JSON.stringify({ error: (e as Error).message }), {
-      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    edgeLog("error", "orchestrator", "Fatal error", { err: String(e) });
+    return errorResponse((e as Error).message, 500);
   }
 });

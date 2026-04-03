@@ -1,10 +1,13 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 import { rateLimit } from "../_shared/rate-limit.ts";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+import {
+  corsHeaders,
+  handleCors,
+  jsonResponse,
+  errorResponse,
+  COMMISSION_RATES,
+  edgeLog,
+} from "../_shared/supabase-admin.ts";
 
 const UPSELL_CATALOG: Record<string, { title: string; description: string; category: string }[]> = {
   aviation: [
@@ -47,7 +50,8 @@ const TIER_THRESHOLDS = [
 ];
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+  const cors = handleCors(req);
+  if (cors) return cors;
 
   try {
     const rateLimited = rateLimit(req, corsHeaders);
@@ -59,59 +63,61 @@ Deno.serve(async (req) => {
 
     const authHeader = req.headers.get("authorization") || "";
     const token = authHeader.replace("Bearer ", "");
-    const { data: { user }, error: authErr } = await supabase.auth.getUser(token);
-    if (authErr || !user) throw new Error("Unauthorized");
+    const { data, error: claimsErr } = await supabase.auth.getClaims(token);
+    if (claimsErr || !data?.claims) return errorResponse("Unauthorized", 401);
+    const userId = data.claims.sub as string;
 
-    const { action, dealId } = await req.json();
+    const body = await req.json();
+    const { action, dealId } = body;
+
+    if (!action || typeof action !== "string") {
+      return errorResponse("action is required", 400);
+    }
 
     if (action === "complete") {
-      // Default commission rates by category
-      const DEFAULT_COMMISSION_RATES: Record<string, number> = {
-        aviation: 0.025, medical: 0.08, staffing: 0.20,
-        lifestyle: 0.10, logistics: 0.05, partnerships: 0.07,
-        marine: 0.05, legal: 0.075, finance: 0.05,
-      };
+      if (!dealId) return errorResponse("dealId is required", 400);
 
       // Mark deal as completed
       const { data: deal, error: dealErr } = await supabase
         .from("deals")
         .update({ status: "completed", completed_at: new Date().toISOString() })
         .eq("id", dealId)
-        .eq("user_id", user.id)
+        .eq("user_id", userId)
         .select()
         .single();
       if (dealErr) throw dealErr;
 
-      // Determine commission rate: deal custom > vendor custom > category default
-      let commissionRate = DEFAULT_COMMISSION_RATES[deal.category] || 0.05;
+      // Determine commission rate from shared constants
+      let commissionRate = COMMISSION_RATES[deal.category] ?? COMMISSION_RATES.default;
 
       if (deal.custom_commission_rate !== null && deal.custom_commission_rate !== undefined) {
-        commissionRate = deal.custom_commission_rate / 100; // stored as percentage
+        commissionRate = deal.custom_commission_rate / 100;
       } else {
-        // Check if any vendor on this deal has a custom rate
         const { data: vendorOutreach } = await supabase
           .from("vendor_outreach")
           .select("custom_commission_rate")
           .eq("deal_id", dealId)
           .not("custom_commission_rate", "is", null)
           .limit(1);
-        if (vendorOutreach && vendorOutreach.length > 0 && vendorOutreach[0].custom_commission_rate !== null) {
+        if (vendorOutreach?.[0]?.custom_commission_rate != null) {
           commissionRate = vendorOutreach[0].custom_commission_rate / 100;
         }
       }
 
       // Auto-create commission log if deal has value
       if (deal.deal_value_estimate && deal.deal_value_estimate > 0) {
+        const dealValueCents = Math.min(Math.round(deal.deal_value_estimate * 100), 2000000000);
         const commissionCents = Math.round(deal.deal_value_estimate * commissionRate * 100);
         await supabase.from("commission_logs").insert({
           deal_id: dealId,
-          user_id: user.id,
+          user_id: userId,
           category: deal.category,
-          deal_value_cents: deal.deal_value_estimate * 100,
+          deal_value_cents: dealValueCents,
           commission_rate: commissionRate,
           commission_cents: commissionCents,
           status: "pending",
         });
+        edgeLog("info", "deal-completion", "Commission created", { dealId, commissionCents, rate: commissionRate });
       }
 
       // Generate summary
@@ -141,26 +147,26 @@ Deno.serve(async (req) => {
         completion_date: deal.completed_at,
       };
 
-      return new Response(JSON.stringify({ summary }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      return jsonResponse({ summary });
     }
 
     if (action === "upsells") {
-      const { data: deal } = await supabase.from("deals").select("category").eq("id", dealId).eq("user_id", user.id).single();
-      if (!deal) throw new Error("Deal not found");
+      if (!dealId) return errorResponse("dealId is required", 400);
+      const { data: deal } = await supabase.from("deals").select("category").eq("id", dealId).eq("user_id", userId).single();
+      if (!deal) return errorResponse("Deal not found", 404);
 
       const upsells = UPSELL_CATALOG[deal.category] || UPSELL_CATALOG.lifestyle;
       const message = "Based on your recent project, we have prepared tailored recommendations that may enhance your upcoming plans.";
 
-      return new Response(JSON.stringify({ upsells, message }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      return jsonResponse({ upsells, message });
     }
 
     if (action === "tier_check") {
-      // Check if client should upgrade
-      const { count: dealCount } = await supabase.from("deals").select("*", { count: "exact", head: true }).eq("user_id", user.id).eq("status", "completed");
-      const { data: allCommissions } = await supabase.from("commission_logs").select("commission_cents").eq("user_id", user.id);
+      const { count: dealCount } = await supabase.from("deals").select("*", { count: "exact", head: true }).eq("user_id", userId).eq("status", "completed");
+      const { data: allCommissions } = await supabase.from("commission_logs").select("commission_cents").eq("user_id", userId);
       const totalRev = (allCommissions || []).reduce((s: number, c: any) => s + (c.commission_cents || 0), 0);
 
-      const { data: sub } = await supabase.from("subscriptions").select("tier").eq("user_id", user.id).maybeSingle();
+      const { data: sub } = await supabase.from("subscriptions").select("tier").eq("user_id", userId).maybeSingle();
       const currentTier = sub?.tier || "free";
 
       let recommended = null;
@@ -171,7 +177,7 @@ Deno.serve(async (req) => {
         }
       }
 
-      return new Response(JSON.stringify({
+      return jsonResponse({
         currentTier,
         completedDeals: dealCount || 0,
         totalRevenueCents: totalRev,
@@ -180,22 +186,23 @@ Deno.serve(async (req) => {
           label: recommended.label,
           message: `Your recent activity aligns with our ${recommended.label} Tier benefits. Upgrading would streamline future orchestration and unlock additional privileges.`,
         } : null,
-      }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      });
     }
 
     if (action === "archive_list") {
       const { data: deals } = await supabase
         .from("deals")
         .select("id, deal_number, category, sub_category, status, deal_value_estimate, budget_currency, completed_at, created_at")
-        .eq("user_id", user.id)
+        .eq("user_id", userId)
         .eq("status", "completed")
         .order("completed_at", { ascending: false });
 
-      return new Response(JSON.stringify({ deals: deals || [] }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      return jsonResponse({ deals: deals || [] });
     }
 
-    throw new Error("Unknown action");
+    return errorResponse("Unknown action", 400);
   } catch (err: any) {
-    return new Response(JSON.stringify({ error: err.message }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    edgeLog("error", "deal-completion", "Request failed", { err: err.message });
+    return errorResponse(err.message, 400);
   }
 });
