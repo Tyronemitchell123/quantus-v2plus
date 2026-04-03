@@ -252,7 +252,7 @@ serve(async (req) => {
       estimated_arrival: payout.arrival_date
         ? new Date(payout.arrival_date * 1000).toISOString()
         : null,
-      total: `$${(totalCents / 100).toLocaleString()}`,
+      total: `${symbol}${(totalCents / 100).toLocaleString()}`,
       total_cents: totalCents,
       count: commissions.length,
       payouts: summary,
