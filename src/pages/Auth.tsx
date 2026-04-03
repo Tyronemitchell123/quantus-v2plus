@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
@@ -26,10 +26,10 @@ const Auth = () => {
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
 
-  useState(() => {
+  useEffect(() => {
     const ref = searchParams.get("ref");
     if (ref) setReferralCode(ref);
-  });
+  }, [searchParams]);
 
   const redeemReferral = async (code: string) => {
     try {
@@ -88,7 +88,7 @@ const Auth = () => {
           localStorage.removeItem("pending_referral_code");
           await redeemReferral(pendingCode);
         }
-        navigate("/onboarding");
+        navigate("/dashboard");
       }
     } catch (err: any) {
       toast({ title: "Error", description: err.message, variant: "destructive" });
