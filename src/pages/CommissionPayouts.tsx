@@ -154,8 +154,7 @@ const CommissionPayouts = () => {
   const sendReminders = async () => {
     setReminderLoading(true);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) throw new Error("Not authenticated");
+      if (!user) throw new Error("Not authenticated");
 
       // Get pending commissions that haven't been reminded yet
       const pendingDeals = commissions.filter(
