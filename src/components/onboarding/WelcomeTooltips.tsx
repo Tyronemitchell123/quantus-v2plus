@@ -26,7 +26,7 @@ const WelcomeTooltips = () => {
         initial={{ opacity: 0, y: 20, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 10, scale: 0.95 }}
-        className="fixed bottom-24 right-6 z-50 w-72 bg-card border border-primary/20 rounded-2xl p-5 shadow-2xl backdrop-blur-md"
+        className="fixed bottom-20 left-4 right-4 sm:left-auto sm:right-6 sm:w-72 z-50 bg-card border border-primary/20 rounded-2xl p-5 shadow-2xl backdrop-blur-md"
       >
         <button
           onClick={() => dismissTooltip(tip.id)}
