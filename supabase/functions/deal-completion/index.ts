@@ -109,7 +109,17 @@ Deno.serve(async (req) => {
       if (deal.deal_value_estimate && deal.deal_value_estimate > 0) {
         const dealValueCents = Math.min(Math.round(deal.deal_value_estimate * 100), 2000000000);
         const commissionCents = Math.round(deal.deal_value_estimate * commissionRate * 100);
-        await supabase.from("commission_logs").insert({
+
+        // Look up vendor contact from outreach
+        const { data: outreach } = await supabase
+          .from("vendor_outreach")
+          .select("vendor_name, vendor_email, vendor_company, vendor_score")
+          .eq("deal_id", dealId)
+          .order("vendor_score", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        const { data: commLog } = await supabase.from("commission_logs").insert({
           deal_id: dealId,
           user_id: userId,
           category: deal.category,
@@ -117,8 +127,128 @@ Deno.serve(async (req) => {
           commission_rate: commissionRate,
           commission_cents: commissionCents,
           status: "pending",
-        });
+          vendor_name: outreach?.vendor_name || null,
+        }).select().single();
+
         edgeLog("info", "deal-completion", "Commission created", { dealId, commissionCents, rate: commissionRate });
+
+        // Auto-create invoice
+        if (commLog) {
+          const recipientName = outreach?.vendor_name || outreach?.vendor_company || "Customer";
+          const recipientEmail = outreach?.vendor_email || null;
+          const currency = deal.budget_currency || "GBP";
+
+          const { data: newInvoice } = await supabase.from("invoices").insert({
+            deal_id: dealId,
+            user_id: userId,
+            amount_cents: commissionCents,
+            currency,
+            status: "draft",
+            invoice_type: "commission",
+            recipient_name: recipientName,
+            recipient_email: recipientEmail,
+            notes: `Auto-generated commission invoice for ${deal.deal_number}`,
+            metadata: {
+              commission_log_id: commLog.id,
+              commission_rate: commissionRate,
+              auto_generated: true,
+            },
+          }).select().single();
+
+          // Link commission to invoice
+          if (newInvoice) {
+            await supabase.from("commission_logs")
+              .update({ invoice_id: newInvoice.id })
+              .eq("id", commLog.id);
+
+            // Generate Stripe checkout link and send payment email
+            const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
+            if (stripeKey && recipientEmail && commissionCents > 0) {
+              try {
+                const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
+                const origin = "https://quantus-v2plus.lovable.app";
+                const dealLabel = `${deal.deal_number} (${deal.category})`;
+
+                const session = await stripe.checkout.sessions.create({
+                  line_items: [{
+                    price_data: {
+                      currency: currency.toLowerCase(),
+                      product_data: {
+                        name: `Invoice ${newInvoice.invoice_number}`,
+                        description: `Payment for deal ${dealLabel}`,
+                      },
+                      unit_amount: commissionCents,
+                    },
+                    quantity: 1,
+                  }],
+                  mode: "payment",
+                  customer_email: recipientEmail,
+                  payment_intent_data: {
+                    metadata: {
+                      deal_id: dealId,
+                      invoice_id: newInvoice.id,
+                      invoice_number: newInvoice.invoice_number,
+                    },
+                  },
+                  success_url: `${origin}/pay?status=success&invoice=${newInvoice.invoice_number}`,
+                  cancel_url: `${origin}/pay?status=canceled&invoice=${newInvoice.invoice_number}`,
+                });
+
+                // Update invoice status to sent with payment URL
+                await supabase.from("invoices")
+                  .update({
+                    status: "sent",
+                    updated_at: new Date().toISOString(),
+                    metadata: {
+                      ...newInvoice.metadata as Record<string, unknown>,
+                      checkout_url: session.url,
+                      checkout_session_id: session.id,
+                    },
+                  })
+                  .eq("id", newInvoice.id);
+
+                // Send payment email via transactional email system
+                const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+                const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+                const symbol = currency.toUpperCase() === "GBP" ? "£" : "$";
+                const amountFormatted = `${symbol}${(commissionCents / 100).toLocaleString("en-US", { minimumFractionDigits: 2 })}`;
+
+                await fetch(`${supabaseUrl}/functions/v1/send-transactional-email`, {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${serviceKey}`,
+                  },
+                  body: JSON.stringify({
+                    template_name: "payment-reminder",
+                    to: recipientEmail,
+                    purpose: "transactional",
+                    idempotency_key: `invoice-${newInvoice.id}`,
+                    data: {
+                      customerName: recipientName,
+                      dealCategory: deal.category,
+                      dealNumber: deal.deal_number,
+                      amountDue: amountFormatted,
+                      paymentUrl: session.url,
+                    },
+                  }),
+                });
+
+                edgeLog("info", "deal-completion", "Invoice sent with payment link", {
+                  dealId,
+                  invoiceId: newInvoice.id,
+                  recipientEmail,
+                  amount: amountFormatted,
+                });
+              } catch (stripeErr: any) {
+                edgeLog("error", "deal-completion", "Failed to generate payment link", {
+                  dealId,
+                  err: stripeErr.message,
+                });
+              }
+            }
+          }
+        }
       }
 
       // Generate summary
