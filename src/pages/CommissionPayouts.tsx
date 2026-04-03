@@ -196,7 +196,7 @@ const CommissionPayouts = () => {
 
         // Create in-app notification
         await supabase.from("notifications").insert({
-          user_id: session.user.id,
+          user_id: user.id,
           title: "Payment Reminder Sent",
           body: `Reminder sent for ${commission.category} deal — ${commission.vendor_name || "vendor"} — $${(commission.commission_cents / 100).toLocaleString()}`,
           category: "billing",
