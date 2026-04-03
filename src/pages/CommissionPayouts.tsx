@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { DollarSign, Filter, Search, ExternalLink, Loader2, Check, ArrowUpDown, Calendar, Download, RefreshCw, Bell, Mail, Send, CreditCard, Copy, Link, MapPin, Save, QrCode, X } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 import useDocumentHead from "@/hooks/use-document-head";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
@@ -70,23 +71,24 @@ const CommissionPayouts = () => {
     description: "View your full commission history, filter by status, and manage Stripe payouts.",
   });
 
-  useEffect(() => { fetchData(); }, []);
+  const { user } = useAuth();
+
+  useEffect(() => { fetchData(); }, [user]);
 
   const fetchData = async () => {
     setLoading(true);
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) { setLoading(false); return; }
+    if (!user) { setLoading(false); return; }
 
     const [commRes, invRes] = await Promise.all([
       supabase
         .from("commission_logs")
         .select("*")
-        .eq("user_id", session.user.id)
+        .eq("user_id", user.id)
         .order("created_at", { ascending: false }),
       supabase
         .from("invoices")
         .select("id, invoice_number, amount_cents, status, metadata, created_at, recipient_email, recipient_name, recipient_address, deal_id")
-        .eq("user_id", session.user.id)
+        .eq("user_id", user.id)
         .eq("invoice_type", "commission")
         .order("created_at", { ascending: false }),
     ]);
@@ -152,8 +154,7 @@ const CommissionPayouts = () => {
   const sendReminders = async () => {
     setReminderLoading(true);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) throw new Error("Not authenticated");
+      if (!user) throw new Error("Not authenticated");
 
       // Get pending commissions that haven't been reminded yet
       const pendingDeals = commissions.filter(
@@ -195,7 +196,7 @@ const CommissionPayouts = () => {
 
         // Create in-app notification
         await supabase.from("notifications").insert({
-          user_id: session.user.id,
+          user_id: user.id,
           title: "Payment Reminder Sent",
           body: `Reminder sent for ${commission.category} deal — ${commission.vendor_name || "vendor"} — $${(commission.commission_cents / 100).toLocaleString()}`,
           category: "billing",

@@ -126,7 +126,7 @@ const SovereignDashboard = () => {
     const fetchData = async () => {
       const [leadsRes, commissionsRes] = await Promise.all([
         supabase.from("leads").select("status").eq("user_id", user.id),
-        supabase.from("commissions").select("quantus_cut").eq("user_id", user.id),
+        supabase.from("commission_logs").select("commission_cents").eq("user_id", user.id),
       ]);
       const leads = leadsRes.data || [];
       setLeadCounts({
@@ -135,7 +135,7 @@ const SovereignDashboard = () => {
         recovered: leads.filter((l) => l.status === "Recovered").length,
       });
       const comms = commissionsRes.data || [];
-      setTotalCommissions(comms.reduce((s, c) => s + Number(c.quantus_cut || 0), 0));
+      setTotalCommissions(comms.reduce((s, c) => s + Number(c.commission_cents || 0), 0) / 100);
     };
     fetchData();
   }, [user]);
