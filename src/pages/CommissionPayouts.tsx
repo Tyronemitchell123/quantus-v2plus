@@ -313,7 +313,43 @@ const CommissionPayouts = () => {
   };
 
 
-  const categories = useMemo(() => {
+  const submitManualEmails = async () => {
+    const validOverrides: Record<string, string> = {};
+    for (const [invoiceId, email] of Object.entries(manualEmails)) {
+      const trimmed = email.trim();
+      if (trimmed && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+        validOverrides[invoiceId] = trimmed;
+      }
+    }
+    if (Object.keys(validOverrides).length === 0) {
+      toast.error("Please enter at least one valid email address");
+      return;
+    }
+    setManualEmailSending(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("backfill-invoice-emails", {
+        body: { overrides: validOverrides },
+      });
+      if (error) throw new Error(error.message);
+      if (data?.error) throw new Error(data.error);
+
+      const { updated = 0, emails_sent = 0, unresolved = 0 } = data || {};
+      if (updated > 0) {
+        toast.success(`${updated} invoice${updated !== 1 ? "s" : ""} updated, ${emails_sent} reminder${emails_sent !== 1 ? "s" : ""} sent`);
+      }
+      if (unresolved > 0) {
+        toast.info(`${unresolved} invoice${unresolved !== 1 ? "s" : ""} still unresolved`);
+      }
+      setManualEmailOpen(false);
+      setManualEmails({});
+      fetchData();
+    } catch (err: any) {
+      toast.error(err.message || "Failed to submit manual emails");
+    }
+    setManualEmailSending(false);
+  };
+
+
     const cats = new Set(commissions.map(c => c.category));
     return Array.from(cats).sort();
   }, [commissions]);
