@@ -89,6 +89,8 @@ const MobileBottomNav = forwardRef<HTMLElement, MobileBottomNavProps>(({ onAIOpe
       </div>
     </nav>
   );
-};
+});
+
+MobileBottomNav.displayName = "MobileBottomNav";
 
 export default MobileBottomNav;
