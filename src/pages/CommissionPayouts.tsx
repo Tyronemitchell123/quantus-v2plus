@@ -559,16 +559,29 @@ const CommissionPayouts = () => {
                     </span>
                   </div>
                   {invoicesMissingEmail.length > 0 && (
-                    <div className="flex items-center gap-3 pt-2 border-t border-border">
-                      <Button
-                        onClick={backfillAndSend}
-                        disabled={backfillLoading}
-                        variant="outline"
-                        className="gap-2"
-                      >
-                        {backfillLoading ? <Loader2 size={14} className="animate-spin" /> : <Mail size={14} />}
-                        Backfill Emails & Send
-                      </Button>
+                    <div className="flex flex-col gap-2 pt-2 border-t border-border">
+                      <div className="flex items-center gap-3">
+                        <Button
+                          onClick={backfillAndSend}
+                          disabled={backfillLoading}
+                          variant="outline"
+                          className="gap-2"
+                        >
+                          {backfillLoading ? <Loader2 size={14} className="animate-spin" /> : <Mail size={14} />}
+                          Backfill Emails & Send
+                        </Button>
+                        <Button
+                          onClick={() => {
+                            setManualEmails({});
+                            setManualEmailOpen(true);
+                          }}
+                          variant="outline"
+                          className="gap-2"
+                        >
+                          <UserPlus size={14} />
+                          Manual Email Entry
+                        </Button>
+                      </div>
                       <span className="text-xs text-muted-foreground">
                         {invoicesMissingEmail.length} invoice{invoicesMissingEmail.length !== 1 ? "s" : ""} missing recipient email
                       </span>
