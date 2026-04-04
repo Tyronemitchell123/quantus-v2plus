@@ -1,25 +1,28 @@
 
 
-## Plan: Add Bulk "Resend Payment Reminders" Button
+## Plan: Make All Checkout URLs Easily Copyable
 
-### What it does
-Adds a new button to the Commission Payouts page that bulk-resends payment reminder emails for all invoices with status "sent" that either failed delivery (suppressed) or were never successfully emailed. It re-invokes the existing `send-transactional-email` edge function for each eligible invoice using the checkout URL already stored in invoice metadata.
+### Problem
+Checkout URLs are already stored in `invoice.metadata.checkout_url` but there's no easy way to see and copy them all at once — especially for vendors whose emails were suppressed.
 
 ### Changes
 
 **File: `src/pages/CommissionPayouts.tsx`**
 
-1. Add new state: `bulkResendLoading` (boolean)
-2. Add a `bulkResendReminders` async function that:
-   - Queries all `sent` invoices (from the already-loaded `invoices` state) that have a `recipient_email` and a `checkout_url` in metadata
-   - For each, calls `supabase.functions.invoke("send-transactional-email")` with the `payment-reminder` template, passing the checkout URL, amount, and recipient details
-   - Tracks success/failure counts and shows a toast summary
-3. Add a new button in the Reminders card (lines ~396-416), below the existing "Send Reminders" button, styled with a `RefreshCw` icon and labeled "Resend All Payment Links". The button is disabled when no eligible invoices exist or while loading.
-4. Show a count of eligible invoices (sent status with email + checkout URL) next to the button.
+1. Add a new card section titled "Payment Links Directory" below the Customer Payment Reminders card that lists all invoices with a `checkout_url` in metadata.
 
-### Technical details
-- Reuses the existing `send-transactional-email` function and `payment-reminder` template — no backend changes needed
-- Uses a fresh idempotency key per resend (`resend-{invoiceId}-{date}`) to bypass dedup
-- Formats amount from `invoice.amount_cents` and `invoice.currency`
-- Pulls checkout URL from `invoice.metadata.checkout_url`
+2. Each row shows:
+   - Vendor name / recipient name
+   - Invoice number
+   - Amount
+   - Recipient email (or "No email" warning)
+   - The checkout URL truncated with a **Copy** button next to it
+   - A **Copy All Links** button at the top that copies all URLs to clipboard (one per line, with vendor name prefix for identification)
+
+3. The list is derived from the existing `invoices` state — no new data fetching needed. Filter: `invoices.filter(i => i.metadata?.checkout_url)`.
+
+4. Copy uses `navigator.clipboard.writeText()` with a toast confirmation, matching existing UX patterns already in the page.
+
+### No backend changes needed
+All checkout URLs are already persisted in the `invoices.metadata.checkout_url` field from when they were created.
 
