@@ -398,20 +398,36 @@ const CommissionPayouts = () => {
                 <p className="text-xs text-muted-foreground mb-3">
                   Send email and in-app reminders to follow up on outstanding payments for pending commissions.
                 </p>
-                <div className="flex items-center gap-3">
-                  <Button
-                    onClick={sendReminders}
-                    disabled={reminderLoading || commissions.filter(c => (c.status === "pending" || c.status === "expected") && !remindersSent.includes(c.id)).length === 0}
-                    variant="outline"
-                    className="gap-2"
-                  >
-                    {reminderLoading ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
-                    Send Reminders
-                  </Button>
-                  <span className="text-xs text-muted-foreground">
-                    {commissions.filter(c => (c.status === "pending" || c.status === "expected") && !remindersSent.includes(c.id)).length} pending
-                    {remindersSent.length > 0 && ` · ${remindersSent.length} sent this session`}
-                  </span>
+                <div className="flex flex-col gap-3">
+                  <div className="flex items-center gap-3">
+                    <Button
+                      onClick={sendReminders}
+                      disabled={reminderLoading || commissions.filter(c => (c.status === "pending" || c.status === "expected") && !remindersSent.includes(c.id)).length === 0}
+                      variant="outline"
+                      className="gap-2"
+                    >
+                      {reminderLoading ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
+                      Send Reminders
+                    </Button>
+                    <span className="text-xs text-muted-foreground">
+                      {commissions.filter(c => (c.status === "pending" || c.status === "expected") && !remindersSent.includes(c.id)).length} pending
+                      {remindersSent.length > 0 && ` · ${remindersSent.length} sent this session`}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Button
+                      onClick={bulkResendReminders}
+                      disabled={bulkResendLoading || eligibleResendInvoices.length === 0}
+                      variant="outline"
+                      className="gap-2"
+                    >
+                      {bulkResendLoading ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />}
+                      Resend All Payment Links
+                    </Button>
+                    <span className="text-xs text-muted-foreground">
+                      {eligibleResendInvoices.length} invoice{eligibleResendInvoices.length !== 1 ? "s" : ""} with payment links
+                    </span>
+                  </div>
                 </div>
               </CardContent>
             </Card>
