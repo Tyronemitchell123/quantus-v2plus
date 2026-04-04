@@ -1,31 +1,25 @@
-# Full Production Launch Plan — All 4 Priorities
 
-## 1. Get Real Payments In
-- **Custom domain**: Connect your IONOS domain (A records → 185.158.133.1) so invoice emails come from your brand, not lovable.app
-- **Real invoice emails**: Wire up the existing transactional email system to auto-send branded invoice emails to vendors with Stripe Checkout links when deals complete
-- **Payment follow-up**: Add a cron job that re-sends payment reminders for unpaid invoices every 48 hours
 
-## 2. Acquire Real Clients
-- **Landing page SEO**: Add JSON-LD, meta tags, and sitemap for all key pages
-- **Lead capture upgrade**: Connect the waiting list → auto-nurture email drip → onboarding flow so signups convert to paying users
-- **Referral amplification**: Enable the existing referral program with real credit rewards on signup
+## Plan: Add Bulk "Resend Payment Reminders" Button
 
-## 3. Polish the Platform
-- **Mobile responsiveness audit**: Fix any layout issues at 360px viewport across all key flows (landing, dashboard, deals, settings)
-- **Performance**: Lazy-load heavy pages (Quantum, Wealth, Sovereign dashboards)
-- **Error handling**: Ensure all edge function failures show user-friendly toasts, not raw errors
+### What it does
+Adds a new button to the Commission Payouts page that bulk-resends payment reminder emails for all invoices with status "sent" that either failed delivery (suppressed) or were never successfully emailed. It re-invokes the existing `send-transactional-email` edge function for each eligible invoice using the checkout URL already stored in invoice metadata.
 
-## 4. Automate Everything
-- **Deal auto-progression cron**: Scheduled function that moves deals through sourcing → negotiation → execution → completion automatically based on time + conditions
-- **Auto-scraping cron**: Run Firecrawl vendor discovery weekly to find new vendors
-- **Auto-outreach**: When new vendors are discovered, auto-generate and queue outreach drafts
+### Changes
 
-## Implementation Order
-1. Custom domain setup (user action — DNS records)
-2. Invoice email pipeline (code + edge function)
-3. Deal auto-progression cron (edge function + pg_cron)
-4. SEO + landing page polish (code changes)
-5. Mobile audit + fixes (code changes)
-6. Auto-scraping cron (edge function + pg_cron)
+**File: `src/pages/CommissionPayouts.tsx`**
 
-This is a multi-session effort. I'll start with the highest-impact items: **invoice emails** and **deal auto-progression**, since those directly drive revenue.
+1. Add new state: `bulkResendLoading` (boolean)
+2. Add a `bulkResendReminders` async function that:
+   - Queries all `sent` invoices (from the already-loaded `invoices` state) that have a `recipient_email` and a `checkout_url` in metadata
+   - For each, calls `supabase.functions.invoke("send-transactional-email")` with the `payment-reminder` template, passing the checkout URL, amount, and recipient details
+   - Tracks success/failure counts and shows a toast summary
+3. Add a new button in the Reminders card (lines ~396-416), below the existing "Send Reminders" button, styled with a `RefreshCw` icon and labeled "Resend All Payment Links". The button is disabled when no eligible invoices exist or while loading.
+4. Show a count of eligible invoices (sent status with email + checkout URL) next to the button.
+
+### Technical details
+- Reuses the existing `send-transactional-email` function and `payment-reminder` template — no backend changes needed
+- Uses a fresh idempotency key per resend (`resend-{invoiceId}-{date}`) to bypass dedup
+- Formats amount from `invoice.amount_cents` and `invoice.currency`
+- Pulls checkout URL from `invoice.metadata.checkout_url`
+
