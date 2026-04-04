@@ -1,3 +1,4 @@
+import { forwardRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { LayoutDashboard, Briefcase, Grid3X3, Bot, User, MessageSquare } from "lucide-react";
 import { motion } from "framer-motion";
@@ -9,7 +10,7 @@ interface MobileBottomNavProps {
   activeTab?: string;
 }
 
-const MobileBottomNav = ({ onAIOpen, onMessagingOpen, onTabChange, activeTab }: MobileBottomNavProps) => {
+const MobileBottomNav = forwardRef<HTMLElement, MobileBottomNavProps>(({ onAIOpen, onMessagingOpen, onTabChange, activeTab }, ref) => {
   const { pathname } = useLocation();
 
   const navItems = [
@@ -21,7 +22,7 @@ const MobileBottomNav = ({ onAIOpen, onMessagingOpen, onTabChange, activeTab }: 
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 lg:hidden border-t border-border bg-background/95 backdrop-blur-xl safe-area-bottom">
+    <nav ref={ref} className="fixed bottom-0 left-0 right-0 z-50 lg:hidden border-t border-border bg-background/95 backdrop-blur-xl safe-area-bottom">
       <div className="flex items-center justify-around h-16 px-2">
         {navItems.map((item) => {
           const isAction = "action" in item && item.action;
@@ -88,6 +89,8 @@ const MobileBottomNav = ({ onAIOpen, onMessagingOpen, onTabChange, activeTab }: 
       </div>
     </nav>
   );
-};
+});
+
+MobileBottomNav.displayName = "MobileBottomNav";
 
 export default MobileBottomNav;
