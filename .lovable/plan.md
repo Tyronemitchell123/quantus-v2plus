@@ -1,28 +1,41 @@
 
 
-## Plan: Make All Checkout URLs Easily Copyable
+## Plan: Backfill Invoice Emails and Resend Payment Reminders
 
 ### Problem
-Checkout URLs are already stored in `invoice.metadata.checkout_url` but there's no easy way to see and copy them all at once — especially for vendors whose emails were suppressed.
+16 invoices have no `recipient_email`. The `vendor_outreach` table also has no emails for these deals. These are older deals that bypassed the outreach phase. We need a new edge function action to:
+1. Look up vendor emails from the `vendors` table (matching by deal category/name) or allow manual backfill
+2. Update the invoices with the found emails
+3. For the 5 invoices missing checkout URLs, create Stripe Checkout sessions first
+4. Send payment reminder emails for all updated invoices
 
-### Changes
+### Approach: New Edge Function `backfill-invoice-emails`
 
-**File: `src/pages/CommissionPayouts.tsx`**
+Create a single-purpose edge function that uses service role to:
 
-1. Add a new card section titled "Payment Links Directory" below the Customer Payment Reminders card that lists all invoices with a `checkout_url` in metadata.
+1. **Find invoices** with `status = 'sent'` and `recipient_email IS NULL`
+2. **Attempt email resolution** by joining `invoices` → `deals` → `vendor_outreach` → fall back to `vendors` table (matching on category)
+3. **Accept manual overrides** via request body: `{ overrides: { invoice_id: "email@example.com" } }` for invoices where no automated match exists
+4. **Update invoices** with resolved emails using service role
+5. **Create Stripe Checkout sessions** for the 5 invoices missing checkout URLs (reusing the logic from `activate-invoices`)
+6. **Send payment reminders** by invoking `send-transactional-email` for each updated invoice
+7. **Return a report** of what was updated, sent, and what still needs manual email entry
 
-2. Each row shows:
-   - Vendor name / recipient name
-   - Invoice number
-   - Amount
-   - Recipient email (or "No email" warning)
-   - The checkout URL truncated with a **Copy** button next to it
-   - A **Copy All Links** button at the top that copies all URLs to clipboard (one per line, with vendor name prefix for identification)
+### Frontend Addition
 
-3. The list is derived from the existing `invoices` state — no new data fetching needed. Filter: `invoices.filter(i => i.metadata?.checkout_url)`.
+Add a "Backfill & Send" button to the Commission Payouts page that:
+- Calls the new edge function
+- Shows results in a toast (X updated, Y emails sent, Z still need manual entry)
+- Refreshes the invoice list after completion
 
-4. Copy uses `navigator.clipboard.writeText()` with a toast confirmation, matching existing UX patterns already in the page.
+### Files to Create/Edit
 
-### No backend changes needed
-All checkout URLs are already persisted in the `invoices.metadata.checkout_url` field from when they were created.
+1. **Create** `supabase/functions/backfill-invoice-emails/index.ts` — the edge function
+2. **Edit** `src/pages/CommissionPayouts.tsx` — add the backfill button
+
+### Technical Details
+- Uses `SUPABASE_SERVICE_ROLE_KEY` to update invoices (bypasses RLS)
+- Uses `STRIPE_SECRET_KEY` to create checkout sessions for invoices missing URLs
+- Reuses existing `send-transactional-email` function with `payment-reminder` template
+- Fresh idempotency keys: `backfill-${invoiceId}-${date}`
 
