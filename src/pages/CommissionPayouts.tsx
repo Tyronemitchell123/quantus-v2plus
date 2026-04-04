@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { DollarSign, Filter, Search, ExternalLink, Loader2, Check, ArrowUpDown, Calendar, Download, RefreshCw, Bell, Mail, Send, CreditCard, Copy, Link, MapPin, Save, QrCode, X } from "lucide-react";
+import { DollarSign, Filter, Search, ExternalLink, Loader2, Check, ArrowUpDown, Calendar, Download, RefreshCw, Bell, Mail, Send, CreditCard, Copy, Link, MapPin, Save, QrCode, X, UserPlus } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -13,6 +13,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 type CommissionLog = {
   id: string;
@@ -67,6 +70,9 @@ const CommissionPayouts = () => {
   const [qrLoading, setQrLoading] = useState<string | null>(null);
   const [bulkResendLoading, setBulkResendLoading] = useState(false);
   const [backfillLoading, setBackfillLoading] = useState(false);
+  const [manualEmailOpen, setManualEmailOpen] = useState(false);
+  const [manualEmails, setManualEmails] = useState<Record<string, string>>({});
+  const [manualEmailSending, setManualEmailSending] = useState(false);
 
   useDocumentHead({
     title: "Commission Payouts — QUANTUS V2+",
@@ -307,6 +313,42 @@ const CommissionPayouts = () => {
   };
 
 
+  const submitManualEmails = async () => {
+    const validOverrides: Record<string, string> = {};
+    for (const [invoiceId, email] of Object.entries(manualEmails)) {
+      const trimmed = email.trim();
+      if (trimmed && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+        validOverrides[invoiceId] = trimmed;
+      }
+    }
+    if (Object.keys(validOverrides).length === 0) {
+      toast.error("Please enter at least one valid email address");
+      return;
+    }
+    setManualEmailSending(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("backfill-invoice-emails", {
+        body: { overrides: validOverrides },
+      });
+      if (error) throw new Error(error.message);
+      if (data?.error) throw new Error(data.error);
+
+      const { updated = 0, emails_sent = 0, unresolved = 0 } = data || {};
+      if (updated > 0) {
+        toast.success(`${updated} invoice${updated !== 1 ? "s" : ""} updated, ${emails_sent} reminder${emails_sent !== 1 ? "s" : ""} sent`);
+      }
+      if (unresolved > 0) {
+        toast.info(`${unresolved} invoice${unresolved !== 1 ? "s" : ""} still unresolved`);
+      }
+      setManualEmailOpen(false);
+      setManualEmails({});
+      fetchData();
+    } catch (err: any) {
+      toast.error(err.message || "Failed to submit manual emails");
+    }
+    setManualEmailSending(false);
+  };
+
   const categories = useMemo(() => {
     const cats = new Set(commissions.map(c => c.category));
     return Array.from(cats).sort();
@@ -517,16 +559,29 @@ const CommissionPayouts = () => {
                     </span>
                   </div>
                   {invoicesMissingEmail.length > 0 && (
-                    <div className="flex items-center gap-3 pt-2 border-t border-border">
-                      <Button
-                        onClick={backfillAndSend}
-                        disabled={backfillLoading}
-                        variant="outline"
-                        className="gap-2"
-                      >
-                        {backfillLoading ? <Loader2 size={14} className="animate-spin" /> : <Mail size={14} />}
-                        Backfill Emails & Send
-                      </Button>
+                    <div className="flex flex-col gap-2 pt-2 border-t border-border">
+                      <div className="flex items-center gap-3">
+                        <Button
+                          onClick={backfillAndSend}
+                          disabled={backfillLoading}
+                          variant="outline"
+                          className="gap-2"
+                        >
+                          {backfillLoading ? <Loader2 size={14} className="animate-spin" /> : <Mail size={14} />}
+                          Backfill Emails & Send
+                        </Button>
+                        <Button
+                          onClick={() => {
+                            setManualEmails({});
+                            setManualEmailOpen(true);
+                          }}
+                          variant="outline"
+                          className="gap-2"
+                        >
+                          <UserPlus size={14} />
+                          Manual Email Entry
+                        </Button>
+                      </div>
                       <span className="text-xs text-muted-foreground">
                         {invoicesMissingEmail.length} invoice{invoicesMissingEmail.length !== 1 ? "s" : ""} missing recipient email
                       </span>
@@ -1099,6 +1154,67 @@ const CommissionPayouts = () => {
           </div>
         </main>
       </div>
+
+      {/* Manual Email Entry Modal */}
+      <Dialog open={manualEmailOpen} onOpenChange={setManualEmailOpen}>
+        <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <UserPlus size={18} className="text-primary" />
+              Manual Email Entry
+            </DialogTitle>
+            <DialogDescription>
+              Enter vendor email addresses for invoices where no email could be automatically resolved. Emails will be saved and payment reminders sent immediately.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 py-2">
+            {invoicesMissingEmail.map(inv => {
+              const commission = commissions.find(c => c.deal_id === inv.deal_id);
+              return (
+                <div key={inv.id} className="space-y-1.5 rounded-lg border border-border p-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs font-medium text-foreground">
+                        {inv.invoice_number}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground capitalize">
+                        {commission?.category || "—"} · {commission?.vendor_name || inv.recipient_name || "Unknown vendor"} · £{(inv.amount_cents / 100).toLocaleString()}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor={`email-${inv.id}`} className="text-xs text-muted-foreground">Vendor Email</Label>
+                    <Input
+                      id={`email-${inv.id}`}
+                      type="email"
+                      placeholder="vendor@example.com"
+                      value={manualEmails[inv.id] || ""}
+                      onChange={e => setManualEmails(prev => ({ ...prev, [inv.id]: e.target.value }))}
+                      className="h-8 text-sm"
+                    />
+                  </div>
+                </div>
+              );
+            })}
+            {invoicesMissingEmail.length === 0 && (
+              <p className="text-sm text-muted-foreground text-center py-4">All invoices have email addresses.</p>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setManualEmailOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              onClick={submitManualEmails}
+              disabled={manualEmailSending || Object.values(manualEmails).filter(e => e.trim()).length === 0}
+              className="gap-2"
+            >
+              {manualEmailSending ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
+              Save & Send Reminders
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
