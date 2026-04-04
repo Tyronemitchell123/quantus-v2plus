@@ -38,34 +38,31 @@ Deno.serve(async (req) => {
         },
         body: JSON.stringify({
           url,
-          formats: [
-            'markdown',
-            {
-              type: 'json',
-              prompt: 'Extract any available appointment slots, cancellation openings, or last-minute availability for diagnostic services like MRI, Full-Body Scan, Cardiovascular screening, or executive health checks. Include: slot_date, slot_time, procedure_type, original_price, discounted_price (if any), location, clinic_name, availability_status.',
-              schema: {
-                type: 'object',
-                properties: {
-                  slots: {
-                    type: 'array',
-                    items: {
-                      type: 'object',
-                      properties: {
-                        clinic_name: { type: 'string' },
-                        procedure_type: { type: 'string' },
-                        slot_date: { type: 'string' },
-                        slot_time: { type: 'string' },
-                        original_price: { type: 'number' },
-                        discounted_price: { type: 'number' },
-                        location: { type: 'string' },
-                        availability_status: { type: 'string' },
-                      },
+          formats: ['markdown', 'json'],
+          jsonOptions: {
+            prompt: 'Extract any available appointment slots, cancellation openings, or last-minute availability for diagnostic services like MRI, Full-Body Scan, Cardiovascular screening, or executive health checks. Include: slot_date, slot_time, procedure_type, original_price, discounted_price (if any), location, clinic_name, availability_status.',
+            schema: {
+              type: 'object',
+              properties: {
+                slots: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {
+                      clinic_name: { type: 'string' },
+                      procedure_type: { type: 'string' },
+                      slot_date: { type: 'string' },
+                      slot_time: { type: 'string' },
+                      original_price: { type: 'number' },
+                      discounted_price: { type: 'number' },
+                      location: { type: 'string' },
+                      availability_status: { type: 'string' },
                     },
                   },
                 },
               },
             },
-          ],
+          },
           onlyMainContent: true,
           waitFor: 3000,
         }),
