@@ -61,9 +61,14 @@
 
   <body>
     <div id="root">
-      <!-- Pre-render LCP skeleton — replaced by React on mount -->
-      <div id="lcp-skeleton" style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:hsl(240 10% 4%)">
-        <h1 style="font-family:'Playfair Display',serif;font-weight:600;font-size:clamp(3rem,8vw,96px);line-height:0.95;letter-spacing:0.05em;background:linear-gradient(135deg,hsl(43 76% 50%),hsl(43 60% 70%));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-align:center">Quantus V2+</h1>
+      <!-- Pre-render skeleton — replaced by React on mount. Improves Speed Index + LCP. -->
+      <div id="lcp-skeleton" style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:hsl(240 10% 4%);gap:1.5rem;padding:2rem">
+        <h1 style="font-family:'Playfair Display',serif;font-weight:600;font-size:clamp(3rem,8vw,96px);line-height:0.95;letter-spacing:0.05em;background:linear-gradient(135deg,hsl(43 76% 50%),hsl(43 60% 70%));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-align:center;margin:0">Quantus V2+</h1>
+        <p style="font-family:'Inter',sans-serif;font-size:9px;letter-spacing:0.6em;text-transform:uppercase;color:hsl(43 76% 50% / 0.4);margin:0">Autonomous Intelligence Platform</p>
+        <div style="font-family:'Playfair Display',serif;font-weight:300;font-style:italic;font-size:clamp(1.8rem,5vw,3.75rem);color:hsl(0 0% 95% / 0.6)">A.I</div>
+        <div style="width:6rem;height:1px;background:linear-gradient(90deg,transparent,hsl(43 76% 50% / 0.6),transparent)"></div>
+        <p style="font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(1.1rem,2.5vw,1.5rem);color:hsl(0 0% 95% / 0.7);margin:0;text-align:center">The Intelligence Behind the Extraordinary</p>
+        <p style="font-family:'Inter',sans-serif;font-size:clamp(0.85rem,1.5vw,1rem);color:hsl(0 0% 95% / 0.35);margin:0;max-width:28rem;text-align:center;line-height:1.6">A sovereign orchestration engine for UHNW clients, private offices, and elite operators.</p>
       </div>
     </div>
     <script type="module" src="/src/main.tsx" fetchpriority="high"></script>
