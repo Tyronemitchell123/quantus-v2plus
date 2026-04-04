@@ -65,6 +65,7 @@ const CommissionPayouts = () => {
   const [qrDealId, setQrDealId] = useState<string | null>(null);
   const [qrUrl, setQrUrl] = useState<string | null>(null);
   const [qrLoading, setQrLoading] = useState<string | null>(null);
+  const [bulkResendLoading, setBulkResendLoading] = useState(false);
 
   useDocumentHead({
     title: "Commission Payouts — QUANTUS V2+",
