@@ -349,7 +349,7 @@ const CommissionPayouts = () => {
     setManualEmailSending(false);
   };
 
-
+  const categories = useMemo(() => {
     const cats = new Set(commissions.map(c => c.category));
     return Array.from(cats).sort();
   }, [commissions]);
