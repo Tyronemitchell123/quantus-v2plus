@@ -225,6 +225,10 @@ const CommissionPayouts = () => {
     );
   }, [invoices]);
 
+  const invoicesWithLinks = useMemo(() => {
+    return invoices.filter(i => (i.metadata as any)?.checkout_url);
+  }, [invoices]);
+
   const bulkResendReminders = async () => {
     setBulkResendLoading(true);
     try {
