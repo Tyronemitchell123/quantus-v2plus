@@ -274,6 +274,38 @@ const CommissionPayouts = () => {
     setBulkResendLoading(false);
   };
 
+  const invoicesMissingEmail = useMemo(() => {
+    return invoices.filter(i => i.status === "sent" && !i.recipient_email);
+  }, [invoices]);
+
+  const backfillAndSend = async () => {
+    setBackfillLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("backfill-invoice-emails", {
+        body: {},
+      });
+      if (error) throw new Error(error.message);
+      if (data?.error) throw new Error(data.error);
+
+      const { updated = 0, emails_sent = 0, unresolved = 0, results = [] } = data || {};
+
+      if (updated > 0) {
+        toast.success(`${updated} invoice${updated !== 1 ? "s" : ""} updated with emails, ${emails_sent} reminder${emails_sent !== 1 ? "s" : ""} sent`);
+      }
+      if (unresolved > 0) {
+        toast.info(`${unresolved} invoice${unresolved !== 1 ? "s" : ""} still need manual email entry — no vendor email found`);
+      }
+      if (updated === 0 && unresolved === 0) {
+        toast.info("No invoices need email backfill");
+      }
+
+      fetchData();
+    } catch (err: any) {
+      toast.error(err.message || "Backfill failed");
+    }
+    setBackfillLoading(false);
+  };
+
 
   const categories = useMemo(() => {
     const cats = new Set(commissions.map(c => c.category));
