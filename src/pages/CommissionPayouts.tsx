@@ -70,6 +70,9 @@ const CommissionPayouts = () => {
   const [qrLoading, setQrLoading] = useState<string | null>(null);
   const [bulkResendLoading, setBulkResendLoading] = useState(false);
   const [backfillLoading, setBackfillLoading] = useState(false);
+  const [manualEmailOpen, setManualEmailOpen] = useState(false);
+  const [manualEmails, setManualEmails] = useState<Record<string, string>>({});
+  const [manualEmailSending, setManualEmailSending] = useState(false);
 
   useDocumentHead({
     title: "Commission Payouts — QUANTUS V2+",
