@@ -1154,6 +1154,67 @@ const CommissionPayouts = () => {
           </div>
         </main>
       </div>
+
+      {/* Manual Email Entry Modal */}
+      <Dialog open={manualEmailOpen} onOpenChange={setManualEmailOpen}>
+        <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <UserPlus size={18} className="text-primary" />
+              Manual Email Entry
+            </DialogTitle>
+            <DialogDescription>
+              Enter vendor email addresses for invoices where no email could be automatically resolved. Emails will be saved and payment reminders sent immediately.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 py-2">
+            {invoicesMissingEmail.map(inv => {
+              const commission = commissions.find(c => c.deal_id === inv.deal_id);
+              return (
+                <div key={inv.id} className="space-y-1.5 rounded-lg border border-border p-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs font-medium text-foreground">
+                        {inv.invoice_number}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground capitalize">
+                        {commission?.category || "—"} · {commission?.vendor_name || inv.recipient_name || "Unknown vendor"} · £{(inv.amount_cents / 100).toLocaleString()}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor={`email-${inv.id}`} className="text-xs text-muted-foreground">Vendor Email</Label>
+                    <Input
+                      id={`email-${inv.id}`}
+                      type="email"
+                      placeholder="vendor@example.com"
+                      value={manualEmails[inv.id] || ""}
+                      onChange={e => setManualEmails(prev => ({ ...prev, [inv.id]: e.target.value }))}
+                      className="h-8 text-sm"
+                    />
+                  </div>
+                </div>
+              );
+            })}
+            {invoicesMissingEmail.length === 0 && (
+              <p className="text-sm text-muted-foreground text-center py-4">All invoices have email addresses.</p>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setManualEmailOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              onClick={submitManualEmails}
+              disabled={manualEmailSending || Object.values(manualEmails).filter(e => e.trim()).length === 0}
+              className="gap-2"
+            >
+              {manualEmailSending ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
+              Save & Send Reminders
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
