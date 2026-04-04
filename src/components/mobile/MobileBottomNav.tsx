@@ -1,3 +1,4 @@
+import { forwardRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { LayoutDashboard, Briefcase, Grid3X3, Bot, User, MessageSquare } from "lucide-react";
 import { motion } from "framer-motion";
@@ -9,7 +10,7 @@ interface MobileBottomNavProps {
   activeTab?: string;
 }
 
-const MobileBottomNav = ({ onAIOpen, onMessagingOpen, onTabChange, activeTab }: MobileBottomNavProps) => {
+const MobileBottomNav = forwardRef<HTMLElement, MobileBottomNavProps>(({ onAIOpen, onMessagingOpen, onTabChange, activeTab }, ref) => {
   const { pathname } = useLocation();
 
   const navItems = [
