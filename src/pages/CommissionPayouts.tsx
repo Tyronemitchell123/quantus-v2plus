@@ -483,6 +483,60 @@ const CommissionPayouts = () => {
               </CardContent>
             </Card>
 
+            {/* Payment Links Directory */}
+            {invoicesWithLinks.length > 0 && (
+              <Card className="border-border">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-sm font-display flex items-center gap-2">
+                      <Link size={16} className="text-primary" />
+                      Payment Links Directory
+                    </CardTitle>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="gap-1.5 text-xs"
+                      onClick={() => {
+                        const text = invoicesWithLinks
+                          .map(i => `${i.recipient_name || i.invoice_number}: ${(i.metadata as any)?.checkout_url}`)
+                          .join("\n");
+                        navigator.clipboard.writeText(text);
+                        toast.success(`${invoicesWithLinks.length} payment link(s) copied`);
+                      }}
+                    >
+                      <Copy size={12} /> Copy All Links
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  {invoicesWithLinks.map(inv => {
+                    const url = (inv.metadata as any)?.checkout_url as string;
+                    return (
+                      <div key={inv.id} className="flex items-center justify-between gap-2 rounded-md border border-border p-2 text-xs">
+                        <div className="flex flex-col gap-0.5 min-w-0 flex-1">
+                          <span className="font-medium truncate">{inv.recipient_name || inv.invoice_number}</span>
+                          <span className="text-muted-foreground">
+                            {inv.recipient_email || "No email"} · £{(inv.amount_cents / 100).toLocaleString()}
+                          </span>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="gap-1 shrink-0 text-xs"
+                          onClick={() => {
+                            navigator.clipboard.writeText(url);
+                            toast.success(`Link copied for ${inv.recipient_name || inv.invoice_number}`);
+                          }}
+                        >
+                          <Copy size={12} /> Copy
+                        </Button>
+                      </div>
+                    );
+                  })}
+                </CardContent>
+              </Card>
+            )}
+
             {/* Collect Payment */}
             {commissions.filter(c => c.status === "pending" || c.status === "expected").length > 0 && (
               <Card className="border-emerald-500/30">
