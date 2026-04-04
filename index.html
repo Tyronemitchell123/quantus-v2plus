@@ -60,7 +60,12 @@
   </head>
 
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Pre-render LCP skeleton — replaced by React on mount -->
+      <div id="lcp-skeleton" style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:hsl(240 10% 4%)">
+        <h1 style="font-family:'Playfair Display',serif;font-weight:600;font-size:clamp(3rem,8vw,96px);line-height:0.95;letter-spacing:0.05em;background:linear-gradient(135deg,hsl(43 76% 50%),hsl(43 60% 70%));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-align:center">Quantus V2+</h1>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx" fetchpriority="high"></script>
   </body>
 </html>
