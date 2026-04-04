@@ -1,6 +1,6 @@
-import { lazy, Suspense, useRef } from "react";
+import { lazy, Suspense, useRef, useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 
 const ParticleGrid = lazy(() => import("@/components/ParticleGrid"));
 const HomepageHeroVideo = lazy(() => import("@/components/HomepageHeroVideo"));
@@ -9,14 +9,30 @@ const MagneticButton = lazy(() => import("@/components/landing/MagneticButton"))
 
 const HeroSection = () => {
   const heroRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
-  const heroY = useTransform(scrollYProgress, [0, 0.7], [0, 60]);
+  const [scrollStyle, setScrollStyle] = useState({ opacity: 1, transform: "translateY(0px)" });
+
+  const handleScroll = useCallback(() => {
+    const el = heroRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const totalH = el.offsetHeight;
+    if (totalH === 0) return;
+    const progress = Math.min(Math.max(-rect.top / totalH, 0), 1);
+    const clampedProgress = Math.min(progress / 0.7, 1);
+    const opacity = 1 - clampedProgress;
+    const y = clampedProgress * 60;
+    setScrollStyle({ opacity, transform: `translateY(${y}px)` });
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [handleScroll]);
 
   return (
-    <motion.section
+    <section
       ref={heroRef}
-      style={{ opacity: heroOpacity }}
+      style={{ opacity: scrollStyle.opacity }}
       className="relative min-h-screen flex items-center justify-center overflow-hidden bg-background"
     >
       <Suspense fallback={null}>
@@ -35,8 +51,8 @@ const HeroSection = () => {
       <div className="absolute inset-y-0 left-[8.33%] w-px bg-gradient-to-b from-transparent via-primary/[0.04] to-transparent pointer-events-none z-[2]" />
       <div className="absolute inset-y-0 right-[8.33%] w-px bg-gradient-to-b from-transparent via-primary/[0.04] to-transparent pointer-events-none z-[2]" />
 
-      <motion.div
-        style={{ y: heroY }}
+      <div
+        style={{ transform: scrollStyle.transform }}
         className="relative z-10 container mx-auto px-6 text-center max-w-4xl"
       >
         {/* H1 outside animated wrapper so LCP element is immediately visible */}
@@ -121,7 +137,7 @@ const HeroSection = () => {
             </Suspense>
           </motion.div>
         </motion.div>
-      </motion.div>
+      </div>
 
       {/* Animated scroll indicator */}
       <motion.div
@@ -139,7 +155,7 @@ const HeroSection = () => {
           <div className="w-px h-14 bg-gradient-to-b from-primary/30 to-transparent" />
         </motion.div>
       </motion.div>
-    </motion.section>
+    </section>
   );
 };
 
