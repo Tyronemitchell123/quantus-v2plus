@@ -66,6 +66,7 @@ const CommissionPayouts = () => {
   const [qrUrl, setQrUrl] = useState<string | null>(null);
   const [qrLoading, setQrLoading] = useState<string | null>(null);
   const [bulkResendLoading, setBulkResendLoading] = useState(false);
+  const [backfillLoading, setBackfillLoading] = useState(false);
 
   useDocumentHead({
     title: "Commission Payouts — QUANTUS V2+",
@@ -271,6 +272,38 @@ const CommissionPayouts = () => {
       toast.error(err.message || "Failed to resend payment links");
     }
     setBulkResendLoading(false);
+  };
+
+  const invoicesMissingEmail = useMemo(() => {
+    return invoices.filter(i => i.status === "sent" && !i.recipient_email);
+  }, [invoices]);
+
+  const backfillAndSend = async () => {
+    setBackfillLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("backfill-invoice-emails", {
+        body: {},
+      });
+      if (error) throw new Error(error.message);
+      if (data?.error) throw new Error(data.error);
+
+      const { updated = 0, emails_sent = 0, unresolved = 0, results = [] } = data || {};
+
+      if (updated > 0) {
+        toast.success(`${updated} invoice${updated !== 1 ? "s" : ""} updated with emails, ${emails_sent} reminder${emails_sent !== 1 ? "s" : ""} sent`);
+      }
+      if (unresolved > 0) {
+        toast.info(`${unresolved} invoice${unresolved !== 1 ? "s" : ""} still need manual email entry — no vendor email found`);
+      }
+      if (updated === 0 && unresolved === 0) {
+        toast.info("No invoices need email backfill");
+      }
+
+      fetchData();
+    } catch (err: any) {
+      toast.error(err.message || "Backfill failed");
+    }
+    setBackfillLoading(false);
   };
 
 
@@ -483,6 +516,22 @@ const CommissionPayouts = () => {
                       {eligibleResendInvoices.length} invoice{eligibleResendInvoices.length !== 1 ? "s" : ""} with payment links
                     </span>
                   </div>
+                  {invoicesMissingEmail.length > 0 && (
+                    <div className="flex items-center gap-3 pt-2 border-t border-border">
+                      <Button
+                        onClick={backfillAndSend}
+                        disabled={backfillLoading}
+                        variant="outline"
+                        className="gap-2"
+                      >
+                        {backfillLoading ? <Loader2 size={14} className="animate-spin" /> : <Mail size={14} />}
+                        Backfill Emails & Send
+                      </Button>
+                      <span className="text-xs text-muted-foreground">
+                        {invoicesMissingEmail.length} invoice{invoicesMissingEmail.length !== 1 ? "s" : ""} missing recipient email
+                      </span>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>

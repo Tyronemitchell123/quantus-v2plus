@@ -53,3 +53,5 @@ project_id = "eqxgnxgbvvrjaxjiznjo"
     verify_jwt = false
   [functions.activate-invoices]
     verify_jwt = false
+  [functions.backfill-invoice-emails]
+    verify_jwt = false
