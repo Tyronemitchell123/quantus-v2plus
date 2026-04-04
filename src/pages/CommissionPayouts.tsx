@@ -219,6 +219,57 @@ const CommissionPayouts = () => {
     setReminderLoading(false);
   };
 
+  const eligibleResendInvoices = useMemo(() => {
+    return invoices.filter(
+      i => i.status === "sent" && i.recipient_email && i.metadata?.checkout_url
+    );
+  }, [invoices]);
+
+  const bulkResendReminders = async () => {
+    setBulkResendLoading(true);
+    try {
+      if (!user) throw new Error("Not authenticated");
+      let success = 0;
+      let failed = 0;
+      const today = new Date().toISOString().slice(0, 10);
+
+      for (const inv of eligibleResendInvoices) {
+        const amountStr = new Intl.NumberFormat("en-GB", {
+          style: "currency",
+          currency: inv.metadata?.currency || "GBP",
+          minimumFractionDigits: 0,
+        }).format(inv.amount_cents / 100);
+
+        const commission = commissions.find(c => c.deal_id === inv.deal_id);
+
+        const { error } = await supabase.functions.invoke("send-transactional-email", {
+          body: {
+            templateName: "payment-reminder",
+            recipientEmail: inv.recipient_email,
+            idempotencyKey: `resend-${inv.id}-${today}`,
+            templateData: {
+              customerName: inv.recipient_name || commission?.vendor_name || "Customer",
+              dealCategory: commission?.category || "deal",
+              dealNumber: inv.invoice_number,
+              amountDue: amountStr,
+              paymentUrl: inv.metadata.checkout_url,
+            },
+          },
+        });
+
+        if (error) { failed++; } else { success++; }
+      }
+
+      if (success > 0) toast.success(`Resent ${success} payment link${success !== 1 ? "s" : ""}`);
+      if (failed > 0) toast.error(`${failed} email${failed !== 1 ? "s" : ""} failed to send`);
+      if (success === 0 && failed === 0) toast.info("No eligible invoices to resend");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to resend payment links");
+    }
+    setBulkResendLoading(false);
+  };
+
+
   const categories = useMemo(() => {
     const cats = new Set(commissions.map(c => c.category));
     return Array.from(cats).sort();
