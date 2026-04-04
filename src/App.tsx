@@ -23,15 +23,21 @@ const AnimatedRoutes = () => {
 
   return (
     <>
-      {!isDashboardRoute && <Navbar />}
-      <AnimatePresence mode="wait">
-        <Suspense fallback={<PageLoader />}>
-          <Routes location={location} key={location.pathname}>
-            {publicRoutes}
-            {dashboardRoutes}
-          </Routes>
+      {!isDashboardRoute && (
+        <Suspense fallback={null}>
+          <Navbar />
         </Suspense>
-      </AnimatePresence>
+      )}
+      <Suspense fallback={null}>
+        <AnimatePresence mode="wait">
+          <Suspense fallback={<PageLoader />}>
+            <Routes location={location} key={location.pathname}>
+              {publicRoutes}
+              {dashboardRoutes}
+            </Routes>
+          </Suspense>
+        </AnimatePresence>
+      </Suspense>
     </>
   );
 };
