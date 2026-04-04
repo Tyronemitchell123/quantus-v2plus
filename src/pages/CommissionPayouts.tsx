@@ -516,6 +516,22 @@ const CommissionPayouts = () => {
                       {eligibleResendInvoices.length} invoice{eligibleResendInvoices.length !== 1 ? "s" : ""} with payment links
                     </span>
                   </div>
+                  {invoicesMissingEmail.length > 0 && (
+                    <div className="flex items-center gap-3 pt-2 border-t border-border">
+                      <Button
+                        onClick={backfillAndSend}
+                        disabled={backfillLoading}
+                        variant="outline"
+                        className="gap-2"
+                      >
+                        {backfillLoading ? <Loader2 size={14} className="animate-spin" /> : <Mail size={14} />}
+                        Backfill Emails & Send
+                      </Button>
+                      <span className="text-xs text-muted-foreground">
+                        {invoicesMissingEmail.length} invoice{invoicesMissingEmail.length !== 1 ? "s" : ""} missing recipient email
+                      </span>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
