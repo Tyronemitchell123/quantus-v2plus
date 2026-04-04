@@ -45,18 +45,22 @@ const AnimatedRoutes = () => {
 const App = () => (
   <ErrorBoundary>
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <AnimatedRoutes />
+      <Suspense fallback={null}>
+        <TooltipProvider>
           <Suspense fallback={null}>
-            <OfflineIndicator />
-            <WelcomeTooltips />
-            <CookieConsent />
+            <Toaster />
+            <Sonner />
           </Suspense>
-        </BrowserRouter>
-      </TooltipProvider>
+          <BrowserRouter>
+            <AnimatedRoutes />
+            <Suspense fallback={null}>
+              <OfflineIndicator />
+              <WelcomeTooltips />
+              <CookieConsent />
+            </Suspense>
+          </BrowserRouter>
+        </TooltipProvider>
+      </Suspense>
     </QueryClientProvider>
   </ErrorBoundary>
 );
