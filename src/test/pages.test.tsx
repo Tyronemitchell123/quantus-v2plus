@@ -78,14 +78,14 @@ describe("Auth page", () => {
     expect(screen.getByPlaceholderText(/password/i)).toBeInTheDocument();
   });
 
-  it("shows sign up toggle", async () => {
+  it("shows membership toggle", async () => {
     const Auth = (await import("@/pages/Auth")).default;
     render(
       <MemoryRouter>
         <Auth />
       </MemoryRouter>
     );
-    expect(screen.getByText(/create account/i)).toBeInTheDocument();
+    expect(screen.getByText(/apply for membership/i)).toBeInTheDocument();
   });
 });
 
