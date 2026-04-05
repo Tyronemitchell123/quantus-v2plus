@@ -252,6 +252,14 @@ const CommissionPayouts = () => {
       const today = new Date().toISOString().slice(0, 10);
 
       for (const inv of eligibleResendInvoices) {
+        if (!inv.recipient_email || !isValidEmail(inv.recipient_email)) continue;
+
+        const suppressionReason = await checkSuppression(inv.recipient_email);
+        if (suppressionReason) {
+          console.warn(`Skipping suppressed email ${inv.recipient_email} (${suppressionReason})`);
+          continue;
+        }
+
         const amountStr = new Intl.NumberFormat("en-GB", {
           style: "currency",
           currency: inv.metadata?.currency || "GBP",
