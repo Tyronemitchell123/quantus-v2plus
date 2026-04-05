@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
+import SendTestEmailCard from "./SendTestEmailCard";
 
 interface EmailLog {
   id: string;
@@ -102,6 +103,9 @@ export default function EmailMonitoringTab() {
 
   return (
     <div className="space-y-6">
+      {/* Send Test Email */}
+      <SendTestEmailCard />
+
       {/* Controls */}
       <div className="flex flex-wrap items-center gap-3">
         <div className="flex gap-1">
