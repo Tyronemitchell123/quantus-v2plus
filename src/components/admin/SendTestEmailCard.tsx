@@ -90,9 +90,8 @@ export default function SendTestEmailCard() {
             <Input
               placeholder="recipient@example.com"
               value={recipient}
-              onChange={(e) => setRecipient(e.target.value)}
-              type="email"
               onChange={(e) => { setRecipient(e.target.value); setValidationWarning(null); }}
+              type="email"
             />
             {validationWarning && (
               <div className="flex items-center gap-2 text-xs text-destructive bg-destructive/10 p-2 rounded">
