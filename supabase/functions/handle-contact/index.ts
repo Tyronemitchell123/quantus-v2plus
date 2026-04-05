@@ -9,7 +9,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 }
 
-const SITE_NAME = 'quantus-loom'
+const SITE_NAME = 'QUANTUS'
 const SENDER_DOMAIN = 'notify.crownprompts.com'
 const SITE_URL = 'https://quantus-v2plus.lovable.app'
 
