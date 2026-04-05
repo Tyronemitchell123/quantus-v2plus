@@ -85,7 +85,8 @@ describe("Auth page", () => {
         <Auth />
       </MemoryRouter>
     );
-    expect(screen.getByText(/apply for membership/i)).toBeInTheDocument();
+    const buttons = screen.getAllByText(/apply for membership/i);
+    expect(buttons.length).toBeGreaterThanOrEqual(1);
   });
 });
 
