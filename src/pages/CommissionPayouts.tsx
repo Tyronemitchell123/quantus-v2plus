@@ -183,8 +183,14 @@ const CommissionPayouts = () => {
         // Find the invoice/vendor email for this commission's deal
         const inv = invoices.find(i => i.deal_id === commission.deal_id);
         const recipientEmail = inv?.recipient_email;
-        if (!recipientEmail) {
-          // Skip if no customer email on file
+        if (!recipientEmail || !isValidEmail(recipientEmail)) {
+          continue;
+        }
+
+        // Skip suppressed emails to reduce bounce rate
+        const suppressionReason = await checkSuppression(recipientEmail);
+        if (suppressionReason) {
+          console.warn(`Skipping suppressed email ${recipientEmail} (${suppressionReason})`);
           continue;
         }
 
