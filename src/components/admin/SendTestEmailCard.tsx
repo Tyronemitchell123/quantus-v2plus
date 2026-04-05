@@ -92,7 +92,14 @@ export default function SendTestEmailCard() {
               value={recipient}
               onChange={(e) => setRecipient(e.target.value)}
               type="email"
+              onChange={(e) => { setRecipient(e.target.value); setValidationWarning(null); }}
             />
+            {validationWarning && (
+              <div className="flex items-center gap-2 text-xs text-destructive bg-destructive/10 p-2 rounded">
+                <AlertTriangle size={12} />
+                {validationWarning}
+              </div>
+            )}
             <Select value={template} onValueChange={setTemplate}>
               <SelectTrigger>
                 <SelectValue />
