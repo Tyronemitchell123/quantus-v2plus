@@ -27,11 +27,21 @@ export default function SendTestEmailCard() {
   const [templateData, setTemplateData] = useState('{ "name": "Test User" }');
   const [sending, setSending] = useState(false);
 
+  const [validationWarning, setValidationWarning] = useState<string | null>(null);
+
   const handleSend = async () => {
     if (!recipient) {
       toast.error("Recipient email is required");
       return;
     }
+
+    const validationError = await validateEmailBeforeSend(recipient);
+    if (validationError) {
+      setValidationWarning(validationError);
+      toast.error(validationError);
+      return;
+    }
+    setValidationWarning(null);
 
     let parsedData: Record<string, any> = {};
     try {
