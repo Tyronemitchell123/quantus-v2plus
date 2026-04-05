@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Send, ChevronDown, ChevronUp, Loader2 } from "lucide-react";
+import { Send, ChevronDown, ChevronUp, Loader2, AlertTriangle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { validateEmailBeforeSend } from "@/lib/email-validation";
 
 const TEMPLATES = [
   "contact-confirmation",
@@ -26,11 +27,21 @@ export default function SendTestEmailCard() {
   const [templateData, setTemplateData] = useState('{ "name": "Test User" }');
   const [sending, setSending] = useState(false);
 
+  const [validationWarning, setValidationWarning] = useState<string | null>(null);
+
   const handleSend = async () => {
     if (!recipient) {
       toast.error("Recipient email is required");
       return;
     }
+
+    const validationError = await validateEmailBeforeSend(recipient);
+    if (validationError) {
+      setValidationWarning(validationError);
+      toast.error(validationError);
+      return;
+    }
+    setValidationWarning(null);
 
     let parsedData: Record<string, any> = {};
     try {
@@ -79,9 +90,15 @@ export default function SendTestEmailCard() {
             <Input
               placeholder="recipient@example.com"
               value={recipient}
-              onChange={(e) => setRecipient(e.target.value)}
+              onChange={(e) => { setRecipient(e.target.value); setValidationWarning(null); }}
               type="email"
             />
+            {validationWarning && (
+              <div className="flex items-center gap-2 text-xs text-destructive bg-destructive/10 p-2 rounded">
+                <AlertTriangle size={12} />
+                {validationWarning}
+              </div>
+            )}
             <Select value={template} onValueChange={setTemplate}>
               <SelectTrigger>
                 <SelectValue />

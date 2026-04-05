@@ -4,6 +4,8 @@ import {
   Body, Container, Head, Heading, Html, Preview, Text, Hr, Button, Section,
 } from 'npm:@react-email/components@0.0.22'
 
+const SITE_NAME = "QUANTUS"
+
 interface DealCompletionSummaryProps {
   dealNumber?: string
   category?: string
@@ -23,14 +25,14 @@ export const DealCompletionSummaryEmail = ({
 }: DealCompletionSummaryProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Deal {dealNumber} completed — QUANTUS V2+</Preview>
+    <Preview>Deal {dealNumber} completed — {SITE_NAME}</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Text style={brand}>QUANTUS V2+</Text>
+        <Text style={brand}>{SITE_NAME}</Text>
         <Hr style={divider} />
         <Heading style={h1}>Deal Completed 🎉</Heading>
         <Text style={text}>
-          Congratulations! Deal <strong style={{ color: '#b8942e' }}>{dealNumber}</strong> has been successfully completed.
+          Congratulations! Deal <strong style={{ color: '#C4993A' }}>{dealNumber}</strong> has been successfully completed.
         </Text>
         <Section style={summaryBox}>
           <Text style={summaryLabel}>Category</Text>
@@ -49,7 +51,7 @@ export const DealCompletionSummaryEmail = ({
           )}
           {commissionEarned && (
             <>
-              <Text style={summaryLabel}>Commission</Text>
+              <Text style={summaryLabel}>Commission Earned</Text>
               <Text style={summaryValue}>{commissionEarned}</Text>
             </>
           )}
@@ -57,9 +59,13 @@ export const DealCompletionSummaryEmail = ({
         <Text style={text}>
           All documents have been archived and the commission has been logged. You can view the full deal history in your dashboard.
         </Text>
-        <Button style={button} href={`${siteUrl}/dashboard`}>View Deal Summary</Button>
-        <Text style={footer}>This is an automated notification from QUANTUS V2+.</Text>
-        <Text style={copyright}>© 2026 QUANTUS V2+. All rights reserved.</Text>
+        <Section style={{ textAlign: 'center' as const, margin: '28px 0' }}>
+          <Button style={button} href={`${siteUrl}/dashboard`}>View Deal Summary →</Button>
+        </Section>
+        <Text style={footer}>
+          This is an automated notification from {SITE_NAME}.<br />
+          © 2026 {SITE_NAME}. All rights reserved.
+        </Text>
       </Container>
     </Body>
   </Html>
@@ -67,15 +73,14 @@ export const DealCompletionSummaryEmail = ({
 
 export default DealCompletionSummaryEmail
 
-const main = { backgroundColor: '#ffffff', fontFamily: "'Outfit', 'Space Grotesk', Arial, sans-serif" }
-const container = { padding: '40px 32px', maxWidth: '480px', margin: '0 auto' }
-const brand = { fontSize: '13px', fontWeight: '700' as const, letterSpacing: '0.25em', color: '#b8942e', margin: '0 0 16px', textTransform: 'uppercase' as const }
-const divider = { borderColor: '#e8e0d0', margin: '0 0 32px' }
-const h1 = { fontSize: '24px', fontWeight: 'bold' as const, color: '#1a1a1a', margin: '0 0 20px' }
+const main = { backgroundColor: '#ffffff', fontFamily: "'Inter', 'Outfit', Arial, sans-serif" }
+const container = { padding: '40px 32px', maxWidth: '520px', margin: '0 auto' }
+const brand = { fontSize: '14px', fontWeight: '600' as const, letterSpacing: '0.3em', color: '#C4993A', margin: '0 0 16px', textTransform: 'uppercase' as const }
+const divider = { borderColor: '#C4993A', borderWidth: '1px', margin: '0 0 32px', opacity: 0.3 }
+const h1 = { fontSize: '24px', fontWeight: '600' as const, color: '#1a1a1a', margin: '0 0 20px', fontFamily: "'Playfair Display', Georgia, serif" }
 const text = { fontSize: '15px', color: '#4a4a4a', lineHeight: '1.6', margin: '0 0 24px' }
-const summaryBox = { backgroundColor: '#faf8f4', borderRadius: '8px', padding: '16px 20px', margin: '0 0 24px', border: '1px solid #e8e0d0' }
+const summaryBox = { backgroundColor: '#f8f6f1', borderRadius: '8px', padding: '16px 20px', margin: '0 0 24px', border: '1px solid #e8e0d0' }
 const summaryLabel = { fontSize: '11px', fontWeight: '600' as const, letterSpacing: '0.1em', textTransform: 'uppercase' as const, color: '#999', margin: '8px 0 2px' }
 const summaryValue = { fontSize: '15px', color: '#1a1a1a', fontWeight: '600' as const, margin: '0 0 8px' }
-const button = { backgroundColor: '#b8942e', color: '#0a0a0a', fontSize: '14px', fontWeight: '600' as const, borderRadius: '12px', padding: '14px 28px', textDecoration: 'none' }
-const footer = { fontSize: '13px', color: '#888888', lineHeight: '1.5', margin: '32px 0 0' }
-const copyright = { fontSize: '11px', color: '#aaaaaa', margin: '24px 0 0' }
+const button = { backgroundColor: '#C4993A', color: '#ffffff', fontSize: '14px', fontWeight: '600' as const, borderRadius: '6px', padding: '14px 28px', textDecoration: 'none' }
+const footer = { fontSize: '12px', color: '#999999', lineHeight: '1.5', margin: '32px 0 0', borderTop: '1px solid #eee', paddingTop: '20px' }

@@ -6,7 +6,7 @@ import {
 } from 'npm:@react-email/components@0.0.22'
 import type { TemplateEntry } from './registry.ts'
 
-const SITE_NAME = "quantus-loom"
+const SITE_NAME = "QUANTUS"
 
 interface ContactConfirmationProps {
   name?: string
@@ -16,26 +16,36 @@ interface ContactConfirmationProps {
 const ContactConfirmationEmail = ({ name, message }: ContactConfirmationProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>We received your message — {SITE_NAME}</Preview>
+    <Preview>{name ? `${name}, we` : 'We'} received your message — {SITE_NAME}</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Section style={headerSection}><Text style={brand}>QUANTUS</Text></Section>
+        <Section style={headerSection}><Text style={brand}>{SITE_NAME}</Text></Section>
         <Hr style={divider} />
         <Heading style={h1}>
           {name ? `Thank you, ${name}` : 'Thank you for reaching out'}
         </Heading>
         <Text style={text}>
-          We have received your message and our concierge team will respond within 24 hours.
+          We've received your message and it's been assigned to our concierge team. You can expect a personalised response within <strong>24 hours</strong>.
         </Text>
         {message && (
           <Section style={quoteSection}>
+            <Text style={quoteLabel}>Your message</Text>
             <Text style={quoteText}>"{message}"</Text>
           </Section>
         )}
+        <Section style={nextStepsSection}>
+          <Text style={nextStepsTitle}>What happens next?</Text>
+          <Text style={nextStepsItem}>1. Our team reviews your enquiry</Text>
+          <Text style={nextStepsItem}>2. We match you with the right specialist</Text>
+          <Text style={nextStepsItem}>3. You'll receive a tailored response within 24h</Text>
+        </Section>
         <Text style={text}>
-          In the meantime, feel free to explore our services or log in to your dashboard.
+          In the meantime, feel free to explore your dashboard or browse our services.
         </Text>
-        <Text style={footer}>Best regards, The {SITE_NAME} Team</Text>
+        <Text style={footer}>
+          Best regards,<br />The {SITE_NAME} Concierge Team
+        </Text>
+        <Text style={copyright}>© 2026 {SITE_NAME}. All rights reserved.</Text>
       </Container>
     </Body>
   </Html>
@@ -56,5 +66,10 @@ const divider = { borderColor: '#C4993A', borderWidth: '1px', margin: '16px 0 32
 const h1 = { fontSize: '24px', fontWeight: '600' as const, color: '#1a1a1a', margin: '0 0 20px', fontFamily: "'Playfair Display', Georgia, serif" }
 const text = { fontSize: '15px', color: '#4a4a4a', lineHeight: '1.6', margin: '0 0 20px' }
 const quoteSection = { backgroundColor: '#f8f6f1', borderLeft: '3px solid #C4993A', padding: '16px 20px', margin: '0 0 24px', borderRadius: '0 4px 4px 0' }
+const quoteLabel = { fontSize: '11px', fontWeight: '600' as const, letterSpacing: '0.1em', textTransform: 'uppercase' as const, color: '#999', margin: '0 0 8px' }
 const quoteText = { fontSize: '14px', color: '#666', fontStyle: 'italic' as const, margin: '0', lineHeight: '1.5' }
+const nextStepsSection = { backgroundColor: '#f0f8f0', borderRadius: '8px', padding: '16px 20px', margin: '0 0 24px' }
+const nextStepsTitle = { fontSize: '14px', fontWeight: '600' as const, color: '#1a1a1a', margin: '0 0 12px' }
+const nextStepsItem = { fontSize: '14px', color: '#4a4a4a', lineHeight: '1.4', margin: '0 0 6px' }
 const footer = { fontSize: '12px', color: '#999999', margin: '32px 0 0', borderTop: '1px solid #eee', paddingTop: '20px' }
+const copyright = { fontSize: '11px', color: '#aaaaaa', margin: '16px 0 0' }

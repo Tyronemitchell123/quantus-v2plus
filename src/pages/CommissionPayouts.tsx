@@ -5,6 +5,7 @@ import { QRCodeSVG } from "qrcode.react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
+import { isValidEmail, checkSuppression } from "@/lib/email-validation";
 import useDocumentHead from "@/hooks/use-document-head";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import DashboardTopBar from "@/components/dashboard/DashboardTopBar";
@@ -182,8 +183,14 @@ const CommissionPayouts = () => {
         // Find the invoice/vendor email for this commission's deal
         const inv = invoices.find(i => i.deal_id === commission.deal_id);
         const recipientEmail = inv?.recipient_email;
-        if (!recipientEmail) {
-          // Skip if no customer email on file
+        if (!recipientEmail || !isValidEmail(recipientEmail)) {
+          continue;
+        }
+
+        // Skip suppressed emails to reduce bounce rate
+        const suppressionReason = await checkSuppression(recipientEmail);
+        if (suppressionReason) {
+          console.warn(`Skipping suppressed email ${recipientEmail} (${suppressionReason})`);
           continue;
         }
 
@@ -245,6 +252,14 @@ const CommissionPayouts = () => {
       const today = new Date().toISOString().slice(0, 10);
 
       for (const inv of eligibleResendInvoices) {
+        if (!inv.recipient_email || !isValidEmail(inv.recipient_email)) continue;
+
+        const suppressionReason = await checkSuppression(inv.recipient_email);
+        if (suppressionReason) {
+          console.warn(`Skipping suppressed email ${inv.recipient_email} (${suppressionReason})`);
+          continue;
+        }
+
         const amountStr = new Intl.NumberFormat("en-GB", {
           style: "currency",
           currency: inv.metadata?.currency || "GBP",
