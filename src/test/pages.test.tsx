@@ -91,13 +91,14 @@ describe("Auth page", () => {
 
 describe("Dashboard page", () => {
   it("renders without crashing", async () => {
+    // Mock scrollIntoView for jsdom
+    Element.prototype.scrollIntoView = vi.fn();
     const Dashboard = (await import("@/pages/Dashboard")).default;
     render(
       <MemoryRouter>
         <Dashboard />
       </MemoryRouter>
     );
-    // Dashboard should render some recognizable content
     expect(document.querySelector("main, [class*='dashboard'], div")).toBeTruthy();
   });
 });
