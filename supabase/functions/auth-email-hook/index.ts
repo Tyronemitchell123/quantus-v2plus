@@ -36,7 +36,7 @@ const EMAIL_TEMPLATES: Record<string, React.ComponentType<any>> = {
 }
 
 // Configuration
-const SITE_NAME = "quantus-loom"
+const SITE_NAME = "QUANTUS"
 const SENDER_DOMAIN = "notify.crownprompts.com"
 const ROOT_DOMAIN = "crownprompts.com"
 const FROM_DOMAIN = "notify.crownprompts.com" // Domain shown in From address (may be root or sender subdomain)
