@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Send, ChevronDown, ChevronUp, Loader2 } from "lucide-react";
+import { Send, ChevronDown, ChevronUp, Loader2, AlertTriangle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { validateEmailBeforeSend } from "@/lib/email-validation";
 
 const TEMPLATES = [
   "contact-confirmation",
