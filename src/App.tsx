@@ -5,12 +5,12 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import PageLoader from "@/components/PageLoader";
 import { publicRoutes } from "@/routes/public-routes";
 import { dashboardRoutes, dashboardRoutePrefixes } from "@/routes/dashboard-routes";
+import Navbar from "@/components/Navbar";
 
 const Toaster = lazy(() => import("@/components/ui/toaster").then(m => ({ default: m.Toaster })));
 const Sonner = lazy(() => import("@/components/ui/sonner").then(m => ({ default: m.Toaster })));
 const TooltipProvider = lazy(() => import("@/components/ui/tooltip").then(m => ({ default: m.TooltipProvider })));
 const AnimatePresence = lazy(() => import("framer-motion").then(m => ({ default: m.AnimatePresence })));
-const Navbar = lazy(() => import("@/components/Navbar"));
 const CookieConsent = lazy(() => import("@/components/CookieConsent"));
 const WelcomeTooltips = lazy(() => import("@/components/onboarding/WelcomeTooltips"));
 const OfflineIndicator = lazy(() => import("@/components/mobile/MobileEnhancements").then(m => ({ default: m.OfflineIndicator })));
@@ -23,11 +23,7 @@ const AnimatedRoutes = () => {
 
   return (
     <>
-      {!isDashboardRoute && (
-        <Suspense fallback={null}>
-          <Navbar />
-        </Suspense>
-      )}
+      {!isDashboardRoute && <Navbar />}
       <Suspense fallback={null}>
         <AnimatePresence mode="wait">
           <Suspense fallback={<PageLoader />}>
