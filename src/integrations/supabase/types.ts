@@ -2396,6 +2396,7 @@ export type Database = {
           user_id: string
           vendor_company: string | null
           vendor_email: string | null
+          vendor_id: string | null
           vendor_name: string
           vendor_phone: string | null
           vendor_score: number | null
@@ -2420,6 +2421,7 @@ export type Database = {
           user_id: string
           vendor_company?: string | null
           vendor_email?: string | null
+          vendor_id?: string | null
           vendor_name: string
           vendor_phone?: string | null
           vendor_score?: number | null
@@ -2444,6 +2446,7 @@ export type Database = {
           user_id?: string
           vendor_company?: string | null
           vendor_email?: string | null
+          vendor_id?: string | null
           vendor_name?: string
           vendor_phone?: string | null
           vendor_score?: number | null
@@ -2461,6 +2464,20 @@ export type Database = {
             columns: ["sourcing_result_id"]
             isOneToOne: false
             referencedRelation: "sourcing_results"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vendor_outreach_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vendor_outreach_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors_safe"
             referencedColumns: ["id"]
           },
         ]
