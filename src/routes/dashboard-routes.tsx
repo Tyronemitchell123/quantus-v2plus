@@ -104,7 +104,7 @@ export const dashboardRoutes = (
     <Route path="/partner/onboarding" element={<ProtectedRoute><R name="Partner Onboarding"><PageTransition><PartnerOnboarding /></PageTransition></R></ProtectedRoute>} />
 
     {/* Admin */}
-    <Route path="/admin" element={<ProtectedRoute requiredRole="admin"><R name="Admin"><PageTransition><AdminDashboard /></PageTransition></R></ProtectedRoute>} />
+    <Route path="/admin" element={<ProtectedRoute requiredRole="admin" skipOnboardingCheck><R name="Admin"><PageTransition><AdminDashboard /></PageTransition></R></ProtectedRoute>} />
 
     {/* Tools */}
     <Route path="/marketing" element={<ProtectedRoute><R name="Marketing"><PageTransition><MarketingHub /></PageTransition></R></ProtectedRoute>} />
