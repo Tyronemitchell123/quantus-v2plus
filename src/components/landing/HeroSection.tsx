@@ -114,7 +114,7 @@ const HeroSection = () => {
           <motion.div
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.35, duration: 0.4 }}
+            transition={{ delay: 0.18, duration: 0.3 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-5"
           >
             <Suspense fallback={
