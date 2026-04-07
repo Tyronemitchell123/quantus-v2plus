@@ -42,6 +42,7 @@ const ProvingGround = lazy(() => import("@/pages/ProvingGround"));
 const QuantusCore = lazy(() => import("@/pages/QuantusCore"));
 const QuantusHelix = lazy(() => import("@/pages/QuantusHelix"));
 const QuantusForge = lazy(() => import("@/pages/QuantusForge"));
+const Automation = lazy(() => import("@/pages/Automation"));
 
 const R = ({ name, children }: { name: string; children: React.ReactNode }) => (
   <RouteErrorBoundary routeName={name}>{children}</RouteErrorBoundary>
