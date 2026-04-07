@@ -13,7 +13,7 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute = ({ children, requiredTier, requiredRole, skipOnboardingCheck }: ProtectedRouteProps) => {
-  const { user, loading: authLoading } = useAuth();
+  const { user, session, loading: authLoading } = useAuth();
   const { canAccess, loading: subLoading } = useSubscription();
   const [roleLoading, setRoleLoading] = useState(Boolean(requiredRole));
   const [hasRequiredRole, setHasRequiredRole] = useState(!requiredRole);
@@ -30,13 +30,20 @@ const ProtectedRoute = ({ children, requiredTier, requiredRole, skipOnboardingCh
         return;
       }
 
-      if (!user) {
+      if (!user || !session) {
         setHasRequiredRole(false);
         setRoleLoading(false);
         return;
       }
 
       setRoleLoading(true);
+      
+      // Ensure the Supabase client has the current session before querying
+      await supabase.auth.setSession({
+        access_token: session.access_token,
+        refresh_token: session.refresh_token,
+      });
+
       const { data, error } = await supabase
         .from("user_roles")
         .select("role")
@@ -54,7 +61,7 @@ const ProtectedRoute = ({ children, requiredTier, requiredRole, skipOnboardingCh
     return () => {
       isMounted = false;
     };
-  }, [requiredRole, user]);
+  }, [requiredRole, user, session]);
 
   if (authLoading || subLoading || roleLoading || onboardingStatus.loading) {
     return (
