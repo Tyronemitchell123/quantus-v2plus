@@ -97,7 +97,7 @@ const HeroSection = () => {
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.25, duration: 0.4 }}
+            transition={{ delay: 0.12, duration: 0.3 }}
             className="font-display text-lg sm:text-xl md:text-2xl italic text-foreground/70 mb-3 leading-relaxed"
           >
             The Intelligence Behind the Extraordinary
