@@ -23,11 +23,7 @@ const AnimatedRoutes = () => {
 
   return (
     <>
-      {!isDashboardRoute && (
-        <Suspense fallback={null}>
-          <Navbar />
-        </Suspense>
-      )}
+      {!isDashboardRoute && <Navbar />}
       <Suspense fallback={null}>
         <AnimatePresence mode="wait">
           <Suspense fallback={<PageLoader />}>
