@@ -20,7 +20,19 @@ serve(async (req) => {
     const authResult = await authenticateRequest(req, corsHeaders);
     if (authResult instanceof Response) return authResult;
 
-    const { messages } = await req.json();
+    const body = await req.json();
+    // Support both { messages: [...] } and { message: "string" } formats
+    let messages = body.messages;
+    if (!Array.isArray(messages)) {
+      if (typeof body.message === "string") {
+        messages = [{ role: "user", content: body.message }];
+      } else {
+        return new Response(
+          JSON.stringify({ error: "Invalid input: 'messages' must be an array or provide a 'message' string." }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+    }
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 

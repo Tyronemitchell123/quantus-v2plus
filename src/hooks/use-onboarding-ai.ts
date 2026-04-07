@@ -27,12 +27,16 @@ export function useOnboardingAI() {
       try {
         const { data, error } = await supabase.functions.invoke("concierge-chat", {
           body: {
-            message: `Based on this user profile, suggest the best QUANTUS modules and membership tier.
+            messages: [
+              {
+                role: "user",
+                content: `Based on this user profile, suggest the best QUANTUS modules and membership tier.
 Role: ${role}
 Preferences: ${JSON.stringify(preferences)}
 
 Respond in JSON only: { "suggestedModules": ["aviation","lifestyle",...], "suggestedTier": "sovereign"|"elite"|"premier", "narrative": "one sentence explanation" }`,
-            channel: "onboarding-ai",
+              },
+            ],
           },
         });
 
