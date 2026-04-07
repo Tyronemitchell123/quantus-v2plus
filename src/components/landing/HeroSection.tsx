@@ -105,7 +105,7 @@ const HeroSection = () => {
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.3, duration: 0.4 }}
+            transition={{ delay: 0.15, duration: 0.3 }}
             className="font-body text-sm sm:text-base text-muted-foreground/60 max-w-lg mx-auto leading-relaxed mb-16"
           >
             A sovereign orchestration engine for UHNW clients, private offices, and elite operators.
