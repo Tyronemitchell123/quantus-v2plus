@@ -84,8 +84,26 @@ export default function Intake() {
         body: { message: message.trim(), channel: "web", category: category || undefined },
       });
 
-      if (error) throw new Error(error.message || "Classification failed");
-      if (data?.error) throw new Error(data.error);
+      // Handle specific error codes from the edge function
+      if (error) {
+        const errorMsg = error.message || "";
+        if (errorMsg.includes("402") || errorMsg.includes("credits exhausted")) {
+          toast.error("AI credits exhausted. Please add funds via Settings → Cloud & AI balance to continue.");
+          return;
+        }
+        if (errorMsg.includes("429") || errorMsg.includes("rate limit")) {
+          toast.error("Rate limit reached. Please wait a moment and try again.");
+          return;
+        }
+        throw new Error(errorMsg || "Classification failed");
+      }
+      if (data?.error) {
+        if (data.error.includes("credits exhausted")) {
+          toast.error("AI credits exhausted. Please add funds via Settings → Cloud & AI balance to continue.");
+          return;
+        }
+        throw new Error(data.error);
+      }
 
       const createdDeal = data.deal as Deal;
       setCurrentDeal(createdDeal);
