@@ -23,7 +23,7 @@ const ProtectedRoute = ({ children, requiredTier, requiredRole, skipOnboardingCh
   useEffect(() => {
     let isMounted = true;
 
-    const checkRole = async () => {
+    const checkRole = async (attempt = 0) => {
       if (!requiredRole) {
         setHasRequiredRole(true);
         setRoleLoading(false);
@@ -45,6 +45,13 @@ const ProtectedRoute = ({ children, requiredTier, requiredRole, skipOnboardingCh
         .maybeSingle();
 
       if (!isMounted) return;
+
+      // Retry once if query failed (auth token may not be ready yet)
+      if (error && attempt < 1) {
+        setTimeout(() => checkRole(attempt + 1), 500);
+        return;
+      }
+
       setHasRequiredRole(Boolean(data) && !error);
       setRoleLoading(false);
     };

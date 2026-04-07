@@ -88,6 +88,15 @@ const Auth = () => {
           localStorage.removeItem("pending_referral_code");
           await redeemReferral(pendingCode);
         }
+        // Pre-set onboarding flag so ProtectedRoute doesn't redirect before DB query resolves
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("onboarding_completed_at")
+          .eq("user_id", (await supabase.auth.getUser()).data.user?.id ?? "")
+          .maybeSingle();
+        if (profile?.onboarding_completed_at) {
+          localStorage.setItem("quantus_onboarding_done", "true");
+        }
         navigate("/dashboard");
       }
     } catch (err: any) {
