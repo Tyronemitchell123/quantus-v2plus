@@ -69,7 +69,7 @@ const HeroSection = () => {
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.1, duration: 0.4 }}
+            transition={{ delay: 0.05, duration: 0.3 }}
             className="font-body text-[8px] sm:text-[9px] tracking-[0.6em] uppercase text-primary/40 mb-10"
           >
             Autonomous Intelligence Platform
