@@ -24,6 +24,16 @@ const VendorDiscoveryPanel = () => {
   const [discovered, setDiscovered] = useState<DiscoveredVendor[]>([]);
   const [addingVendor, setAddingVendor] = useState<string | null>(null);
 
+  const getDiscoveryWarning = (payload: any) => {
+    if (payload?.code === "FIRECRAWL_CREDITS_EXHAUSTED") {
+      return payload.warning || "Live vendor discovery is unavailable because scan credits are exhausted. Top up credits and try again.";
+    }
+    if (payload?.code === "FIRECRAWL_RATE_LIMITED") {
+      return payload.warning || "Vendor discovery is temporarily rate limited. Please try again shortly.";
+    }
+    return null;
+  };
+
   const runDiscovery = async () => {
     setDiscovering(true);
     setDiscovered([]);
@@ -34,13 +44,23 @@ const VendorDiscoveryPanel = () => {
       if (error) throw error;
       const suggestions = data?.data?.suggestions || [];
       setDiscovered(suggestions);
-      if (suggestions.length === 0) {
+      const warning = getDiscoveryWarning(data);
+      if (warning) {
+        toast.error(warning);
+      } else if (suggestions.length === 0) {
         toast.info("No vendors discovered for this category/region.");
       } else {
         toast.success(`Found ${suggestions.length} potential vendors`);
       }
     } catch (err: unknown) {
-      toast.error(err instanceof Error ? err.message : "Discovery failed");
+      const message = err instanceof Error ? err.message : "Discovery failed";
+      if (/402|insufficient credits|credits exhausted/i.test(message)) {
+        toast.error("Live vendor discovery is unavailable because scan credits are exhausted. Top up credits and try again.");
+      } else if (/429|rate limit/i.test(message)) {
+        toast.error("Vendor discovery is temporarily rate limited. Please try again shortly.");
+      } else {
+        toast.error(message);
+      }
     }
     setDiscovering(false);
   };

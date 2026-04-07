@@ -70,6 +70,16 @@ const VendorManagementTab = () => {
   const formatDate = (d: string) =>
     new Date(d).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
 
+  const getDiscoveryWarning = (payload: any) => {
+    if (payload?.code === "FIRECRAWL_CREDITS_EXHAUSTED") {
+      return payload.warning || "Live vendor discovery is unavailable because scan credits are exhausted. Top up credits and try again.";
+    }
+    if (payload?.code === "FIRECRAWL_RATE_LIMITED") {
+      return payload.warning || "Vendor discovery is temporarily rate limited. Please try again shortly.";
+    }
+    return null;
+  };
+
   if (loading) {
     return (
       <Card>
@@ -88,14 +98,25 @@ const VendorManagementTab = () => {
         body: { category: discoveryCategory, region: discoveryRegion || undefined },
       });
       if (error) throw error;
-      setDiscovered(data?.data?.suggestions || []);
-      if ((data?.data?.suggestions || []).length === 0) {
+      const suggestions = data?.data?.suggestions || [];
+      setDiscovered(suggestions);
+      const warning = getDiscoveryWarning(data);
+      if (warning) {
+        toast.error(warning);
+      } else if (suggestions.length === 0) {
         toast.info("No vendors discovered for this category/region.");
       } else {
-        toast.success(`Found ${data.data.suggestions.length} potential vendors`);
+        toast.success(`Found ${suggestions.length} potential vendors`);
       }
     } catch (err: unknown) {
-      toast.error(err instanceof Error ? err.message : "Discovery failed");
+      const message = err instanceof Error ? err.message : "Discovery failed";
+      if (/402|insufficient credits|credits exhausted/i.test(message)) {
+        toast.error("Live vendor discovery is unavailable because scan credits are exhausted. Top up credits and try again.");
+      } else if (/429|rate limit/i.test(message)) {
+        toast.error("Vendor discovery is temporarily rate limited. Please try again shortly.");
+      } else {
+        toast.error(message);
+      }
     }
     setDiscovering(false);
   };
