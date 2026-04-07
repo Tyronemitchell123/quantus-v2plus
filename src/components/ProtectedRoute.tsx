@@ -13,7 +13,7 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute = ({ children, requiredTier, requiredRole, skipOnboardingCheck }: ProtectedRouteProps) => {
-  const { user, session, loading: authLoading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const { canAccess, loading: subLoading } = useSubscription();
   const [roleLoading, setRoleLoading] = useState(Boolean(requiredRole));
   const [hasRequiredRole, setHasRequiredRole] = useState(!requiredRole);
@@ -23,27 +23,20 @@ const ProtectedRoute = ({ children, requiredTier, requiredRole, skipOnboardingCh
   useEffect(() => {
     let isMounted = true;
 
-    const checkRole = async () => {
+    const checkRole = async (attempt = 0) => {
       if (!requiredRole) {
         setHasRequiredRole(true);
         setRoleLoading(false);
         return;
       }
 
-      if (!user || !session) {
+      if (!user) {
         setHasRequiredRole(false);
         setRoleLoading(false);
         return;
       }
 
       setRoleLoading(true);
-      
-      // Ensure the Supabase client has the current session before querying
-      await supabase.auth.setSession({
-        access_token: session.access_token,
-        refresh_token: session.refresh_token,
-      });
-
       const { data, error } = await supabase
         .from("user_roles")
         .select("role")
@@ -52,6 +45,13 @@ const ProtectedRoute = ({ children, requiredTier, requiredRole, skipOnboardingCh
         .maybeSingle();
 
       if (!isMounted) return;
+
+      // Retry once if query failed (auth token may not be ready yet)
+      if (error && attempt < 1) {
+        setTimeout(() => checkRole(attempt + 1), 500);
+        return;
+      }
+
       setHasRequiredRole(Boolean(data) && !error);
       setRoleLoading(false);
     };
@@ -61,7 +61,7 @@ const ProtectedRoute = ({ children, requiredTier, requiredRole, skipOnboardingCh
     return () => {
       isMounted = false;
     };
-  }, [requiredRole, user, session]);
+  }, [requiredRole, user]);
 
   if (authLoading || subLoading || roleLoading || onboardingStatus.loading) {
     return (
