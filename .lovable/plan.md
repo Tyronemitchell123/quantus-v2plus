@@ -1,35 +1,43 @@
 
 
-## Email Testing & Send Test Email
+## Plan: Add Unified `/automation` Route
 
-### What We'll Build
+### Overview
+Create a dedicated Automation Dashboard page that consolidates all Firecrawl-powered scanning tools into a single tabbed interface, and wire it into the existing routing and navigation.
 
-1. **Add a "Send Test Email" panel** to the existing Admin Dashboard's Email Monitoring tab — a card with a recipient input (pre-filled), template selector, and send button that invokes `send-transactional-email` directly.
+### Changes
 
-2. **Send a test email** to `Tyrone.mitchell76@hotmail.com` using the `contact-confirmation` template to verify the pipeline end-to-end.
+**1. Create `src/pages/Automation.tsx`**
+- New page with a tabbed layout (using existing `Tabs` UI component)
+- Six tabs: **Vendor Discovery**, **Aviation**, **Medical**, **Hospitality**, **Longevity**, **Auto-Scrape**
+- Each tab embeds the existing panel component:
+  - Vendor Discovery: extract the AI discovery section from `VendorManagementTab` into a standalone `VendorDiscoveryPanel` component
+  - Aviation: `<AviationScanPanel />`
+  - Medical: `<MedicalScanPanel />`
+  - Hospitality: `<HospitalityScanPanel />`
+  - Longevity: `<LongevityScanPanel />`
+  - Auto-Scrape: a simple trigger button that invokes the `auto-scrape-vendors` edge function with status display
+- Page header with title "Automation Hub" and description
+- Uses `useDocumentHead` for SEO, wrapped in the dashboard layout pattern
 
-### Implementation Steps
+**2. Create `src/components/automation/VendorDiscoveryPanel.tsx`**
+- Extract the AI vendor discovery form (category select, region input, discover button, results list with "Add" actions) from `VendorManagementTab` into a reusable panel
+- Keep the same Supabase calls (`vendor-discovery` edge function + vendor insert)
 
-**Step 1 — Add Send Test Email UI to EmailMonitoringTab**
-- Add a collapsible "Send Test Email" card at the top of `src/components/admin/EmailMonitoringTab.tsx`
-- Fields: recipient email input, template dropdown (populated from the existing `TEMPLATES` registry keys), optional `templateData` JSON textarea
-- "Send Test" button that calls `supabase.functions.invoke('send-transactional-email', { body: { templateName, recipientEmail, idempotencyKey: \`test-\${Date.now()}\` } })`
-- Show success/error toast on completion
+**3. Create `src/components/automation/AutoScrapePanel.tsx`**
+- Simple panel with a "Run Auto-Scrape" button that invokes `auto-scrape-vendors` edge function
+- Displays results: vendors discovered, added, outreach drafts created, errors
 
-**Step 2 — Send the test email**
-- Use the edge function curl tool to invoke `send-transactional-email` with:
-  - `templateName: "contact-confirmation"`
-  - `recipientEmail: "Tyrone.mitchell76@hotmail.com"`
-  - `idempotencyKey: "test-tyrone-{timestamp}"`
-  - `templateData: { name: "Tyrone" }`
+**4. Update `src/routes/dashboard-routes.tsx`**
+- Add lazy import for `Automation` page
+- Add route: `<Route path="/automation" element={<ProtectedRoute><R name="Automation"><Automation /></R></ProtectedRoute>} />`
+- Add `"/automation"` to `dashboardRoutePrefixes`
 
-**Step 3 — Fix runtime errors**
-- Investigate and resolve the dynamic import failures for `Index.tsx` and `WelcomeTooltips.tsx` (likely transient build cache issues — a rebuild should resolve).
+**5. Update `src/components/dashboard/DashboardSidebar.tsx`**
+- Add an "Automation" link (using `Radar` or `Zap` icon) to the "Intelligence" or "Operations" nav section
 
-### Technical Details
-
-- No new edge functions needed — uses existing `send-transactional-email`
-- No database changes required
-- The test email panel is admin-only (already behind the admin dashboard route)
-- Template list is hardcoded from known templates: `contact-confirmation`, `deal-intake-confirmation`, `deal-sourcing-update`, `deal-vendor-match`, `deal-negotiation-progress`, `deal-completion-summary`, `payment-reminder`
+### Technical Notes
+- All existing scan panel components are reused as-is with no modifications
+- The vendor discovery extraction keeps `VendorManagementTab` intact (it can import the same panel or keep its inline version)
+- Protected route ensures only authenticated users access automation tools
 
