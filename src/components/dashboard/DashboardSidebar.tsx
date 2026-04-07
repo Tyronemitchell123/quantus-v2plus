@@ -33,6 +33,7 @@ const navSections = [
       { icon: CalendarDays, label: "Calendar", to: "/calendar" },
       { icon: ShieldCheck, label: "Compliance", to: "/compliance" },
       { icon: Users, label: "Network", to: "/network" },
+      { icon: Zap, label: "Automation", to: "/automation" },
     ],
   },
   {

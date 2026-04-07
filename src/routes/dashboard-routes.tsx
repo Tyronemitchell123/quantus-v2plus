@@ -120,6 +120,9 @@ export const dashboardRoutes = (
     <Route path="/compliance" element={<ProtectedRoute><R name="Compliance"><RiskCompliance /></R></ProtectedRoute>} />
     <Route path="/network" element={<ProtectedRoute><R name="Network"><PrivateNetwork /></R></ProtectedRoute>} />
 
+    {/* Automation */}
+    <Route path="/automation" element={<ProtectedRoute><R name="Automation"><Automation /></R></ProtectedRoute>} />
+
     {/* Connect & Payments */}
     <Route path="/connect/onboarding" element={<ProtectedRoute><R name="Connect Onboarding"><ConnectOnboarding /></R></ProtectedRoute>} />
     <Route path="/connect/products" element={<ProtectedRoute><R name="Connect Products"><ConnectProducts /></R></ProtectedRoute>} />
