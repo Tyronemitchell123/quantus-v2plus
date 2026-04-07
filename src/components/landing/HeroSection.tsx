@@ -63,13 +63,13 @@ const HeroSection = () => {
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
         >
           {/* Sovereign label */}
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.1, duration: 0.4 }}
+            transition={{ delay: 0.05, duration: 0.3 }}
             className="font-body text-[8px] sm:text-[9px] tracking-[0.6em] uppercase text-primary/40 mb-10"
           >
             Autonomous Intelligence Platform
@@ -78,7 +78,7 @@ const HeroSection = () => {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.15, duration: 0.4 }}
+            transition={{ delay: 0.08, duration: 0.3 }}
             className="mb-6"
           >
             <span className="text-foreground/60 font-display font-light italic text-3xl sm:text-4xl md:text-5xl lg:text-6xl">
@@ -89,7 +89,7 @@ const HeroSection = () => {
           <motion.div
             initial={{ scaleX: 0 }}
             animate={{ scaleX: 1 }}
-            transition={{ delay: 0.2, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ delay: 0.1, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
             className="w-24 h-px mx-auto mb-10"
             style={{ background: "linear-gradient(90deg, transparent, hsl(var(--gold)/0.6), transparent)" }}
           />
@@ -97,7 +97,7 @@ const HeroSection = () => {
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.25, duration: 0.4 }}
+            transition={{ delay: 0.12, duration: 0.3 }}
             className="font-display text-lg sm:text-xl md:text-2xl italic text-foreground/70 mb-3 leading-relaxed"
           >
             The Intelligence Behind the Extraordinary
@@ -105,7 +105,7 @@ const HeroSection = () => {
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.3, duration: 0.4 }}
+            transition={{ delay: 0.15, duration: 0.3 }}
             className="font-body text-sm sm:text-base text-muted-foreground/60 max-w-lg mx-auto leading-relaxed mb-16"
           >
             A sovereign orchestration engine for UHNW clients, private offices, and elite operators.
@@ -114,7 +114,7 @@ const HeroSection = () => {
           <motion.div
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.35, duration: 0.4 }}
+            transition={{ delay: 0.18, duration: 0.3 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-5"
           >
             <Suspense fallback={

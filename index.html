@@ -62,7 +62,23 @@
   <body>
     <div id="root">
       <!-- Pre-render skeleton — replaced by React on mount. Improves Speed Index + LCP. -->
-      <div id="lcp-skeleton" style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:hsl(240 10% 4%);gap:1.5rem;padding:2rem">
+      <!-- Navbar skeleton -->
+      <header style="position:fixed;top:0;left:0;right:0;z-index:50;height:64px;display:flex;align-items:center;background:hsl(240 10% 4% / 0.8);backdrop-filter:blur(12px);border-bottom:1px solid hsl(0 0% 100% / 0.04)">
+        <div style="max-width:80rem;width:100%;margin:0 auto;padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between">
+          <a href="/" style="font-family:'Playfair Display',serif;font-size:1.25rem;letter-spacing:0.05em;text-decoration:none;color:inherit;display:flex;align-items:baseline;gap:0.25rem">
+            <span style="background:linear-gradient(135deg,hsl(43 76% 50%),hsl(43 60% 70%));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:600">Quantus V2+</span>
+            <span style="color:hsl(0 0% 95% / 0.5);font-weight:300;font-style:italic;font-size:0.75rem">A.I</span>
+          </a>
+          <nav style="display:flex;gap:2rem;align-items:center">
+            <span style="font-family:'Inter',sans-serif;font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;color:hsl(0 0% 95% / 0.5)">Home</span>
+            <span style="font-family:'Inter',sans-serif;font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;color:hsl(0 0% 95% / 0.5)">About</span>
+            <span style="font-family:'Inter',sans-serif;font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;color:hsl(0 0% 95% / 0.5)">Modules</span>
+            <span style="font-family:'Inter',sans-serif;font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;color:hsl(0 0% 95% / 0.5)">Membership</span>
+          </nav>
+        </div>
+      </header>
+      <!-- Hero skeleton -->
+      <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:hsl(240 10% 4%);gap:1.5rem;padding:2rem">
         <h1 style="font-family:'Playfair Display',serif;font-weight:600;font-size:clamp(3rem,8vw,96px);line-height:0.95;letter-spacing:0.05em;background:linear-gradient(135deg,hsl(43 76% 50%),hsl(43 60% 70%));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-align:center;margin:0">Quantus V2+</h1>
         <p style="font-family:'Inter',sans-serif;font-size:9px;letter-spacing:0.6em;text-transform:uppercase;color:hsl(43 76% 50% / 0.4);margin:0">Autonomous Intelligence Platform</p>
         <div style="font-family:'Playfair Display',serif;font-weight:300;font-style:italic;font-size:clamp(1.8rem,5vw,3.75rem);color:hsl(0 0% 95% / 0.6)">A.I</div>
