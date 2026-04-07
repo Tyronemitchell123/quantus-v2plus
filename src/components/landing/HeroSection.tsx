@@ -89,7 +89,7 @@ const HeroSection = () => {
           <motion.div
             initial={{ scaleX: 0 }}
             animate={{ scaleX: 1 }}
-            transition={{ delay: 0.2, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ delay: 0.1, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
             className="w-24 h-px mx-auto mb-10"
             style={{ background: "linear-gradient(90deg, transparent, hsl(var(--gold)/0.6), transparent)" }}
           />
