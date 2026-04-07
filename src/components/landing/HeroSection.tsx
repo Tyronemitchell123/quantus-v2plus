@@ -78,7 +78,7 @@ const HeroSection = () => {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.15, duration: 0.4 }}
+            transition={{ delay: 0.08, duration: 0.3 }}
             className="mb-6"
           >
             <span className="text-foreground/60 font-display font-light italic text-3xl sm:text-4xl md:text-5xl lg:text-6xl">
