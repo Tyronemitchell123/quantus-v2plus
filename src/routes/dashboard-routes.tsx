@@ -42,6 +42,7 @@ const ProvingGround = lazy(() => import("@/pages/ProvingGround"));
 const QuantusCore = lazy(() => import("@/pages/QuantusCore"));
 const QuantusHelix = lazy(() => import("@/pages/QuantusHelix"));
 const QuantusForge = lazy(() => import("@/pages/QuantusForge"));
+const Automation = lazy(() => import("@/pages/Automation"));
 
 const R = ({ name, children }: { name: string; children: React.ReactNode }) => (
   <RouteErrorBoundary routeName={name}>{children}</RouteErrorBoundary>
@@ -59,7 +60,7 @@ export const dashboardRoutePrefixes = [
   "/partner", "/admin", "/marketing", "/nlp", "/quantum",
   "/recommendations", "/autopilot", "/intelligence", "/vault",
   "/wealth", "/calendar", "/compliance", "/network",
-  "/connect", "/commission-payouts",
+  "/connect", "/commission-payouts", "/automation",
 ];
 
 export const dashboardRoutes = (
@@ -118,6 +119,9 @@ export const dashboardRoutes = (
     <Route path="/calendar" element={<ProtectedRoute><R name="Calendar"><ConciergeCalendar /></R></ProtectedRoute>} />
     <Route path="/compliance" element={<ProtectedRoute><R name="Compliance"><RiskCompliance /></R></ProtectedRoute>} />
     <Route path="/network" element={<ProtectedRoute><R name="Network"><PrivateNetwork /></R></ProtectedRoute>} />
+
+    {/* Automation */}
+    <Route path="/automation" element={<ProtectedRoute><R name="Automation"><Automation /></R></ProtectedRoute>} />
 
     {/* Connect & Payments */}
     <Route path="/connect/onboarding" element={<ProtectedRoute><R name="Connect Onboarding"><ConnectOnboarding /></R></ProtectedRoute>} />
