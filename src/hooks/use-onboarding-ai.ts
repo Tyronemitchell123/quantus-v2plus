@@ -27,18 +27,45 @@ export function useOnboardingAI() {
       try {
         const { data, error } = await supabase.functions.invoke("concierge-chat", {
           body: {
-            message: `Based on this user profile, suggest the best QUANTUS modules and membership tier.
+            messages: [
+              {
+                role: "user",
+                content: `Based on this user profile, suggest the best QUANTUS modules and membership tier.
 Role: ${role}
 Preferences: ${JSON.stringify(preferences)}
 
 Respond in JSON only: { "suggestedModules": ["aviation","lifestyle",...], "suggestedTier": "sovereign"|"elite"|"premier", "narrative": "one sentence explanation" }`,
-            channel: "onboarding-ai",
+              },
+            ],
           },
         });
 
         if (error) throw error;
 
-        const content = data?.reply || data?.content || "";
+        // The edge function returns an SSE stream — read it fully
+        let content = "";
+        if (data instanceof ReadableStream) {
+          const reader = data.getReader();
+          const decoder = new TextDecoder();
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            const chunk = decoder.decode(value, { stream: true });
+            // Parse SSE lines to extract content deltas
+            for (const line of chunk.split("\n")) {
+              if (!line.startsWith("data: ") || line === "data: [DONE]") continue;
+              try {
+                const parsed = JSON.parse(line.slice(6));
+                content += parsed.choices?.[0]?.delta?.content || "";
+              } catch { /* skip non-JSON lines */ }
+            }
+          }
+        } else if (typeof data === "string") {
+          content = data;
+        } else {
+          content = data?.reply || data?.content || JSON.stringify(data) || "";
+        }
+
         // Extract JSON from response
         const jsonMatch = content.match(/\{[\s\S]*\}/);
         if (jsonMatch) {
