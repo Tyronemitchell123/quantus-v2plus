@@ -2,10 +2,81 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
 const FIRECRAWL_BASE = "https://api.firecrawl.dev/v1";
+const CREDIT_EXHAUSTED_CODE = "FIRECRAWL_CREDITS_EXHAUSTED";
+const RATE_LIMITED_CODE = "FIRECRAWL_RATE_LIMITED";
+
+type VendorSuggestion = {
+  name: string;
+  company: string;
+  website?: string;
+  location?: string;
+  description?: string;
+};
+
+const parseJsonSafely = (value: string) => {
+  try {
+    return JSON.parse(value);
+  } catch {
+    return null;
+  }
+};
+
+const normalizeVendorName = (title?: string, url?: string) => {
+  const cleanedTitle = (title || "")
+    .trim()
+    .split(/\s[|\-–—]\s/)[0]
+    ?.replace(/\b(official site|homepage|home)\b/gi, "")
+    .trim();
+
+  if (cleanedTitle && cleanedTitle.length >= 3) return cleanedTitle;
+
+  if (url) {
+    try {
+      const hostname = new URL(url).hostname.replace(/^www\./, "");
+      const label = hostname.split(".")[0]?.replace(/[-_]/g, " ").trim();
+      if (label) {
+        return label.replace(/\b\w/g, (char) => char.toUpperCase());
+      }
+    } catch {
+      return "";
+    }
+  }
+
+  return "";
+};
+
+const buildDiscoveryPayload = ({
+  category,
+  region,
+  queryUsed,
+  suggestions,
+  sourceResultCount,
+  code,
+  warning,
+}: {
+  category: string;
+  region?: string;
+  queryUsed: string;
+  suggestions: VendorSuggestion[];
+  sourceResultCount: number;
+  code?: string;
+  warning?: string;
+}) => ({
+  success: !code,
+  ...(code ? { code, warning } : {}),
+  data: {
+    category,
+    region: region || "Global",
+    scanned_at: new Date().toISOString(),
+    query_used: queryUsed,
+    source_result_count: sourceResultCount,
+    suggestions,
+  },
+});
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -57,7 +128,10 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { category, region } = await req.json();
+    const body = await req.json().catch(() => null);
+    const category = typeof body?.category === "string" ? body.category.trim() : "";
+    const region = typeof body?.region === "string" ? body.region.trim() : "";
+
     if (!category) {
       return new Response(JSON.stringify({ error: "Category is required" }), {
         status: 400,
@@ -79,85 +153,110 @@ Deno.serve(async (req) => {
     };
 
     const query = searchQueries[category.toLowerCase()] || `${category} premium service provider`;
-    const regionFilter = region ? ` ${region}` : "";
+    const queryUsed = `${query}${region ? ` ${region}` : ""}`.trim();
 
-    // Use Firecrawl /scrape to search for vendors
-    const scrapeRes = await fetch(`${FIRECRAWL_BASE}/scrape`, {
+    const searchRes = await fetch(`${FIRECRAWL_BASE}/search`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${firecrawlKey}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        url: `https://www.google.com/search?q=${encodeURIComponent(query + regionFilter)}`,
-        formats: ["markdown"],
-        actions: [{ type: "wait", milliseconds: 2000 }],
+        query: queryUsed,
+        limit: 6,
       }),
     });
 
-    if (!scrapeRes.ok) {
-      const errBody = await scrapeRes.text();
-      console.error("Firecrawl scrape failed:", errBody);
+    const responseText = await searchRes.text();
+    const searchData = parseJsonSafely(responseText);
+    const upstreamError = searchData?.error || responseText || "Discovery scan failed";
+
+    if (!searchRes.ok || searchData?.success === false) {
+      console.error("Firecrawl search failed:", upstreamError);
+
+      if (searchRes.status === 402 || /insufficient credits/i.test(upstreamError)) {
+        return new Response(
+          JSON.stringify(buildDiscoveryPayload({
+            category,
+            region: region || undefined,
+            queryUsed,
+            suggestions: [],
+            sourceResultCount: 0,
+            code: CREDIT_EXHAUSTED_CODE,
+            warning: "Live vendor discovery is unavailable because scan credits are exhausted. Top up your Firecrawl credits and try again.",
+          })),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      if (searchRes.status === 429) {
+        return new Response(
+          JSON.stringify(buildDiscoveryPayload({
+            category,
+            region: region || undefined,
+            queryUsed,
+            suggestions: [],
+            sourceResultCount: 0,
+            code: RATE_LIMITED_CODE,
+            warning: "Vendor discovery is temporarily rate limited. Please try again again in a moment.",
+          })),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
       return new Response(
-        JSON.stringify({ error: "Discovery scan failed", details: errBody }),
+        JSON.stringify({ error: "Discovery scan failed", details: upstreamError }),
         { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    const scrapeData = await scrapeRes.json();
-    const markdown = scrapeData?.data?.markdown || "";
-
-    // Use AI to extract vendor suggestions from the scraped content
-    const extractionPrompt = `Extract up to 10 potential vendor/service providers from this search results page. 
-For each vendor, provide: name, company, website (if found), location (if found), and a brief description.
-Category: ${category}
-Region: ${region || "Global"}
-
-Return as JSON array: [{"name":"...","company":"...","website":"...","location":"...","description":"..."}]
-
-Content:
-${markdown.substring(0, 8000)}`;
-
-    // Store the raw discovery results
-    const discoveredVendors = {
-      category,
-      region: region || "Global",
-      scanned_at: new Date().toISOString(),
-      raw_markdown_length: markdown.length,
-      query_used: query + regionFilter,
-      suggestions: [] as Array<{ name: string; company: string; website?: string; location?: string; description?: string }>,
-    };
-
-    // Try to parse vendor names from markdown using simple patterns
-    const lines = markdown.split("\n").filter((l: string) => l.trim().length > 10);
+    const results = Array.isArray(searchData?.data) ? searchData.data : [];
     const seen = new Set<string>();
+    const suggestions: VendorSuggestion[] = [];
 
-    for (const line of lines) {
-      // Look for patterns like company names with links
-      const linkMatch = line.match(/\[([^\]]+)\]\(([^)]+)\)/);
-      if (linkMatch && !seen.has(linkMatch[1].toLowerCase())) {
-        const name = linkMatch[1].trim();
-        const url = linkMatch[2];
-        if (
-          name.length > 3 &&
-          name.length < 80 &&
-          !name.toLowerCase().includes("google") &&
-          !name.toLowerCase().includes("search") &&
-          !url.includes("google.com")
-        ) {
-          seen.add(name.toLowerCase());
-          discoveredVendors.suggestions.push({
-            name,
-            company: name,
-            website: url.startsWith("http") ? url : undefined,
-            description: `Discovered via ${category} directory scan`,
-          });
-        }
+    for (const result of results) {
+      const website = typeof result?.url === "string" && result.url.startsWith("http")
+        ? result.url
+        : undefined;
+      const name = normalizeVendorName(
+        typeof result?.title === "string" ? result.title : undefined,
+        website,
+      );
+
+      if (
+        !name ||
+        name.length < 3 ||
+        name.length > 80 ||
+        /google|search/i.test(name) ||
+        (website?.includes("google.com") ?? false)
+      ) {
+        continue;
       }
-      if (discoveredVendors.suggestions.length >= 10) break;
+
+      const key = `${name.toLowerCase()}|${website || ""}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+
+      suggestions.push({
+        name,
+        company: name,
+        website,
+        location: region || undefined,
+        description: typeof result?.description === "string" && result.description.trim().length > 0
+          ? result.description.trim()
+          : `Discovered via ${category} vendor search`,
+      });
+
+      if (suggestions.length >= 10) break;
     }
 
-    return new Response(JSON.stringify({ success: true, data: discoveredVendors }), {
+    return new Response(JSON.stringify(buildDiscoveryPayload({
+      category,
+      region: region || undefined,
+      queryUsed,
+      suggestions,
+      sourceResultCount: results.length,
+    })), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err: unknown) {
