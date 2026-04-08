@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, forwardRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Bot, Send, Sparkles, X, Mic, MicOff, Volume2, VolumeX } from "lucide-react";
 import { streamChat } from "@/lib/stream-chat";
@@ -15,7 +15,7 @@ const DEMO_PROMPTS = [
   "Coordinate yacht charter in Croatia",
 ];
 
-const LiveDemoWidget = () => {
+const LiveDemoWidget = forwardRef<HTMLDivElement>((_, _fRef) => {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -270,6 +270,8 @@ const LiveDemoWidget = () => {
       </AnimatePresence>
     </>
   );
-};
+});
+
+LiveDemoWidget.displayName = "LiveDemoWidget";
 
 export default LiveDemoWidget;
