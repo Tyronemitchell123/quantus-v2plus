@@ -17,6 +17,34 @@ const OUTREACH_TONES: Record<string, string> = {
   partnerships: "strategic, collaborative, and visionary — highlighting mutual value",
 };
 
+function generateToken(): string {
+  const bytes = new Uint8Array(32);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes).map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+async function getOrCreateUnsubscribeToken(supabaseAdmin: any, email: string): Promise<string> {
+  const normalizedEmail = email.toLowerCase();
+  const { data: existing } = await supabaseAdmin
+    .from("email_unsubscribe_tokens")
+    .select("token")
+    .eq("email", normalizedEmail)
+    .maybeSingle();
+  if (existing?.token) return existing.token;
+
+  const token = generateToken();
+  await supabaseAdmin.from("email_unsubscribe_tokens").upsert(
+    { token, email: normalizedEmail },
+    { onConflict: "email", ignoreDuplicates: true }
+  );
+  const { data: stored } = await supabaseAdmin
+    .from("email_unsubscribe_tokens")
+    .select("token")
+    .eq("email", normalizedEmail)
+    .maybeSingle();
+  return stored?.token || token;
+}
+
 function buildVendorEmailHtml({ subject, body, vendorName, company }: {
   subject: string;
   body: string;
