@@ -129,6 +129,7 @@ export const dashboardRoutes = (
     <Route path="/connect/products" element={<ProtectedRoute><R name="Connect Products"><ConnectProducts /></R></ProtectedRoute>} />
     <Route path="/connect/storefront" element={<ProtectedRoute><R name="Connect Storefront"><ConnectStorefront /></R></ProtectedRoute>} />
     <Route path="/commission-payouts" element={<ProtectedRoute><R name="Commission Payouts"><CommissionPayouts /></R></ProtectedRoute>} />
+    <Route path="/invoices" element={<ProtectedRoute><R name="Invoices"><InvoiceManagement /></R></ProtectedRoute>} />
 
     {/* Sovereign */}
     <Route path="/sovereign" element={<ProtectedRoute><R name="Sovereign"><SovereignDashboard /></R></ProtectedRoute>} />
