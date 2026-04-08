@@ -46,9 +46,9 @@ const ProtectedRoute = ({ children, requiredTier, requiredRole, skipOnboardingCh
 
       if (!isMounted) return;
 
-      // Retry once if query failed (auth token may not be ready yet)
-      if (error && attempt < 1) {
-        setTimeout(() => checkRole(attempt + 1), 500);
+      // Retry up to 2 times if query failed (auth token may not be ready yet)
+      if (error && attempt < 2) {
+        setTimeout(() => checkRole(attempt + 1), 500 * (attempt + 1));
         return;
       }
 
@@ -63,7 +63,14 @@ const ProtectedRoute = ({ children, requiredTier, requiredRole, skipOnboardingCh
     };
   }, [requiredRole, user]);
 
-  const stillLoading = authLoading || subLoading || roleLoading || (!skipOnboardingCheck && onboardingStatus.loading);
+  // Add a safety timeout to prevent infinite loading
+  const [timedOut, setTimedOut] = useState(false);
+  useEffect(() => {
+    const timer = setTimeout(() => setTimedOut(true), 10000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const stillLoading = (authLoading || subLoading || roleLoading || (!skipOnboardingCheck && onboardingStatus.loading)) && !timedOut;
   if (stillLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">

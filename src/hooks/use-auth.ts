@@ -10,6 +10,7 @@ export function useAuth() {
   const auditedRef = useRef(false);
 
   useEffect(() => {
+    // Set up listener FIRST — this is the primary source of truth
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         setSession(session);
@@ -17,17 +18,18 @@ export function useAuth() {
         setLoading(false);
         if (event === "SIGNED_IN" && session?.user && !auditedRef.current) {
           auditedRef.current = true;
-          logAudit("login", "auth", session.user.id);
+          setTimeout(() => logAudit("login", "auth", session.user.id), 0);
         } else if (event === "SIGNED_OUT") {
           auditedRef.current = false;
-          logAudit("logout", "auth");
+          setTimeout(() => logAudit("logout", "auth"), 0);
         }
       }
     );
 
+    // Fallback: ensure loading resolves even if onAuthStateChange is slow
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
+      setSession(prev => prev ?? session);
+      setUser(prev => prev ?? (session?.user ?? null));
       setLoading(false);
     });
 
