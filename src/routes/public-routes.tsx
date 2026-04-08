@@ -52,6 +52,7 @@ export const publicRoutes = (
     <Route path="/contact" element={<R name="Contact"><PageTransition><Contact /><Footer /></PageTransition></R>} />
     <Route path="/services" element={<R name="Services"><PageTransition><Services /><Footer /></PageTransition></R>} />
     <Route path="/blog" element={<R name="Blog"><PageTransition><Blog /><Footer /></PageTransition></R>} />
+    <Route path="/blog/:slug" element={<R name="Blog Post"><PageTransition><Blog /><Footer /></PageTransition></R>} />
     <Route path="/benefits" element={<R name="Benefits"><PageTransition><Benefits /><Footer /></PageTransition></R>} />
     <Route path="/enterprise" element={<R name="Enterprise"><PageTransition><Enterprise /><Footer /></PageTransition></R>} />
     <Route path="/case-studies" element={<R name="Case Studies"><PageTransition><CaseStudies /><Footer /></PageTransition></R>} />
