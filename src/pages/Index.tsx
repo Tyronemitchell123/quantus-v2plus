@@ -13,11 +13,13 @@ const Testimonials = lazy(() => import("@/components/landing/Testimonials"));
 const FinalCTA = lazy(() => import("@/components/landing/FinalCTA"));
 const LeadCapture = lazy(() => import("@/components/landing/LeadCapture"));
 const LiveActivityFeed = lazy(() => import("@/components/landing/LiveActivityFeed"));
+const LandingFAQ = lazy(() => import("@/components/landing/LandingFAQ"));
+const StickyEngagementBar = lazy(() => import("@/components/landing/StickyEngagementBar"));
 
 const Index = () => {
   useDocumentHead({
-    title: "Quantus V2+ — Ultra-Premium Intelligence Platform",
-    description: "A multi-vertical orchestration engine for UHNW clients. Aviation, medical travel, staffing, luxury lifestyle — unified in one private interface.",
+    title: "Quantus V2+ — AI Deal Orchestration for UHNW Clients & Private Offices",
+    description: "AI-powered deal orchestration across aviation, marine, medical, legal, finance, staffing & lifestyle. The sovereign intelligence platform trusted by UHNW clients and family offices worldwide.",
     canonical: "https://quantus-v2plus.lovable.app/",
     jsonLd: {
       "@context": "https://schema.org",
@@ -25,7 +27,7 @@ const Index = () => {
       name: "Quantus V2+",
       url: "https://quantus-v2plus.lovable.app",
       logo: "https://quantus-v2plus.lovable.app/favicon.png",
-      description: "Ultra-premium AI orchestration platform for UHNW clients across aviation, medical, staffing, and lifestyle verticals.",
+      description: "Ultra-premium AI orchestration platform unifying 9 verticals for UHNW clients, private offices, and elite operators.",
       sameAs: [],
       contactPoint: { "@type": "ContactPoint", contactType: "sales", url: "https://quantus-v2plus.lovable.app/contact" },
     },
@@ -54,8 +56,11 @@ const Index = () => {
         <div className="luxury-divider" />
         <SocialProof />
         <div className="luxury-divider" />
+        <LandingFAQ />
+        <div className="luxury-divider" />
         <FinalCTA />
         <LeadCapture />
+        <StickyEngagementBar />
       </Suspense>
     </main>
   );
