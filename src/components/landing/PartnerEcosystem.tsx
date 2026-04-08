@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, forwardRef } from "react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -6,7 +6,7 @@ import { partnerSchema } from "@/lib/validation";
 
 const categories = ["Aviation", "Medical", "Staffing", "Hospitality", "Logistics"];
 
-const PartnerEcosystem = () => {
+const PartnerEcosystem = forwardRef<HTMLElement>((_, ref) => {
   const [form, setForm] = useState({ name: "", company: "", category: "", region: "" });
   const [submitting, setSubmitting] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -42,7 +42,7 @@ const PartnerEcosystem = () => {
   };
 
   return (
-    <section className="py-24 sm:py-32">
+    <section ref={ref} className="py-24 sm:py-32">
       <div className="container mx-auto px-6">
         <div className="grid lg:grid-cols-2 gap-16 items-start max-w-5xl mx-auto">
           {/* Left */}
@@ -121,6 +121,8 @@ const PartnerEcosystem = () => {
       </div>
     </section>
   );
-};
+});
+
+PartnerEcosystem.displayName = "PartnerEcosystem";
 
 export default PartnerEcosystem;
