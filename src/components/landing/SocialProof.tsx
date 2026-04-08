@@ -1,3 +1,4 @@
+import { forwardRef } from "react";
 import { motion } from "framer-motion";
 import { Shield, Rocket, Globe, Lock } from "lucide-react";
 
@@ -12,8 +13,8 @@ const trustLogos = [
   "ISO 27001", "SOC 2", "GDPR", "PCI DSS", "FCA Regulated",
 ];
 
-const SocialProof = () => (
-  <section className="py-20 sm:py-28 bg-background relative overflow-hidden">
+const SocialProof = forwardRef<HTMLElement>((_, ref) => (
+  <section ref={ref} className="py-20 sm:py-28 bg-background relative overflow-hidden">
     <div className="absolute inset-0 bg-gradient-to-b from-primary/[0.02] via-transparent to-primary/[0.02] pointer-events-none" />
 
     <div className="container mx-auto px-6 relative z-10">
@@ -68,6 +69,8 @@ const SocialProof = () => (
       </motion.div>
     </div>
   </section>
-);
+));
+
+SocialProof.displayName = "SocialProof";
 
 export default SocialProof;
