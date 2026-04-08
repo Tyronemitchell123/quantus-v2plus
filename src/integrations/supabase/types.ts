@@ -996,6 +996,51 @@ export type Database = {
           },
         ]
       }
+      kyc_verifications: {
+        Row: {
+          address_proof_path: string | null
+          created_at: string
+          document_back_path: string | null
+          document_front_path: string | null
+          document_type: string
+          id: string
+          notes: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          address_proof_path?: string | null
+          created_at?: string
+          document_back_path?: string | null
+          document_front_path?: string | null
+          document_type?: string
+          id?: string
+          notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          address_proof_path?: string | null
+          created_at?: string
+          document_back_path?: string | null
+          document_front_path?: string | null
+          document_type?: string
+          id?: string
+          notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       leads: {
         Row: {
           ai_summary: string | null
@@ -1650,44 +1695,74 @@ export type Database = {
       }
       profiles: {
         Row: {
+          account_type: string
+          address_line1: string | null
+          address_line2: string | null
           avatar_url: string | null
+          city: string | null
           company: string | null
+          country: string | null
           created_at: string
           display_name: string | null
           id: string
+          kyc_status: string
           onboarding_completed_at: string | null
           onboarding_modules: string[] | null
           onboarding_preferences: Json | null
           onboarding_role: string | null
           onboarding_tier: string | null
+          phone: string | null
+          postcode: string | null
+          service_category: string | null
+          service_description: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
+          account_type?: string
+          address_line1?: string | null
+          address_line2?: string | null
           avatar_url?: string | null
+          city?: string | null
           company?: string | null
+          country?: string | null
           created_at?: string
           display_name?: string | null
           id?: string
+          kyc_status?: string
           onboarding_completed_at?: string | null
           onboarding_modules?: string[] | null
           onboarding_preferences?: Json | null
           onboarding_role?: string | null
           onboarding_tier?: string | null
+          phone?: string | null
+          postcode?: string | null
+          service_category?: string | null
+          service_description?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
+          account_type?: string
+          address_line1?: string | null
+          address_line2?: string | null
           avatar_url?: string | null
+          city?: string | null
           company?: string | null
+          country?: string | null
           created_at?: string
           display_name?: string | null
           id?: string
+          kyc_status?: string
           onboarding_completed_at?: string | null
           onboarding_modules?: string[] | null
           onboarding_preferences?: Json | null
           onboarding_role?: string | null
           onboarding_tier?: string | null
+          phone?: string | null
+          postcode?: string | null
+          service_category?: string | null
+          service_description?: string | null
           updated_at?: string
           user_id?: string
         }
