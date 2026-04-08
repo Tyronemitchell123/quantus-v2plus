@@ -2,19 +2,26 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, ArrowRight } from "lucide-react";
 import { useWelcomeSequence } from "@/hooks/use-welcome-sequence";
 import { useAuth } from "@/hooks/use-auth";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { forwardRef } from "react";
+
+// Pages where tooltips should appear (authenticated dashboard areas only)
+const TOOLTIP_ROUTES = ["/dashboard", "/intake", "/deals", "/sourcing", "/chat", "/settings"];
 
 /**
  * Renders floating tooltip cards after onboarding completion,
  * guiding users through their first actions.
+ * Only shows on authenticated dashboard pages, not the landing page.
  */
-const WelcomeTooltips = () => {
+const WelcomeTooltips = forwardRef<HTMLDivElement>((_, ref) => {
   const { user } = useAuth();
   const { activeTooltips, dismissTooltip } = useWelcomeSequence(user?.id);
   const navigate = useNavigate();
+  const { pathname } = useLocation();
 
-  // Only show for authenticated users who haven't dismissed all tips
-  if (!user || activeTooltips.length === 0) return null;
+  // Only show for authenticated users on dashboard pages
+  const isOnDashboardPage = TOOLTIP_ROUTES.some((r) => pathname.startsWith(r));
+  if (!user || !isOnDashboardPage || activeTooltips.length === 0) return null;
 
   // Show only the first undismissed tooltip
   const tip = activeTooltips[0];
@@ -22,6 +29,7 @@ const WelcomeTooltips = () => {
   return (
     <AnimatePresence>
       <motion.div
+        ref={ref}
         key={tip.id}
         initial={{ opacity: 0, y: 20, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -56,6 +64,8 @@ const WelcomeTooltips = () => {
       </motion.div>
     </AnimatePresence>
   );
-};
+});
+
+WelcomeTooltips.displayName = "WelcomeTooltips";
 
 export default WelcomeTooltips;

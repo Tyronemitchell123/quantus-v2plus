@@ -32,9 +32,12 @@ const DocumentsSnapshot = () => (
               <p className="font-body text-xs text-foreground">{doc.title}</p>
               <p className="font-body text-[10px] text-primary/60">{doc.status}</p>
             </div>
-            <button className="px-3 py-1.5 border border-primary/20 font-body text-[10px] tracking-wider uppercase text-primary hover:bg-primary/5 transition-colors">
+            <Link
+              to="/documents"
+              className="px-3 py-1.5 border border-primary/20 font-body text-[10px] tracking-wider uppercase text-primary hover:bg-primary/5 transition-colors"
+            >
               Sign Now
-            </button>
+            </Link>
           </div>
         ))}
       </div>

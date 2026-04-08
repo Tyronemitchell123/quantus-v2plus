@@ -30,7 +30,8 @@ const MagneticButton = ({ children, className = "", onClick, strength = 0.3 }: M
       onClick={onClick}
       animate={{ x: position.x, y: position.y }}
       transition={{ type: "spring", stiffness: 150, damping: 15, mass: 0.1 }}
-      className={className}
+      className={`${className} [&_a]:relative [&_a]:z-10`}
+      style={{ pointerEvents: "auto" }}
     >
       {children}
     </motion.div>
