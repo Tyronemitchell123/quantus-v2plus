@@ -36,10 +36,10 @@ const EMAIL_TEMPLATES: Record<string, React.ComponentType<any>> = {
 }
 
 // Configuration
-const SITE_NAME = "QUANTUS"
-const SENDER_DOMAIN = "notify.crownprompts.com"
-const ROOT_DOMAIN = "crownprompts.com"
-const FROM_DOMAIN = "notify.crownprompts.com" // Domain shown in From address (may be root or sender subdomain)
+const SITE_NAME = "quantus-v2plus"
+const SENDER_DOMAIN = "notify.aurelia-privateconcierge.com"
+const ROOT_DOMAIN = "aurelia-privateconcierge.com"
+const FROM_DOMAIN = "notify.aurelia-privateconcierge.com" // Domain shown in From address (may be root or sender subdomain)
 
 // Sample data for preview mode ONLY (not used in actual email sending).
 // URLs are baked in at scaffold time from the project's real data.
