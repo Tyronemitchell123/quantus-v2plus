@@ -36,6 +36,7 @@ const ConnectOnboarding = lazy(() => import("@/pages/ConnectOnboarding"));
 const ConnectProducts = lazy(() => import("@/pages/ConnectProducts"));
 const ConnectStorefront = lazy(() => import("@/pages/ConnectStorefront"));
 const CommissionPayouts = lazy(() => import("@/pages/CommissionPayouts"));
+const InvoiceManagement = lazy(() => import("@/pages/InvoiceManagement"));
 const SovereignDashboard = lazy(() => import("@/pages/SovereignDashboard"));
 const SovereignVault = lazy(() => import("@/pages/SovereignVault"));
 const ProvingGround = lazy(() => import("@/pages/ProvingGround"));
@@ -60,7 +61,7 @@ export const dashboardRoutePrefixes = [
   "/partner", "/admin", "/marketing", "/nlp", "/quantum",
   "/recommendations", "/autopilot", "/intelligence", "/vault",
   "/wealth", "/calendar", "/compliance", "/network",
-  "/connect", "/commission-payouts", "/automation",
+  "/connect", "/commission-payouts", "/automation", "/invoices",
 ];
 
 export const dashboardRoutes = (
@@ -128,6 +129,7 @@ export const dashboardRoutes = (
     <Route path="/connect/products" element={<ProtectedRoute><R name="Connect Products"><ConnectProducts /></R></ProtectedRoute>} />
     <Route path="/connect/storefront" element={<ProtectedRoute><R name="Connect Storefront"><ConnectStorefront /></R></ProtectedRoute>} />
     <Route path="/commission-payouts" element={<ProtectedRoute><R name="Commission Payouts"><CommissionPayouts /></R></ProtectedRoute>} />
+    <Route path="/invoices" element={<ProtectedRoute><R name="Invoices"><InvoiceManagement /></R></ProtectedRoute>} />
 
     {/* Sovereign */}
     <Route path="/sovereign" element={<ProtectedRoute><R name="Sovereign"><SovereignDashboard /></R></ProtectedRoute>} />
