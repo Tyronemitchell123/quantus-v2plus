@@ -197,6 +197,33 @@ Deno.serve(async (req) => {
           ? (failedAttemptsByMessageId.get(payload.message_id) ?? 0)
           : 0
 
+      // Safety: if message has been read too many times (runaway), force DLQ
+      if (msg.read_ct > 100) {
+        console.warn('Message read_ct exceeded safety threshold', {
+          queue, msg_id: msg.msg_id, read_ct: msg.read_ct,
+        })
+        await moveToDlq(supabase, queue, msg, `Safety: read_ct ${msg.read_ct} exceeded threshold (100)`)
+        continue
+      }
+
+      // Messages without message_id cannot be tracked for retries — DLQ immediately
+      if (!payload?.message_id || typeof payload.message_id !== 'string') {
+        console.warn('Message missing message_id — cannot track retries, moving to DLQ', {
+          queue, msg_id: msg.msg_id,
+        })
+        await moveToDlq(supabase, queue, msg, 'Missing message_id — untrackable message')
+        continue
+      }
+
+      // Validate required fields before attempting send
+      if (!payload.to || !payload.from || !payload.subject || !payload.html) {
+        console.warn('Message missing required fields', {
+          queue, msg_id: msg.msg_id, has_to: !!payload.to, has_from: !!payload.from,
+        })
+        await moveToDlq(supabase, queue, msg, `Missing required fields: ${[!payload.to && 'to', !payload.from && 'from', !payload.subject && 'subject', !payload.html && 'html'].filter(Boolean).join(', ')}`)
+        continue
+      }
+
       // Drop expired messages (TTL exceeded)
       if (payload.queued_at) {
         const ageMs = Date.now() - new Date(payload.queued_at).getTime()
