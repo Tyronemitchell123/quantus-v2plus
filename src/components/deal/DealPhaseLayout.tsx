@@ -38,6 +38,7 @@ const DealPhaseLayout = ({
   showBottomBar = true,
 }: Props) => {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
   const dealQuery = dealId ? `?deal=${dealId}` : "";
 
   return (
