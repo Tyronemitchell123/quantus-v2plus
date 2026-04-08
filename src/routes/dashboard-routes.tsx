@@ -65,7 +65,7 @@ export const dashboardRoutePrefixes = [
   "/recommendations", "/autopilot", "/intelligence", "/vault",
   "/wealth", "/calendar", "/compliance", "/network",
   "/connect", "/commission-payouts", "/automation", "/invoices",
-  "/sessions",
+  "/sessions", "/kyc",
 ];
 
 export const dashboardRoutes = (
@@ -104,6 +104,7 @@ export const dashboardRoutes = (
     {/* Settings */}
     <Route path="/settings" element={<ProtectedRoute><R name="Settings"><PageTransition><Settings /></PageTransition></R></ProtectedRoute>} />
     <Route path="/settings/sessions" element={<ProtectedRoute><R name="Sessions"><SessionManagement /></R></ProtectedRoute>} />
+    <Route path="/kyc" element={<ProtectedRoute><R name="KYC"><KYCVerification /></R></ProtectedRoute>} />
     <Route path="/account/subscription" element={<ProtectedRoute><R name="Subscription"><PageTransition><SubscriptionManagement /></PageTransition></R></ProtectedRoute>} />
 
     {/* Partner */}
@@ -112,6 +113,7 @@ export const dashboardRoutes = (
 
     {/* Admin */}
     <Route path="/admin" element={<ProtectedRoute requiredRole="admin" skipOnboardingCheck><R name="Admin"><PageTransition><AdminDashboard /></PageTransition></R></ProtectedRoute>} />
+    <Route path="/admin/kyc" element={<ProtectedRoute requiredRole="admin" skipOnboardingCheck><R name="Admin KYC"><AdminKYCReview /></R></ProtectedRoute>} />
 
     {/* Tools */}
     <Route path="/marketing" element={<ProtectedRoute><R name="Marketing"><PageTransition><MarketingHub /></PageTransition></R></ProtectedRoute>} />
