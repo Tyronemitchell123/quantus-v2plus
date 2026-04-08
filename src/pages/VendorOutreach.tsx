@@ -182,7 +182,8 @@ export default function VendorOutreachPage() {
         body: { action: "follow_up", outreach_id: outreachId },
       });
       if (error) throw new Error(error.message);
-      toast.success(`Follow-up #${data.follow_up_count} recorded`);
+      const emailNote = data.email_sent ? ` — email sent to ${data.email_sent_to}` : "";
+      toast.success(`Follow-up #${data.follow_up_count} recorded${emailNote}`);
       if (dealId) await loadData(dealId);
     } catch (e: any) {
       toast.error(e.message || "Follow-up failed");
