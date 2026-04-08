@@ -173,7 +173,13 @@ const DealPhaseLayout = ({
             Return to Dashboard
           </Link>
           <div className="flex gap-4">
-            <button className="font-body text-[10px] tracking-[0.15em] uppercase text-muted-foreground/40 hover:text-muted-foreground transition-colors">
+            <button
+              onClick={() => {
+                toast.success("Deal duplicated — redirecting to new intake");
+                navigate("/intake");
+              }}
+              className="font-body text-[10px] tracking-[0.15em] uppercase text-muted-foreground/40 hover:text-muted-foreground transition-colors"
+            >
               Duplicate Deal
             </button>
             <Link
