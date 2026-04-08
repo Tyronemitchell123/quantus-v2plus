@@ -46,9 +46,10 @@ const ProtectedRoute = ({ children, requiredTier, requiredRole, skipOnboardingCh
 
       if (!isMounted) return;
 
-      // Retry up to 2 times if query failed (auth token may not be ready yet)
-      if (error && attempt < 2) {
-        setTimeout(() => checkRole(attempt + 1), 500 * (attempt + 1));
+      // Retry up to 4 times if query failed OR returned no data
+      // (auth token may not be ready yet, causing RLS to filter rows)
+      if ((error || !data) && attempt < 4) {
+        setTimeout(() => checkRole(attempt + 1), 600 * (attempt + 1));
         return;
       }
 
