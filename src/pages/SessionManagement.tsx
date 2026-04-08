@@ -36,7 +36,7 @@ const SessionManagement = () => {
   };
 
   return (
-    <DashboardPageWrapper title="Session Management" subtitle="Manage your active sessions and security settings">
+    <DashboardPageWrapper footerLeft="Quantus V2+ — Session Management">
       <div className="max-w-2xl space-y-6">
         {/* Current Session */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="glass-card p-6 rounded-2xl">
