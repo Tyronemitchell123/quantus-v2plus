@@ -1,8 +1,9 @@
+import { forwardRef } from "react";
 import { motion } from "framer-motion";
 import videoLifestyleAsset from "@/assets/video-lifestyle.mp4.asset.json";
 
-const CinematicStrip = () => (
-  <section className="relative h-[50vh] overflow-hidden">
+const CinematicStrip = forwardRef<HTMLElement>((_, ref) => (
+  <section ref={ref} className="relative h-[50vh] overflow-hidden">
     <video
       autoPlay loop muted playsInline
       className="absolute inset-0 w-full h-full object-cover"
@@ -23,7 +24,6 @@ const CinematicStrip = () => (
           <br />
           <span className="text-primary">Luxury is precision.</span>
         </p>
-        {/* Animated gold underline */}
         <motion.div
           initial={{ scaleX: 0 }}
           whileInView={{ scaleX: 1 }}
@@ -34,6 +34,8 @@ const CinematicStrip = () => (
       </motion.div>
     </div>
   </section>
-);
+));
+
+CinematicStrip.displayName = "CinematicStrip";
 
 export default CinematicStrip;

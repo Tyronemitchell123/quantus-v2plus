@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, forwardRef } from "react";
 import homepageHeroVideo from "@/assets/homepage-hero.mp4";
 
-const HomepageHeroVideo = () => {
+const HomepageHeroVideo = forwardRef<HTMLDivElement>((_, ref) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [loaded, setLoaded] = useState(false);
 
@@ -21,7 +21,7 @@ const HomepageHeroVideo = () => {
   }, [loaded]);
 
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+    <div ref={ref} className="absolute inset-0 overflow-hidden pointer-events-none">
       <video
         ref={videoRef}
         autoPlay
@@ -34,6 +34,8 @@ const HomepageHeroVideo = () => {
       <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/70 to-background" />
     </div>
   );
-};
+});
+
+HomepageHeroVideo.displayName = "HomepageHeroVideo";
 
 export default HomepageHeroVideo;
