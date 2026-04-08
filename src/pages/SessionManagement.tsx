@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
-import DashboardPageWrapper from "@/components/dashboard/DashboardPageWrapper";
+import DashboardPageWrapper from "@/components/layouts/DashboardPageWrapper";
 import useDocumentHead from "@/hooks/use-document-head";
 
 const SessionManagement = () => {
