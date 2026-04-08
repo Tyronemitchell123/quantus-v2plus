@@ -45,6 +45,8 @@ const QuantusHelix = lazy(() => import("@/pages/QuantusHelix"));
 const QuantusForge = lazy(() => import("@/pages/QuantusForge"));
 const Automation = lazy(() => import("@/pages/Automation"));
 const SessionManagement = lazy(() => import("@/pages/SessionManagement"));
+const KYCVerification = lazy(() => import("@/pages/KYCVerification"));
+const AdminKYCReview = lazy(() => import("@/pages/AdminKYCReview"));
 
 const R = ({ name, children }: { name: string; children: React.ReactNode }) => (
   <RouteErrorBoundary routeName={name}>{children}</RouteErrorBoundary>
