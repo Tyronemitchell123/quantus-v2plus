@@ -161,10 +161,18 @@ export default function VendorOutreachPage() {
 
   async function handleSendOutreach(outreachId: string) {
     setSending(outreachId);
-    await supabase.from("vendor_outreach").update({ status: "sent" }).eq("id", outreachId);
-    setOutreachList((prev) => prev.map((o) => o.id === outreachId ? { ...o, status: "sent" } : o));
-    toast.success("Outreach marked as sent");
-    setSending(null);
+    try {
+      const { data, error } = await supabase.functions.invoke("vendor-outreach", {
+        body: { action: "send_email", outreach_id: outreachId },
+      });
+      if (error) throw new Error(error.message);
+      toast.success(`Email sent to ${data.email_sent_to}`);
+      setOutreachList((prev) => prev.map((o) => o.id === outreachId ? { ...o, status: "sent" } : o));
+    } catch (e: any) {
+      toast.error(e.message || "Failed to send email");
+    } finally {
+      setSending(null);
+    }
   }
 
   async function handleFollowUp(outreachId: string) {
@@ -174,7 +182,8 @@ export default function VendorOutreachPage() {
         body: { action: "follow_up", outreach_id: outreachId },
       });
       if (error) throw new Error(error.message);
-      toast.success(`Follow-up #${data.follow_up_count} recorded`);
+      const emailNote = data.email_sent ? ` — email sent to ${data.email_sent_to}` : "";
+      toast.success(`Follow-up #${data.follow_up_count} recorded${emailNote}`);
       if (dealId) await loadData(dealId);
     } catch (e: any) {
       toast.error(e.message || "Follow-up failed");
@@ -224,8 +233,14 @@ export default function VendorOutreachPage() {
 
   // Bulk actions
   async function handleBulkMarkSent(ids: string[]) {
+    let sent = 0;
     for (const id of ids) {
-      await supabase.from("vendor_outreach").update({ status: "sent" }).eq("id", id);
+      try {
+        await supabase.functions.invoke("vendor-outreach", {
+          body: { action: "send_email", outreach_id: id },
+        });
+        sent++;
+      } catch { /* skip failed */ }
     }
     setOutreachList((prev) =>
       prev.map((o) => ids.includes(o.id) ? { ...o, status: "sent" } : o)

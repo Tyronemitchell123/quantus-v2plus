@@ -189,7 +189,7 @@ const OutreachVendorCards = ({
                         {o.status === "pending" && (
                           <button onClick={() => onSendOutreach(o.id)} disabled={sending === o.id}
                             className="flex items-center gap-1.5 px-3 py-2 bg-primary text-primary-foreground font-body text-[9px] tracking-widest uppercase rounded-lg hover:brightness-110 disabled:opacity-50 transition-all">
-                            {sending === o.id ? <Loader2 size={9} className="animate-spin" /> : <Send size={9} />} Mark Sent
+                            {sending === o.id ? <Loader2 size={9} className="animate-spin" /> : <Send size={9} />} Send Email
                           </button>
                         )}
                         {(o.status === "sent" || o.status === "pending") && (

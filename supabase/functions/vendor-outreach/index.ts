@@ -17,6 +17,75 @@ const OUTREACH_TONES: Record<string, string> = {
   partnerships: "strategic, collaborative, and visionary — highlighting mutual value",
 };
 
+function generateToken(): string {
+  const bytes = new Uint8Array(32);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes).map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+async function getOrCreateUnsubscribeToken(supabaseAdmin: any, email: string): Promise<string> {
+  const normalizedEmail = email.toLowerCase();
+  const { data: existing } = await supabaseAdmin
+    .from("email_unsubscribe_tokens")
+    .select("token")
+    .eq("email", normalizedEmail)
+    .maybeSingle();
+  if (existing?.token) return existing.token;
+
+  const token = generateToken();
+  await supabaseAdmin.from("email_unsubscribe_tokens").upsert(
+    { token, email: normalizedEmail },
+    { onConflict: "email", ignoreDuplicates: true }
+  );
+  const { data: stored } = await supabaseAdmin
+    .from("email_unsubscribe_tokens")
+    .select("token")
+    .eq("email", normalizedEmail)
+    .maybeSingle();
+  return stored?.token || token;
+}
+
+function buildVendorEmailHtml({ subject, body, vendorName, company }: {
+  subject: string;
+  body: string;
+  vendorName: string;
+  company: string | null;
+}) {
+  const escapedBody = body
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\n/g, "<br/>");
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/></head>
+<body style="margin:0;padding:0;background:#0a0a0a;font-family:Georgia,'Times New Roman',serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#0a0a0a;padding:40px 20px;">
+<tr><td align="center">
+<table width="600" cellpadding="0" cellspacing="0" style="background:#111;border:1px solid #222;border-radius:8px;">
+  <tr><td style="padding:32px 40px 24px;border-bottom:1px solid #1a1a1a;">
+    <h1 style="margin:0;font-size:18px;font-weight:400;letter-spacing:0.15em;color:#c9a55a;text-transform:uppercase;">QUANTUS</h1>
+    <p style="margin:8px 0 0;font-size:11px;letter-spacing:0.1em;color:#666;text-transform:uppercase;">Private Advisory Office</p>
+  </td></tr>
+  <tr><td style="padding:32px 40px;">
+    <p style="margin:0 0 24px;font-size:14px;color:#999;line-height:1.7;">
+      ${escapedBody}
+    </p>
+  </td></tr>
+  <tr><td style="padding:24px 40px 32px;border-top:1px solid #1a1a1a;">
+    <p style="margin:0;font-size:10px;color:#444;letter-spacing:0.08em;">
+      This communication is from QUANTUS, a private advisory platform.<br/>
+      Please reply directly to this email to respond.
+    </p>
+  </td></tr>
+</table>
+</td></tr>
+</table>
+</body>
+</html>`;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -265,7 +334,118 @@ ${vendorSummaries}`,
       });
     }
 
-    // ACTION: follow_up — Generate a follow-up message for an outreach
+    // ACTION: send_email — Send the initial outreach email to the vendor
+    if (action === "send_email") {
+      const { outreach_id } = body;
+      if (!outreach_id) {
+        return new Response(JSON.stringify({ error: "outreach_id required" }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const { data: outreach } = await supabase
+        .from("vendor_outreach")
+        .select("*")
+        .eq("id", outreach_id)
+        .single();
+
+      if (!outreach) {
+        return new Response(JSON.stringify({ error: "Outreach not found" }), {
+          status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      if (!outreach.vendor_email) {
+        return new Response(JSON.stringify({ error: "No vendor email on record" }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      // Fetch the initial outbound message
+      const { data: msgs } = await supabase
+        .from("vendor_messages")
+        .select("*")
+        .eq("outreach_id", outreach_id)
+        .eq("direction", "outbound")
+        .is("metadata->type", null)
+        .order("created_at", { ascending: true })
+        .limit(1);
+
+      const initialMsg = msgs?.[0];
+      if (!initialMsg) {
+        return new Response(JSON.stringify({ error: "No outreach message found to send" }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      // Build HTML email body
+      const emailHtml = buildVendorEmailHtml({
+        subject: initialMsg.subject || "Partnership Inquiry — QUANTUS",
+        body: initialMsg.body,
+        vendorName: outreach.vendor_name,
+        company: outreach.vendor_company,
+      });
+
+      const messageId = crypto.randomUUID();
+      const idempotencyKey = `vendor-outreach-${outreach_id}`;
+      const unsubscribeToken = await getOrCreateUnsubscribeToken(supabaseAdmin, outreach.vendor_email);
+
+      // Enqueue via PGMQ for reliable delivery
+      const { error: enqueueError } = await supabaseAdmin.rpc("enqueue_email", {
+        queue_name: "transactional_emails",
+        payload: {
+          message_id: messageId,
+          to: outreach.vendor_email,
+          from: "QUANTUS <noreply@notify.crownprompts.com>",
+          sender_domain: "notify.crownprompts.com",
+          subject: initialMsg.subject || "Partnership Inquiry — QUANTUS",
+          html: emailHtml,
+          text: initialMsg.body,
+          purpose: "transactional",
+          label: "vendor-outreach",
+          idempotency_key: idempotencyKey,
+          unsubscribe_token: unsubscribeToken,
+          queued_at: new Date().toISOString(),
+        },
+      });
+
+      if (enqueueError) {
+        console.error("Failed to enqueue vendor email:", enqueueError);
+        return new Response(JSON.stringify({ error: "Failed to queue email for delivery" }), {
+          status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      // Log pending
+      await supabaseAdmin.from("email_send_log").insert({
+        message_id: messageId,
+        template_name: "vendor-outreach",
+        recipient_email: outreach.vendor_email,
+        status: "pending",
+      });
+
+      // Update outreach status
+      await supabase
+        .from("vendor_outreach")
+        .update({ status: "sent" })
+        .eq("id", outreach_id);
+
+      console.log("Vendor outreach email enqueued", {
+        outreach_id,
+        vendor: outreach.vendor_name,
+        email: outreach.vendor_email,
+      });
+
+      return new Response(JSON.stringify({
+        success: true,
+        email_sent_to: outreach.vendor_email,
+        vendor: outreach.vendor_name,
+      }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // ACTION: follow_up — Generate a follow-up message and send email
     if (action === "follow_up") {
       const { outreach_id } = body;
       if (!outreach_id) {
@@ -290,6 +470,62 @@ ${vendorSummaries}`,
       const tones = ["gentle", "firm", "escalation"];
       const tone = tones[Math.min(followUpCount - 1, 2)];
 
+      // Find the follow-up template message
+      const messages = (outreach.vendor_messages as any[]) || [];
+      const followUpTemplate = messages.find(
+        (m: any) => m.direction === "outbound" && m.metadata?.type === "follow_up_template"
+      );
+
+      // Send follow-up email if vendor has email
+      let emailSent = false;
+      if (outreach.vendor_email && followUpTemplate) {
+        const emailHtml = buildVendorEmailHtml({
+          subject: followUpTemplate.subject || `Follow-up #${followUpCount} — QUANTUS`,
+          body: followUpTemplate.body,
+          vendorName: outreach.vendor_name,
+          company: outreach.vendor_company,
+        });
+
+        const messageId = crypto.randomUUID();
+        const idempotencyKey = `vendor-followup-${outreach_id}-${followUpCount}`;
+        const unsubscribeToken = await getOrCreateUnsubscribeToken(supabaseAdmin, outreach.vendor_email);
+
+        const { error: enqueueError } = await supabaseAdmin.rpc("enqueue_email", {
+          queue_name: "transactional_emails",
+          payload: {
+            message_id: messageId,
+            to: outreach.vendor_email,
+            from: "QUANTUS <noreply@notify.crownprompts.com>",
+            sender_domain: "notify.crownprompts.com",
+            subject: followUpTemplate.subject || `Follow-up #${followUpCount} — QUANTUS`,
+            html: emailHtml,
+            text: followUpTemplate.body,
+            purpose: "transactional",
+            label: "vendor-follow-up",
+            idempotency_key: idempotencyKey,
+            unsubscribe_token: unsubscribeToken,
+            queued_at: new Date().toISOString(),
+          },
+        });
+
+        if (!enqueueError) {
+          await supabaseAdmin.from("email_send_log").insert({
+            message_id: messageId,
+            template_name: "vendor-follow-up",
+            recipient_email: outreach.vendor_email,
+            status: "pending",
+          });
+          emailSent = true;
+          console.log("Follow-up email enqueued", {
+            outreach_id,
+            follow_up_count: followUpCount,
+            email: outreach.vendor_email,
+          });
+        } else {
+          console.error("Failed to enqueue follow-up email:", enqueueError);
+        }
+      }
+
       // Update outreach
       await supabase
         .from("vendor_outreach")
@@ -299,7 +535,13 @@ ${vendorSummaries}`,
         })
         .eq("id", outreach_id);
 
-      return new Response(JSON.stringify({ success: true, follow_up_count: followUpCount, tone }), {
+      return new Response(JSON.stringify({
+        success: true,
+        follow_up_count: followUpCount,
+        tone,
+        email_sent: emailSent,
+        email_sent_to: emailSent ? outreach.vendor_email : null,
+      }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
