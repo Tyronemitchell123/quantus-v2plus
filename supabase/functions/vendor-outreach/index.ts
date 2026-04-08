@@ -488,6 +488,7 @@ ${vendorSummaries}`,
 
         const messageId = crypto.randomUUID();
         const idempotencyKey = `vendor-followup-${outreach_id}-${followUpCount}`;
+        const unsubscribeToken = await getOrCreateUnsubscribeToken(supabaseAdmin, outreach.vendor_email);
 
         const { error: enqueueError } = await supabaseAdmin.rpc("enqueue_email", {
           queue_name: "transactional_emails",
@@ -502,6 +503,7 @@ ${vendorSummaries}`,
             purpose: "transactional",
             label: "vendor-follow-up",
             idempotency_key: idempotencyKey,
+            unsubscribe_token: unsubscribeToken,
             queued_at: new Date().toISOString(),
           },
         });
