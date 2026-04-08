@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ArrowLeft, ArrowRight, Home, Pause, CheckCircle2 } from "lucide-react";
+import { toast } from "sonner";
 
 const phases = [
   { num: 1, label: "Intake", path: "/intake" },
