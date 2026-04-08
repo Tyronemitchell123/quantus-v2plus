@@ -2,7 +2,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import KYCUpload from "@/components/kyc/KYCUpload";
-import DashboardPageWrapper from "@/components/dashboard/DashboardPageWrapper";
+import DashboardPageWrapper from "@/components/layouts/DashboardPageWrapper";
 import { Shield, CheckCircle2, Clock, XCircle } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
