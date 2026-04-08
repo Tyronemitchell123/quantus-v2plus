@@ -36,6 +36,7 @@ const ConnectOnboarding = lazy(() => import("@/pages/ConnectOnboarding"));
 const ConnectProducts = lazy(() => import("@/pages/ConnectProducts"));
 const ConnectStorefront = lazy(() => import("@/pages/ConnectStorefront"));
 const CommissionPayouts = lazy(() => import("@/pages/CommissionPayouts"));
+const InvoiceManagement = lazy(() => import("@/pages/InvoiceManagement"));
 const SovereignDashboard = lazy(() => import("@/pages/SovereignDashboard"));
 const SovereignVault = lazy(() => import("@/pages/SovereignVault"));
 const ProvingGround = lazy(() => import("@/pages/ProvingGround"));
