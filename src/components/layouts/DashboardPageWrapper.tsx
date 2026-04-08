@@ -1,4 +1,5 @@
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import DashboardTopBar from "@/components/dashboard/DashboardTopBar";
 import MobileBottomNav from "@/components/mobile/MobileBottomNav";
@@ -6,11 +7,8 @@ import ParticleGrid from "@/components/ParticleGrid";
 
 interface DashboardPageWrapperProps {
   children: ReactNode;
-  /** Show the particle grid background (default: true) */
   showParticles?: boolean;
-  /** Footer text left side */
   footerLeft?: string;
-  /** Footer text right side */
   footerRight?: string;
 }
 
@@ -20,6 +18,15 @@ const DashboardPageWrapper = ({
   footerLeft = "Quantus V2+",
   footerRight = "Phase 1",
 }: DashboardPageWrapperProps) => {
+  const navigate = useNavigate();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const tabRoutes: Record<string, string> = {
+    feed: "/dashboard",
+    modules: "/dashboard/modules",
+    profile: "/settings",
+  };
+
   return (
     <div className="min-h-screen bg-background flex relative">
       {showParticles && (
@@ -40,7 +47,10 @@ const DashboardPageWrapper = ({
       <DashboardSidebar />
 
       <div className="flex-1 flex flex-col min-w-0 relative z-10">
-        <DashboardTopBar onMobileMenuToggle={() => {}} notifications={[]} />
+        <DashboardTopBar
+          onMobileMenuToggle={() => setSidebarOpen((v) => !v)}
+          notifications={[]}
+        />
 
         <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 pb-24 lg:pb-8 space-y-6">
           {children}
@@ -57,9 +67,12 @@ const DashboardPageWrapper = ({
       </div>
 
       <MobileBottomNav
-        onAIOpen={() => {}}
-        onMessagingOpen={() => {}}
-        onTabChange={() => {}}
+        onAIOpen={() => navigate("/chat")}
+        onMessagingOpen={() => navigate("/chat")}
+        onTabChange={(tab) => {
+          const route = tabRoutes[tab];
+          if (route) navigate(route);
+        }}
         activeTab="feed"
       />
     </div>
