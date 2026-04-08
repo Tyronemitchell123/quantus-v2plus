@@ -16,6 +16,8 @@ import { template as dealVendorMatch } from './deal-vendor-match.tsx'
 import { template as dealNegotiationProgress } from './deal-negotiation-progress.tsx'
 import { template as dealCompletionSummary } from './deal-completion-summary.tsx'
 import { template as paymentReminder } from './payment-reminder.tsx'
+import { template as welcomeEmail } from './welcome-email.tsx'
+import { template as bookingConfirmation } from './booking-confirmation.tsx'
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'contact-confirmation': contactConfirmation,
@@ -25,4 +27,6 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'deal-negotiation-progress': dealNegotiationProgress,
   'deal-completion-summary': dealCompletionSummary,
   'payment-reminder': paymentReminder,
+  'welcome-email': welcomeEmail,
+  'booking-confirmation': bookingConfirmation,
 }
