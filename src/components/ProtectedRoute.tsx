@@ -67,7 +67,7 @@ const ProtectedRoute = ({ children, requiredTier, requiredRole, skipOnboardingCh
   // Add a safety timeout to prevent infinite loading
   const [timedOut, setTimedOut] = useState(false);
   useEffect(() => {
-    const timer = setTimeout(() => setTimedOut(true), 10000);
+    const timer = setTimeout(() => setTimedOut(true), 15000);
     return () => clearTimeout(timer);
   }, []);
 
