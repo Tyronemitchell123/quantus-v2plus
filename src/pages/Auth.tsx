@@ -131,6 +131,32 @@ const Auth = () => {
     try {
       const { error } = await signIn(email, password);
       if (error) throw error;
+
+      const { data: { user } } = await supabase.auth.getUser();
+
+      // Apply pending profile data from signup if it exists
+      const pendingProfile = localStorage.getItem("pending_profile");
+      if (pendingProfile && user) {
+        try {
+          const profileData = JSON.parse(pendingProfile);
+          if (profileData.userId === user.id) {
+            await supabase.from("profiles").update({
+              phone: profileData.phone,
+              company: profileData.company,
+              address_line1: profileData.address_line1,
+              address_line2: profileData.address_line2,
+              city: profileData.city,
+              country: profileData.country,
+              postcode: profileData.postcode,
+              account_type: profileData.account_type,
+              service_category: profileData.service_category,
+              service_description: profileData.service_description,
+            } as any).eq("user_id", user.id);
+            localStorage.removeItem("pending_profile");
+          }
+        } catch {}
+      }
+
       const pendingCode = localStorage.getItem("pending_referral_code");
       if (pendingCode) {
         localStorage.removeItem("pending_referral_code");
@@ -139,7 +165,7 @@ const Auth = () => {
       const { data: profile } = await supabase
         .from("profiles")
         .select("onboarding_completed_at")
-        .eq("user_id", (await supabase.auth.getUser()).data.user?.id ?? "")
+        .eq("user_id", user?.id ?? "")
         .maybeSingle();
       if (profile?.onboarding_completed_at) {
         localStorage.setItem("quantus_onboarding_done", "true");
