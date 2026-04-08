@@ -78,6 +78,22 @@ Deno.serve(async (req) => {
     if (action === "complete") {
       if (!dealId) return errorResponse("dealId is required", 400);
 
+      // Deduplication: skip if invoice already exists for this deal
+      const { data: existingInvoice } = await supabase
+        .from("invoices")
+        .select("id")
+        .eq("deal_id", dealId)
+        .eq("user_id", userId)
+        .limit(1)
+        .maybeSingle();
+      if (existingInvoice) {
+        edgeLog("info", "deal-completion", "Duplicate completion blocked — invoice already exists", { dealId });
+        // Still return summary for idempotency
+        const { data: deal } = await supabase.from("deals").select("*").eq("id", dealId).eq("user_id", userId).single();
+        if (!deal) return errorResponse("Deal not found", 404);
+        return jsonResponse({ summary: { deal_number: deal.deal_number, already_completed: true } });
+      }
+
       // Mark deal as completed
       const { data: deal, error: dealErr } = await supabase
         .from("deals")
