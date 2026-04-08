@@ -46,13 +46,28 @@ const Auth = () => {
   const handleSignup = async (data: SignupFormData) => {
     setLoading(true);
     try {
-      const { error } = await signUp(data.email, data.password, data.fullName);
+      const { data: signUpData, error } = await signUp(data.email, data.password, data.fullName);
       if (error) throw error;
 
-      // Save extended profile data after signup
-      // The profile row is auto-created by trigger, so we update it
-      const { data: { user } } = await supabase.auth.getUser();
+      // Use the user from signUp response (getUser() fails before email confirmation)
+      const user = signUpData?.user;
       if (user) {
+        // Store profile details to apply after email verification
+        localStorage.setItem("pending_profile", JSON.stringify({
+          userId: user.id,
+          phone: data.phone || null,
+          company: data.company || null,
+          address_line1: data.addressLine1,
+          address_line2: data.addressLine2 || null,
+          city: data.city,
+          country: data.country,
+          postcode: data.postcode,
+          account_type: data.accountType,
+          service_category: data.serviceCategory || null,
+          service_description: data.serviceDescription || null,
+        }));
+
+        // Try immediate update (works if auto-confirm is on or session exists)
         await supabase.from("profiles").update({
           phone: data.phone || null,
           company: data.company || null,
