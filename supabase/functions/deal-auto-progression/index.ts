@@ -186,12 +186,48 @@ Deno.serve(async (req) => {
       }
     }
 
-    // ── 4. Log system health ──
+    // ── 4. Smart Follow-Up Escalation (3+ unanswered = escalate) ──
+    const { data: unansweredOutreach } = await supabase
+      .from("vendor_outreach")
+      .select("id, deal_id, vendor_name, follow_up_count, status, user_id")
+      .gte("follow_up_count", 3)
+      .not("status", "in", '("escalated","completed","responded")')
+      .limit(20);
+
+    let escalated = 0;
+    if (unansweredOutreach && unansweredOutreach.length > 0) {
+      for (const outreach of unansweredOutreach) {
+        try {
+          await supabase
+            .from("vendor_outreach")
+            .update({ status: "escalated" })
+            .eq("id", outreach.id);
+
+          // Create notification for operator
+          if (outreach.user_id) {
+            await supabase.from("notifications").insert({
+              user_id: outreach.user_id,
+              title: `Vendor Escalation — ${outreach.vendor_name || "Unknown"}`,
+              body: `${outreach.vendor_name || "A vendor"} has not responded after ${outreach.follow_up_count} follow-ups. Consider phone outreach.`,
+              category: "deal",
+              severity: "warning",
+              action_url: "/outreach",
+              metadata: { outreach_id: outreach.id, deal_id: outreach.deal_id },
+            });
+          }
+          escalated++;
+        } catch (escErr) {
+          results.errors.push(`Escalate ${outreach.id}: ${escErr instanceof Error ? escErr.message : "unknown"}`);
+        }
+      }
+    }
+
+    // ── 5. Log system health ──
     await supabase.from("system_health").insert({
       function_name: "deal-auto-progression",
       event_type: "cron_run",
       severity: results.errors.length > 0 ? "warning" : "info",
-      metadata: results,
+      metadata: { ...results, vendors_escalated: escalated },
     });
 
     console.log("Auto-progression results:", JSON.stringify(results));
