@@ -52,7 +52,7 @@ export default function AdminKYCReview() {
   };
 
   return (
-    <DashboardPageWrapper title="KYC Review" subtitle="Review and approve identity verification submissions">
+    <DashboardPageWrapper>
       <div className="space-y-4 max-w-3xl">
         {isLoading && <p className="text-sm text-muted-foreground">Loading submissions...</p>}
         {submissions.length === 0 && !isLoading && (

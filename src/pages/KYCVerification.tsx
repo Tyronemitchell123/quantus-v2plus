@@ -36,7 +36,7 @@ export default function KYCVerification() {
   const Icon = config.icon;
 
   return (
-    <DashboardPageWrapper title="Identity Verification" subtitle="KYC compliance for high-value transactions">
+    <DashboardPageWrapper>
       <div className="max-w-lg mx-auto space-y-6">
         <Card className="border-border">
           <CardContent className="p-6 flex items-center gap-4">
