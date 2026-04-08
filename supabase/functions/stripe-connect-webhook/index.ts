@@ -218,6 +218,88 @@ serve(async (req) => {
       }
     }
 
+    // ── Step 6: Handle subscription changes ─────────────────────────────
+    if (event.type === "customer.subscription.updated" || event.type === "customer.subscription.deleted") {
+      const subscription = (event as any).data?.object;
+      const customerId = subscription?.customer;
+      const status = subscription?.status; // active, canceled, past_due, etc.
+      const cancelAtPeriodEnd = subscription?.cancel_at_period_end || false;
+
+      if (customerId) {
+        console.log(`Subscription ${event.type} for customer: ${customerId}, status: ${status}`);
+
+        // Find the user by looking up the subscription or customer
+        const { data: existingSub } = await supabaseAdmin
+          .from("subscriptions")
+          .select("id, user_id, tier")
+          .limit(1)
+          .single();
+
+        if (existingSub) {
+          // Map Stripe status to our enum
+          const statusMap: Record<string, string> = {
+            active: "active",
+            canceled: "canceled",
+            past_due: "past_due",
+            incomplete: "active",
+            trialing: "trialing",
+            unpaid: "past_due",
+          };
+
+          // Map Stripe price to our tier (by looking at subscription items)
+          let tier = existingSub.tier;
+          const items = subscription?.items?.data;
+          if (items && items.length > 0) {
+            const priceId = items[0]?.price?.id;
+            const amount = items[0]?.price?.unit_amount || 0;
+            // Infer tier from price amount
+            if (amount >= 100000) tier = "obsidian"; // £1000+
+            else if (amount >= 50000) tier = "elite"; // £500+
+            else if (amount >= 10000) tier = "professional"; // £100+
+            else tier = "free";
+          }
+
+          const updateData: Record<string, unknown> = {
+            status: statusMap[status] || "active",
+            cancel_at_period_end: cancelAtPeriodEnd,
+            current_period_start: subscription?.current_period_start
+              ? new Date(subscription.current_period_start * 1000).toISOString()
+              : undefined,
+            current_period_end: subscription?.current_period_end
+              ? new Date(subscription.current_period_end * 1000).toISOString()
+              : undefined,
+          };
+
+          if (tier !== existingSub.tier) {
+            (updateData as any).tier = tier;
+          }
+
+          await supabaseAdmin
+            .from("subscriptions")
+            .update(updateData)
+            .eq("id", existingSub.id);
+
+          // Notify user of subscription change
+          await supabaseAdmin.from("notifications").insert({
+            user_id: existingSub.user_id,
+            title: event.type === "customer.subscription.deleted"
+              ? "Subscription Cancelled"
+              : `Subscription Updated — ${tier}`,
+            body: event.type === "customer.subscription.deleted"
+              ? "Your subscription has been cancelled. You can resubscribe anytime."
+              : cancelAtPeriodEnd
+                ? "Your subscription will end at the current billing period."
+                : `Your subscription has been updated to the ${tier} tier.`,
+            category: "billing",
+            severity: event.type === "customer.subscription.deleted" ? "warning" : "info",
+            action_url: "/account/subscription",
+          });
+
+          console.log(`Subscription synced for user ${existingSub.user_id}: ${status}, tier: ${tier}`);
+        }
+      }
+    }
+
     // Always respond 200 to acknowledge receipt — Stripe retries on non-2xx
     return new Response(JSON.stringify({ received: true }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
