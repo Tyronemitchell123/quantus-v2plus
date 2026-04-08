@@ -233,8 +233,14 @@ export default function VendorOutreachPage() {
 
   // Bulk actions
   async function handleBulkMarkSent(ids: string[]) {
+    let sent = 0;
     for (const id of ids) {
-      await supabase.from("vendor_outreach").update({ status: "sent" }).eq("id", id);
+      try {
+        await supabase.functions.invoke("vendor-outreach", {
+          body: { action: "send_email", outreach_id: id },
+        });
+        sent++;
+      } catch { /* skip failed */ }
     }
     setOutreachList((prev) =>
       prev.map((o) => ids.includes(o.id) ? { ...o, status: "sent" } : o)
