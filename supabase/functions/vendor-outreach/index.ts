@@ -17,6 +17,47 @@ const OUTREACH_TONES: Record<string, string> = {
   partnerships: "strategic, collaborative, and visionary — highlighting mutual value",
 };
 
+function buildVendorEmailHtml({ subject, body, vendorName, company }: {
+  subject: string;
+  body: string;
+  vendorName: string;
+  company: string | null;
+}) {
+  const escapedBody = body
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\n/g, "<br/>");
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/></head>
+<body style="margin:0;padding:0;background:#0a0a0a;font-family:Georgia,'Times New Roman',serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#0a0a0a;padding:40px 20px;">
+<tr><td align="center">
+<table width="600" cellpadding="0" cellspacing="0" style="background:#111;border:1px solid #222;border-radius:8px;">
+  <tr><td style="padding:32px 40px 24px;border-bottom:1px solid #1a1a1a;">
+    <h1 style="margin:0;font-size:18px;font-weight:400;letter-spacing:0.15em;color:#c9a55a;text-transform:uppercase;">QUANTUS</h1>
+    <p style="margin:8px 0 0;font-size:11px;letter-spacing:0.1em;color:#666;text-transform:uppercase;">Private Advisory Office</p>
+  </td></tr>
+  <tr><td style="padding:32px 40px;">
+    <p style="margin:0 0 24px;font-size:14px;color:#999;line-height:1.7;">
+      ${escapedBody}
+    </p>
+  </td></tr>
+  <tr><td style="padding:24px 40px 32px;border-top:1px solid #1a1a1a;">
+    <p style="margin:0;font-size:10px;color:#444;letter-spacing:0.08em;">
+      This communication is from QUANTUS, a private advisory platform.<br/>
+      Please reply directly to this email to respond.
+    </p>
+  </td></tr>
+</table>
+</td></tr>
+</table>
+</body>
+</html>`;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
