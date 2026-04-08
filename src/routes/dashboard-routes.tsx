@@ -61,7 +61,7 @@ export const dashboardRoutePrefixes = [
   "/partner", "/admin", "/marketing", "/nlp", "/quantum",
   "/recommendations", "/autopilot", "/intelligence", "/vault",
   "/wealth", "/calendar", "/compliance", "/network",
-  "/connect", "/commission-payouts", "/automation",
+  "/connect", "/commission-payouts", "/automation", "/invoices",
 ];
 
 export const dashboardRoutes = (
