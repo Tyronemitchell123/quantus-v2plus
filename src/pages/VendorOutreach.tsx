@@ -161,10 +161,18 @@ export default function VendorOutreachPage() {
 
   async function handleSendOutreach(outreachId: string) {
     setSending(outreachId);
-    await supabase.from("vendor_outreach").update({ status: "sent" }).eq("id", outreachId);
-    setOutreachList((prev) => prev.map((o) => o.id === outreachId ? { ...o, status: "sent" } : o));
-    toast.success("Outreach marked as sent");
-    setSending(null);
+    try {
+      const { data, error } = await supabase.functions.invoke("vendor-outreach", {
+        body: { action: "send_email", outreach_id: outreachId },
+      });
+      if (error) throw new Error(error.message);
+      toast.success(`Email sent to ${data.email_sent_to}`);
+      setOutreachList((prev) => prev.map((o) => o.id === outreachId ? { ...o, status: "sent" } : o));
+    } catch (e: any) {
+      toast.error(e.message || "Failed to send email");
+    } finally {
+      setSending(null);
+    }
   }
 
   async function handleFollowUp(outreachId: string) {
