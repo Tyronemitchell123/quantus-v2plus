@@ -46,13 +46,28 @@ const Auth = () => {
   const handleSignup = async (data: SignupFormData) => {
     setLoading(true);
     try {
-      const { error } = await signUp(data.email, data.password, data.fullName);
+      const { data: signUpData, error } = await signUp(data.email, data.password, data.fullName);
       if (error) throw error;
 
-      // Save extended profile data after signup
-      // The profile row is auto-created by trigger, so we update it
-      const { data: { user } } = await supabase.auth.getUser();
+      // Use the user from signUp response (getUser() fails before email confirmation)
+      const user = signUpData?.user;
       if (user) {
+        // Store profile details to apply after email verification
+        localStorage.setItem("pending_profile", JSON.stringify({
+          userId: user.id,
+          phone: data.phone || null,
+          company: data.company || null,
+          address_line1: data.addressLine1,
+          address_line2: data.addressLine2 || null,
+          city: data.city,
+          country: data.country,
+          postcode: data.postcode,
+          account_type: data.accountType,
+          service_category: data.serviceCategory || null,
+          service_description: data.serviceDescription || null,
+        }));
+
+        // Try immediate update (works if auto-confirm is on or session exists)
         await supabase.from("profiles").update({
           phone: data.phone || null,
           company: data.company || null,
@@ -116,6 +131,32 @@ const Auth = () => {
     try {
       const { error } = await signIn(email, password);
       if (error) throw error;
+
+      const { data: { user } } = await supabase.auth.getUser();
+
+      // Apply pending profile data from signup if it exists
+      const pendingProfile = localStorage.getItem("pending_profile");
+      if (pendingProfile && user) {
+        try {
+          const profileData = JSON.parse(pendingProfile);
+          if (profileData.userId === user.id) {
+            await supabase.from("profiles").update({
+              phone: profileData.phone,
+              company: profileData.company,
+              address_line1: profileData.address_line1,
+              address_line2: profileData.address_line2,
+              city: profileData.city,
+              country: profileData.country,
+              postcode: profileData.postcode,
+              account_type: profileData.account_type,
+              service_category: profileData.service_category,
+              service_description: profileData.service_description,
+            } as any).eq("user_id", user.id);
+            localStorage.removeItem("pending_profile");
+          }
+        } catch {}
+      }
+
       const pendingCode = localStorage.getItem("pending_referral_code");
       if (pendingCode) {
         localStorage.removeItem("pending_referral_code");
@@ -124,7 +165,7 @@ const Auth = () => {
       const { data: profile } = await supabase
         .from("profiles")
         .select("onboarding_completed_at")
-        .eq("user_id", (await supabase.auth.getUser()).data.user?.id ?? "")
+        .eq("user_id", user?.id ?? "")
         .maybeSingle();
       if (profile?.onboarding_completed_at) {
         localStorage.setItem("quantus_onboarding_done", "true");
