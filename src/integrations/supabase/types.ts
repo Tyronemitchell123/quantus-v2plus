@@ -511,6 +511,104 @@ export type Database = {
           },
         ]
       }
+      deal_share_tokens: {
+        Row: {
+          created_at: string
+          created_by: string
+          deal_id: string
+          expires_at: string
+          id: string
+          is_active: boolean
+          token: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          deal_id: string
+          expires_at?: string
+          id?: string
+          is_active?: boolean
+          token?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          deal_id?: string
+          expires_at?: string
+          id?: string
+          is_active?: boolean
+          token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deal_share_tokens_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "deals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      deal_templates: {
+        Row: {
+          category: string
+          created_at: string
+          default_budget_currency: string | null
+          default_budget_max: number | null
+          default_budget_min: number | null
+          default_location: string | null
+          default_preferences: Json | null
+          default_raw_input: string
+          default_requirements: Json | null
+          default_timeline_days: number | null
+          description: string | null
+          icon: string | null
+          id: string
+          is_active: boolean
+          name: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          default_budget_currency?: string | null
+          default_budget_max?: number | null
+          default_budget_min?: number | null
+          default_location?: string | null
+          default_preferences?: Json | null
+          default_raw_input?: string
+          default_requirements?: Json | null
+          default_timeline_days?: number | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          default_budget_currency?: string | null
+          default_budget_max?: number | null
+          default_budget_min?: number | null
+          default_location?: string | null
+          default_preferences?: Json | null
+          default_raw_input?: string
+          default_requirements?: Json | null
+          default_timeline_days?: number | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       deals: {
         Row: {
           ai_classification_raw: Json | null
@@ -612,6 +710,44 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      email_events: {
+        Row: {
+          created_at: string
+          email_log_id: string | null
+          event_type: string
+          id: string
+          ip_address: string | null
+          metadata: Json | null
+          user_agent: string | null
+        }
+        Insert: {
+          created_at?: string
+          email_log_id?: string | null
+          event_type?: string
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          user_agent?: string | null
+        }
+        Update: {
+          created_at?: string
+          email_log_id?: string | null
+          event_type?: string
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_events_email_log_id_fkey"
+            columns: ["email_log_id"]
+            isOneToOne: false
+            referencedRelation: "email_send_log"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       email_send_log: {
         Row: {
@@ -1189,6 +1325,36 @@ export type Database = {
           severity?: string
           title?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      otp_codes: {
+        Row: {
+          code: string
+          created_at: string
+          expires_at: string
+          id: string
+          purpose: string
+          user_id: string
+          verified: boolean
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          purpose?: string
+          user_id: string
+          verified?: boolean
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          purpose?: string
+          user_id?: string
+          verified?: boolean
         }
         Relationships: []
       }

@@ -1,43 +1,26 @@
 
+# Full Feature Implementation Plan
 
-## Plan: Add Unified `/automation` Route
+## Phase 1: Security & Trust
+1. **Two-Factor Authentication (2FA)** — Email OTP verification for high-value actions (payments >£1000, role changes, API key creation). Create `send-otp` and `verify-otp` edge functions with a new `otp_codes` table.
+2. **Session Management UI** — New `/settings/sessions` page showing active sessions with revoke capability using Supabase Auth admin API.
 
-### Overview
-Create a dedicated Automation Dashboard page that consolidates all Firecrawl-powered scanning tools into a single tabbed interface, and wire it into the existing routing and navigation.
+## Phase 2: Revenue & Growth  
+3. **Stripe Subscription Webhook Enhancement** — Extend `stripe-connect-webhook` to handle `customer.subscription.updated`, `customer.subscription.deleted` events, auto-syncing tier changes to the `subscriptions` table.
+4. **Automated Monthly Revenue Reports** — New `monthly-revenue-report` edge function (cron: 1st of month) that generates and emails a branded PDF summary of commissions, deal completions, and pipeline metrics.
+5. **Client-Facing Deal Tracker** — Shareable public link (`/track/:token`) allowing vendors/clients to view deal progress without authentication. New `deal_share_tokens` table with expiring tokens.
 
-### Changes
+## Phase 3: Analytics & Intelligence
+6. **Dashboard KPI Widgets with Real Data** — Replace static dashboard feed with live widgets: pipeline value, conversion rate, avg deal completion time, revenue this month — all from real `deals`, `commission_logs`, and `invoices` data.
+7. **Email Open/Click Tracking** — Add tracking pixel and click-through redirect via `track-email` edge function. New `email_events` table logging opens/clicks per email.
 
-**1. Create `src/pages/Automation.tsx`**
-- New page with a tabbed layout (using existing `Tabs` UI component)
-- Six tabs: **Vendor Discovery**, **Aviation**, **Medical**, **Hospitality**, **Longevity**, **Auto-Scrape**
-- Each tab embeds the existing panel component:
-  - Vendor Discovery: extract the AI discovery section from `VendorManagementTab` into a standalone `VendorDiscoveryPanel` component
-  - Aviation: `<AviationScanPanel />`
-  - Medical: `<MedicalScanPanel />`
-  - Hospitality: `<HospitalityScanPanel />`
-  - Longevity: `<LongevityScanPanel />`
-  - Auto-Scrape: a simple trigger button that invokes the `auto-scrape-vendors` edge function with status display
-- Page header with title "Automation Hub" and description
-- Uses `useDocumentHead` for SEO, wrapped in the dashboard layout pattern
+## Phase 4: Automation
+8. **Smart Follow-Up Escalation** — Enhance `deal-auto-progression` to flag vendors with 3+ unanswered emails for phone outreach, creating a notification and updating vendor_outreach status to `escalated`.
+9. **Deal Templates** — New `deal_templates` table with pre-filled intake forms for common deal types (private jet, medical, luxury). Template selector on the intake page.
 
-**2. Create `src/components/automation/VendorDiscoveryPanel.tsx`**
-- Extract the AI vendor discovery form (category select, region input, discover button, results list with "Add" actions) from `VendorManagementTab` into a reusable panel
-- Keep the same Supabase calls (`vendor-discovery` edge function + vendor insert)
+## Phase 5: Mobile & UX
+10. **Push Notifications (Service Worker)** — Register a service worker for web push notifications on payment received, deal completion, and critical alerts.
+11. **Offline Mode** — Service worker caching strategy for dashboard data, deal list, and critical pages using Cache API.
 
-**3. Create `src/components/automation/AutoScrapePanel.tsx`**
-- Simple panel with a "Run Auto-Scrape" button that invokes `auto-scrape-vendors` edge function
-- Displays results: vendors discovered, added, outreach drafts created, errors
-
-**4. Update `src/routes/dashboard-routes.tsx`**
-- Add lazy import for `Automation` page
-- Add route: `<Route path="/automation" element={<ProtectedRoute><R name="Automation"><Automation /></R></ProtectedRoute>} />`
-- Add `"/automation"` to `dashboardRoutePrefixes`
-
-**5. Update `src/components/dashboard/DashboardSidebar.tsx`**
-- Add an "Automation" link (using `Radar` or `Zap` icon) to the "Intelligence" or "Operations" nav section
-
-### Technical Notes
-- All existing scan panel components are reused as-is with no modifications
-- The vendor discovery extraction keeps `VendorManagementTab` intact (it can import the same panel or keep its inline version)
-- Protected route ensures only authenticated users access automation tools
-
+## Implementation Order
+Phases will be built sequentially. Each phase will include database migrations, edge functions, and UI components as needed.
