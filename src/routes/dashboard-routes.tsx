@@ -44,6 +44,7 @@ const QuantusCore = lazy(() => import("@/pages/QuantusCore"));
 const QuantusHelix = lazy(() => import("@/pages/QuantusHelix"));
 const QuantusForge = lazy(() => import("@/pages/QuantusForge"));
 const Automation = lazy(() => import("@/pages/Automation"));
+const SessionManagement = lazy(() => import("@/pages/SessionManagement"));
 
 const R = ({ name, children }: { name: string; children: React.ReactNode }) => (
   <RouteErrorBoundary routeName={name}>{children}</RouteErrorBoundary>
@@ -62,6 +63,7 @@ export const dashboardRoutePrefixes = [
   "/recommendations", "/autopilot", "/intelligence", "/vault",
   "/wealth", "/calendar", "/compliance", "/network",
   "/connect", "/commission-payouts", "/automation", "/invoices",
+  "/sessions",
 ];
 
 export const dashboardRoutes = (
@@ -99,6 +101,7 @@ export const dashboardRoutes = (
 
     {/* Settings */}
     <Route path="/settings" element={<ProtectedRoute><R name="Settings"><PageTransition><Settings /></PageTransition></R></ProtectedRoute>} />
+    <Route path="/settings/sessions" element={<ProtectedRoute><R name="Sessions"><SessionManagement /></R></ProtectedRoute>} />
     <Route path="/account/subscription" element={<ProtectedRoute><R name="Subscription"><PageTransition><SubscriptionManagement /></PageTransition></R></ProtectedRoute>} />
 
     {/* Partner */}

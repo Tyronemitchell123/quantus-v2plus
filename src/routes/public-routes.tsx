@@ -29,6 +29,7 @@ const MarketplacePage = lazy(() => import("@/pages/Marketplace"));
 const Onboarding = lazy(() => import("@/pages/Onboarding"));
 const Privacy = lazy(() => import("@/pages/Privacy"));
 const Terms = lazy(() => import("@/pages/Terms"));
+const TrackDeal = lazy(() => import("@/pages/TrackDeal"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 
 const R = ({ name, children }: { name: string; children: React.ReactNode }) => (
@@ -67,6 +68,8 @@ export const publicRoutes = (
     <Route path="/onboarding" element={<ProtectedRoute skipOnboardingCheck><R name="Onboarding"><PageTransition><Onboarding /></PageTransition></R></ProtectedRoute>} />
     <Route path="/privacy" element={<R name="Privacy"><PageTransition><Privacy /><Footer /></PageTransition></R>} />
     <Route path="/terms" element={<R name="Terms"><PageTransition><Terms /><Footer /></PageTransition></R>} />
+    <Route path="/track" element={<R name="Track Deal"><PageTransition><TrackDeal /></PageTransition></R>} />
+    <Route path="*" element={<R name="Not Found"><PageTransition><NotFound /></PageTransition></R>} />
     <Route path="*" element={<R name="Not Found"><PageTransition><NotFound /></PageTransition></R>} />
   </>
 );
