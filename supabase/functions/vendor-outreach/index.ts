@@ -265,7 +265,116 @@ ${vendorSummaries}`,
       });
     }
 
-    // ACTION: follow_up — Generate a follow-up message for an outreach
+    // ACTION: send_email — Send the initial outreach email to the vendor
+    if (action === "send_email") {
+      const { outreach_id } = body;
+      if (!outreach_id) {
+        return new Response(JSON.stringify({ error: "outreach_id required" }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const { data: outreach } = await supabase
+        .from("vendor_outreach")
+        .select("*")
+        .eq("id", outreach_id)
+        .single();
+
+      if (!outreach) {
+        return new Response(JSON.stringify({ error: "Outreach not found" }), {
+          status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      if (!outreach.vendor_email) {
+        return new Response(JSON.stringify({ error: "No vendor email on record" }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      // Fetch the initial outbound message
+      const { data: msgs } = await supabase
+        .from("vendor_messages")
+        .select("*")
+        .eq("outreach_id", outreach_id)
+        .eq("direction", "outbound")
+        .is("metadata->type", null)
+        .order("created_at", { ascending: true })
+        .limit(1);
+
+      const initialMsg = msgs?.[0];
+      if (!initialMsg) {
+        return new Response(JSON.stringify({ error: "No outreach message found to send" }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      // Build HTML email body
+      const emailHtml = buildVendorEmailHtml({
+        subject: initialMsg.subject || "Partnership Inquiry — QUANTUS",
+        body: initialMsg.body,
+        vendorName: outreach.vendor_name,
+        company: outreach.vendor_company,
+      });
+
+      const messageId = crypto.randomUUID();
+      const idempotencyKey = `vendor-outreach-${outreach_id}`;
+
+      // Enqueue via PGMQ for reliable delivery
+      const { error: enqueueError } = await supabaseAdmin.rpc("enqueue_email", {
+        queue_name: "transactional_emails",
+        payload: {
+          message_id: messageId,
+          to: outreach.vendor_email,
+          from: "QUANTUS <noreply@notify.crownprompts.com>",
+          sender_domain: "notify.crownprompts.com",
+          subject: initialMsg.subject || "Partnership Inquiry — QUANTUS",
+          html: emailHtml,
+          text: initialMsg.body,
+          purpose: "transactional",
+          label: "vendor-outreach",
+          idempotency_key: idempotencyKey,
+          queued_at: new Date().toISOString(),
+        },
+      });
+
+      if (enqueueError) {
+        console.error("Failed to enqueue vendor email:", enqueueError);
+        return new Response(JSON.stringify({ error: "Failed to queue email for delivery" }), {
+          status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      // Log pending
+      await supabaseAdmin.from("email_send_log").insert({
+        message_id: messageId,
+        template_name: "vendor-outreach",
+        recipient_email: outreach.vendor_email,
+        status: "pending",
+      });
+
+      // Update outreach status
+      await supabase
+        .from("vendor_outreach")
+        .update({ status: "sent" })
+        .eq("id", outreach_id);
+
+      console.log("Vendor outreach email enqueued", {
+        outreach_id,
+        vendor: outreach.vendor_name,
+        email: outreach.vendor_email,
+      });
+
+      return new Response(JSON.stringify({
+        success: true,
+        email_sent_to: outreach.vendor_email,
+        vendor: outreach.vendor_name,
+      }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // ACTION: follow_up — Generate a follow-up message and send email
     if (action === "follow_up") {
       const { outreach_id } = body;
       if (!outreach_id) {
@@ -290,6 +399,60 @@ ${vendorSummaries}`,
       const tones = ["gentle", "firm", "escalation"];
       const tone = tones[Math.min(followUpCount - 1, 2)];
 
+      // Find the follow-up template message
+      const messages = (outreach.vendor_messages as any[]) || [];
+      const followUpTemplate = messages.find(
+        (m: any) => m.direction === "outbound" && m.metadata?.type === "follow_up_template"
+      );
+
+      // Send follow-up email if vendor has email
+      let emailSent = false;
+      if (outreach.vendor_email && followUpTemplate) {
+        const emailHtml = buildVendorEmailHtml({
+          subject: followUpTemplate.subject || `Follow-up #${followUpCount} — QUANTUS`,
+          body: followUpTemplate.body,
+          vendorName: outreach.vendor_name,
+          company: outreach.vendor_company,
+        });
+
+        const messageId = crypto.randomUUID();
+        const idempotencyKey = `vendor-followup-${outreach_id}-${followUpCount}`;
+
+        const { error: enqueueError } = await supabaseAdmin.rpc("enqueue_email", {
+          queue_name: "transactional_emails",
+          payload: {
+            message_id: messageId,
+            to: outreach.vendor_email,
+            from: "QUANTUS <noreply@notify.crownprompts.com>",
+            sender_domain: "notify.crownprompts.com",
+            subject: followUpTemplate.subject || `Follow-up #${followUpCount} — QUANTUS`,
+            html: emailHtml,
+            text: followUpTemplate.body,
+            purpose: "transactional",
+            label: "vendor-follow-up",
+            idempotency_key: idempotencyKey,
+            queued_at: new Date().toISOString(),
+          },
+        });
+
+        if (!enqueueError) {
+          await supabaseAdmin.from("email_send_log").insert({
+            message_id: messageId,
+            template_name: "vendor-follow-up",
+            recipient_email: outreach.vendor_email,
+            status: "pending",
+          });
+          emailSent = true;
+          console.log("Follow-up email enqueued", {
+            outreach_id,
+            follow_up_count: followUpCount,
+            email: outreach.vendor_email,
+          });
+        } else {
+          console.error("Failed to enqueue follow-up email:", enqueueError);
+        }
+      }
+
       // Update outreach
       await supabase
         .from("vendor_outreach")
@@ -299,7 +462,13 @@ ${vendorSummaries}`,
         })
         .eq("id", outreach_id);
 
-      return new Response(JSON.stringify({ success: true, follow_up_count: followUpCount, tone }), {
+      return new Response(JSON.stringify({
+        success: true,
+        follow_up_count: followUpCount,
+        tone,
+        email_sent: emailSent,
+        email_sent_to: emailSent ? outreach.vendor_email : null,
+      }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
