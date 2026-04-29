@@ -10,7 +10,17 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "validate:dev-env": "node scripts/validate-dev-env.mjs",
+    "report:validation": "node scripts/generate-validation-report.mjs",
+    "quantus:complete": "node scripts/quantus-complete.mjs",
+    "quantus:trigger-ci": "node scripts/trigger-ci-evidence.mjs",
+    "install:deps": "node scripts/install-deps.mjs",
+    "install:deps:pnpm": "node scripts/install-deps.mjs --manager=pnpm",
+    "install:deps:yarn": "node scripts/install-deps.mjs --manager=yarn",
+    "install:deps:bun": "node scripts/install-deps.mjs --manager=bun",
+    "test:check-subscription": "node scripts/run-deno-test.mjs supabase/functions/check-subscription/index.test.ts",
+    "test:check-subscription:integration": "node scripts/run-deno-test.mjs supabase/functions/check-subscription/index.integration.test.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

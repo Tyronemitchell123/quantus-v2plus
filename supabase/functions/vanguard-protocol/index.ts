@@ -194,7 +194,7 @@ Deno.serve(async (req) => {
     }
 
     if (!outreachDraft) {
-      outreachDraft = `Mr. ${name}, your biometric trend shows a 'Burnout Risk' profile. I have pre-secured a ${topFlight?.aircraft || 'Global 7500'} from ${topFlight?.route || 'Farnborough to Tokyo'} departing in ${topFlight?.departure || '5 hours'} ($${topFlight ? (topFlight.price_cents / 100).toLocaleString() : '42,000'} arbitrage). I've also snagged a cancelled ${topClinic?.programme || '2-day Neuro-Sync'} slot at the ${topClinic?.clinic || 'Tokyo Brain Hub'}. Your car is 20 mins away. Should I confirm the 'Bio-Reset' itinerary?`;
+      outreachDraft = `Mr. ${name}, your biometric trend shows a 'Burnout Risk' profile. I have pre-secured a ${topFlight?.aircraft || 'Global 7500'} from ${topFlight?.route || 'Farnborough to Tokyo'} departing in ${topFlight?.departure || '5 hours'} ($${topFlight ? (topFlight.price_cents / 100).toLocaleString() : '42,000'} arbitrage). I've also snagged a cancelled ${topClinic?.programme || '2-day Neuro-Sync'} slot at the ${topClinic?.clinic || 'Tokyo Brain Hub'}. Your car is 20 minutes away. Should I confirm the 'Bio-Reset' itinerary?`;
     }
 
     // 5. Commission calculation

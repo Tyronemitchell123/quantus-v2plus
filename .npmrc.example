@@ -1,0 +1,3 @@
+# If your environment enforces scoped package auth, configure a token for @lovable.dev
+@lovable.dev:registry=https://registry.npmjs.org/
+//registry.npmjs.org/:_authToken=${NPM_TOKEN}
