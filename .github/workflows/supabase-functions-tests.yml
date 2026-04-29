@@ -1,0 +1,66 @@
+name: Supabase Function Tests
+
+on:
+  pull_request:
+    paths:
+      - "supabase/functions/check-subscription/**"
+      - ".github/workflows/supabase-functions-tests.yml"
+  push:
+    branches: [main]
+    paths:
+      - "supabase/functions/check-subscription/**"
+      - ".github/workflows/supabase-functions-tests.yml"
+  workflow_dispatch:
+    inputs:
+      run_integration:
+        description: "Run integration test against deployed Supabase function"
+        required: true
+        default: "false"
+
+permissions:
+  contents: read
+
+jobs:
+  check-subscription-unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Run check-subscription tests
+        run: deno test supabase/functions/check-subscription/index.test.ts
+
+      - name: Generate validation report
+        run: node scripts/generate-validation-report.mjs > validation-report.md
+
+      - name: Upload validation report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: check-subscription-validation-report
+          path: validation-report.md
+
+      - name: Publish validation report to job summary
+        run: cat validation-report.md >> $GITHUB_STEP_SUMMARY
+
+  check-subscription-integration-test:
+    if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.run_integration == 'true' }}
+    runs-on: ubuntu-latest
+    env:
+      VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+      VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Run check-subscription integration test
+        run: deno test supabase/functions/check-subscription/index.integration.test.ts

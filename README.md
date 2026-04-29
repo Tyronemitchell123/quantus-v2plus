@@ -2,7 +2,7 @@
 
 ## Project info
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+**URL**: Set your project URL in `VITE_LOVABLE_PROJECT_URL` (for example: `https://lovable.dev/projects/your-project-id`).
 
 ## How can I edit this code?
 
@@ -10,7 +10,7 @@ There are several ways of editing your application.
 
 **Use Lovable**
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+Set `VITE_LOVABLE_PROJECT_URL` and visit that URL in your browser to start prompting in Lovable.
 
 Changes made via Lovable will be committed automatically to this repo.
 
@@ -23,11 +23,11 @@ The only requirement is having Node.js & npm installed - [install with nvm](http
 Follow these steps:
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+# Step 1: Clone the repository.
+git clone <repo-url> quantus-pulse
 
 # Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+cd quantus-pulse
 
 # Step 3: Install the necessary dependencies.
 npm i
@@ -45,6 +45,47 @@ This project is built with:
 - React
 - shadcn-ui
 - Tailwind CSS
+
+## Supabase function tests
+
+```sh
+# Optional preflight validation for local environment/setup
+npm run validate:dev-env
+
+# Optional markdown report for PR comments/checklists
+npm run report:validation
+
+# One-shot completion helper (preflight + report + next-step prompts)
+npm run quantus:complete
+
+# Optional CI trigger helper (requires GitHub CLI auth)
+npm run quantus:trigger-ci
+# If GitHub CLI is unavailable, the helper prints manual GitHub Actions fallback steps.
+
+# Deterministic unit tests (no external services)
+npm run test:check-subscription
+
+# Optional integration test (requires VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY)
+npm run test:check-subscription:integration
+```
+
+### Testing fallback policy (when local Deno is unavailable)
+
+1. **Unit validation in CI (required)**  
+   Open a PR and rely on the `Supabase Function Tests` workflow to run unit tests.
+
+2. **Integration validation in CI (optional but recommended before release)**  
+   Trigger the same workflow via `workflow_dispatch` with `run_integration=true`.
+   The unit-test workflow also uploads a `check-subscription-validation-report` artifact and publishes it in the job summary for PR evidence.
+
+3. **Local preflight guidance**  
+   `npm run test:check-subscription` and `npm run test:check-subscription:integration` will print a clear message if `deno` is missing from `PATH`.
+
+4. **Restricted network/dependency environments**  
+   If `npm install` cannot access private or restricted registries, rely on CI for authoritative test execution and attach CI run links in PR reviews.
+   If scoped package authentication is required, copy `.npmrc.example` to `.npmrc` and set `NPM_TOKEN` before running `npm install`.
+   You can also run `npm run install:deps` to automatically prepare `.npmrc`, attempt install, and try a reduced fallback install mode.
+   For other package managers, run `node scripts/install-deps.mjs --manager=pnpm` (or `yarn` / `bun`).
 
 ## Quantum Computing Integration (AWS Braket)
 
@@ -99,7 +140,7 @@ If no AWS credentials are configured, the system runs a **built-in simulator** t
 
 ## How can I deploy this project?
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+Open your Lovable project URL (`VITE_LOVABLE_PROJECT_URL`) and click Share -> Publish.
 
 ## Can I connect a custom domain to my Lovable project?
 
